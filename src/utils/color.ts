@@ -49,6 +49,17 @@ export class Color {
     ].join("");
   }
 
+  get asIntRGB(): string {
+    return (
+      "0x" +
+      [
+        this.red.toString(16).padStart(2, "0"),
+        this.green.toString(16).padStart(2, "0"),
+        this.blue.toString(16).padStart(2, "0"),
+      ].join("")
+    );
+  }
+
   get asFloat(): { red: number; green: number; blue: number; alpha: number } {
     return {
       red: this.red / 255,
