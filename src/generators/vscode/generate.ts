@@ -1,6 +1,7 @@
 import { palette } from "../../palette.ts";
 import { ColorEntry, SemanticToken } from "../../types.ts";
-import { entries, toJSON, writeFile } from "../../utils/index.ts";
+import { toJSON } from "../../utils/format.ts";
+import { entries, writeFile } from "../../utils/index.ts";
 import { ThemeType, VSCodeTokenColor } from "../types.ts";
 import {
   mapEditorToPaletteColor,

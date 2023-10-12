@@ -1,5 +1,6 @@
 import { palette } from "../../palette.ts";
-import { getThemeName, toJSON, writeFile } from "../../utils/index.ts";
+import { toJSON } from "../../utils/format.ts";
+import { getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
 
 export const generateWindowsTerminalTheme = ({

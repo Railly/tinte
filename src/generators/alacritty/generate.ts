@@ -1,10 +1,6 @@
 import { palette } from "../../palette.ts";
-import {
-  getThemeName,
-  processPaletteHexToInt,
-  toYAML,
-  writeFile,
-} from "../../utils/index.ts";
+import { processPaletteHexToInt, toYAML } from "../../utils/format.ts";
+import { getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
 
 export const generateAlacrittyTheme = ({
