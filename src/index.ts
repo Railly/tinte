@@ -1,3 +1,4 @@
+import { generateITerm2Theme } from "./generators/iterm2/generate.ts";
 import { generateVSCodeTheme } from "./generators/vscode/generate.ts";
 import { generateWindowsTerminalTheme } from "./generators/windows-terminal/generate.ts";
 import { getThemeName } from "./utils/index.ts";
@@ -25,6 +26,7 @@ function main() {
           generateWindowsTerminalTheme({ name, themeType });
           break;
         case "iterm2":
+          generateITerm2Theme({ name, themeType });
           break;
         default:
           throw new Error(`Unknown provider: ${provider}`);
