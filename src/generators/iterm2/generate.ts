@@ -1,6 +1,6 @@
 import { palette } from "../../palette.ts";
 import { Color } from "../../utils/color.ts";
-import { entries, getThemeName, toJSON, writeFile } from "../../utils/index.ts";
+import { entries, getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
 import { mapITerm2Color } from "./mappers.ts";
 
