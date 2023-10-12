@@ -55,3 +55,24 @@ export const processPaletteHexToInt = (paletteSection: {
   }
   return processed;
 };
+
+export const toConf = (obj: Record<string, any>) => {
+  let ini = "";
+  for (const [section, values] of entries(obj)) {
+    console.log({ section, values });
+    const maxKeyLength = Math.max(...Object.keys(values).map((k) => k.length));
+
+    ini += `# ${section}
+`;
+
+    for (const [key, value] of entries(values)) {
+      console.log({ key, value });
+      const paddedKey = key.padEnd(maxKeyLength, " ");
+      ini += `${paddedKey} ${value}
+`;
+    }
+    ini += `
+`;
+  }
+  return ini;
+};
