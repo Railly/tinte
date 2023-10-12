@@ -76,3 +76,12 @@ export const toConf = (obj: Record<string, any>) => {
   }
   return ini;
 };
+
+export const toThemeSH = (obj: Record<string, any>) => {
+  let sh = "";
+  for (const [key, value] of entries(obj)) {
+    sh += `${key} ${value}
+`;
+  }
+  return sh;
+};
