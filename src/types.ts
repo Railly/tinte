@@ -99,5 +99,3 @@ export type SemanticToken =
   | "calls"
   | "punctuation"
   | "codeBlocks";
-
-export type EditorToken = "error" | "warning" | "info" | "debug";

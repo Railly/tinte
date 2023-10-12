@@ -55,7 +55,13 @@ const generateVSCodeColors = (themeType: ThemeType) => {
   return vsCodeColors;
 };
 
-const generateVSCodeTheme = (themeType: ThemeType) => {
+export const generateVSCodeTheme = ({
+  name,
+  themeType,
+}: {
+  name: string;
+  themeType: ThemeType;
+}) => {
   const semanticTokenColors = generateSemanticTokenColors();
   const vsCodeTokens: VSCodeTokenColor[] = [];
 
@@ -67,18 +73,15 @@ const generateVSCodeTheme = (themeType: ThemeType) => {
   const vsCodeColors = generateVSCodeColors(themeType);
 
   const vsCodeTheme = {
-    name: "Flexoki",
+    name,
     type: themeType,
     colors: vsCodeColors,
     tokenColors: vsCodeTokens,
   };
 
+  const filePath = `./_generated/vscode/${name}-${themeType}-vscode.json`;
+
+  writeFile(filePath, toJSON(vsCodeTheme));
+
   return vsCodeTheme;
 };
-
-console.log(generateVSCodeTheme("dark"));
-
-writeFile(
-  "./src/generators/themes/vscode.json",
-  toJSON(generateVSCodeTheme("dark"))
-);
