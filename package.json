@@ -5,7 +5,7 @@
   "description": "An opinionated tool for generating multi-platform color themes",
   "main": "index.js",
   "scripts": {
-    "build": "node --no-warnings --loader ts-node/esm src/generators/vscode.ts"
+    "build": "node --no-warnings --loader ts-node/esm src/generators/vscode/generate.ts"
   },
   "repository": {
     "type": "git",

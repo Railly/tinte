@@ -1,96 +1,8 @@
-import colors from "./pallete.ts";
 import {
   AllColorAbbreviations,
   AllToneAbbreviations,
-  ColorEntry,
-  ColorMap,
   SemanticToken,
-  Shade,
-} from "./types.ts";
-import { entries } from "./utils.ts";
-
-const colorAbbreviations = {
-  red: "re",
-  orange: "or",
-  yellow: "ye",
-  green: "gr",
-  cyan: "cy",
-  blue: "bl",
-  purple: "pu",
-  magenta: "ma",
-} as const;
-
-const textTones = {
-  tx: {
-    light: colors.base.black,
-    dark: colors.base[200],
-  },
-  "tx-2": {
-    light: colors.base[600],
-    dark: colors.base[500],
-  },
-  "tx-3": {
-    light: colors.base[300],
-    dark: colors.base[700],
-  },
-};
-
-const interfaceTones = {
-  ui: {
-    light: colors.base[100],
-    dark: colors.base[900],
-  },
-  "ui-2": {
-    light: colors.base[150],
-    dark: colors.base[850],
-  },
-  "ui-3": {
-    light: colors.base[200],
-    dark: colors.base[800],
-  },
-};
-
-const backgroundTones = {
-  bg: {
-    light: colors.base.paper,
-    dark: colors.base.black,
-  },
-  "bg-2": {
-    light: colors.base[50],
-    dark: colors.base[950],
-  },
-};
-
-const generateColorTones = ({
-  lightContrastShade = 500,
-  darkContrastShade = 300,
-}: {
-  lightContrastShade: Shade;
-  darkContrastShade: Shade;
-}): ColorMap => {
-  const colorMap: ColorMap = {} as ColorMap;
-
-  for (const [colorName, abbreviation] of entries(colorAbbreviations)) {
-    colorMap[abbreviation] = {
-      light: colors[colorName][lightContrastShade],
-      dark: colors[colorName][darkContrastShade],
-    };
-    colorMap[`${abbreviation}-2`] = {
-      light: colors[colorName][darkContrastShade],
-      dark: colors[colorName][lightContrastShade],
-    };
-  }
-
-  return colorMap;
-};
-
-const palette = {
-  ...textTones,
-  ...interfaceTones,
-  ...backgroundTones,
-  ...generateColorTones({ lightContrastShade: 500, darkContrastShade: 300 }),
-};
-console.log(palette);
+} from "../../types.ts";
 
 const mapTokenToPaletteColor: Record<
   SemanticToken,
@@ -124,7 +36,7 @@ const mapTokenToPaletteColor: Record<
   urls: "bl",
   tags: "bl", // For markup languages
   jsxTags: "ma", // For JSX
-  attributes: "ye", // For markup languages
+  attributes: "ye", // For markup attributes
   types: "ye",
   constants: "tx",
   labels: "ma", // For label in GOTO statements, for example
@@ -336,27 +248,90 @@ const mapEditorToPaletteColor: Record<
   "button.background": "bl-2",
 };
 
-const generateSemanticTokenColors = () => {
-  const semanticColors: Record<SemanticToken, ColorEntry> = {} as any;
+const mapTokenToScope = (token: SemanticToken): string | string[] => {
+  const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
+    classes: ["entity.name.type.class"],
+    interfaces: ["entity.name.type.interface"],
+    structs: ["entity.name.type.struct"],
+    enums: ["entity.name.type.enum"],
+    keys: ["meta.object-literal.key", "support.type.property-name"],
+    methods: ["entity.name.function.method", "meta.function.method"],
+    functions: [
+      "entity.name.function",
+      "support.function",
+      "meta.function-call.generic",
+    ],
+    variables: ["variable", "meta.variable", "variable.other.object.property"],
+    globalVariables: ["variable.other.global", "variable.language.this"],
+    localVariables: ["variable.other.local"],
+    parameters: ["variable.parameter", "meta.parameter"],
+    properties: ["variable.other.property", "meta.property"],
+    strings: [
+      "string",
+      "string.other.link",
+      "markup.inline.raw.string.markdown",
+    ],
+    stringEscapeSequences: [
+      "constant.character.escape",
+      "constant.other.placeholder",
+    ],
+    keywords: ["keyword", "variable.other.object"],
+    keywordsControl: [
+      "keyword.control.import",
+      "keyword.control.from",
+      "keyword.import",
+    ],
+    storageModifiers: [
+      "storage.modifier",
+      "keyword.modifier",
+      "storage.type",
+      "variable.other.readwrite.alias",
+    ],
+    comments: ["comment", "punctuation.definition.comment"],
+    docComments: ["comment.documentation", "comment.line.documentation"],
+    numbers: ["constant.numeric"],
+    booleans: ["constant.language.boolean", "constant.language.json"],
+    operators: ["keyword.operator"],
+    macros: ["entity.name.function.preprocessor", "meta.preprocessor"],
+    preprocessor: ["meta.preprocessor"],
+    urls: ["markup.underline.link"],
+    tags: ["entity.name.tag"],
+    jsxTags: ["support.class.component"],
+    attributes: ["entity.other.attribute-name", "meta.attribute"],
+    types: ["entity.name.type", "support.type"],
+    constants: ["variable.other.constant", "variable.readonly"],
+    labels: [
+      "entity.name.label",
+      "punctuation.definition.label",
+      "entity.name.section.markdown",
+    ],
+    namespaces: [
+      "entity.name.namespace",
+      "storage.modifier.namespace",
+      "markup.bold.markdown",
+    ],
+    modules: ["entity.name.module", "storage.modifier.module"],
+    typeParameters: ["variable.type.parameter", "variable.parameter.type"],
+    exceptions: ["keyword.control.exception", "keyword.control.trycatch"],
+    decorators: [
+      "meta.decorator",
+      "punctuation.decorator",
+      "entity.name.function.decorator",
+    ],
+    calls: ["variable.function"],
+    punctuation: [
+      "punctuation",
+      "punctuation.terminator",
+      "punctuation.definition.tag",
+      "punctuation.separator",
+      "punctuation.definition.string",
+      "meta.separator.markdown",
+    ],
+    codeBlocks: ["punctuation.section.block"],
+    plain: ["source"],
+  };
 
-  for (const [tokenColor, colorKey] of entries(mapTokenToPaletteColor)) {
-    semanticColors[tokenColor] = palette[colorKey];
-  }
-
-  return semanticColors;
+  return tokenToScopeMapping[token];
 };
 
-const generateEditorThemeColors = () => {
-  const themeColors: Record<string, ColorEntry> = {};
-
-  for (const [editorColor, colorKey] of entries(mapEditorToPaletteColor)) {
-    themeColors[editorColor] = palette[colorKey];
-  }
-
-  return themeColors;
-};
-
-const semanticTokenColors = generateSemanticTokenColors();
-const editorThemeColors = generateEditorThemeColors();
-
-export { semanticTokenColors, editorThemeColors };
+export { mapEditorToPaletteColor, mapTokenToPaletteColor, mapTokenToScope };

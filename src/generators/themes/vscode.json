@@ -213,7 +213,7 @@
       "scope": [
         "entity.name.function",
         "support.function",
-        "\tmeta.function-call.generic"
+        "meta.function-call.generic"
       ],
       "settings": {
         "foreground": "#DA702C"

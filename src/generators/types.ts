@@ -1,3 +1,5 @@
+export type ThemeType = "light" | "dark";
+
 export type VSCodeTokenColor = {
   name: string;
   scope: string | string[];
