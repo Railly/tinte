@@ -7,6 +7,7 @@ import { generateVSCodeTheme } from "./generators/vscode/generate.ts";
 import { generateWindowsTerminalTheme } from "./generators/windows-terminal/generate.ts";
 import { getThemeName } from "./utils/index.ts";
 import { generateKittyTheme } from "./generators/kitty/generate.ts";
+import { generateLiteXLTheme } from "./generators/lite-xl/generate.ts";
 
 const generatorMapping = {
   vscode: generateVSCodeTheme,
@@ -16,6 +17,7 @@ const generatorMapping = {
   "vanilla-css": generateVanillaCSSTheme,
   gimp: generateGimpTheme,
   kitty: generateKittyTheme,
+  "lite-xl": generateLiteXLTheme,
 } as const;
 
 const config = {
@@ -47,6 +49,10 @@ const config = {
     },
     {
       name: "kitty",
+      themes: ["light", "dark"],
+    },
+    {
+      name: "lite-xl",
       themes: ["light", "dark"],
     },
   ],
