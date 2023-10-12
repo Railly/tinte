@@ -14,10 +14,6 @@ export const writeFile = (filePath: string, data: string) => {
   fs.writeFileSync(path.join(process.cwd(), filePath), data);
 };
 
-// export const getThemeName = (name: string, themeType: string) =>
-//   `${name}-${themeType}`;
-
-// sanitize One Hunter Theme to one-hunter-theme
 export const getThemeName = (...args: string[]) => {
   const themeName = args.join("-").toLowerCase();
   return themeName.replace(/\s/g, "-");
