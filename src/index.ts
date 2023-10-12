@@ -2,7 +2,6 @@ import colors from "./pallete.ts";
 import {
   AllColorAbbreviations,
   AllToneAbbreviations,
-  ColorAbbreviation,
   ColorEntry,
   ColorMap,
   SemanticToken,

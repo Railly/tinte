@@ -14,7 +14,7 @@ const mapTokenToScope = (token: SemanticToken): string | string[] => {
     functions: [
       "entity.name.function",
       "support.function",
-      "	meta.function-call.generic",
+      "meta.function-call.generic",
     ],
     variables: ["variable", "meta.variable", "variable.other.object.property"],
     globalVariables: ["variable.other.global", "variable.language.this"],
