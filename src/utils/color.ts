@@ -68,4 +68,13 @@ export class Color {
       alpha: this.alpha / 255,
     };
   }
+
+  get asInt(): { red: number; green: number; blue: number; alpha: number } {
+    return {
+      red: this.red,
+      green: this.green,
+      blue: this.blue,
+      alpha: this.alpha,
+    };
+  }
 }

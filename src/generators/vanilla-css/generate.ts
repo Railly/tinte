@@ -1,7 +1,8 @@
 import { ThemeType } from "../types.ts";
 import { entries, getThemeName, writeFile } from "../../utils/index.ts";
 import { palette } from "../../palette.ts";
-import { formatAbbreviationToSemantic, toCSS } from "../../utils/format.ts";
+import { toCSS } from "../../utils/format.ts";
+import { formatAbbreviationToSemantic } from "./mappers.ts";
 
 export const generateVanillaCSSTheme = ({
   name,

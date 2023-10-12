@@ -1,4 +1,6 @@
+import { exit } from "process";
 import { generateAlacrittyTheme } from "./generators/alacritty/generate.ts";
+import { generateGimpTheme } from "./generators/gimp/generate.ts";
 import { generateITerm2Theme } from "./generators/iterm2/generate.ts";
 import { generateVanillaCSSTheme } from "./generators/vanilla-css/generate.ts";
 import { generateVSCodeTheme } from "./generators/vscode/generate.ts";
@@ -11,6 +13,7 @@ const generatorMapping = {
   iterm2: generateITerm2Theme,
   alacritty: generateAlacrittyTheme,
   "vanilla-css": generateVanillaCSSTheme,
+  gimp: generateGimpTheme,
 } as const;
 
 const config = {
@@ -36,30 +39,39 @@ const config = {
       name: "vanilla-css",
       themes: ["light"],
     },
+    {
+      name: "gimp",
+      themes: ["dark"],
+    },
   ],
 } as const;
 
 function main() {
-  const { name, providers } = config;
+  try {
+    const { name, providers } = config;
 
-  for (const { name: providerName, themes } of providers) {
-    const generator = generatorMapping[providerName];
-    if (!generator) {
-      throw new Error(`Unknown provider: ${providerName}`);
+    for (const { name: providerName, themes } of providers) {
+      const generator = generatorMapping[providerName];
+      if (!generator) {
+        throw new Error(`Unknown provider: ${providerName}`);
+      }
+
+      for (const themeType of themes) {
+        const themeName = getThemeName(name, themeType);
+
+        console.debug(`[${providerName.toUpperCase()}]`);
+        console.log(`Generating ${themeName} theme...`);
+
+        generator({ name, themeType });
+      }
+
+      console.log(
+        `\x1b[32mSuccessfully generated themes for ${providerName}!\x1b[0m`
+      );
     }
-
-    for (const themeType of themes) {
-      const themeName = getThemeName(name, themeType);
-
-      console.debug(`[${providerName.toUpperCase()}]`);
-      console.log(`Generating ${themeName} theme...`);
-
-      generator({ name, themeType });
-    }
-
-    console.log(
-      `\x1b[32mSuccessfully generated themes for ${providerName}!\x1b[0m`
-    );
+  } catch (error) {
+    console.error(`\x1b[31mAn error occurred while generating themes:\x1b[0m`);
+    exit(1);
   }
 }
 
