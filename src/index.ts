@@ -1,3 +1,4 @@
+import { generateAlacrittyTheme } from "./generators/alacritty/generate.ts";
 import { generateITerm2Theme } from "./generators/iterm2/generate.ts";
 import { generateVSCodeTheme } from "./generators/vscode/generate.ts";
 import { generateWindowsTerminalTheme } from "./generators/windows-terminal/generate.ts";
@@ -5,7 +6,7 @@ import { getThemeName } from "./utils/index.ts";
 
 const config = {
   name: "Flexoki",
-  providers: ["vscode", "windows-terminal", "iterm2"],
+  providers: ["vscode", "windows-terminal", "iterm2", "alacritty"],
   themeTypes: ["light", "dark"],
 } as const;
 
@@ -27,6 +28,9 @@ function main() {
           break;
         case "iterm2":
           generateITerm2Theme({ name, themeType });
+          break;
+        case "alacritty":
+          generateAlacrittyTheme({ name, themeType });
           break;
         default:
           throw new Error(`Unknown provider: ${provider}`);
