@@ -59,14 +59,12 @@ export const processPaletteHexToInt = (paletteSection: {
 export const toConf = (obj: Record<string, any>) => {
   let ini = "";
   for (const [section, values] of entries(obj)) {
-    console.log({ section, values });
     const maxKeyLength = Math.max(...Object.keys(values).map((k) => k.length));
 
     ini += `# ${section}
 `;
 
     for (const [key, value] of entries(values)) {
-      console.log({ key, value });
       const paddedKey = key.padEnd(maxKeyLength, " ");
       ini += `${paddedKey} ${value}
 `;
@@ -84,4 +82,41 @@ export const toThemeSH = (obj: Record<string, any>) => {
 `;
   }
   return sh;
+};
+
+export const toXResources = (
+  defines: Record<string, Record<string, string>>,
+  obj: Record<string, any>
+) => {
+  let xresources = "";
+
+  const maxKeyLength = Math.max(...Object.keys(obj).map((k) => k.length));
+  for (const [key, value] of entries(defines)) {
+    xresources += `! ${key}
+`;
+
+    for (const [k, v] of entries(value)) {
+      const paddedKey = k.padEnd(maxKeyLength + 2, " ");
+      xresources += `#define ${paddedKey}    ${v}
+`;
+    }
+    xresources += `
+`;
+  }
+
+  for (const [key, value] of entries(obj)) {
+    const maxKeyLength = Math.max(...Object.keys(value).map((k) => k.length));
+
+    xresources += `! ${key}
+`;
+
+    for (const [k, v] of entries(value)) {
+      const paddedKey = k.padEnd(maxKeyLength, " ");
+      xresources += `${paddedKey}:  ${v}
+`;
+    }
+    xresources += `
+`;
+  }
+  return xresources;
 };

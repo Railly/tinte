@@ -9,6 +9,7 @@ import { getThemeName } from "./utils/index.ts";
 import { generateKittyTheme } from "./generators/kitty/generate.ts";
 import { generateLiteXLTheme } from "./generators/lite-xl/generate.ts";
 import { generateThemeSHTheme } from "./generators/theme-sh/generate.ts";
+import { generateXResourcesTheme } from "./generators/xresources/generate.ts";
 
 const generatorMapping = {
   vscode: generateVSCodeTheme,
@@ -20,6 +21,7 @@ const generatorMapping = {
   kitty: generateKittyTheme,
   "lite-xl": generateLiteXLTheme,
   "theme-sh": generateThemeSHTheme,
+  xresources: generateXResourcesTheme,
 } as const;
 
 const config = {
@@ -59,6 +61,10 @@ const config = {
     },
     {
       name: "theme-sh",
+      themes: ["light", "dark"],
+    },
+    {
+      name: "xresources",
       themes: ["light", "dark"],
     },
   ],
