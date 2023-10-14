@@ -7,8 +7,7 @@
 </h3>
 
 <p align="center">
-An opinionated multi-platform color theme generator
-  <br>
+An opinionated multi-platform color theme generator 🎨 <br>
 </p>
 
 ## Table of Contents
