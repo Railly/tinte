@@ -1,0 +1,23 @@
+{
+  "name": "one-hunter-light",
+  "background": "#FEFEF8",
+  "foreground": "#1d2126",
+  "black": "#1d2126",
+  "white": "#F2F2EC",
+  "brightBlack": "#444f5a",
+  "brightWhite": "#FEFEF8",
+  "brightBlue": "#4096f1",
+  "brightCyan": "#10a4e7",
+  "brightGreen": "#20ac93",
+  "brightPurple": "#c972d8",
+  "brightRed": "#f06292",
+  "brightYellow": "#f1881e",
+  "blue": "#96d0fa",
+  "cyan": "#96d0fa",
+  "green": "#66dfc4",
+  "purple": "#e6b8ef",
+  "red": "#f8a9c5",
+  "yellow": "#f7bc62",
+  "selectionBackground": "#4f5e6b",
+  "cursorColor": "#4f5e6b"
+}

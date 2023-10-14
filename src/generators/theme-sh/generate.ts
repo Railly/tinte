@@ -1,4 +1,4 @@
-import { palette } from "../../palette.ts";
+import { mappedPalette } from "../../mapped-palette.ts";
 import { getThemeName, writeFile } from "../../utils/index.ts";
 import { toThemeSH } from "../../utils/format.ts";
 import { ThemeType } from "../types.ts";
@@ -11,28 +11,30 @@ export const generateThemeSHTheme = ({
   themeType: ThemeType;
 }) => {
   const themeName = getThemeName(name, themeType);
+  const slugifiedName = getThemeName(name);
+
   const theme = {
-    color0: palette.bg[themeType],
-    color1: palette.re[themeType],
-    color2: palette.gr[themeType],
-    color3: palette.ye[themeType],
-    color4: palette.bl[themeType],
-    color5: palette.pu[themeType],
-    color6: palette.cy[themeType],
-    color7: palette["tx-2"][themeType],
-    color8: palette["ui"][themeType],
-    color9: palette["re-2"][themeType],
-    color10: palette["gr-2"][themeType],
-    color11: palette["ye-2"][themeType],
-    color12: palette["bl-2"][themeType],
-    color13: palette["pu-2"][themeType],
-    color14: palette["cy-2"][themeType],
-    color15: palette["tx-2"][themeType],
-    foreground: palette.tx[themeType],
-    background: palette.bg[themeType],
-    cursor: palette.tx[themeType],
+    color0: mappedPalette.bg[themeType],
+    color1: mappedPalette.re[themeType],
+    color2: mappedPalette.gr[themeType],
+    color3: mappedPalette.ye[themeType],
+    color4: mappedPalette.bl[themeType],
+    color5: mappedPalette.pu[themeType],
+    color6: mappedPalette.cy[themeType],
+    color7: mappedPalette["tx-2"][themeType],
+    color8: mappedPalette["ui"][themeType],
+    color9: mappedPalette["re-2"][themeType],
+    color10: mappedPalette["gr-2"][themeType],
+    color11: mappedPalette["ye-2"][themeType],
+    color12: mappedPalette["bl-2"][themeType],
+    color13: mappedPalette["pu-2"][themeType],
+    color14: mappedPalette["cy-2"][themeType],
+    color15: mappedPalette["tx-2"][themeType],
+    foreground: mappedPalette.tx[themeType],
+    background: mappedPalette.bg[themeType],
+    cursor: mappedPalette.tx[themeType],
   };
 
-  const filePath = `./_generated/theme-sh/${themeName}`;
+  const filePath = `./_generated/${slugifiedName}/theme-sh/${themeName}`;
   writeFile(filePath, toThemeSH(theme));
 };

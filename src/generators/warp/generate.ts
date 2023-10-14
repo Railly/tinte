@@ -1,4 +1,4 @@
-import { palette } from "../../palette.ts";
+import { mappedPalette } from "../../mapped-palette.ts";
 import { toYAML } from "../../utils/format.ts";
 import { getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
@@ -11,35 +11,37 @@ export const generateWarpTheme = ({
   themeType: ThemeType;
 }) => {
   const themeName = getThemeName(name, themeType);
+  const slugifiedName = getThemeName(name);
+
   const theme = {
-    accent: palette.or[themeType],
-    background: palette.bg[themeType],
+    accent: mappedPalette.or[themeType],
+    background: mappedPalette.bg[themeType],
     details: themeType === "light" ? "lighter" : "darker",
-    foreground: palette.tx[themeType],
+    foreground: mappedPalette.tx[themeType],
     terminal_colors: {
       bright: {
-        black: palette.bg["dark"],
-        blue: palette.bl[themeType],
-        cyan: palette.cy[themeType],
-        green: palette.gr[themeType],
-        magenta: palette.ma[themeType],
-        red: palette.re[themeType],
-        white: palette.tx[themeType],
-        yellow: palette.ye[themeType],
+        black: mappedPalette.bg["dark"],
+        blue: mappedPalette.bl[themeType],
+        cyan: mappedPalette.cy[themeType],
+        green: mappedPalette.gr[themeType],
+        magenta: mappedPalette.ma[themeType],
+        red: mappedPalette.re[themeType],
+        white: mappedPalette.tx[themeType],
+        yellow: mappedPalette.ye[themeType],
       },
       normal: {
-        black: palette.bg["dark"],
-        blue: palette["bl-2"][themeType],
-        cyan: palette["cy-2"][themeType],
-        green: palette["gr-2"][themeType],
-        magenta: palette["ma-2"][themeType],
-        red: palette["re-2"][themeType],
-        white: palette.tx[themeType],
-        yellow: palette["ye-2"][themeType],
+        black: mappedPalette.bg["dark"],
+        blue: mappedPalette["bl-2"][themeType],
+        cyan: mappedPalette["cy-2"][themeType],
+        green: mappedPalette["gr-2"][themeType],
+        magenta: mappedPalette["ma-2"][themeType],
+        red: mappedPalette["re-2"][themeType],
+        white: mappedPalette.tx[themeType],
+        yellow: mappedPalette["ye-2"][themeType],
       },
     },
   };
 
-  const filePath = `./_generated/warp/${themeName}.yaml`;
+  const filePath = `./_generated/${slugifiedName}/warp/${themeName}.yaml`;
   writeFile(filePath, toYAML(theme));
 };

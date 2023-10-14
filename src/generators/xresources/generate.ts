@@ -1,4 +1,4 @@
-import { palette } from "../../palette.ts";
+import { mappedPalette } from "../../mapped-palette.ts";
 import { toXResources } from "../../utils/format.ts";
 import { getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
@@ -11,30 +11,32 @@ export const generateXResourcesTheme = ({
   themeType: ThemeType;
 }) => {
   const themeName = getThemeName(name, themeType);
+  const slugifiedName = getThemeName(name);
+
   const defines = {
     "dark-colors": {
-      yellow: palette["ye-2"][themeType],
-      blue: palette["bl-2"][themeType],
-      orange: palette["or-2"][themeType],
-      cyan: palette["cy-2"][themeType],
-      red: palette["re-2"][themeType],
-      green: palette["gr-2"][themeType],
-      magenta: palette["ma-2"][themeType],
-      violet: palette["pu-2"][themeType],
-      white: palette["bg"]["light"],
-      black: palette["bg"]["dark"],
+      yellow: mappedPalette["ye-2"][themeType],
+      blue: mappedPalette["bl-2"][themeType],
+      orange: mappedPalette["or-2"][themeType],
+      cyan: mappedPalette["cy-2"][themeType],
+      red: mappedPalette["re-2"][themeType],
+      green: mappedPalette["gr-2"][themeType],
+      magenta: mappedPalette["ma-2"][themeType],
+      violet: mappedPalette["pu-2"][themeType],
+      white: mappedPalette["bg"]["light"],
+      black: mappedPalette["bg"]["dark"],
     },
     "light-colors": {
-      bryellow: palette["ye"][themeType],
-      brblue: palette["bl"][themeType],
-      brorange: palette["or"][themeType],
-      brcyan: palette["cy"][themeType],
-      brred: palette["re"][themeType],
-      brgreen: palette["gr"][themeType],
-      brmagenta: palette["ma"][themeType],
-      brviolet: palette["pu"][themeType],
-      brwhite: palette["bg"]["light"],
-      brblack: palette["bg"]["dark"],
+      bryellow: mappedPalette["ye"][themeType],
+      brblue: mappedPalette["bl"][themeType],
+      brorange: mappedPalette["or"][themeType],
+      brcyan: mappedPalette["cy"][themeType],
+      brred: mappedPalette["re"][themeType],
+      brgreen: mappedPalette["gr"][themeType],
+      brmagenta: mappedPalette["ma"][themeType],
+      brviolet: mappedPalette["pu"][themeType],
+      brwhite: mappedPalette["bg"]["light"],
+      brblack: mappedPalette["bg"]["dark"],
     },
   };
   const body = {
@@ -80,6 +82,6 @@ export const generateXResourcesTheme = ({
       "*color15": "brwhite",
     },
   };
-  const filePath = `./_generated/xresources/${themeName}`;
+  const filePath = `./_generated/${slugifiedName}/xresources/${themeName}`;
   writeFile(filePath, toXResources(defines, body));
 };

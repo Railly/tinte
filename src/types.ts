@@ -1,7 +1,8 @@
-export type Shade =
+export type MyTheme = "Flexoki" | "One Hunter";
+
+export type Shade = (
   | 50
   | 100
-  | 150
   | 200
   | 300
   | 400
@@ -9,9 +10,10 @@ export type Shade =
   | 600
   | 700
   | 800
-  | 850
   | 900
-  | 950;
+  | 950
+) &
+  (number | string);
 
 export type ColorName =
   | "red"
@@ -49,6 +51,8 @@ export type AllToneAbbreviations =
   | "bg"
   | "bg-2";
 
+export type Abbreviations = AllColorAbbreviations | AllToneAbbreviations;
+
 export type ColorEntry = {
   light: string;
   dark: string;
@@ -68,6 +72,7 @@ export type SemanticToken =
   | "methods"
   | "functions"
   | "variables"
+  | "variablesOther"
   | "globalVariables"
   | "localVariables"
   | "parameters"
@@ -97,5 +102,4 @@ export type SemanticToken =
   | "exceptions"
   | "decorators"
   | "calls"
-  | "punctuation"
-  | "codeBlocks";
+  | "punctuation";

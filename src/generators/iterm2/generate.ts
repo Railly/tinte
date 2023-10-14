@@ -1,4 +1,4 @@
-import { palette } from "../../palette.ts";
+import { mappedPalette } from "../../mapped-palette.ts";
 import { Color } from "../../utils/color.ts";
 import { entries, getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
@@ -12,13 +12,15 @@ export const generateITerm2Theme = ({
   themeType: ThemeType;
 }) => {
   const themeName = getThemeName(name, themeType);
+  const slugifiedName = getThemeName(name);
+
   const theme = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 ${entries(mapITerm2Color)
   .map(([key, color]) => {
-    const rgbaColor = Color.fromHex(palette[color][themeType]);
+    const rgbaColor = Color.fromHex(mappedPalette[color][themeType]);
     return `    <key>${key}</key>
     <dict>
         <key>Color Space</key>
@@ -37,6 +39,6 @@ ${entries(mapITerm2Color)
 </dict>
 </plist>`;
 
-  const filePath = `./_generated/iterm2/${themeName}-iterm2.xml`;
+  const filePath = `./_generated/${slugifiedName}/iterm2/${themeName}-iterm2.xml`;
   writeFile(filePath, theme);
 };

@@ -1,4 +1,4 @@
-import { palette } from "../../palette.ts";
+import { mappedPalette } from "../../mapped-palette.ts";
 import { Color } from "../../utils/color.ts";
 import { entries, getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
@@ -15,17 +15,17 @@ export const generateGimpTheme = ({
 
   const maxLengths = {
     red: Math.max(
-      ...Object.values(palette).map(
+      ...Object.values(mappedPalette).map(
         (color) => Color.fromHex(color[themeType]).asInt.red.toString().length
       )
     ),
     green: Math.max(
-      ...Object.values(palette).map(
+      ...Object.values(mappedPalette).map(
         (color) => Color.fromHex(color[themeType]).asInt.green.toString().length
       )
     ),
     blue: Math.max(
-      ...Object.values(palette).map(
+      ...Object.values(mappedPalette).map(
         (color) => Color.fromHex(color[themeType]).asInt.blue.toString().length
       )
     ),
@@ -34,7 +34,7 @@ export const generateGimpTheme = ({
   const theme = `GIMP Palette
 Name: ${themeName}
 Columns: 8
-${entries(palette).map(([key, color]) => {
+${entries(mappedPalette).map(([key, color]) => {
   const rgbaColor = Color.fromHex(color[themeType]);
 
   const paddedRed = rgbaColor.asInt.red
@@ -53,6 +53,6 @@ ${entries(palette).map(([key, color]) => {
 }).join(`
 `)}`;
 
-  const filePath = `./_generated/gimp/${themeName}.gpl`;
+  const filePath = `./_generated/${themeName}/gimp/${themeName}.gpl`;
   writeFile(filePath, theme);
 };
