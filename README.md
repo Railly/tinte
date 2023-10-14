@@ -14,8 +14,9 @@ An opinionated multi-platform color theme generator
 ## Table of Contents
 
 - [Tinte](#tinte)
-  - [Features](#features)
   - [Motivation](#motivation)
+  - [Features](#features)
+  - [Installation](#installation)
   - [Usage](#usage)
     - [Update the Theme Type and currentTheme Constant](#1-update-the-theme-type-and-currenttheme-constant)
     - [Introduce a New Color Palette](#2-introduce-a-new-color-palette)
@@ -37,6 +38,10 @@ You only need to define your color palette once, and Tinte will generate your th
 - **Wide Range of Platforms:** Generate themes for Alacritty, GIMP, iTerm2, Kitty, Lite-xl, theme.sh, Vanilla-CSS, VSCode, Warp, Windows Terminal, and Xresources.
 - **Modular Structure:** Each generator is isolated, making it easy to add more in the future.
 - **Opinionated Defaults:** Provides a solid foundation for theme creation, with the flexibility to tweak as needed.
+
+## Installation
+
+Coming soon via [NPM](https://www.npmjs.com/package/tinte)
 
 ## Usage
 
@@ -153,6 +158,12 @@ export const providers = [
 | Dark Theme                                                                                                                    | Light Theme                                                                                                                     |
 | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | ![Dark Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/flexoki-dark.jpg) | ![Light Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/flexoki-light.jpg) |
+
+## Roadmap
+
+1. CLI for generating themes: `tinte generate`
+2. Support for more platforms (e.g. Sublime Text, Vim, etc.)
+3. Web app for generating themes.
 
 ## Contributing
 
