@@ -18,9 +18,6 @@ An opinionated multi-platform color theme generator
   - [Features](#features)
   - [Installation](#installation)
   - [Usage](#usage)
-    - [Update the Theme Type and currentTheme Constant](#1-update-the-theme-type-and-currenttheme-constant)
-    - [Introduce a New Color Palette](#2-introduce-a-new-color-palette)
-    - [Generate Your Theme](#4-generate-your-theme)
   - [Customizing Semantic Coloring for VS Code](#customizing-semantic-coloring-for-vs-code)
   - [Adding Generators](#adding-generators)
   - [Contributing](#contributing)
@@ -86,7 +83,24 @@ export const palettes: Record<MyTheme, Palette> = {
 };
 ```
 
-### 3. **Generate Your Theme**
+### 3. Select your shades.
+
+In the example below, we're using the `500`, `300` shades, for light and dark themes respectively.
+
+```ts
+// src/mappedPalette.ts
+export const mappedPalette = {
+  ... // other tones
+  ...generateColorTones({
+      lightContrastShade: 500,
+      darkContrastShade: 300
+    })
+}
+```
+
+> Make sure you have these shades defined in your `palette`.
+
+### 4. **Generate Your Theme**
 
 Run the following command to generate your theme:
 
