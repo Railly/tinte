@@ -1,92 +1,26 @@
 import { exit } from "process";
-import { generateAlacrittyTheme } from "./generators/alacritty/generate.ts";
-import { generateGimpTheme } from "./generators/gimp/generate.ts";
-import { generateITerm2Theme } from "./generators/iterm2/generate.ts";
-import { generateVanillaCSSTheme } from "./generators/vanilla-css/generate.ts";
-import { generateVSCodeTheme } from "./generators/vscode/generate.ts";
-import { generateWindowsTerminalTheme } from "./generators/windows-terminal/generate.ts";
 import { getThemeName } from "./utils/index.ts";
-import { generateKittyTheme } from "./generators/kitty/generate.ts";
-import { generateLiteXLTheme } from "./generators/lite-xl/generate.ts";
-import { generateThemeSHTheme } from "./generators/theme-sh/generate.ts";
-import { generateXResourcesTheme } from "./generators/xresources/generate.ts";
-
-const generatorMapping = {
-  vscode: generateVSCodeTheme,
-  "windows-terminal": generateWindowsTerminalTheme,
-  iterm2: generateITerm2Theme,
-  alacritty: generateAlacrittyTheme,
-  "vanilla-css": generateVanillaCSSTheme,
-  gimp: generateGimpTheme,
-  kitty: generateKittyTheme,
-  "lite-xl": generateLiteXLTheme,
-  "theme-sh": generateThemeSHTheme,
-  xresources: generateXResourcesTheme,
-} as const;
-
-const config = {
-  name: "Flexoki",
-  providers: [
-    {
-      name: "vscode",
-      themes: ["light", "dark"],
-    },
-    {
-      name: "windows-terminal",
-      themes: ["light", "dark"],
-    },
-    {
-      name: "iterm2",
-      themes: ["light", "dark"],
-    },
-    {
-      name: "alacritty",
-      themes: ["light", "dark"],
-    },
-    {
-      name: "vanilla-css",
-      themes: ["light"],
-    },
-    {
-      name: "gimp",
-      themes: ["dark"],
-    },
-    {
-      name: "kitty",
-      themes: ["light", "dark"],
-    },
-    {
-      name: "lite-xl",
-      themes: ["light", "dark"],
-    },
-    {
-      name: "theme-sh",
-      themes: ["light", "dark"],
-    },
-    {
-      name: "xresources",
-      themes: ["light", "dark"],
-    },
-  ],
-} as const;
+import { generators, providers } from "./generators/index.ts";
+import { currentTheme } from "./config/index.ts";
 
 function main() {
   try {
-    const { name, providers } = config;
-
     for (const { name: providerName, themes } of providers) {
-      const generator = generatorMapping[providerName];
+      // Here we extract the generator function
+      const generator = generators[providerName];
       if (!generator) {
         throw new Error(`Unknown provider: ${providerName}`);
       }
 
       for (const themeType of themes) {
-        const themeName = getThemeName(name, themeType);
+        // We obtain the slugified name + theme type
+        const themeName = getThemeName(currentTheme, themeType);
 
         console.debug(`[${providerName.toUpperCase()}]`);
         console.log(`Generating ${themeName} theme...`);
 
-        generator({ name, themeType });
+        // We call the generator function
+        generator({ name: currentTheme, themeType });
       }
 
       console.log(

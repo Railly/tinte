@@ -1,0 +1,27 @@
+GIMP Palette
+Name: one-hunter
+Columns: 8
+216  216  211  Text
+ 91  111  127  Text Muted
+ 68   79   90  Text Faint
+ 54   59   67  Interface
+ 61   69   77  Interface Hover
+ 61   69   77  Interface active
+ 29   33   38  Background
+ 29   33   38  Background Secondary
+248  169  197  Dark Red
+240   98  146  Light Red
+247  188   98  Dark Orange
+241  136   30  Light Orange
+247  188   98  Dark Yellow
+241  136   30  Light Yellow
+102  223  196  Dark Green
+ 32  172  147  Light Green
+126  211  251  Dark Cyan
+ 16  164  231  Light Cyan
+150  208  250  Dark Blue
+ 64  150  241  Light Blue
+230  184  239  Dark Purple
+201  114  216  Light Purple
+248  169  197  Dark Magenta
+233   75  124  Light Magenta

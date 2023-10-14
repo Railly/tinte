@@ -1,4 +1,4 @@
-import colors from "./colors.ts";
+import { currentPalette } from "./config/index.ts";
 import { ColorMap, Shade } from "./types.ts";
 import { entries } from "./utils/index.ts";
 
@@ -15,42 +15,42 @@ const colorAbbreviations = {
 
 const textTones = {
   tx: {
-    light: colors.base.black,
-    dark: colors.base[200],
+    light: currentPalette.base.black,
+    dark: currentPalette.base[200],
   },
   "tx-2": {
-    light: colors.base[600],
-    dark: colors.base[500],
+    light: currentPalette.base[600],
+    dark: currentPalette.base[500],
   },
   "tx-3": {
-    light: colors.base[300],
-    dark: colors.base[700],
+    light: currentPalette.base[300],
+    dark: currentPalette.base[700],
   },
 };
 
 const interfaceTones = {
   ui: {
-    light: colors.base[100],
-    dark: colors.base[900],
+    light: currentPalette.base[100],
+    dark: currentPalette.base[900],
   },
   "ui-2": {
-    light: colors.base[150],
-    dark: colors.base[850],
+    light: currentPalette.base[150],
+    dark: currentPalette.base[850],
   },
   "ui-3": {
-    light: colors.base[200],
-    dark: colors.base[800],
+    light: currentPalette.base[200],
+    dark: currentPalette.base[800],
   },
 };
 
 const backgroundTones = {
   bg: {
-    light: colors.base.paper,
-    dark: colors.base.black,
+    light: currentPalette.base.paper,
+    dark: currentPalette.base.black,
   },
   "bg-2": {
-    light: colors.base[50],
-    dark: colors.base[950],
+    light: currentPalette.base[50],
+    dark: currentPalette.base[950],
   },
 };
 
@@ -65,19 +65,19 @@ const generateColorTones = ({
 
   for (const [colorName, abbreviation] of entries(colorAbbreviations)) {
     colorMap[abbreviation] = {
-      light: colors[colorName][lightContrastShade],
-      dark: colors[colorName][darkContrastShade],
+      light: currentPalette[colorName][lightContrastShade],
+      dark: currentPalette[colorName][darkContrastShade],
     };
     colorMap[`${abbreviation}-2`] = {
-      light: colors[colorName][darkContrastShade],
-      dark: colors[colorName][lightContrastShade],
+      light: currentPalette[colorName][darkContrastShade],
+      dark: currentPalette[colorName][lightContrastShade],
     };
   }
 
   return colorMap;
 };
 
-export const palette = {
+export const mappedPalette = {
   ...textTones,
   ...interfaceTones,
   ...backgroundTones,

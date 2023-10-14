@@ -1,4 +1,4 @@
-import { palette } from "../../palette.ts";
+import { mappedPalette } from "../../mapped-palette.ts";
 import { toJSON } from "../../utils/format.ts";
 import { getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
@@ -11,41 +11,43 @@ export const generateWindowsTerminalTheme = ({
   themeType: ThemeType;
 }) => {
   const themeName = getThemeName(name, themeType);
+  const slugifiedName = getThemeName(name);
+
   const theme = {
     // General
     name: themeName,
-    background: palette.bg[themeType],
-    foreground: palette.tx[themeType],
+    background: mappedPalette.bg[themeType],
+    foreground: mappedPalette.tx[themeType],
 
     // Black & White
-    black: palette.bg["dark"],
-    white: palette["bg-2"]["light"],
+    black: mappedPalette.bg["dark"],
+    white: mappedPalette["bg-2"]["light"],
 
     // Bright colors
-    brightBlack: palette["tx-3"]["dark"],
-    brightWhite: palette.bg["light"],
-    brightBlue: palette.bl[themeType],
-    brightCyan: palette.cy[themeType],
-    brightGreen: palette.gr[themeType],
-    brightPurple: palette.pu[themeType],
-    brightRed: palette.re[themeType],
-    brightYellow: palette.ye[themeType],
+    brightBlack: mappedPalette["tx-3"]["dark"],
+    brightWhite: mappedPalette.bg["light"],
+    brightBlue: mappedPalette.bl[themeType],
+    brightCyan: mappedPalette.cy[themeType],
+    brightGreen: mappedPalette.gr[themeType],
+    brightPurple: mappedPalette.pu[themeType],
+    brightRed: mappedPalette.re[themeType],
+    brightYellow: mappedPalette.ye[themeType],
 
     // Normal colors
-    blue: palette["bl-2"][themeType],
-    cyan: palette["bl-2"][themeType],
-    green: palette["gr-2"][themeType],
-    purple: palette["pu-2"][themeType],
-    red: palette["re-2"][themeType],
-    yellow: palette["ye-2"][themeType],
+    blue: mappedPalette["bl-2"][themeType],
+    cyan: mappedPalette["bl-2"][themeType],
+    green: mappedPalette["gr-2"][themeType],
+    purple: mappedPalette["pu-2"][themeType],
+    red: mappedPalette["re-2"][themeType],
+    yellow: mappedPalette["ye-2"][themeType],
 
     // Selection colors
-    selectionBackground: palette["tx-2"][themeType],
+    selectionBackground: mappedPalette["tx-2"][themeType],
 
     // Cursor colors
-    cursorColor: palette["tx-2"][themeType],
+    cursorColor: mappedPalette["tx-2"][themeType],
   };
 
-  const filePath = `./_generated/windows-terminal/${themeName}-wt.json`;
+  const filePath = `./_generated/${slugifiedName}/windows-terminal/${themeName}-wt.json`;
   writeFile(filePath, toJSON(theme));
 };

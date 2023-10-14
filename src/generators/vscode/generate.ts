@@ -1,19 +1,22 @@
-import { palette } from "../../palette.ts";
+import { currentTheme } from "../../config/index.ts";
+import { mappedPalette } from "../../mapped-palette.ts";
 import { ColorEntry, SemanticToken } from "../../types.ts";
 import { toJSON } from "../../utils/format.ts";
-import { entries, writeFile } from "../../utils/index.ts";
+import { entries, getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType, VSCodeTokenColor } from "../types.ts";
 import {
-  mapEditorToPaletteColor,
-  mapTokenToPaletteColor,
-  mapTokenToScope,
-} from "./mappers.ts";
+  VSCodeEditorMappedTokens,
+  VSCodeMappedTokens,
+} from "../../config/customize/vscode.ts";
+import { mapTokenToScope } from "./mappers.ts";
 
 const generateSemanticTokenColors = () => {
   const semanticColors: Record<SemanticToken, ColorEntry> = {} as any;
 
-  for (const [tokenColor, colorKey] of entries(mapTokenToPaletteColor)) {
-    semanticColors[tokenColor] = palette[colorKey];
+  for (const [tokenColor, colorKey] of entries(
+    VSCodeMappedTokens[currentTheme]
+  )) {
+    semanticColors[tokenColor] = mappedPalette[colorKey];
   }
 
   return semanticColors;
@@ -22,8 +25,8 @@ const generateSemanticTokenColors = () => {
 const generateEditorThemeColors = () => {
   const themeColors: Record<string, ColorEntry> = {};
 
-  for (const [editorColor, colorKey] of entries(mapEditorToPaletteColor)) {
-    themeColors[editorColor] = palette[colorKey];
+  for (const [editorToken, colorKey] of entries(VSCodeEditorMappedTokens)) {
+    themeColors[editorToken] = mappedPalette[colorKey];
   }
 
   return themeColors;
@@ -63,6 +66,8 @@ export const generateVSCodeTheme = ({
   name: string;
   themeType: ThemeType;
 }) => {
+  const themeName = getThemeName(name, themeType);
+  const slugifiedName = getThemeName(name);
   const semanticTokenColors = generateSemanticTokenColors();
   const vsCodeTokens: VSCodeTokenColor[] = [];
 
@@ -80,7 +85,7 @@ export const generateVSCodeTheme = ({
     tokenColors: vsCodeTokens,
   };
 
-  const filePath = `./_generated/vscode/${name}-${themeType}-vscode.json`;
+  const filePath = `./_generated/${slugifiedName}/vscode/${themeName}.json`;
 
   writeFile(filePath, toJSON(vsCodeTheme));
 

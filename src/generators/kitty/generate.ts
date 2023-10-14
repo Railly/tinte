@@ -1,4 +1,4 @@
-import { palette } from "../../palette.ts";
+import { mappedPalette } from "../../mapped-palette.ts";
 import { toConf } from "../../utils/format.ts";
 import { getThemeName, writeFile } from "../../utils/index.ts";
 import { ThemeType } from "../types.ts";
@@ -11,64 +11,65 @@ export const generateKittyTheme = ({
   themeType: ThemeType;
 }) => {
   const themeName = getThemeName(name, themeType);
+  const slugifiedName = getThemeName(name);
   const theme = {
     "basic colors": {
-      foreground: palette.tx[themeType],
-      background: palette.bg[themeType],
-      selection_foreground: palette.tx[themeType],
-      selection_background: palette["ui-3"][themeType],
+      foreground: mappedPalette.tx[themeType],
+      background: mappedPalette.bg[themeType],
+      selection_foreground: mappedPalette.tx[themeType],
+      selection_background: mappedPalette["ui-3"][themeType],
     },
     "cursor colors": {
-      cursor: palette.tx[themeType],
-      cursor_text_color: palette.bg[themeType],
+      cursor: mappedPalette.tx[themeType],
+      cursor_text_color: mappedPalette.bg[themeType],
     },
     "window border colors": {
-      active_border_color: palette.re[themeType],
-      inactive_border_color: palette["ui-3"][themeType],
+      active_border_color: mappedPalette.re[themeType],
+      inactive_border_color: mappedPalette["ui-3"][themeType],
     },
     "tab bar colors": {
-      active_tab_foreground: palette.tx[themeType],
-      active_tab_background: palette["ui-3"][themeType],
-      inactive_tab_foreground: palette["tx-2"][themeType],
-      inactive_tab_background: palette["ui"][themeType],
+      active_tab_foreground: mappedPalette.tx[themeType],
+      active_tab_background: mappedPalette["ui-3"][themeType],
+      inactive_tab_foreground: mappedPalette["tx-2"][themeType],
+      inactive_tab_background: mappedPalette["ui"][themeType],
     },
 
     black: {
-      color0: palette.bg["dark"],
-      color8: palette["tx-2"][themeType],
+      color0: mappedPalette.bg["dark"],
+      color8: mappedPalette["tx-2"][themeType],
     },
     red: {
-      color1: palette.re[themeType],
-      color9: palette["re-2"][themeType],
+      color1: mappedPalette.re[themeType],
+      color9: mappedPalette["re-2"][themeType],
     },
     green: {
-      color2: palette.gr[themeType],
-      color10: palette["gr-2"][themeType],
+      color2: mappedPalette.gr[themeType],
+      color10: mappedPalette["gr-2"][themeType],
     },
 
     yellow: {
-      color3: palette.ye[themeType],
-      color11: palette["ye-2"][themeType],
+      color3: mappedPalette.ye[themeType],
+      color11: mappedPalette["ye-2"][themeType],
     },
     blue: {
-      color4: palette.bl[themeType],
-      color12: palette["bl-2"][themeType],
+      color4: mappedPalette.bl[themeType],
+      color12: mappedPalette["bl-2"][themeType],
     },
 
     magenta: {
-      color5: palette.pu[themeType],
-      color13: palette["pu-2"][themeType],
+      color5: mappedPalette.pu[themeType],
+      color13: mappedPalette["pu-2"][themeType],
     },
     cyan: {
-      color6: palette.cy[themeType],
-      color14: palette["cy-2"][themeType],
+      color6: mappedPalette.cy[themeType],
+      color14: mappedPalette["cy-2"][themeType],
     },
     white: {
-      color7: palette.tx[themeType],
-      color15: palette.bg["light"],
+      color7: mappedPalette.tx[themeType],
+      color15: mappedPalette.bg["light"],
     },
   };
 
-  const filePath = `./_generated/kitty/${themeName}.conf`;
+  const filePath = `./_generated/${slugifiedName}/kitty/${themeName}.conf`;
   writeFile(filePath, toConf(theme));
 };

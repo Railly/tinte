@@ -1,0 +1,23 @@
+{
+  "name": "one-hunter-dark",
+  "background": "#1d2126",
+  "foreground": "#D8D8D3",
+  "black": "#1d2126",
+  "white": "#F2F2EC",
+  "brightBlack": "#444f5a",
+  "brightWhite": "#FEFEF8",
+  "brightBlue": "#96d0fa",
+  "brightCyan": "#7ed3fb",
+  "brightGreen": "#66dfc4",
+  "brightPurple": "#e6b8ef",
+  "brightRed": "#f8a9c5",
+  "brightYellow": "#f7bc62",
+  "blue": "#4096f1",
+  "cyan": "#4096f1",
+  "green": "#20ac93",
+  "purple": "#c972d8",
+  "red": "#f06292",
+  "yellow": "#f1881e",
+  "selectionBackground": "#5b6f7f",
+  "cursorColor": "#5b6f7f"
+}
