@@ -40,9 +40,7 @@ You only need to define your color palette once, and Tinte will generate your th
 
 ## Usage
 
-### 1. **Update the Theme Type and currentTheme Constant**
-
-You'll need to expand the `Theme` type and modify the `currentTheme` constant to include your new theme.
+### 1. **Update the `Theme` type and `currentTheme` constant**
 
 ```ts
 // src/types.ts
@@ -83,7 +81,7 @@ export const palettes: Record<MyTheme, Palette> = {
 };
 ```
 
-### 4. **Generate Your Theme**
+### 3. **Generate Your Theme**
 
 Run the following command to generate your theme:
 
