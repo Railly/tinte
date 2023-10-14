@@ -1,8 +1,8 @@
 # Tinte
 
 <h3 align="center">
-  <img src="https://raw.githubusercontent.com/Railly/tinte/main/public/logo.png?token=GHSAT0AAAAAACI2LRUH67VMPN7FN6AMEW7WZJKELBA" width="100" alt="Tinte Logo"/><br/>
-  <img src="https://raw.githubusercontent.com/Railly/tinte/main/public/transparent.png" height="30" width="0px"/>
+  <img src="https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/tinte-logo.png" width="100" alt="Tinte Logo"/><br/>
+  <img src="https://raw.githubusercontent.com/crafter-station/website/main/public/transparent.png" height="30" width="0px"/>
   Tinte
 </h3>
 
@@ -139,6 +139,22 @@ export const providers = [
   },
 ];
 ```
+
+## Screenshots
+
+### One Hunter Generated (VS Code)
+
+#### Screenshots
+
+| Dark Theme                                                                                                                       | Light Theme                                                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| ![Dark Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/one-hunter-dark.jpg) | ![Light Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/one-hunter-light.jpg) |
+
+### Flexoki Generated (VS Code)
+
+| Dark Theme                                                                                                                    | Light Theme                                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| ![Dark Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/flexoki-dark.jpg) | ![Light Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/flexoki-light.jpg) |
 
 ## Contributing
 
