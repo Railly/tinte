@@ -45,8 +45,8 @@ export const generateWeztermTheme = ({
       cursor_fg: Color.fromHex(mappedPalette.bg.dark).asRGB,
       selection_bg: Color.fromHex(mappedPalette["ui-3"].dark).asRGB,
       selection_fg: Color.fromHex(mappedPalette["ui-3"].light).asRGB,
-      indexed: {},
     },
+    "colors.indexed": {},
   };
 
   const themeLight = {
@@ -78,8 +78,8 @@ export const generateWeztermTheme = ({
       cursor_fg: Color.fromHex(mappedPalette.bg.light).asHexRGB,
       selection_bg: Color.fromHex(mappedPalette["ui-3"].light).asHexRGB,
       selection_fg: Color.fromHex(mappedPalette["tx"].light).asHexRGB,
-      indexed: {},
     },
+    "colors.indexed": {},
   };
   const theme = isDark ? themeDark : themeLight;
 
