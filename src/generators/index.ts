@@ -7,6 +7,7 @@ import { generateThemeSHTheme } from "./theme-sh/generate.ts";
 import { generateVanillaCSSTheme } from "./vanilla-css/generate.ts";
 import { generateVSCodeTheme } from "./vscode/generate.ts";
 import { generateWarpTheme } from "./warp/generate.ts";
+import { generateWeztermTheme } from "./wezterm/generate.ts";
 import { generateWindowsTerminalTheme } from "./windows-terminal/generate.ts";
 import { generateXResourcesTheme } from "./xresources/generate.ts";
 import { ThemeType } from "./types.ts";
@@ -25,6 +26,7 @@ export const generators = {
   "theme-sh": generateThemeSHTheme,
   xresources: generateXResourcesTheme,
   warp: generateWarpTheme,
+  wezterm: generateWeztermTheme,
 } as const;
 
 export const providers: Array<{
@@ -73,6 +75,10 @@ export const providers: Array<{
   },
   {
     name: "warp",
+    themes: ["light", "dark"],
+  },
+  {
+    name: "wezterm",
     themes: ["light", "dark"],
   },
 ];

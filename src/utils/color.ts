@@ -60,6 +60,10 @@ export class Color {
     );
   }
 
+  get asRGB(): string {
+    return `rgb(${this.red}, ${this.green}, ${this.blue})`;
+  }
+
   get asFloat(): { red: number; green: number; blue: number; alpha: number } {
     return {
       red: this.red / 255,
