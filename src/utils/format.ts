@@ -42,11 +42,36 @@ const convertToTOML = (obj: any, level = 0): string => {
   return toml;
 };
 
+const convertToMD = (obj: Record<string, any>): string => {
+  const lines: string[] = [];
+
+  const generateLine = (flag: string, value: any) => {
+    const line = `--${flag}=${Object.entries(value)
+      .map(([key, val]) => `${key}:${val}`)
+      .join(",")}`;
+    lines.push(line);
+  };
+
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+
+    if (Array.isArray(value)) {
+      value.forEach((item: Object) => generateLine(key, item));
+    } else {
+      generateLine(key, value);
+    }
+  }
+
+  return lines.join("\n");
+};
+
 export const toJSON = <T>(obj: T) => JSON.stringify(obj, null, 2);
 
 export const toYAML = <T extends object>(obj: T) => convertToYAML(obj);
 
 export const toTOML = (obj: Record<string, any>) => convertToTOML(obj);
+
+export const toMD = (obj: Record<string, any>) => convertToMD(obj);
 
 export const toCSSVar = (name: string) => `var(--${name})`;
 
