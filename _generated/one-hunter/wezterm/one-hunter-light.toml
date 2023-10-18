@@ -20,10 +20,10 @@ brights = [
   "#f8a9c5"
 ]
 foreground = "#1d2126"
-background = "#fefef8"
+background = "#FEFEF8"
 cursor_bg = "#1d2126"
 cursor_border = "#1d2126"
-cursor_fg = "#fefef8"
-selection_bg = "#d8d8d3"
+cursor_fg = "#FEFEF8"
+selection_bg = "#D8D8D3"
 selection_fg = "#1d2126"
 [colors.indexed]
