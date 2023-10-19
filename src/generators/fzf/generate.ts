@@ -45,35 +45,6 @@ export const generateFzFTheme = ({
     ],
   };
 
-  //   const themeDark = {
-  //     color: [
-  //       {
-  //         fg: mappedPalette["tx-2"].dark,
-  //         bg: mappedPalette.bg.dark,
-  //         hl: mappedPalette.bg.light,
-  //       },
-  //       {
-  //         "fg+": mappedPalette["tx-2"].dark,
-  //         "bg+": mappedPalette["bg-2"].dark,
-  //         "hl+": mappedPalette.bg.light,
-  //       },
-  //       {
-  //         border: mappedPalette["re-2"].dark, //go
-  //         header: mappedPalette.bg.light,
-  //         gutter: mappedPalette.bg.dark,
-  //       },
-  //       {
-  //         spinner: mappedPalette["cy-2"].dark, //go
-  //         info: mappedPalette["cy-2"].dark, //go
-  //         separator: mappedPalette["bg-2"].dark, //go
-  //       },
-  //       {
-  //         pointer: mappedPalette["ye-2"].dark, //go
-  //         marker: mappedPalette["re-2"].light, //go
-  //         point: mappedPalette["ye-2"].light, //go
-  //       },
-  //     ],
-  //   };
   const themeDark = {
     color: [
       {

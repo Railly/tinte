@@ -54,12 +54,7 @@ const convertToMD = (obj: Record<string, any>): string => {
 
   for (const key of Object.keys(obj)) {
     const value = obj[key];
-
-    if (Array.isArray(value)) {
-      value.forEach((item: Object) => generateLine(key, item));
-    } else {
-      generateLine(key, value);
-    }
+    value.forEach((item: any) => generateLine(key, item));
   }
 
   return lines.join("\n");
