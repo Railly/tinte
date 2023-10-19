@@ -10,12 +10,10 @@ export const generateFzFTheme = ({
   name: string;
   themeType: ThemeType;
 }) => {
-  const themeName = getThemeName(name, themeType);
   const slugifiedName = getThemeName(name);
 
-  const isDark = themeType === "dark";
-
   const themeLight = {
+    name: `${slugifiedName}-light`,
     color: [
       {
         fg: mappedPalette["tx-3"].light,
@@ -46,6 +44,7 @@ export const generateFzFTheme = ({
   };
 
   const themeDark = {
+    name: `${slugifiedName}-dark`,
     color: [
       {
         fg: mappedPalette["tx-2"].dark,
@@ -66,9 +65,9 @@ export const generateFzFTheme = ({
     ],
   };
 
-  const theme = isDark ? themeDark : themeLight;
+  const filePath = `./_generated/${slugifiedName}/fzf/theme.md`;
 
-  const filePath = `./_generated/${slugifiedName}/fzf/${themeName}.md`;
+  const content = `${toMD(themeLight)}\n\n ${toMD(themeDark)}`;
 
-  writeFile(filePath, toMD(theme));
+  writeFile(filePath, content);
 };
