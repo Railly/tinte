@@ -1,6 +1,8 @@
 import { entries } from "./index.ts";
 import { Color } from "./color.ts";
 
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
 const indent = (level: number) => "  ".repeat(level); // Two spaces for each level.
 
 const convertToYAML = (obj: any, level = 0): string => {
@@ -42,11 +44,35 @@ const convertToTOML = (obj: any, level = 0): string => {
   return toml;
 };
 
+const convertToMD = ({ name, ...obj }: Record<string, any>): string => {
+  const lines: string[] = [];
+  const title = name.split("-").map(capitalize).join(" ");
+
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+
+    lines.push(`### ${title}\n\n\`\`\`bash`);
+
+    for (const item of value) {
+      const lineParts = Object.entries(item).map(
+        ([subKey, subValue]) => `${subKey}:${subValue}`
+      );
+      lines.push(`--${key}=${lineParts.join(",")}`);
+    }
+
+    lines.push("```");
+  }
+
+  return lines.join("\n");
+};
+
 export const toJSON = <T>(obj: T) => JSON.stringify(obj, null, 2);
 
 export const toYAML = <T extends object>(obj: T) => convertToYAML(obj);
 
 export const toTOML = (obj: Record<string, any>) => convertToTOML(obj);
+
+export const toMD = (obj: Record<string, any>) => convertToMD(obj);
 
 export const toCSSVar = (name: string) => `var(--${name})`;
 

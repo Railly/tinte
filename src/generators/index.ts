@@ -11,6 +11,7 @@ import { generateWeztermTheme } from "./wezterm/generate.ts";
 import { generateWindowsTerminalTheme } from "./windows-terminal/generate.ts";
 import { generateXResourcesTheme } from "./xresources/generate.ts";
 import { ThemeType } from "./types.ts";
+import { generateFzFTheme } from "./fzf/generate.ts";
 
 type Provider = keyof typeof generators;
 
@@ -27,6 +28,7 @@ export const generators = {
   xresources: generateXResourcesTheme,
   warp: generateWarpTheme,
   wezterm: generateWeztermTheme,
+  fzf: generateFzFTheme,
 } as const;
 
 export const providers: Array<{
@@ -79,6 +81,10 @@ export const providers: Array<{
   },
   {
     name: "wezterm",
+    themes: ["light", "dark"],
+  },
+  {
+    name: "fzf",
     themes: ["light", "dark"],
   },
 ];
