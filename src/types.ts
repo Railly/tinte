@@ -1,4 +1,4 @@
-export type MyTheme = "Flexoki" | "One Hunter";
+export type MyTheme = "Flexoki" | "One Hunter Material" | "One Hunter Flexoki";
 
 export type Shade = (
   | 50
@@ -102,4 +102,12 @@ export type SemanticToken =
   | "exceptions"
   | "decorators"
   | "calls"
-  | "punctuation";
+  | "punctuation"
+  | "yellow"
+  | "green"
+  | "cyan"
+  | "blue"
+  | "purple"
+  | "magenta"
+  | "red"
+  | "orange";

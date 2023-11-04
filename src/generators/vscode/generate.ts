@@ -22,11 +22,33 @@ const generateSemanticTokenColors = () => {
   return semanticColors;
 };
 
-const generateEditorThemeColors = () => {
+const applyCustomizations = (color: ColorEntry, token: string): ColorEntry => {
+  switch (token) {
+    case "editor.findMatchHighlightBackground":
+      return { light: color.light + "cc", dark: color.dark + "cc" };
+    case "editor.selectionBackground":
+    case "editor.selectionHighlightBackground":
+      return { light: color.light + "44", dark: color.dark + "33" };
+    case "button.foreground":
+    case "badge.foreground":
+    case "activityBarBadge.foreground":
+      return { light: color.light, dark: color.dark };
+    default:
+      if (token.startsWith("diffEditor")) {
+        return { light: color.light + "99", dark: color.dark + "99" };
+      }
+      return color;
+  }
+};
+
+const generateEditorThemeColors = (): Record<string, ColorEntry> => {
   const themeColors: Record<string, ColorEntry> = {};
 
-  for (const [editorToken, colorKey] of entries(VSCodeEditorMappedTokens)) {
-    themeColors[editorToken] = mappedPalette[colorKey];
+  for (const [editorToken, colorKey] of Object.entries(
+    VSCodeEditorMappedTokens
+  )) {
+    const colorEntry = mappedPalette[colorKey];
+    themeColors[editorToken] = applyCustomizations(colorEntry, editorToken);
   }
 
   return themeColors;
@@ -39,12 +61,20 @@ const generateVSCodeTokenColors = (
 ): VSCodeTokenColor => {
   const scope = mapTokenToScope(token);
 
+  const settings = {
+    foreground: color[themeType],
+  };
+
+  if (scope.includes("entity.name.function")) {
+    Object.assign(settings, {
+      fontStyle: "bold",
+    });
+  }
+
   return {
     name: token,
     scope,
-    settings: {
-      foreground: color[themeType],
-    },
+    settings,
   };
 };
 

@@ -1,21 +1,21 @@
 import { Palette } from "./types.ts";
 
-export const OneHunterPalette: Palette = {
+export const OneHunterMaterialPalette: Palette = {
   base: {
-    black: "#1d2126",
-    50: "#F2F2EC",
-    100: "#EAEAE5",
-    150: "#E5E5E1",
-    200: "#D8D8D3",
-    300: "#a4b3bc",
-    500: "#5b6f7f",
-    600: "#4f5e6b",
-    700: "#444f5a",
-    800: "#3d454d",
-    850: "#3d454d",
-    900: "#363b43",
-    950: "#1d2126",
-    paper: "#FEFEF8",
+    black: "#1D2126",
+    950: "#2B2E31",
+    900: "#34373A",
+    850: "#3D4043",
+    800: "#46494D",
+    700: "#595D61",
+    600: "#6C7074",
+    500: "#7F8286",
+    300: "#A5A8AD",
+    200: "#E3E1E1",
+    150: "#EDEBEB",
+    100: "#F6F5F5",
+    50: "#FFFFFF",
+    paper: "#FFFCF0",
   },
   red: {
     //400
