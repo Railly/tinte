@@ -81,6 +81,6 @@ export const mappedPalette = {
   ...textTones,
   ...interfaceTones,
   ...backgroundTones,
-  ...generateColorTones({ lightContrastShade: 700, darkContrastShade: 400 }),
-  // ...generateColorTones({ lightContrastShade: 500, darkContrastShade: 300 }),
+  // ...generateColorTones({ lightContrastShade: 700, darkContrastShade: 400 }),
+  ...generateColorTones({ lightContrastShade: 500, darkContrastShade: 300 }),
 };

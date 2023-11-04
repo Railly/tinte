@@ -32,7 +32,7 @@ const applyCustomizations = (color: ColorEntry, token: string): ColorEntry => {
     case "button.foreground":
     case "badge.foreground":
     case "activityBarBadge.foreground":
-      return { light: color.dark, dark: color.dark };
+      return { light: color.light, dark: color.dark };
     default:
       if (token.startsWith("diffEditor")) {
         return { light: color.light + "99", dark: color.dark + "99" };

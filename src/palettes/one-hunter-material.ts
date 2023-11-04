@@ -1,6 +1,6 @@
 import { Palette } from "./types.ts";
 
-export const OneHunterPalette: Palette = {
+export const OneHunterMaterialPalette: Palette = {
   base: {
     black: "#1D2126",
     950: "#2B2E31",

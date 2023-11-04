@@ -51,7 +51,10 @@ export const FlexokiVSCodeMappedTokens: Record<SemanticToken, Abbreviations> = {
   orange: "or",
 };
 
-export const OneHunterMappedTokens: Record<SemanticToken, Abbreviations> = {
+export const OneHunterMaterialMappedTokens: Record<
+  SemanticToken,
+  Abbreviations
+> = {
   plain: "tx",
   classes: "ye",
   interfaces: "ye",
@@ -94,6 +97,60 @@ export const OneHunterMappedTokens: Record<SemanticToken, Abbreviations> = {
   punctuation: "tx",
   yellow: "ye",
   green: "gr",
+  cyan: "cy",
+  blue: "bl",
+  purple: "pu",
+  magenta: "ma",
+  red: "re",
+  orange: "or",
+};
+
+export const OneHunterFlexokiMappedTokens: Record<
+  SemanticToken,
+  Abbreviations
+> = {
+  plain: "tx",
+  classes: "ye",
+  interfaces: "ye",
+  structs: "ye",
+  enums: "ye",
+  keys: "ma",
+  methods: "bl",
+  functions: "bl",
+  variables: "tx",
+  variablesOther: "tx",
+  globalVariables: "cy",
+  localVariables: "ui",
+  parameters: "tx",
+  properties: "tx",
+  strings: "cy",
+  stringEscapeSequences: "tx",
+  keywords: "ma",
+  keywordsControl: "ma",
+  storageModifiers: "ma",
+  comments: "tx-2",
+  docComments: "tx-2",
+  numbers: "ye",
+  booleans: "cy",
+  operators: "bl",
+  macros: "bl",
+  preprocessor: "cy",
+  urls: "bl",
+  tags: "ma",
+  jsxTags: "bl",
+  attributes: "ye",
+  types: "bl",
+  constants: "tx",
+  labels: "cy",
+  namespaces: "ye",
+  modules: "re",
+  typeParameters: "ye",
+  exceptions: "cy",
+  decorators: "ye",
+  calls: "tx",
+  punctuation: "tx",
+  yellow: "ye",
+  green: "cy",
   cyan: "cy",
   blue: "bl",
   purple: "pu",
@@ -146,14 +203,14 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
 
   // Editor Groups & Tabs
   "editorGroupHeader.tabsBackground": "bg",
-  "editorGroup.border": "ui",
+  "editorGroup.border": "ui-2",
   "tab.activeBackground": "bg",
   "tab.inactiveBackground": "bg-2",
   "tab.inactiveForeground": "tx-2",
   "tab.activeForeground": "tx",
   "tab.hoverBackground": "ui-2",
   "tab.unfocusedHoverBackground": "ui-2",
-  "tab.border": "ui",
+  "tab.border": "ui-2",
   "tab.activeModifiedBorder": "ye",
   "tab.inactiveModifiedBorder": "bl",
   "tab.unfocusedActiveModifiedBorder": "ye-2",
@@ -163,13 +220,13 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "editorWidget.background": "bg-2",
   "editorWidget.border": "ui-2",
   "editorSuggestWidget.background": "bg",
-  "editorSuggestWidget.border": "ui",
+  "editorSuggestWidget.border": "ui-2",
   "editorSuggestWidget.foreground": "tx",
   "editorSuggestWidget.highlightForeground": "tx-2",
   "editorSuggestWidget.selectedBackground": "ui-2",
 
   // Peek View Colors
-  "peekView.border": "ui",
+  "peekView.border": "ui-2",
   "peekViewEditor.background": "bg",
   "peekViewEditor.matchHighlightBackground": "ui-3",
   "peekViewResult.background": "bg-2",
@@ -187,13 +244,13 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "merge.currentContentBackground": "gr-2",
   "merge.incomingHeaderBackground": "cy",
   "merge.incomingContentBackground": "cy-2",
-  "merge.border": "ui",
+  "merge.border": "ui-2",
   "merge.commonContentBackground": "ui-3",
   "merge.commonHeaderBackground": "ui-2",
 
   // Panel Colors
   "panel.background": "bg",
-  "panel.border": "ui",
+  "panel.border": "ui-2",
   "panelTitle.activeBorder": "ui-3",
   "panelTitle.activeForeground": "tx",
   "panelTitle.inactiveForeground": "tx-2",
@@ -201,7 +258,7 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   // Status Bar Colors
   "statusBar.background": "bg",
   "statusBar.foreground": "tx",
-  "statusBar.border": "ui",
+  "statusBar.border": "ui-2",
   "statusBar.debuggingBackground": "re",
   "statusBar.debuggingForeground": "tx",
   "statusBar.noFolderBackground": "ui-3",
@@ -212,14 +269,14 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "titleBar.activeForeground": "tx",
   "titleBar.inactiveBackground": "bg-2",
   "titleBar.inactiveForeground": "tx-2",
-  "titleBar.border": "ui",
+  "titleBar.border": "ui-2",
 
   // Menus
   "menu.foreground": "tx",
   "menu.background": "bg",
   "menu.selectionForeground": "tx",
   "menu.selectionBackground": "ui-2",
-  "menu.border": "ui",
+  "menu.border": "ui-2",
 
   // Inlay Hints
   "editorInlayHint.foreground": "tx-2",
@@ -242,16 +299,16 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "activityBar.foreground": "tx",
   "activityBar.inactiveForeground": "tx-2",
   "activityBar.activeBorder": "tx",
-  "activityBar.border": "ui",
+  "activityBar.border": "ui-2",
 
   // Sidebar
   "sideBar.background": "bg",
   "sideBar.foreground": "tx",
-  "sideBar.border": "ui",
+  "sideBar.border": "ui-2",
   "sideBarTitle.foreground": "tx",
   "sideBarSectionHeader.background": "bg-2",
   "sideBarSectionHeader.foreground": "tx",
-  "sideBarSectionHeader.border": "ui",
+  "sideBarSectionHeader.border": "ui-2",
 
   // SideBar: Highlights & Active items
   "sideBar.activeBackground": "ui-3",
@@ -280,7 +337,7 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   // Input Controls
   "input.background": "bg-2",
   "input.foreground": "tx",
-  "input.border": "ui",
+  "input.border": "ui-2",
   "input.placeholderForeground": "tx-2",
   "inputOption.activeBorder": "ui-2",
   "inputOption.activeBackground": "ui",
@@ -297,7 +354,7 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   // Dropdowns
   "dropdown.background": "bg-2",
   "dropdown.foreground": "tx",
-  "dropdown.border": "ui",
+  "dropdown.border": "ui-2",
   "dropdown.listBackground": "bg",
 
   // Buttons & Badges
@@ -317,5 +374,6 @@ export const VSCodeMappedTokens: Record<
   Record<SemanticToken, Abbreviations>
 > = {
   Flexoki: FlexokiVSCodeMappedTokens,
-  "One Hunter": OneHunterMappedTokens,
+  "One Hunter Material": OneHunterMaterialMappedTokens,
+  "One Hunter Flexoki": OneHunterFlexokiMappedTokens,
 };

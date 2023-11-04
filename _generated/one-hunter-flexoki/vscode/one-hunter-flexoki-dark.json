@@ -1,5 +1,5 @@
 {
-  "name": "Flexoki",
+  "name": "One Hunter Flexoki",
   "type": "dark",
   "colors": {
     "editor.background": "#100F0F",
@@ -173,7 +173,7 @@
         "entity.name.type.class"
       ],
       "settings": {
-        "foreground": "#DA702C"
+        "foreground": "#D0A215"
       }
     },
     {
@@ -192,7 +192,7 @@
         "entity.name.type.struct"
       ],
       "settings": {
-        "foreground": "#DA702C"
+        "foreground": "#D0A215"
       }
     },
     {
@@ -201,7 +201,7 @@
         "entity.name.type.enum"
       ],
       "settings": {
-        "foreground": "#DA702C"
+        "foreground": "#D0A215"
       }
     },
     {
@@ -211,7 +211,7 @@
         "support.type.property-name"
       ],
       "settings": {
-        "foreground": "#DA702C"
+        "foreground": "#CE5D97"
       }
     },
     {
@@ -221,7 +221,7 @@
         "meta.function.method"
       ],
       "settings": {
-        "foreground": "#879A39"
+        "foreground": "#4385BE"
       }
     },
     {
@@ -232,7 +232,7 @@
         "meta.function-call.generic"
       ],
       "settings": {
-        "foreground": "#DA702C",
+        "foreground": "#4385BE",
         "fontStyle": "bold"
       }
     },
@@ -254,7 +254,7 @@
         "variable.other.readwrite.alias"
       ],
       "settings": {
-        "foreground": "#879A39"
+        "foreground": "#CECDC3"
       }
     },
     {
@@ -264,7 +264,7 @@
         "variable.language.this"
       ],
       "settings": {
-        "foreground": "#CE5D97"
+        "foreground": "#3AA99F"
       }
     },
     {
@@ -293,7 +293,7 @@
         "meta.property"
       ],
       "settings": {
-        "foreground": "#4385BE"
+        "foreground": "#CECDC3"
       }
     },
     {
@@ -323,7 +323,7 @@
         "keyword"
       ],
       "settings": {
-        "foreground": "#879A39"
+        "foreground": "#CE5D97"
       }
     },
     {
@@ -334,7 +334,7 @@
         "keyword.import"
       ],
       "settings": {
-        "foreground": "#D14D41"
+        "foreground": "#CE5D97"
       }
     },
     {
@@ -345,7 +345,7 @@
         "storage.type"
       ],
       "settings": {
-        "foreground": "#4385BE"
+        "foreground": "#CE5D97"
       }
     },
     {
@@ -365,7 +365,7 @@
         "comment.line.documentation"
       ],
       "settings": {
-        "foreground": "#575653"
+        "foreground": "#878580"
       }
     },
     {
@@ -374,7 +374,7 @@
         "constant.numeric"
       ],
       "settings": {
-        "foreground": "#8B7EC8"
+        "foreground": "#D0A215"
       }
     },
     {
@@ -384,7 +384,7 @@
         "constant.language.json"
       ],
       "settings": {
-        "foreground": "#D0A215"
+        "foreground": "#3AA99F"
       }
     },
     {
@@ -393,7 +393,7 @@
         "keyword.operator"
       ],
       "settings": {
-        "foreground": "#D14D41"
+        "foreground": "#4385BE"
       }
     },
     {
@@ -412,7 +412,7 @@
         "meta.preprocessor"
       ],
       "settings": {
-        "foreground": "#CE5D97"
+        "foreground": "#3AA99F"
       }
     },
     {
@@ -430,7 +430,7 @@
         "entity.name.tag"
       ],
       "settings": {
-        "foreground": "#4385BE"
+        "foreground": "#CE5D97"
       }
     },
     {
@@ -439,7 +439,7 @@
         "support.class.component"
       ],
       "settings": {
-        "foreground": "#CE5D97"
+        "foreground": "#4385BE"
       }
     },
     {
@@ -458,7 +458,7 @@
         "support.type"
       ],
       "settings": {
-        "foreground": "#D0A215"
+        "foreground": "#4385BE"
       }
     },
     {
@@ -478,7 +478,7 @@
         "punctuation.definition.label"
       ],
       "settings": {
-        "foreground": "#CE5D97"
+        "foreground": "#3AA99F"
       }
     },
     {
@@ -509,7 +509,7 @@
         "variable.parameter.type"
       ],
       "settings": {
-        "foreground": "#DA702C"
+        "foreground": "#D0A215"
       }
     },
     {
@@ -519,7 +519,7 @@
         "keyword.control.trycatch"
       ],
       "settings": {
-        "foreground": "#CE5D97"
+        "foreground": "#3AA99F"
       }
     },
     {
@@ -553,7 +553,7 @@
         "punctuation.section.block"
       ],
       "settings": {
-        "foreground": "#878580"
+        "foreground": "#CECDC3"
       }
     },
     {
@@ -583,7 +583,7 @@
       "name": "green",
       "scope": [],
       "settings": {
-        "foreground": "#879A39"
+        "foreground": "#3AA99F"
       }
     },
     {
