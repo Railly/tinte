@@ -1,26 +1,26 @@
 ! dark-colors
 #define yellow       #f7bc62
-#define blue         #96d0fa
-#define orange       #f7bc62
-#define cyan         #7ed3fb
-#define red          #f8a9c5
+#define blue         #64b5f6
+#define orange       #f4a343
+#define cyan         #4fc3f7
+#define red          #f06292
 #define green        #66dfc4
-#define magenta      #f8a9c5
-#define violet       #e6b8ef
-#define white        #FEFEF8
-#define black        #1d2126
+#define magenta      #f06292
+#define violet       #d88ee4
+#define white        #FFFCF0
+#define black        #1D2126
 
 ! light-colors
-#define bryellow     #f1881e
-#define brblue       #4096f1
-#define brorange     #f1881e
-#define brcyan       #10a4e7
-#define brred        #f06292
-#define brgreen      #20ac93
-#define brmagenta    #e94b7c
-#define brviolet     #c972d8
-#define brwhite      #FEFEF8
-#define brblack      #1d2126
+#define bryellow     #bc5412
+#define brblue       #2263d3
+#define brorange     #bc5412
+#define brcyan       #05699f
+#define brred        #bb1b3f
+#define brgreen      #176e61
+#define brmagenta    #bb1b3f
+#define brviolet     #8c3497
+#define brwhite      #FFFCF0
+#define brblack      #1D2126
 
 ! base
 *background            :  black

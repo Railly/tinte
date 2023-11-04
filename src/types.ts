@@ -102,4 +102,12 @@ export type SemanticToken =
   | "exceptions"
   | "decorators"
   | "calls"
-  | "punctuation";
+  | "punctuation"
+  | "yellow"
+  | "green"
+  | "cyan"
+  | "blue"
+  | "purple"
+  | "magenta"
+  | "red"
+  | "orange";
