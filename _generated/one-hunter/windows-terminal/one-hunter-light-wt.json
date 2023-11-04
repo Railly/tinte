@@ -3,8 +3,8 @@
   "background": "#FFFCF0",
   "foreground": "#1D2126",
   "black": "#1D2126",
-  "white": "#F2F0E5",
-  "brightBlack": "#575653",
+  "white": "#FFFFFF",
+  "brightBlack": "#595D61",
   "brightWhite": "#FFFCF0",
   "brightBlue": "#2263d3",
   "brightCyan": "#05699f",
@@ -18,6 +18,6 @@
   "purple": "#d88ee4",
   "red": "#f06292",
   "yellow": "#f7bc62",
-  "selectionBackground": "#6F6E69",
-  "cursorColor": "#6F6E69"
+  "selectionBackground": "#6C7074",
+  "cursorColor": "#6C7074"
 }

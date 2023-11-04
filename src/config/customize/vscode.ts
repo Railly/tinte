@@ -121,6 +121,9 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "editorInlayHint.typeForeground": "tx",
   "editorWhitespace.foreground": "ui-3",
   "editorIndentGuide.background1": "ui-2",
+  "editorHoverWidget.background": "ui",
+  "editorLineNumber.activeForeground": "tx",
+  "editorLineNumber.foreground": "ui-3",
 
   // Gutter Colors
   "editorGutter.background": "bg",
@@ -149,6 +152,7 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "tab.inactiveForeground": "tx-2",
   "tab.activeForeground": "tx",
   "tab.hoverBackground": "ui-2",
+  "tab.unfocusedHoverBackground": "ui-2",
   "tab.border": "ui",
   "tab.activeModifiedBorder": "ye",
   "tab.inactiveModifiedBorder": "bl",
@@ -237,7 +241,7 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "activityBar.background": "bg",
   "activityBar.foreground": "tx",
   "activityBar.inactiveForeground": "tx-2",
-  "activityBar.activeBorder": "ui-3",
+  "activityBar.activeBorder": "tx",
   "activityBar.border": "ui",
 
   // Sidebar

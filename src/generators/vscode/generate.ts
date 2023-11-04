@@ -28,7 +28,7 @@ const applyCustomizations = (color: ColorEntry, token: string): ColorEntry => {
       return { light: color.light + "cc", dark: color.dark + "cc" };
     case "editor.selectionBackground":
     case "editor.selectionHighlightBackground":
-      return { light: color.light + "55", dark: color.dark + "55" };
+      return { light: color.light + "44", dark: color.dark + "33" };
     case "button.foreground":
     case "badge.foreground":
     case "activityBarBadge.foreground":
@@ -66,7 +66,6 @@ const generateVSCodeTokenColors = (
   };
 
   if (scope.includes("entity.name.function")) {
-    console.log({ scope });
     Object.assign(settings, {
       fontStyle: "bold",
     });

@@ -1,7 +1,7 @@
 accent: "#f4a343"
 background: "#1D2126"
 details: "darker"
-foreground: "#CECDC3"
+foreground: "#E3E1E1"
 terminal_colors:
   bright:
     black: "#1D2126"
@@ -10,7 +10,7 @@ terminal_colors:
     green: "#66dfc4"
     magenta: "#f06292"
     red: "#f06292"
-    white: "#CECDC3"
+    white: "#E3E1E1"
     yellow: "#f7bc62"
   normal:
     black: "#1D2126"
@@ -19,5 +19,5 @@ terminal_colors:
     green: "#176e61"
     magenta: "#bb1b3f"
     red: "#bb1b3f"
-    white: "#CECDC3"
+    white: "#E3E1E1"
     yellow: "#bc5412"

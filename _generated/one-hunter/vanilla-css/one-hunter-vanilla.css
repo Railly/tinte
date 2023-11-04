@@ -1,12 +1,12 @@
 :root {
   --one hunter-text             : #1D2126;
-  --one hunter-text-muted       : #6F6E69;
-  --one hunter-text-faint       : #B7B5AC;
-  --one hunter-ui               : #E6E4D9;
-  --one hunter-ui-hover         : #DAD8CE;
-  --one hunter-ui-active        : #CECDC3;
+  --one hunter-text-muted       : #6C7074;
+  --one hunter-text-faint       : #A5A8AD;
+  --one hunter-ui               : #F6F5F5;
+  --one hunter-ui-hover         : #EDEBEB;
+  --one hunter-ui-active        : #E3E1E1;
   --one hunter-bg               : #FFFCF0;
-  --one hunter-bg-secondary     : #F2F0E5;
+  --one hunter-bg-secondary     : #FFFFFF;
   --one hunter-red              : #bb1b3f;
   --one hunter-red-secondary    : #f06292;
   --one hunter-orange           : #bc5412;
@@ -26,14 +26,14 @@
 
 }
 .dark {
-  --one hunter-text             : #CECDC3;
-  --one hunter-text-muted       : #878580;
-  --one hunter-text-faint       : #575653;
-  --one hunter-ui               : #303033;
-  --one hunter-ui-hover         : #38373B;
-  --one hunter-ui-active        : #4B484D;
+  --one hunter-text             : #E3E1E1;
+  --one hunter-text-muted       : #7F8286;
+  --one hunter-text-faint       : #595D61;
+  --one hunter-ui               : #34373A;
+  --one hunter-ui-hover         : #3D4043;
+  --one hunter-ui-active        : #46494D;
   --one hunter-bg               : #1D2126;
-  --one hunter-bg-secondary     : #272B35;
+  --one hunter-bg-secondary     : #2B2E31;
   --one hunter-red              : #f06292;
   --one hunter-red-secondary    : #bb1b3f;
   --one hunter-orange           : #f4a343;

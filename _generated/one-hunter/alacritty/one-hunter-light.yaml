@@ -7,8 +7,8 @@ colors:
     dim_background: "0x1d2126"
     bright_background: "0xfffcf0"
   cursor:
-    text: "0x6f6e69"
-    cursor: "0x6f6e69"
+    text: "0x6c7074"
+    cursor: "0x6c7074"
   normal:
     black: "0x1d2126"
     red: "0xf06292"
@@ -19,7 +19,7 @@ colors:
     cyan: "0x64b5f6"
     white: "0x1d2126"
   bright:
-    black: "0x575653"
+    black: "0x595d61"
     red: "0xbb1b3f"
     green: "0x176e61"
     yellow: "0xbc5412"
