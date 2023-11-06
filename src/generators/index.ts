@@ -1,17 +1,17 @@
-import { generateAlacrittyTheme } from "./alacritty/generate.ts";
-import { generateGimpTheme } from "./gimp/generate.ts";
-import { generateITerm2Theme } from "./iterm2/generate.ts";
-import { generateKittyTheme } from "./kitty/generate.ts";
-import { generateLiteXLTheme } from "./lite-xl/generate.ts";
-import { generateThemeSHTheme } from "./theme-sh/generate.ts";
-import { generateVanillaCSSTheme } from "./vanilla-css/generate.ts";
-import { generateVSCodeTheme } from "./vscode/generate.ts";
-import { generateWarpTheme } from "./warp/generate.ts";
-import { generateWeztermTheme } from "./wezterm/generate.ts";
-import { generateWindowsTerminalTheme } from "./windows-terminal/generate.ts";
-import { generateXResourcesTheme } from "./xresources/generate.ts";
-import { ThemeType } from "./types.ts";
-import { generateFzFTheme } from "./fzf/generate.ts";
+import { generateAlacrittyTheme } from "./alacritty/generate.js";
+import { generateGimpTheme } from "./gimp/generate.js";
+import { generateITerm2Theme } from "./iterm2/generate.js";
+import { generateKittyTheme } from "./kitty/generate.js";
+import { generateLiteXLTheme } from "./lite-xl/generate.js";
+import { generateThemeSHTheme } from "./theme-sh/generate.js";
+import { generateVanillaCSSTheme } from "./vanilla-css/generate.js";
+import { generateVSCodeTheme } from "./vscode/generate.js";
+import { generateWarpTheme } from "./warp/generate.js";
+import { generateWeztermTheme } from "./wezterm/generate.js";
+import { generateWindowsTerminalTheme } from "./windows-terminal/generate.js";
+import { generateXResourcesTheme } from "./xresources/generate.js";
+import { ThemeType } from "./types.js";
+import { generateFzFTheme } from "./fzf/generate.js";
 
 type Provider = keyof typeof generators;
 

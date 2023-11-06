@@ -1,0 +1,65 @@
+! dark-colors
+#define yellow       #ffef97
+#define blue         #6190b4
+#define orange       #ffa651
+#define cyan         #59d6e3
+#define red          #ff8a96
+#define green        #76cf87
+#define magenta      #f142af
+#define violet       #af42f7
+#define white        #FFFFFF
+#define black        #121212
+
+! light-colors
+#define bryellow     #b3a242
+#define brblue       #07385e
+#define brorange     #b34d00
+#define brcyan       #008493
+#define brred        #b32e3f
+#define brgreen      #1c7a31
+#define brmagenta    #a10058
+#define brviolet     #5800a9
+#define brwhite      #FFFFFF
+#define brblack      #121212
+
+! base
+*background            :  black
+*foreground            :  brwhite
+*fading                :  40
+*fadeColor             :  black
+*cursorColor           :  brwhite
+*pointerColorBackground:  brblack
+*pointerColorForeground:  black
+
+! black
+*color0:  black
+*color8:  brblack
+
+! red
+*color1:  red
+*color9:  brred
+
+! green
+*color2 :  green
+*color10:  brgreen
+
+! yellow
+*color3 :  yellow
+*color11:  bryellow
+
+! blue
+*color4 :  blue
+*color12:  brblue
+
+! magenta
+*color5 :  magenta
+*color13:  brmagenta
+
+! cyan
+*color6 :  cyan
+*color14:  brcyan
+
+! white
+*color7 :  white
+*color15:  brwhite
+

@@ -1,8 +1,8 @@
-import { ThemeType } from "../types.ts";
-import { entries, getThemeName, writeFile } from "../../utils/index.ts";
-import { mappedPalette } from "../../mapped-palette.ts";
-import { toCSS } from "../../utils/format.ts";
-import { formatAbbreviationToSemantic } from "./mappers.ts";
+import { ThemeType } from "../types.js";
+import { entries, getThemeName, writeFile } from "../../utils/index.js";
+import { mappedPalette } from "../../mapped-palette.js";
+import { toCSS } from "../../utils/format.js";
+import { formatAbbreviationToSemantic } from "./mappers.js";
 
 export const generateVanillaCSSTheme = ({
   name,

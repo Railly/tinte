@@ -1,4 +1,8 @@
-export type MyTheme = "Flexoki" | "One Hunter Material" | "One Hunter Flexoki";
+export type MyTheme =
+  | "Flexoki"
+  | "One Hunter Material"
+  | "One Hunter Flexoki"
+  | "Neoteric Shades";
 
 export type Shade = (
   | 50

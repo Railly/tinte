@@ -1,6 +1,6 @@
-import { mappedPalette } from "../../mapped-palette.ts";
-import { getThemeName, writeFile } from "../../utils/index.ts";
-import { ThemeType } from "../types.ts";
+import { mappedPalette } from "../../mapped-palette.js";
+import { getThemeName, writeFile } from "../../utils/index.js";
+import { ThemeType } from "../types.js";
 
 export const generateLiteXLTheme = ({
   name,

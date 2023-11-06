@@ -1,0 +1,27 @@
+GIMP Palette
+Name: neoteric-shades
+Columns: 8
+227  225  225  Text
+103  103  103  Text Muted
+ 74   74   74  Text Faint
+ 37   37   37  Interface
+ 49   49   49  Interface Hover
+ 61   61   61  Interface active
+ 18   18   18  Background
+ 26   26   26  Background Secondary
+255  138  150  Dark Red
+179   46   63  Light Red
+255  166   81  Dark Orange
+179   77    0  Light Orange
+255  239  151  Dark Yellow
+179  162   66  Light Yellow
+118  207  135  Dark Green
+ 28  122   49  Light Green
+ 89  214  227  Dark Cyan
+  0  132  147  Light Cyan
+ 97  144  180  Dark Blue
+  7   56   94  Light Blue
+175   66  247  Dark Purple
+ 88    0  169  Light Purple
+241   66  175  Dark Magenta
+161    0   88  Light Magenta

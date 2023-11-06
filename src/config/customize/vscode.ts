@@ -1,4 +1,4 @@
-import { Abbreviations, MyTheme, SemanticToken } from "../../types.ts";
+import { Abbreviations, MyTheme, SemanticToken } from "../../types.js";
 
 export const FlexokiVSCodeMappedTokens: Record<SemanticToken, Abbreviations> = {
   plain: "tx",
@@ -158,6 +158,59 @@ export const OneHunterFlexokiMappedTokens: Record<
   red: "re",
   orange: "or",
 };
+
+export const NeotericShadesMappedTokens: Record<SemanticToken, Abbreviations> =
+  {
+    plain: "tx", // Default text color
+    classes: "pu", // Purple for classes
+    interfaces: "cy", // Cyan for interfaces
+    structs: "gr", // Green for structs
+    enums: "ye", // Yellow for enums
+    keys: "or", // Orange for object keys
+    methods: "bl", // Blue for methods
+    functions: "ma", // Magenta for functions
+    variables: "tx", // Default text color for variables
+    variablesOther: "tx",
+    globalVariables: "re", // Red for globals for emphasis
+    localVariables: "tx-3",
+    parameters: "cy", // Cyan for parameters
+    properties: "or", // Orange for properties
+    strings: "gr", // Green for strings
+    stringEscapeSequences: "re", // Red for escape sequences within strings
+    keywords: "bl", // Blue for keywords
+    keywordsControl: "pu", // Purple for control keywords
+    storageModifiers: "or", // Orange for storage modifiers
+    comments: "tx-2", // A lighter text tone for comments
+    docComments: "tx-3", // Differentiated from regular comments
+    numbers: "ye", // Yellow for numbers
+    booleans: "or", // Orange for booleans
+    operators: "tx", // Default text color for operators
+    macros: "re", // Red for macros, since they are preprocessor directives
+    preprocessor: "re", // Red for preprocessor directives
+    urls: "bl", // Blue for URLs
+    tags: "pu", // Purple for tags
+    jsxTags: "cy", // Cyan for JSX tags
+    attributes: "or", // Orange for attributes
+    types: "pu", // Purple for type declarations
+    constants: "re", // Red for constants
+    labels: "tx-2", // Lighter text tone for labels
+    namespaces: "cy", // Cyan for namespaces
+    modules: "bl", // Blue for modules
+    typeParameters: "ma", // Magenta for type parameters
+    exceptions: "re", // Red for exceptions
+    decorators: "ma", // Magenta for decorators
+    calls: "bl", // Blue for function/method calls
+    punctuation: "tx", // Default text color for punctuation
+    // Direct color mappings
+    yellow: "ye",
+    green: "gr",
+    cyan: "cy",
+    blue: "bl",
+    purple: "pu",
+    magenta: "ma",
+    red: "re",
+    orange: "or",
+  };
 
 export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   // Editor Colors
@@ -363,7 +416,7 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "button.background": "cy",
 
   /** Arbitrary Changes to improve accessibility & consistency  */
-  // Hardcoded Colors - Always Paper - See generate.ts
+  // Hardcoded Colors - Always Paper - See generate.js
   "button.foreground": "bg",
   "badge.foreground": "bg",
   "activityBarBadge.foreground": "bg",
@@ -376,4 +429,5 @@ export const VSCodeMappedTokens: Record<
   Flexoki: FlexokiVSCodeMappedTokens,
   "One Hunter Material": OneHunterMaterialMappedTokens,
   "One Hunter Flexoki": OneHunterFlexokiMappedTokens,
+  "Neoteric Shades": NeotericShadesMappedTokens,
 };

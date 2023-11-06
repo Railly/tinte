@@ -1,7 +1,7 @@
 import { exit } from "process";
-import { getThemeName } from "./utils/index.ts";
-import { generators, providers } from "./generators/index.ts";
-import { currentTheme } from "./config/index.ts";
+import { getThemeName } from "./utils/index.js";
+import { generators, providers } from "./generators/index.js";
+import { currentTheme } from "./config/index.js";
 
 function main() {
   try {

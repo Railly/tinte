@@ -1,6 +1,6 @@
-import { currentPalette } from "./config/index.ts";
-import { ColorMap, Shade } from "./types.ts";
-import { entries } from "./utils/index.ts";
+import { currentPalette } from "./config/index.js";
+import { ColorMap, Shade } from "./types.js";
+import { entries } from "./utils/index.js";
 
 const colorAbbreviations = {
   red: "re",
@@ -82,5 +82,9 @@ export const mappedPalette = {
   ...interfaceTones,
   ...backgroundTones,
   // ...generateColorTones({ lightContrastShade: 700, darkContrastShade: 400 }),
-  ...generateColorTones({ lightContrastShade: 500, darkContrastShade: 300 }),
+  // ...generateColorTones({ lightContrastShade: 500, darkContrastShade: 300 }),
+  ...generateColorTones({
+    lightContrastShade: 800, // Light shade for contrast
+    darkContrastShade: 300, // Dark shade for contrast
+  }),
 };

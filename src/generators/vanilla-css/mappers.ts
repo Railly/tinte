@@ -1,4 +1,4 @@
-import { AllColorAbbreviations, AllToneAbbreviations } from "../../types.ts";
+import { AllColorAbbreviations, AllToneAbbreviations } from "../../types.js";
 
 const baseToneMappings = {
   tx: "text",

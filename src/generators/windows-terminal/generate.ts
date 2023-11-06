@@ -1,7 +1,7 @@
-import { mappedPalette } from "../../mapped-palette.ts";
-import { toJSON } from "../../utils/format.ts";
-import { getThemeName, writeFile } from "../../utils/index.ts";
-import { ThemeType } from "../types.ts";
+import { mappedPalette } from "../../mapped-palette.js";
+import { toJSON } from "../../utils/format.js";
+import { getThemeName, writeFile } from "../../utils/index.js";
+import { ThemeType } from "../types.js";
 
 export const generateWindowsTerminalTheme = ({
   name,

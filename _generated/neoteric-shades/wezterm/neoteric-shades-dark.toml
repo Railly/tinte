@@ -1,0 +1,29 @@
+[colors]
+ansi = [
+  "rgb(18, 18, 18)",
+  "rgb(179, 46, 63)",
+  "rgb(28, 122, 49)",
+  "rgb(179, 162, 66)",
+  "rgb(7, 56, 94)",
+  "rgb(88, 0, 169)",
+  "rgb(0, 132, 147)",
+  "rgb(103, 103, 103)"
+]
+brights = [
+  "rgb(26, 26, 26)",
+  "rgb(255, 138, 150)",
+  "rgb(118, 207, 135)",
+  "rgb(255, 239, 151)",
+  "rgb(97, 144, 180)",
+  "rgb(175, 66, 247)",
+  "rgb(89, 214, 227)",
+  "rgb(227, 225, 225)"
+]
+foreground = "rgb(227, 225, 225)"
+background = "rgb(18, 18, 18)"
+cursor_bg = "rgb(227, 225, 225)"
+cursor_border = "rgb(227, 225, 225)"
+cursor_fg = "rgb(18, 18, 18)"
+selection_bg = "rgb(61, 61, 61)"
+selection_fg = "rgb(227, 225, 225)"
+[colors.indexed]

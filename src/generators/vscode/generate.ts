@@ -1,14 +1,14 @@
-import { currentTheme } from "../../config/index.ts";
-import { mappedPalette } from "../../mapped-palette.ts";
-import { ColorEntry, SemanticToken } from "../../types.ts";
-import { toJSON } from "../../utils/format.ts";
-import { entries, getThemeName, writeFile } from "../../utils/index.ts";
-import { ThemeType, VSCodeTokenColor } from "../types.ts";
+import { currentTheme } from "../../config/index.js";
+import { mappedPalette } from "../../mapped-palette.js";
+import { ColorEntry, SemanticToken } from "../../types.js";
+import { toJSON } from "../../utils/format.js";
+import { entries, getThemeName, writeFile } from "../../utils/index.js";
+import { ThemeType, VSCodeTokenColor } from "../types.js";
 import {
   VSCodeEditorMappedTokens,
   VSCodeMappedTokens,
-} from "../../config/customize/vscode.ts";
-import { mapTokenToScope } from "./mappers.ts";
+} from "../../config/customize/vscode.js";
+import { mapTokenToScope } from "./mappers.js";
 
 const generateSemanticTokenColors = () => {
   const semanticColors: Record<SemanticToken, ColorEntry> = {} as any;

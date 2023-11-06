@@ -1,0 +1,23 @@
+{
+  "name": "neoteric-shades-light",
+  "background": "#FFFFFF",
+  "foreground": "#121212",
+  "black": "#121212",
+  "white": "#F5F3F3",
+  "brightBlack": "#4a4a4a",
+  "brightWhite": "#FFFFFF",
+  "brightBlue": "#07385e",
+  "brightCyan": "#008493",
+  "brightGreen": "#1c7a31",
+  "brightPurple": "#5800a9",
+  "brightRed": "#b32e3f",
+  "brightYellow": "#b3a242",
+  "blue": "#6190b4",
+  "cyan": "#6190b4",
+  "green": "#76cf87",
+  "purple": "#af42f7",
+  "red": "#ff8a96",
+  "yellow": "#ffef97",
+  "selectionBackground": "#585858",
+  "cursorColor": "#585858"
+}

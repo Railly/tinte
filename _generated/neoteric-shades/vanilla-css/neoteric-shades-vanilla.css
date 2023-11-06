@@ -1,0 +1,54 @@
+:root {
+  --neoteric shades-text             : #121212;
+  --neoteric shades-text-muted       : #585858;
+  --neoteric shades-text-faint       : #969696;
+  --neoteric shades-ui               : #EFEDED;
+  --neoteric shades-ui-hover         : #E9E7E7;
+  --neoteric shades-ui-active        : #E3E1E1;
+  --neoteric shades-bg               : #FFFFFF;
+  --neoteric shades-bg-secondary     : #F5F3F3;
+  --neoteric shades-red              : #b32e3f;
+  --neoteric shades-red-secondary    : #ff8a96;
+  --neoteric shades-orange           : #b34d00;
+  --neoteric shades-orange-secondary : #ffa651;
+  --neoteric shades-yellow           : #b3a242;
+  --neoteric shades-yellow-secondary : #ffef97;
+  --neoteric shades-green            : #1c7a31;
+  --neoteric shades-green-secondary  : #76cf87;
+  --neoteric shades-cyan             : #008493;
+  --neoteric shades-cyan-secondary   : #59d6e3;
+  --neoteric shades-blue             : #07385e;
+  --neoteric shades-blue-secondary   : #6190b4;
+  --neoteric shades-purple           : #5800a9;
+  --neoteric shades-purple-secondary : #af42f7;
+  --neoteric shades-magenta          : #a10058;
+  --neoteric shades-magenta-secondary: #f142af;
+
+}
+.dark {
+  --neoteric shades-text             : #E3E1E1;
+  --neoteric shades-text-muted       : #676767;
+  --neoteric shades-text-faint       : #4a4a4a;
+  --neoteric shades-ui               : #252525;
+  --neoteric shades-ui-hover         : #313131;
+  --neoteric shades-ui-active        : #3d3d3d;
+  --neoteric shades-bg               : #121212;
+  --neoteric shades-bg-secondary     : #1a1a1a;
+  --neoteric shades-red              : #ff8a96;
+  --neoteric shades-red-secondary    : #b32e3f;
+  --neoteric shades-orange           : #ffa651;
+  --neoteric shades-orange-secondary : #b34d00;
+  --neoteric shades-yellow           : #ffef97;
+  --neoteric shades-yellow-secondary : #b3a242;
+  --neoteric shades-green            : #76cf87;
+  --neoteric shades-green-secondary  : #1c7a31;
+  --neoteric shades-cyan             : #59d6e3;
+  --neoteric shades-cyan-secondary   : #008493;
+  --neoteric shades-blue             : #6190b4;
+  --neoteric shades-blue-secondary   : #07385e;
+  --neoteric shades-purple           : #af42f7;
+  --neoteric shades-purple-secondary : #5800a9;
+  --neoteric shades-magenta          : #f142af;
+  --neoteric shades-magenta-secondary: #a10058;
+
+}

@@ -1,0 +1,23 @@
+{
+  "name": "neoteric-shades-dark",
+  "background": "#121212",
+  "foreground": "#E3E1E1",
+  "black": "#121212",
+  "white": "#F5F3F3",
+  "brightBlack": "#4a4a4a",
+  "brightWhite": "#FFFFFF",
+  "brightBlue": "#6190b4",
+  "brightCyan": "#59d6e3",
+  "brightGreen": "#76cf87",
+  "brightPurple": "#af42f7",
+  "brightRed": "#ff8a96",
+  "brightYellow": "#ffef97",
+  "blue": "#07385e",
+  "cyan": "#07385e",
+  "green": "#1c7a31",
+  "purple": "#5800a9",
+  "red": "#b32e3f",
+  "yellow": "#b3a242",
+  "selectionBackground": "#676767",
+  "cursorColor": "#676767"
+}

@@ -1,5 +1,5 @@
-import { entries } from "./index.ts";
-import { Color } from "./color.ts";
+import { entries } from "./index.js";
+import { Color } from "./color.js";
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 

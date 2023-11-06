@@ -1,8 +1,8 @@
-import { mappedPalette } from "../../mapped-palette.ts";
-import { Color } from "../../utils/color.ts";
-import { entries, getThemeName, writeFile } from "../../utils/index.ts";
-import { ThemeType } from "../types.ts";
-import { mapITerm2Color } from "./mappers.ts";
+import { mappedPalette } from "../../mapped-palette.js";
+import { Color } from "../../utils/color.js";
+import { entries, getThemeName, writeFile } from "../../utils/index.js";
+import { ThemeType } from "../types.js";
+import { mapITerm2Color } from "./mappers.js";
 
 export const generateITerm2Theme = ({
   name,

@@ -1,4 +1,4 @@
-import { Palette } from "./types.ts";
+import { Palette } from "./types.js";
 
 export const FlexokiPalette: Palette = {
   base: {

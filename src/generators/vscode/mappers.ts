@@ -1,4 +1,4 @@
-import { SemanticToken } from "../../types.ts";
+import { SemanticToken } from "../../types.js";
 
 const mapTokenToScope = (token: SemanticToken): string | string[] => {
   const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
