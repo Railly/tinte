@@ -1,0 +1,23 @@
+{
+  "name": "vercel-2024-dark",
+  "background": "#000000",
+  "foreground": "#EDEDED",
+  "black": "#000000",
+  "white": "#EDEDED",
+  "brightBlack": "#8F8F8F",
+  "brightWhite": "#FFFFFF",
+  "brightBlue": "#47A8FF",
+  "brightCyan": "#4CC0BA",
+  "brightGreen": "#00CA51",
+  "brightPurple": "#C372FC",
+  "brightRed": "#D14D41",
+  "brightYellow": "#E5B800",
+  "blue": "#0060F1",
+  "cyan": "#0060F1",
+  "green": "#0F7E32",
+  "purple": "#7D00CC",
+  "red": "#AF3029",
+  "yellow": "#B38F00",
+  "selectionBackground": "#A3A3A3",
+  "cursorColor": "#A3A3A3"
+}

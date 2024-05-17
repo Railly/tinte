@@ -35,7 +35,7 @@ const applyCustomizations = (color: ColorEntry, token: string): ColorEntry => {
       return { light: color.light, dark: color.dark };
     default:
       if (token.startsWith("diffEditor")) {
-        return { light: color.light + "99", dark: color.dark + "99" };
+        return { light: color.light + "33", dark: color.dark + "55" };
       }
       return color;
   }
@@ -65,11 +65,11 @@ const generateVSCodeTokenColors = (
     foreground: color[themeType],
   };
 
-  if (scope.includes("entity.name.function")) {
-    Object.assign(settings, {
-      fontStyle: "bold",
-    });
-  }
+  // if (scope.includes("entity.name.function")) {
+  //   Object.assign(settings, {
+  //     fontStyle: "bold",
+  //   });
+  // }
 
   return {
     name: token,

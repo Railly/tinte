@@ -15,30 +15,30 @@ const colorAbbreviations = {
 
 const textTones = {
   tx: {
-    light: currentPalette.base.black,
-    dark: currentPalette.base[200],
+    light: currentPalette.base[900],
+    dark: currentPalette.base[50],
   },
   "tx-2": {
-    light: currentPalette.base[600],
-    dark: currentPalette.base[500],
+    light: currentPalette.base[500],
+    dark: currentPalette.base[200],
   },
   "tx-3": {
     light: currentPalette.base[300],
-    dark: currentPalette.base[700],
+    dark: currentPalette.base[300],
   },
 };
 
 const interfaceTones = {
   ui: {
-    light: currentPalette.base[100],
+    light: currentPalette.base[50],
     dark: currentPalette.base[900],
   },
   "ui-2": {
-    light: currentPalette.base[150],
+    light: currentPalette.base[100],
     dark: currentPalette.base[850],
   },
   "ui-3": {
-    light: currentPalette.base[200],
+    light: currentPalette.base[150],
     dark: currentPalette.base[800],
   },
 };

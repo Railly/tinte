@@ -159,6 +159,57 @@ export const OneHunterFlexokiMappedTokens: Record<
   orange: "or",
 };
 
+export const Vercel2024MappedTokens: Record<SemanticToken, Abbreviations> = {
+  plain: "tx",
+  classes: "ye",
+  interfaces: "pu",
+  structs: "ye",
+  enums: "ye",
+  keys: "tx",
+  methods: "bl",
+  functions: "pu",
+  variables: "tx",
+  variablesOther: "bl",
+  globalVariables: "cy",
+  localVariables: "ui",
+  parameters: "tx",
+  properties: "tx",
+  strings: "gr",
+  stringEscapeSequences: "tx",
+  keywords: "ma",
+  keywordsControl: "ma",
+  storageModifiers: "ma",
+  comments: "tx-2",
+  docComments: "tx-2",
+  numbers: "tx",
+  booleans: "tx",
+  operators: "ma",
+  macros: "bl",
+  preprocessor: "cy",
+  urls: "bl",
+  tags: "gr",
+  jsxTags: "bl",
+  attributes: "pu",
+  types: "bl",
+  constants: "bl",
+  labels: "cy",
+  namespaces: "ye",
+  modules: "re",
+  typeParameters: "ye",
+  exceptions: "ma",
+  decorators: "ye",
+  calls: "tx",
+  punctuation: "tx",
+  yellow: "ye",
+  green: "cy",
+  cyan: "cy",
+  blue: "bl",
+  purple: "pu",
+  magenta: "ma",
+  red: "re",
+  orange: "or",
+};
+
 export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   // Editor Colors
   "editor.background": "bg",
@@ -344,8 +395,8 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "inputOption.activeForeground": "tx",
 
   // Input Validation
-  "inputValidation.infoBackground": "cy",
-  "inputValidation.infoBorder": "cy-2",
+  "inputValidation.infoBackground": "bl",
+  "inputValidation.infoBorder": "bl-2",
   "inputValidation.warningBackground": "or",
   "inputValidation.warningBorder": "or-2",
   "inputValidation.errorBackground": "re",
@@ -358,9 +409,9 @@ export const VSCodeEditorMappedTokens: Record<string, Abbreviations> = {
   "dropdown.listBackground": "bg",
 
   // Buttons & Badges
-  "badge.background": "cy",
-  "activityBarBadge.background": "cy",
-  "button.background": "cy",
+  "badge.background": "bl",
+  "activityBarBadge.background": "bl",
+  "button.background": "bl",
 
   /** Arbitrary Changes to improve accessibility & consistency  */
   // Hardcoded Colors - Always Paper - See generate.ts
@@ -376,4 +427,5 @@ export const VSCodeMappedTokens: Record<
   Flexoki: FlexokiVSCodeMappedTokens,
   "One Hunter Material": OneHunterMaterialMappedTokens,
   "One Hunter Flexoki": OneHunterFlexokiMappedTokens,
+  "Vercel 2024": Vercel2024MappedTokens,
 };
