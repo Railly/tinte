@@ -10,14 +10,6 @@
 An opinionated multi-platform color theme generator 🎨 <br>
 </p>
 
-## Disclaimer
-
-Visit the web version of this project at [Tinte](https://tinte-app.vercel.app/)
-
-<img src="./tinte-preview.png" alt="Tinte Preview" width="100%"/>
-
-<img src="./tinte-preview-2.png" alt="Tinte Preview 2" width="100%"/>
-
 ## Table of Contents
 
 - [Tinte](#tinte)

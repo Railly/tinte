@@ -1,35 +1,20 @@
 {
-  "name": "tinte",
-  "type": "module",
-  "version": "0.1.0",
-  "description": "An opinionated tool for generating multi-platform color themes",
-  "main": "index.js",
+  "name": "tinte-2",
+  "private": true,
   "scripts": {
-    "build": "node --no-warnings --loader ts-node/esm src/index.ts"
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Railly/tinte.git"
-  },
-  "keywords": [
-    "ink",
-    "flexoki",
-    "one-hunter",
-    "vscode",
-    "neovim",
-    "windows-terminal",
-    "theme-generator",
-    "color-scheme"
-  ],
-  "author": "Railly Hugo",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Railly/tinte/issues"
-  },
-  "homepage": "https://github.com/Railly/tinte#readme",
   "devDependencies": {
-    "@types/node": "^20.8.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "prettier": "^3.2.5",
+    "turbo": "latest"
+  },
+  "packageManager": "pnpm@9.1.1",
+  "engines": {
+    "node": ">=18"
   }
 }
