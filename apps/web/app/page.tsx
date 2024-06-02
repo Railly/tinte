@@ -296,6 +296,7 @@ export default function Page(): JSX.Element {
                                   )
                                 }
                                 name={colorKey}
+                                id={colorKey}
                                 ref={ref}
                               />
                               <IconPipette
@@ -316,11 +317,11 @@ export default function Page(): JSX.Element {
                                   e.target.value
                                 )
                               }
-                              name={colorKey}
-                              ref={ref}
+                              name={`${colorKey}-text`}
+                              id={`${colorKey}-text`}
                             />
                             <label
-                              htmlFor={colorKey}
+                              htmlFor={`${colorKey}-text`}
                               className="text-xs text-foreground"
                             >
                               {colorKey}
