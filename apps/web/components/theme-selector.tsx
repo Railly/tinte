@@ -14,7 +14,7 @@ import {
 import { IconComputer, IconMoon, IconSun } from "@/components/ui/icons";
 
 export function ThemeSelector() {
-  const { setTheme, theme } = useTheme();
+  const { setTheme, theme, systemTheme } = useTheme();
   // eslint-disable-next-line no-unused-vars
   const [_, startTransition] = React.useTransition();
 
@@ -78,7 +78,7 @@ export function ThemeSelector() {
             )}
             onClick={() => {
               startTransition(() => {
-                setTheme("system");
+                setTheme(systemTheme as "light" | "dark");
               });
             }}
           >

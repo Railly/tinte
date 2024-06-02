@@ -3,12 +3,19 @@ import { useMonaco, loader } from "@monaco-editor/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 import { useTheme } from "next-themes";
 import { getHighlighter } from "shiki";
-// import oneHunterThemeDark from "@/lib/themes/one-hunter-theme-dark.json";
-import oneHunterThemeLight from "@/lib/themes/one-hunter-theme-light.json";
 
-export function useMonacoEditor({ theme }: { theme: any }) {
+export function useMonacoEditor({
+  theme: monacoTheme,
+}: {
+  theme: {
+    lightTheme: any;
+    darkTheme: any;
+  };
+}) {
   const monaco = useMonaco();
   const { theme: nextTheme, systemTheme } = useTheme();
+  const theme =
+    nextTheme === "dark" ? monacoTheme.darkTheme : monacoTheme.lightTheme;
 
   const isDark = useMemo(() => {
     return (
@@ -16,15 +23,15 @@ export function useMonacoEditor({ theme }: { theme: any }) {
     );
   }, [nextTheme, systemTheme]);
 
-  const currentTheme = useMemo(() => {
-    return isDark ? theme.name : "one-hunter-flexoki-light";
+  const currentThemeName = useMemo(() => {
+    return theme.name;
   }, [isDark]);
 
   useEffect(() => {
     if (!monaco) return;
     async function initializeMonaco() {
       const highlighter = await getHighlighter({
-        themes: [theme as any, oneHunterThemeLight as any],
+        themes: [monacoTheme.lightTheme, monacoTheme.darkTheme],
         langs: ["sql", "typescript", "javascript"],
       });
       monaco?.languages.register({ id: "sql" });
@@ -32,7 +39,7 @@ export function useMonacoEditor({ theme }: { theme: any }) {
       shikiToMonaco(highlighter, monaco);
 
       loader.init().then((monaco) => {
-        monaco.editor.setTheme(currentTheme);
+        monaco.editor.setTheme(currentThemeName);
       });
     }
 
@@ -41,8 +48,8 @@ export function useMonacoEditor({ theme }: { theme: any }) {
 
   useEffect(() => {
     if (!monaco) return;
-    monaco.editor.setTheme(currentTheme);
-  }, [monaco, currentTheme]);
+    monaco.editor.setTheme(currentThemeName);
+  }, [monaco, currentThemeName]);
 
-  return { isDark, currentTheme };
+  return { isDark, currentThemeName };
 }

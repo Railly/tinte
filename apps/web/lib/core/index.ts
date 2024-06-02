@@ -3,14 +3,21 @@ import { generateTokenColors } from "./tokens";
 import { ThemeConfig } from "./types";
 
 export function generateVSCodeTheme(themeConfig: ThemeConfig) {
-  const { name, type, palette, tokenColors } = themeConfig;
+  const { name, palette, tokenColors } = themeConfig;
 
-  const vsCodeTheme = {
-    name,
-    type,
-    colors: getVSCodeColors(palette),
-    tokenColors: generateTokenColors(palette, tokenColors),
+  const darkTheme = {
+    name: `${name}-dark`,
+    type: "dark",
+    colors: getVSCodeColors(palette.dark),
+    tokenColors: generateTokenColors(palette.dark, tokenColors),
   };
 
-  return vsCodeTheme;
+  const lightTheme = {
+    name: `${name}-light`,
+    type: "light",
+    colors: getVSCodeColors(palette.light),
+    tokenColors: generateTokenColors(palette.light, tokenColors),
+  };
+
+  return { darkTheme, lightTheme };
 }
