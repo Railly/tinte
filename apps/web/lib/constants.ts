@@ -1,19 +1,128 @@
 import { Palette } from "./core/types";
+export const LANGS = [
+  "php",
+  "javascript",
+  "typescript",
+  "sql",
+  "go",
+  "rust",
+  "python",
+  "ruby",
+];
 
-export const CODE_SAMPLE = `function leftpad(str, len, ch) {
-  str = String(str);
-  var i = -1;
+export const CODE_SAMPLES: Record<string, string> = {
+  php: `<?php
+class Calculator {
+    public static function add($a, $b) {
+        return $a + $b;
+    }
+}
 
-  if (!ch && ch !== 0) ch = 'Hello World';
+$result = Calculator::add(5, 3);
+echo "Result: " . $result;
+?>`,
 
-  len = len - str.length;
+  javascript: `function isPalindrome(str) {
+  const cleaned = str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  return cleaned === cleaned.split('').reverse().join('');
+}
 
-  while (i++ < len) {
-    str = ch + str;
-  }
+console.log(isPalindrome("A man, a plan, a canal, Panama!"));`,
 
-  return str;
-}`;
+  typescript: `interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+function fetchUser(id: number): Promise<User> {
+  return fetch(\`/api/users/\${id}\`)
+    .then(response => response.json());
+}
+
+fetchUser(42).then(user => {
+  console.log(\`User: \${user.name} (Email: \${user.email})\`);
+});`,
+
+  sql: `SELECT
+    p.product_name,
+    SUM(oi.quantity) AS total_quantity,
+    SUM(oi.quantity * p.price) AS total_revenue
+FROM
+    products p
+    JOIN order_items oi ON p.product_id = oi.product_id
+GROUP BY
+    p.product_name
+ORDER BY
+    total_revenue DESC
+LIMIT 5;`,
+
+  go: `func countVowels(str string) int {
+    vowels := "aeiouAEIOU"
+    count := 0
+    for _, char := range str {
+        if strings.ContainsRune(vowels, char) {
+            count++
+        }
+    }
+    return count
+}
+
+sentence := "The quick brown fox jumps over the lazy dog"
+fmt.Printf("Number of vowels: %d", countVowels(sentence))`,
+
+  rust: `fn binary_search(arr: &[i32], target: i32) -> Option<usize> {
+    let mut left = 0;
+    let mut right = arr.len() - 1;
+
+    while left <= right {
+        let mid = (left + right) / 2;
+        match arr[mid].cmp(&target) {
+            Ordering::Equal => return Some(mid),
+            Ordering::Less => left = mid + 1,
+            Ordering::Greater => right = mid - 1,
+        }
+    }
+
+    None
+}
+
+let numbers = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
+let target = 7;
+match binary_search(&numbers, target) {
+    Some(index) => println!("Target found at index: {}", index),
+    None => println!("Target not found"),
+}`,
+
+  python: `import re
+
+def extract_email(text):
+    pattern = r'\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b'
+    emails = re.findall(pattern, text)
+    return emails
+
+text = '''
+John Doe: john.doe@example.com
+Jane Smith: jane.smith@gmail.com
+'''
+
+emails = extract_email(text)
+print("Extracted emails:", emails)`,
+
+  ruby: `def fibonacci(n)
+  return n if n <= 1
+  fibonacci(n - 1) + fibonacci(n - 2)
+end
+
+def memoized_fibonacci(n, memo={})
+  return memo[n] if memo.key?(n)
+  memo[n] = memoized_fibonacci(n - 1, memo) + memoized_fibonacci(n - 2, memo)
+end
+
+n = 30
+puts "Fibonacci number at position #{n}: #{fibonacci(n)}"
+puts "Memoized Fibonacci number at position #{n}: #{memoized_fibonacci(n)}"`,
+};
 
 export const BACKGROUND_LESS_PALETTE = {
   dark: {

@@ -16,13 +16,15 @@ export type Palette = {
 
 export type ThemeType = "light" | "dark";
 
+export type DarkLightPalette = {
+  dark: Palette;
+  light: Palette;
+};
+
 export type ThemeConfig = {
   name: string;
   displayName: string;
-  palette: {
-    dark: Palette;
-    light: Palette;
-  };
+  palette: DarkLightPalette;
   tokenColors: TokenColorMap;
 };
 

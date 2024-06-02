@@ -1,18 +1,19 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { getHighlighter } from "shiki";
+import { LANGS } from "../constants";
 
 export function useHighlighter({
   theme,
   text,
-  lang = "typescript",
+  language,
 }: {
   theme: {
     lightTheme: any;
     darkTheme: any;
   };
   text?: string;
-  lang?: string;
+  language: string;
 }) {
   const { theme: nextTheme } = useTheme();
   const [highlightedText, setHighlightedText] = useState("");
@@ -20,15 +21,17 @@ export function useHighlighter({
   useEffect(() => {
     async function highlight() {
       if (!text) return;
+
       const highlighter = await getHighlighter({
         themes: [theme.lightTheme, theme.darkTheme],
-        langs: ["json", "typescript", "javascript"],
+        langs: LANGS,
       });
+
       if (!highlighter) return;
 
       setHighlightedText(
         highlighter.codeToHtml(text, {
-          lang,
+          lang: language,
           themes: {
             light: theme.lightTheme.name,
             dark: theme.darkTheme.name,
@@ -38,7 +41,7 @@ export function useHighlighter({
     }
 
     highlight();
-  }, [text, theme.darkTheme, theme.lightTheme, nextTheme]);
+  }, [text, theme.darkTheme, theme.lightTheme, nextTheme, language]);
 
   return { highlightedText };
 }

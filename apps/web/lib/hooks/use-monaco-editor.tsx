@@ -1,8 +1,9 @@
 import { useEffect, useMemo } from "react";
-import { useMonaco, loader } from "@monaco-editor/react";
+import { useMonaco } from "@monaco-editor/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 import { useTheme } from "next-themes";
 import { getHighlighter } from "shiki";
+import { LANGS } from "../constants";
 
 export function useMonacoEditor({
   theme: monacoTheme,
@@ -25,31 +26,33 @@ export function useMonacoEditor({
 
   const currentThemeName = useMemo(() => {
     return isDark ? monacoTheme.darkTheme.name : monacoTheme.lightTheme.name;
-  }, [isDark]);
+  }, [isDark, monacoTheme, nextTheme]);
+
+  async function initializeMonaco(customTheme: {
+    lightTheme: any;
+    darkTheme: any;
+  }) {
+    if (!monaco) return;
+    const highlighter = await getHighlighter({
+      themes: [customTheme.lightTheme, customTheme.darkTheme],
+      langs: LANGS,
+    });
+
+    LANGS.forEach((lang) => {
+      if (!monaco) return;
+      monaco.languages.register({ id: lang });
+    });
+
+    shikiToMonaco(highlighter, monaco);
+  }
 
   useEffect(() => {
     if (!monaco) return;
-    async function initializeMonaco() {
-      const highlighter = await getHighlighter({
-        themes: [monacoTheme.lightTheme, monacoTheme.darkTheme],
-        langs: ["sql", "typescript", "javascript"],
-      });
-      monaco?.languages.register({ id: "sql" });
 
-      shikiToMonaco(highlighter, monaco);
-
-      loader.init().then((monaco) => {
-        monaco.editor.setTheme(currentThemeName);
-      });
-    }
-
-    initializeMonaco();
-  }, [monaco, nextTheme]);
-
-  useEffect(() => {
-    if (!monaco) return;
-    monaco.editor.setTheme(currentThemeName);
-  }, [monaco, currentThemeName]);
+    initializeMonaco(monacoTheme).then(() => {
+      monaco.editor.setTheme(currentThemeName);
+    });
+  }, [monaco, monacoTheme, currentThemeName]);
 
   return { isDark, currentThemeName };
 }
