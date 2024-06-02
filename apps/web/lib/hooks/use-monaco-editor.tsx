@@ -13,22 +13,18 @@ export function useMonacoEditor({
   };
 }) {
   const monaco = useMonaco();
-  const { theme: nextTheme, systemTheme } = useTheme();
-  console.log({
-    nextTheme,
-    systemTheme,
-  });
-  const theme =
-    nextTheme === "dark" ? monacoTheme.darkTheme : monacoTheme.lightTheme;
+  const { theme: nextTheme } = useTheme();
 
   const isDark = useMemo(() => {
     return (
-      nextTheme === "dark" || (nextTheme === "system" && systemTheme === "dark")
+      nextTheme === "dark" ||
+      (nextTheme === "system" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
     );
-  }, [nextTheme, systemTheme]);
+  }, [nextTheme]);
 
   const currentThemeName = useMemo(() => {
-    return theme.name;
+    return isDark ? monacoTheme.darkTheme.name : monacoTheme.lightTheme.name;
   }, [isDark]);
 
   useEffect(() => {
@@ -48,7 +44,7 @@ export function useMonacoEditor({
     }
 
     initializeMonaco();
-  }, [monaco, theme, nextTheme, systemTheme]);
+  }, [monaco, nextTheme]);
 
   useEffect(() => {
     if (!monaco) return;

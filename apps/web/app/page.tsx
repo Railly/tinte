@@ -33,9 +33,14 @@ export default function Page(): JSX.Element {
     useState<ThemeConfig>(defaultThemeConfig);
   const [code, setCode] = useState<string | undefined>(CODE_SAMPLE);
   const [isBackgroundless, setIsBackgroundless] = useState(false);
-  const { theme: nextTheme, systemTheme, setTheme } = useTheme();
-  const currentTheme =
-    nextTheme === "system" ? systemTheme : (nextTheme as "dark" | "light");
+  const { theme: nextTheme, setTheme } = useTheme();
+  const currentTheme = (
+    nextTheme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : nextTheme
+  ) as "light" | "dark";
 
   const updatePaletteColor = debounce(
     (colorKey: keyof Palette, value: string) => {
