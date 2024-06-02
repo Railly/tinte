@@ -21,16 +21,15 @@ export function ThemeSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={cn(buttonVariants({ variant: "ghost" }), "h-8 w-full py-0")}
+        className={cn(buttonVariants({ variant: "outline" }), "w-full py-0")}
       >
         {theme === "light" ? (
-          <IconSun className="mr-2 size-4" />
+          <IconSun className="size-4" />
         ) : theme === "dark" ? (
-          <IconMoon className="mr-2 size-4" />
+          <IconMoon className="size-4" />
         ) : (
-          <IconComputer className="mr-2 size-4" />
+          <IconComputer className="size-4" />
         )}
-        <span>Theme</span>
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent className="w-32 space-y-1">
@@ -48,7 +47,7 @@ export function ThemeSelector() {
               });
             }}
           >
-            <IconSun className="mr-2 size-3" />
+            <IconSun className="size-3" />
             <span>Light</span>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -65,7 +64,7 @@ export function ThemeSelector() {
               });
             }}
           >
-            <IconMoon className="mr-2 size-3" />
+            <IconMoon className="size-3" />
             <span>Dark</span>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -78,11 +77,11 @@ export function ThemeSelector() {
             )}
             onClick={() => {
               startTransition(() => {
-                setTheme(systemTheme as "light" | "dark");
+                setTheme("system");
               });
             }}
           >
-            <IconComputer className="mr-2 size-3" />
+            <IconComputer className="size-3" />
             <span>System</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

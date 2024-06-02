@@ -1,6 +1,11 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { IconPipette } from "@/components/ui/icons";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  IconGithub,
+  IconPipette,
+  IconRH,
+  IconTinte,
+} from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -10,10 +15,18 @@ import { defaultThemeConfig } from "@/lib/core/config";
 import { Palette, ThemeConfig } from "@/lib/core/types";
 import { useHighlighter } from "@/lib/hooks/use-highlighter";
 import { useMonacoEditor } from "@/lib/hooks/use-monaco-editor";
-import { cn, debounce } from "@/lib/utils";
+import { cn, debounce, entries } from "@/lib/utils";
 import MonacoEditor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { createRef, useRef, useState } from "react";
+import TinteLogo from "./icon.svg";
+import { ThemeSelector } from "@/components/theme-selector";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Page(): JSX.Element {
   const [themeConfig, setThemeConfig] =
@@ -23,7 +36,6 @@ export default function Page(): JSX.Element {
   const { theme: nextTheme, systemTheme, setTheme } = useTheme();
   const currentTheme =
     nextTheme === "system" ? systemTheme : (nextTheme as "dark" | "light");
-  console.log({ nextTheme, currentTheme, systemTheme });
 
   const updatePaletteColor = debounce(
     (colorKey: keyof Palette, value: string) => {
@@ -100,7 +112,6 @@ export default function Page(): JSX.Element {
     URL.revokeObjectURL(url);
   };
 
-  console.log({ themeConfig });
   const theme = generateVSCodeTheme(themeConfig);
   const { highlightedText } = useHighlighter({
     theme,
@@ -111,7 +122,52 @@ export default function Page(): JSX.Element {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex gap-4 w-full h-full p-8 max-h-screen">
+      <header className="flex items-center justify-between gap-4 py-2 px-8 border-b">
+        <div className="flex items-center gap-2">
+          <IconTinte />
+          <h1 className="text-md font-bold">tinte</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeSelector />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <a
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "flex items-center gap-2"
+                  )}
+                  href="https://github.com/Railly/tinte"
+                  target="_blank"
+                >
+                  <IconGithub className="text-foreground" />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>
+                <span className="text-xs">Github</span>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger>
+                <a
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "flex items-center gap-2"
+                  )}
+                  href="https://www.railly.dev"
+                  target="_blank"
+                >
+                  <IconRH />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>
+                <span className="text-xs">Railly's Blog</span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </header>
+      <div className="flex flex-col md:flex-row gap-4 w-full h-full px-8 py-4 max-h-screen">
         <div className="flex flex-col gap-4 w-full h-full">
           <h1 className="text-sm font-mono uppercase font-bold">Preview</h1>
           <div className="w-full h-full grid grid-rows-2 gap-4">
@@ -199,78 +255,79 @@ export default function Page(): JSX.Element {
             </div>
             <div className="flex flex-col gap-2 border p-2">
               <h2 className="text-sm font-mono font-bold">Tokens</h2>
-              <div className="grid grid-cols-2">
-                {Object.entries(
-                  themeConfig.palette[currentTheme as "light" | "dark"]
-                ).map(([colorKey, colorValue]) => {
-                  const ref = createRef<HTMLInputElement>();
-                  return (
-                    <div
-                      className="w-full flex flex-col font-mono gap-2 py-2"
-                      key={colorKey}
-                    >
-                      <div className="grid grid-cols-[2fr_2fr_3fr] gap-4 items-center">
+              <div className="grid grid-cols-2 gap-4 md:gap-0">
+                {currentTheme &&
+                  entries(themeConfig.palette[currentTheme]).map(
+                    ([colorKey, colorValue]) => {
+                      const ref = createRef<HTMLInputElement>();
+                      return (
                         <div
-                          className={cn(
-                            "relative w-full text-transparent transition-colors duration-200 hover:text-foreground dark:hover:text-foreground/70"
-                          )}
+                          className="w-full flex flex-col font-mono gap-2 py-2"
+                          key={colorKey}
                         >
-                          <Input
-                            type="color"
-                            className={cn(
-                              "p-1 rounded-full w-full",
-                              `[&::-webkit-color-swatch]:p-0 `,
-                              `[&::-webkit-color-swatch]:rounded-full`,
-                              `[&::-webkit-color-swatch]:border-2`,
-                              `[&::-webkit-color-swatch]:border-black/20`,
-                              `dark:[&::-webkit-color-swatch]:border-white/20`,
-                              `[&::-webkit-color-swatch-wrapper]:p-0 border-none`,
-                              "cursor-pointer"
-                            )}
-                            value={colorValue}
-                            onChange={(e) =>
-                              updatePaletteColor(
-                                colorKey as keyof Palette,
-                                e.target.value
-                              )
-                            }
-                            name={colorKey}
-                            ref={ref}
-                          />
-                          <IconPipette
-                            className="absolute top-[calc(50%-0.5rem)] left-[calc(50%-0.5rem)] cursor-pointer"
-                            onClick={() => {
-                              if (ref.current) {
-                                ref.current.click();
+                          <div className="grid md:grid-cols-[2fr_2fr_3fr] gap-4 items-center">
+                            <div
+                              className={cn(
+                                "relative w-full text-transparent transition-colors duration-200 hover:text-foreground dark:hover:text-foreground/70"
+                              )}
+                            >
+                              <Input
+                                type="color"
+                                className={cn(
+                                  "p-1 rounded-full w-full",
+                                  `[&::-webkit-color-swatch]:p-0 `,
+                                  `[&::-webkit-color-swatch]:rounded-full`,
+                                  `[&::-webkit-color-swatch]:border-2`,
+                                  `[&::-webkit-color-swatch]:border-black/20`,
+                                  `dark:[&::-webkit-color-swatch]:border-white/20`,
+                                  `[&::-webkit-color-swatch-wrapper]:p-0 border-none`,
+                                  "cursor-pointer"
+                                )}
+                                value={colorValue}
+                                onChange={(e) =>
+                                  updatePaletteColor(
+                                    colorKey as keyof Palette,
+                                    e.target.value
+                                  )
+                                }
+                                name={colorKey}
+                                ref={ref}
+                              />
+                              <IconPipette
+                                className="absolute top-[calc(50%-0.5rem)] left-[calc(50%-0.5rem)] cursor-pointer"
+                                onClick={() => {
+                                  if (ref.current) {
+                                    ref.current.click();
+                                  }
+                                }}
+                              />
+                            </div>
+                            <Input
+                              className="font-mono"
+                              value={colorValue}
+                              onChange={(e) =>
+                                updatePaletteColor(
+                                  colorKey as keyof Palette,
+                                  e.target.value
+                                )
                               }
-                            }}
-                          />
+                              name={colorKey}
+                              ref={ref}
+                            />
+                            <label
+                              htmlFor={colorKey}
+                              className="text-xs text-foreground"
+                            >
+                              {colorKey}
+                            </label>
+                          </div>
                         </div>
-                        <Input
-                          className="font-mono"
-                          value={colorValue}
-                          onChange={(e) =>
-                            updatePaletteColor(
-                              colorKey as keyof Palette,
-                              e.target.value
-                            )
-                          }
-                          name={colorKey}
-                          ref={ref}
-                        />
-                        <label
-                          htmlFor={colorKey}
-                          className="text-xs text-foreground"
-                        >
-                          {colorKey}
-                        </label>
-                      </div>
-                    </div>
-                  );
-                })}
+                      );
+                    }
+                  )}
               </div>
             </div>
-            <div className="flex gap-2 w-full">
+            <div className="flex gap-2 w-full mb-4 md:mb-0">
               <Button
                 className="w-full"
                 variant="outline"

@@ -213,7 +213,6 @@ const editorColorMap = {
 export function getVSCodeColors(palette: Palette) {
   const vsCodeColors: Record<string, string> = {};
 
-  console.log({ palette });
   for (const [token, colorKey] of entries(editorColorMap)) {
     vsCodeColors[token] = palette[colorKey];
   }

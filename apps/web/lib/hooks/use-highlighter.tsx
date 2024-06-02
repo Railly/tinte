@@ -20,13 +20,6 @@ export function useHighlighter({
   useEffect(() => {
     async function highlight() {
       if (!text) return;
-      console.log({
-        themes: {
-          light: theme.lightTheme,
-          dark: theme.darkTheme,
-        },
-        ga: "Ga",
-      });
       const highlighter = await getHighlighter({
         themes: [theme.lightTheme, theme.darkTheme],
         langs: ["json", "typescript", "javascript"],
