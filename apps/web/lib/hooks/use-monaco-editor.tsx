@@ -14,6 +14,10 @@ export function useMonacoEditor({
 }) {
   const monaco = useMonaco();
   const { theme: nextTheme, systemTheme } = useTheme();
+  console.log({
+    nextTheme,
+    systemTheme,
+  });
   const theme =
     nextTheme === "dark" ? monacoTheme.darkTheme : monacoTheme.lightTheme;
 
@@ -44,7 +48,7 @@ export function useMonacoEditor({
     }
 
     initializeMonaco();
-  }, [monaco, theme]);
+  }, [monaco, theme, nextTheme, systemTheme]);
 
   useEffect(() => {
     if (!monaco) return;

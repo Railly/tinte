@@ -12,7 +12,7 @@ An opinionated multi-platform color theme generator 🎨 <br>
 
 ## Disclaimer
 
-Visit the web version of this project at [Tinte](https://tinte-app.vercel.app/)
+Visit the web version of this project at [Tinte](https://tinte-x.vercel.app/)
 
 <img src="./tinte-preview.png" alt="Tinte Preview" width="100%"/>
 
