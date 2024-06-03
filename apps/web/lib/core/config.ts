@@ -55,7 +55,7 @@ export const defaultThemeConfig: ThemeConfig = {
     keywords: "primary",
     keywordsControl: "primary",
     storageModifiers: "primary",
-    comments: "text",
+    comments: "text-3",
     docComments: "text",
     numbers: "accent-3",
     booleans: "accent-3",

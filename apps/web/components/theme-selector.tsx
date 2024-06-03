@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { IconComputer, IconMoon, IconSun } from "@/components/ui/icons";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export function ThemeSelector() {
   const { setTheme, theme } = useTheme();
@@ -20,17 +21,24 @@ export function ThemeSelector() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className={cn(buttonVariants({ variant: "outline" }), "w-full py-0")}
-      >
-        {theme === "light" ? (
-          <IconSun className="size-4" />
-        ) : theme === "dark" ? (
-          <IconMoon className="size-4" />
-        ) : (
-          <IconComputer className="size-4" />
-        )}
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger>
+          <DropdownMenuTrigger
+            className={cn(buttonVariants({ variant: "ghost" }), "w-full py-0")}
+          >
+            {theme === "light" ? (
+              <IconSun className="size-4" />
+            ) : theme === "dark" ? (
+              <IconMoon className="size-4" />
+            ) : (
+              <IconComputer className="size-4" />
+            )}
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <span className="text-xs mt-4">Theme</span>
+        </TooltipContent>
+      </Tooltip>
       <DropdownMenuPortal>
         <DropdownMenuContent className="w-32 space-y-1">
           <DropdownMenuItem

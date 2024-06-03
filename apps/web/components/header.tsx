@@ -1,4 +1,9 @@
-import { IconTinte, IconGithub, IconRH } from "@/components/ui/icons";
+import {
+  IconTinte,
+  IconGithub,
+  IconRH,
+  IconHeart,
+} from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { ThemeSelector } from "@/components/theme-selector";
 import {
@@ -17,13 +22,31 @@ export const Header = () => {
         <h1 className="text-md font-bold">tinte</h1>
       </div>
       <div className="flex items-center gap-2">
-        <ThemeSelector />
         <TooltipProvider>
+          <ThemeSelector />
+          {/* Donate Button Just a IconHeart */}
           <Tooltip>
             <TooltipTrigger>
               <a
                 className={cn(
-                  buttonVariants({ variant: "outline" }),
+                  buttonVariants({ variant: "ghost" }),
+                  "flex items-center gap-2"
+                )}
+                href="https://donate.railly.dev"
+                target="_blank"
+              >
+                <IconHeart />
+              </a>
+            </TooltipTrigger>
+            <TooltipContent>
+              <span className="text-xs">Support</span>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger>
+              <a
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
                   "flex items-center gap-2"
                 )}
                 href="https://github.com/Railly/tinte"
@@ -40,7 +63,7 @@ export const Header = () => {
             <TooltipTrigger>
               <a
                 className={cn(
-                  buttonVariants({ variant: "outline" }),
+                  buttonVariants({ variant: "ghost" }),
                   "flex items-center gap-2"
                 )}
                 href="https://www.railly.dev"

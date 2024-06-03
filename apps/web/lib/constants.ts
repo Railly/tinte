@@ -1,8 +1,12 @@
 import { Palette } from "./core/types";
 export const LANGS = [
-  "php",
-  "javascript",
+  "tsx",
+  "jsx",
+  "vue",
   "typescript",
+  "javascript",
+  "json",
+  "php",
   "sql",
   "go",
   "rust",
@@ -11,6 +15,38 @@ export const LANGS = [
 ];
 
 export const CODE_SAMPLES: Record<string, string> = {
+  tsx: `import React from 'react';
+
+interface ButtonProps {
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+export const Button = ({ onClick, children }: ButtonProps) => (
+  <button onClick={onClick}>{children}</button>
+);`,
+  jsx: `import React from 'react';
+
+const Button = ({ onClick, children }) => (
+  <button onClick={onClick}>{children}</button>
+);`,
+  vue: `<template>
+  <button @click="onClick">{{ children }}</button>
+</template>
+
+<script>
+export default {
+  props: ['onClick', 'children'],
+};
+</script>`,
+  json: `{
+  "editor.fontSize": 14,
+  "editor.fontFamily": "Fira Code",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": false
+}`,
   php: `<?php
 class Calculator {
     public static function add($a, $b) {

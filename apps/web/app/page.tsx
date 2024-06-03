@@ -13,10 +13,12 @@ import { Header } from "@/components/header";
 import { Configuration } from "@/components/configuration";
 import { debounce } from "@/lib/utils";
 import { Preview } from "@/components/preview";
+import { toast } from "sonner";
 
 export default function Page(): JSX.Element {
   const [themeConfig, setThemeConfig] =
     useState<ThemeConfig>(defaultThemeConfig);
+  const [loading, setLoading] = useState(false);
   const [code, setCode] = useState<string | undefined>(CODE_SAMPLES.typescript);
   const [isBackgroundless, setIsBackgroundless] = useState(false);
   const { theme: nextTheme, setTheme } = useTheme();
@@ -90,7 +92,7 @@ export default function Page(): JSX.Element {
     }));
   };
 
-  const exportTheme = () => {
+  const exportThemeAsJSON = () => {
     const jsonString = JSON.stringify(theme, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -103,6 +105,52 @@ export default function Page(): JSX.Element {
     URL.revokeObjectURL(url);
   };
 
+  const exportThemeAsVSIX = async () => {
+    try {
+      setLoading(true);
+      toast.info("Exporting theme as VSIX...");
+      const response = await fetch("/api/export-vsix", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          themeConfig,
+          isDark: currentTheme === "dark",
+        }),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        // Get the file name from the Content-Disposition header
+        const contentDisposition = response.headers.get("Content-Disposition");
+        const fileNameMatch =
+          contentDisposition && contentDisposition.match(/filename="(.+)"/);
+        const fileName = fileNameMatch ? fileNameMatch[1] : "theme.vsix";
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName || "theme.vsix";
+        link.click();
+        window.URL.revokeObjectURL(url);
+        toast.dismiss();
+        toast.success("Theme exported as VSIX");
+      } else {
+        console.error("Failed to export VSIX:", await response.json());
+        toast.dismiss();
+        toast.error("Failed to export theme as VSIX");
+      }
+    } catch (error) {
+      console.error("Failed to export VSIX:", error);
+      toast.dismiss();
+      toast.error("Failed to export theme as VSIX");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const theme = generateVSCodeTheme(themeConfig);
 
   return (
@@ -111,6 +159,7 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col md:flex-row gap-4 w-full h-full px-8 py-4 max-h-screen">
         <Preview theme={theme} code={code} updateCode={updateCode} />
         <Configuration
+          loading={loading}
           themeConfig={themeConfig}
           currentTheme={currentTheme}
           isBackgroundless={isBackgroundless}
@@ -126,7 +175,7 @@ export default function Page(): JSX.Element {
             );
             navigator.clipboard.writeText(jsonString);
           }}
-          onExportTheme={exportTheme}
+          onExportTheme={exportThemeAsVSIX}
           presets={presets}
         />
       </div>

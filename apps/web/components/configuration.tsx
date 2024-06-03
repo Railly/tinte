@@ -1,12 +1,20 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ThemeConfig, Palette } from "@/lib/core/types";
-import { entries } from "@/lib/utils";
+import { cn, entries } from "@/lib/utils";
 import { PresetSelector } from "@/components/preset-selector";
 import { TokenEditor } from "@/components/token-editor";
+import {
+  ResponsiveModal,
+  ResponsiveModalDescription,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+} from "./ui/responsive-modal";
+import { IconHeart, IconInfo, IconLoading } from "./ui/icons";
 
 interface ConfigurationProps {
+  loading: boolean;
   themeConfig: ThemeConfig;
   currentTheme: "light" | "dark";
   isBackgroundless: boolean;
@@ -20,6 +28,7 @@ interface ConfigurationProps {
 }
 
 export const Configuration = ({
+  loading,
   themeConfig,
   currentTheme,
   isBackgroundless,
@@ -38,7 +47,7 @@ export const Configuration = ({
           <h1 className="text-sm font-mono uppercase font-bold">
             Configuration
           </h1>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap">
             <div className="flex items-center space-x-2">
               <Switch
                 id="backgroundless-mode"
@@ -57,6 +66,74 @@ export const Configuration = ({
                 {currentTheme === "dark" ? "Dark" : "Light"} Mode
               </Label>
             </div>
+            <ResponsiveModal
+              trigger={
+                <Button variant="outline">
+                  <IconInfo className="mr-2" />
+                  <span>How to Set Theme in VSCode</span>
+                </Button>
+              }
+            >
+              <ResponsiveModalHeader>
+                <ResponsiveModalTitle>
+                  How to Set Theme in VSCode
+                </ResponsiveModalTitle>
+              </ResponsiveModalHeader>
+              <ResponsiveModalDescription className="prose dark:prose-invert prose-neutral text-foreground leading-5">
+                <p>Ready to take your coding to the next level?</p>
+                <ol className="flex flex-col gap-2">
+                  <li>
+                    Export your favorite theme using the "Export VSCode Theme"
+                    button.
+                  </li>
+                  <li>
+                    Go to VSCode and open the command palette by pressing{" "}
+                    <kbd>Ctrl+Shift+P</kbd> (Windows/Linux) or{" "}
+                    <kbd>Cmd+Shift+P</kbd> (Mac).
+                  </li>
+                  <li>
+                    Type "VSIX" and select{" "}
+                    <b>"Extensions: Install from VSIX"</b>.
+                  </li>
+                  <li>
+                    Choose the exported theme file and let VSCode work its
+                    magic.
+                  </li>
+                  <li>
+                    Go to the Extensions view, find your shiny new theme, and
+                    click "Set Color Theme" to activate it.
+                  </li>
+                </ol>
+                <p className="mt-4 mb-8">
+                  Congratulations! Enjoy your personalized VSCode experience and
+                  let your creativity soar. Happy coding!
+                </p>
+                <div className="flex gap-2 w-full">
+                  <a
+                    className={cn(
+                      buttonVariants({ variant: "default" }),
+                      "flex w-full items-center gap-2 no-underline"
+                    )}
+                    href="https://donate.railly.dev"
+                    target="_blank"
+                  >
+                    <IconHeart />
+                    Support me
+                  </a>
+                  <a
+                    href="https://www.railly.dev"
+                    target="_blank"
+                    rel="noreferrer"
+                    className={cn(
+                      buttonVariants({ variant: "outline" }),
+                      "flex w-full items-center gap-2 no-underline"
+                    )}
+                  >
+                    Know more about me
+                  </a>
+                </div>
+              </ResponsiveModalDescription>
+            </ResponsiveModal>
           </div>
 
           <PresetSelector
@@ -97,8 +174,19 @@ export const Configuration = ({
             >
               Copy Palette
             </Button>
-            <Button className="w-full" onClick={onExportTheme}>
-              Export VSCode Theme
+            <Button
+              className="w-full"
+              onClick={onExportTheme}
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <IconLoading className="animate-spin" />
+                  <span>Exporting...</span>
+                </div>
+              ) : (
+                <span>Export VSCode Theme</span>
+              )}
             </Button>
           </div>
         </div>
