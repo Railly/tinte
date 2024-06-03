@@ -5,6 +5,7 @@ import path from "path";
 import util from "util";
 import { ThemeConfig } from "@/lib/core/types";
 import type { NextApiRequest, NextApiResponse } from "next";
+import {} from "@vscode/vsce";
 
 const execPromise = util.promisify(exec);
 

@@ -109,7 +109,7 @@ export default function Page(): JSX.Element {
     try {
       setLoading(true);
       toast.info("Exporting theme as VSIX...");
-      const response = await fetch("/api/export-vsix", {
+      const response = await fetch(process.env.NEXT_PUBLIC_EXPORT_API_URL!, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
