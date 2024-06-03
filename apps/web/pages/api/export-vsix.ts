@@ -29,12 +29,13 @@ export default async function handler(
 
   const theme = generateVSCodeTheme(themeConfig);
 
-  const themePath = path.join(process.cwd(), "temp-theme");
+  const themePath = path.join("/tmp", "temp-theme"); // Using Vercel's /tmp directory
   const packageJsonPath = path.join(themePath, "package.json");
   const themeJsonPath = path.join(themePath, "themes", "theme.json");
   const readmePath = path.join(themePath, "README.md");
-  const imagePath = path.join(themePath, "image.png");
+  const licensePath = path.join(themePath, "LICENSE");
 
+  // Ensure the themePath and themes directory exist
   fs.mkdirSync(path.join(themePath, "themes"), { recursive: true });
 
   const packageJson = {
@@ -55,7 +56,33 @@ export default async function handler(
         },
       ],
     },
+    repository: {
+      type: "git",
+      url: "https://github.com/Railly/your-repository-name.git", // Replace with your actual repository URL
+    },
   };
+
+  const licenseContent = `MIT License
+
+  Copyright (c) ${new Date().getFullYear()} Railly Hugo
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.`;
 
   fs.writeFileSync(
     readmePath,
@@ -82,7 +109,7 @@ If you'd like to support my work, you can do so through the following methods:
 ### Buy Me a Coffee
 
 <a href="https://www.buymeacoffee.com/raillyhugo" target="_blank">
-	<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="45px">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="45px">
 </a>
 
 ### PayPal
@@ -111,25 +138,33 @@ Happy coding! 💻✨`
     themeJsonPath,
     JSON.stringify(isDark ? theme.darkTheme : theme.lightTheme, null, 2)
   );
+  fs.writeFileSync(licensePath, licenseContent);
 
   try {
-    await execPromise("npx vsce package", { cwd: themePath });
+    const { stdout, stderr } = await execPromise("npx vsce package", {
+      cwd: themePath,
+    });
+
+    if (stderr) {
+      throw new Error(stderr);
+    }
+
     const vsixPath = path.join(
       themePath,
       `${packageJson.name}-${packageJson.version}.vsix`
     );
-    const vsixBuffer = fs.readFileSync(vsixPath);
-
-    fs.rmSync(themePath, { recursive: true, force: true });
+    const vsixStream = fs.createReadStream(vsixPath);
 
     res.setHeader("Content-Type", "application/octet-stream");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${packageJson.name}-${
-        isDark ? "dark" : "light"
-      }-${packageJson.version}.vsix"`
+      `attachment; filename="${packageJson.name}-${isDark ? "dark" : "light"}-${packageJson.version}.vsix"`
     );
-    res.status(200).send(vsixBuffer);
+
+    vsixStream.pipe(res).on("finish", () => {
+      // Cleanup
+      fs.rmSync(themePath, { recursive: true, force: true });
+    });
   } catch (error: any) {
     // Cleanup in case of error
     fs.rmSync(themePath, { recursive: true, force: true });
