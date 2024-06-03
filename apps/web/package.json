@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "generate-theme": "vsce package"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
@@ -21,6 +22,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@repo/ui": "workspace:*",
     "@shikijs/monaco": "^1.6.1",
+    "@vscode/vsce": "2.26.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "geist": "^1.3.0",
