@@ -123,12 +123,14 @@ export default function Page(): JSX.Element {
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
-
-        // Get the file name from the Content-Disposition header
         const contentDisposition = response.headers.get("Content-Disposition");
+
         const fileNameMatch =
           contentDisposition && contentDisposition.match(/filename="(.+)"/);
-        const fileName = fileNameMatch ? fileNameMatch[1] : "theme.vsix";
+        const fileName = fileNameMatch
+          ? fileNameMatch[1]
+          : themeConfig.displayName.replace(/\s/g, "-") +
+            `-${currentTheme === "dark" ? "dark" : "light"}-0.0.1.vsix`;
 
         const link = document.createElement("a");
         link.href = url;
