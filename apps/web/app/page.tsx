@@ -35,10 +35,9 @@ import {
 } from "@/components/ui/icons";
 import { PresetSelector } from "@/components/preset-selector";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { Separator } from "@/components/ui/separator";
-import { SubscriptionForm } from "@/components/subscription-form";
 
 export default function Page(): JSX.Element {
+  if (typeof window === "undefined") return <></>;
   const customThemesRaw = window.localStorage.getItem("customThemes") || "{}";
   const customThemesJSON = JSON.parse(customThemesRaw);
   const [presets, setPresets] = useState({

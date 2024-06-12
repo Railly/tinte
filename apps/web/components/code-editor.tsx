@@ -66,7 +66,7 @@ export const CodeEditor = ({
     <div className="w-full h-full grid md:grid-cols-2 gap-4 max-h-[80vh]">
       <pre
         ref={codeRef}
-        className="overflow-x-auto border [&>pre]:p-4 text-sm !text-[13px]"
+        className="overflow-x-auto border [&>pre]:p-4 text-sm !text-[13px] min-h-[40vh] max-h-[40vh]"
         dangerouslySetInnerHTML={{ __html: highlightedText }}
       />
       <MonacoEditor
