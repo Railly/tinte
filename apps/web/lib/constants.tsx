@@ -1,5 +1,9 @@
-import { Palette } from "./core/types";
+/* eslint-disable @next/next/no-img-element */
+import { IconSupabase, IconTailwind, IconVercel } from "@/components/ui/icons";
+import { DarkLightPalette } from "./core/types";
 export const LANGS = [
+  "html",
+  "css",
   "tsx",
   "jsx",
   "vue",
@@ -12,9 +16,30 @@ export const LANGS = [
   "rust",
   "python",
   "ruby",
+  "dart",
 ];
 
+export const DEFAULT_LANGUAGE = "typescript";
+
 export const CODE_SAMPLES: Record<string, string> = {
+  html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <h1 class="text-2xl font-bold text-blue-500">Hello, World!</h1>
+</body>
+</html>`,
+  css: `body {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+h1 {
+  color: #007bff;
+}`,
   tsx: `import React from 'react';
 
 interface ButtonProps {
@@ -23,7 +48,11 @@ interface ButtonProps {
 }
 
 export const Button = ({ onClick, children }: ButtonProps) => (
-  <button onClick={onClick}>{children}</button>
+  <button
+    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    onClick={onClick}>
+    {children}
+  </button>
 );`,
   jsx: `import React from 'react';
 
@@ -158,6 +187,23 @@ end
 n = 30
 puts "Fibonacci number at position #{n}: #{fibonacci(n)}"
 puts "Memoized Fibonacci number at position #{n}: #{memoized_fibonacci(n)}"`,
+  dart: `import 'package:flutter/material.dart';
+ 
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text('Hello, World!')),
+        body: Center(child: Text('Hello, World!')),
+      ),
+    );
+  }
+}`,
 };
 
 export const BACKGROUND_LESS_PALETTE = {
@@ -183,37 +229,37 @@ export const BACKGROUND_LESS_PALETTE = {
   },
 };
 
-export const presets: Record<string, Record<"dark" | "light", Palette>> = {
+export const PRESETS: Record<string, DarkLightPalette> = {
   "One Hunter": {
     dark: {
       text: "#E3E1E1",
-      "text-2": "#A3A3A3",
-      "text-3": "#8F8F8F",
       interface: "#35373A",
+      "text-2": "#A3A3A3",
       "interface-2": "#3E4043",
+      "text-3": "#8F8F8F",
       "interface-3": "#47494D",
       background: "#1D2127",
-      "background-2": "#2C2E31",
-      primary: "#F06293",
-      secondary: "#E3E1E1",
       accent: "#50C2F7",
+      "background-2": "#2C2E31",
       "accent-2": "#66DFC4",
+      primary: "#F06293",
       "accent-3": "#F7BC62",
+      secondary: "#E3E1E2",
     },
     light: {
       text: "#1D2127",
-      "text-2": "#808080",
-      "text-3": "#b3b3b3",
       interface: "#dedede",
+      "text-2": "#808080",
       "interface-2": "#d1d1d1",
+      "text-3": "#b3b3b3",
       "interface-3": "#c4c4c4",
       background: "#F7F7F7",
-      "background-2": "#ebebeb",
-      primary: "#bb1b3f",
-      secondary: "#1D2127",
       accent: "#0483c5",
+      "background-2": "#ebebeb",
       "accent-2": "#178a78",
+      primary: "#bb1b3f",
       "accent-3": "#e26d14",
+      secondary: "#1D2128",
     },
   },
   Flexoki: {
@@ -310,6 +356,38 @@ export const presets: Record<string, Record<"dark" | "light", Palette>> = {
       accent: "#019A55",
       "accent-2": "#019A55",
       "accent-3": "#171717",
+    },
+  },
+  Tailwind: {
+    dark: {
+      text: "#F9FAFB",
+      "text-2": "#98aecd",
+      "text-3": "#6486b4",
+      interface: "#293e5b",
+      "interface-2": "#32496c",
+      "interface-3": "#38537a",
+      background: "#1B293D",
+      "background-2": "#21324a",
+      primary: "#F471B5",
+      secondary: "#98F6E4",
+      accent: "#D1D5DB",
+      "accent-2": "#7DD3FC",
+      "accent-3": "#FDE68A",
+    },
+    light: {
+      text: "#1D2127",
+      "text-2": "#808080",
+      "text-3": "#b3b3b3",
+      interface: "#e6e6e6",
+      "interface-2": "#d9d9d9",
+      "interface-3": "#cccccc",
+      background: "#FFFFFF",
+      "background-2": "#f2f2f2",
+      primary: "#C31562",
+      secondary: "#0060F1",
+      accent: "#7D00CC",
+      "accent-2": "#0F7E32",
+      "accent-3": "#000000",
     },
   },
   Bitmap: {
@@ -482,7 +560,7 @@ export const presets: Record<string, Record<"dark" | "light", Palette>> = {
       "interface-3": "#5f4365",
       background: "#1e0d21",
       "background-2": "#2b132f",
-      primary: "#69F",
+      primary: "#6699FF",
       secondary: "#49E8F2",
       accent: "#F8528D",
       "accent-2": "#E9AEFE",
@@ -728,4 +806,24 @@ export const presets: Record<string, Record<"dark" | "light", Palette>> = {
       "accent-3": "#846F00",
     },
   },
+};
+
+export const FEATURED_THEME_LOGOS = {
+  "One Hunter": (
+    <img
+      className="size-5 border rounded-full"
+      src="one-hunter-logo.png"
+      alt="One Hunter Logo"
+    />
+  ),
+  Flexoki: (
+    <img
+      className="size-5 border rounded-full"
+      src="flexoki-logo.png"
+      alt="Flexoki Logo"
+    />
+  ),
+  Vercel: <IconVercel className="mx-0.5" />,
+  Supabase: <IconSupabase className="mx-0.5" />,
+  Tailwind: <IconTailwind className="mx-0.5" />,
 };

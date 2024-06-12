@@ -98,6 +98,46 @@ function mapTokenToScope(token) {
 
 export { mapTokenToScope };
 
+const applyCustomizations = (color, token, mode) => {
+  switch (token) {
+    case "editor.findMatchBackground":
+      return mode === "light" ? color + "44" : color + "55";
+    case "editor.findMatchHighlightBackground":
+      return mode === "light" ? color + "22" : color + "33";
+    case "editor.findRangeHighlightBackground":
+      return mode === "light" ? color + "cc" : color + "cc";
+    case "editor.hoverHighlightBackground":
+    case "editor.inactiveSelectionBackground":
+      return mode === "light" ? color + "55" : color + "66";
+    case "editor.rangeHighlightBackground":
+      return mode === "light" ? color + "33" : color + "44";
+    case "editor.selectionBackground":
+      return mode === "light" ? color + "77" : color + "88";
+    case "editor.selectionHighlightBackground":
+    case "editor.wordHighlightBackground":
+      return mode === "light" ? color + "22" : color + "11";
+    case "merge.commonContentBackground":
+    case "merge.commonHeaderBackground":
+      return mode === "light" ? color + "55" : color + "66";
+    case "merge.currentContentBackground":
+    case "merge.currentHeaderBackground":
+    case "merge.incomingContentBackground":
+    case "merge.incomingHeaderBackground":
+      return mode === "light" ? color + "33" : color + "44";
+    case "editor.wordHighlightStrongBackground":
+      return mode === "light" ? color + "33" : color + "22";
+    case "button.foreground":
+    case "badge.foreground":
+    case "activityBarBadge.foreground":
+      return color;
+    case "diffEditor.insertedTextBackground":
+    case "diffEditor.removedTextBackground":
+      return mode === "light" ? color + "22" : color + "44";
+    default:
+      return color;
+  }
+};
+
 const editorColorMap = {
   // Editor Colors
   "editor.background": "background",
@@ -106,6 +146,8 @@ const editorColorMap = {
   "editor.lineHighlightBackground": "background-2",
   "editor.selectionBackground": "interface-3",
   "editor.selectionHighlightBackground": "text-3",
+  "editor.wordHighlightBackground": "interface-2",
+  "editor.wordHighlightStrongBackground": "interface",
   "editor.findMatchBackground": "accent",
   "editor.findMatchHighlightBackground": "accent",
   "editor.findRangeHighlightBackground": "background-2",
@@ -130,15 +172,6 @@ const editorColorMap = {
   // Bracket Matching
   "editorBracketMatch.background": "interface",
   "editorBracketMatch.border": "interface-2",
-
-  // Error & Warnings
-  "editorError.foreground": "primary",
-  "editorWarning.foreground": "accent",
-  "editorInfo.foreground": "secondary",
-
-  // Diff Editor
-  "diffEditor.insertedTextBackground": "accent-2",
-  "diffEditor.removedTextBackground": "primary",
 
   // Editor Groups & Tabs
   "editorGroupHeader.tabsBackground": "background",
@@ -249,6 +282,12 @@ const editorColorMap = {
   "sideBarSectionHeader.foreground": "text",
   "sideBarSectionHeader.border": "interface-2",
 
+  // Settings
+  "settings.headerForeground": "text",
+  "settings.modifiedItemForeground": "primary",
+  "settings.textInputForeground": "text",
+  "textLink.foreground": "accent",
+
   // SideBar: Highlights & Active items
   "sideBar.activeBackground": "interface-3",
   "sideBar.activeForeground": "text",
@@ -261,15 +300,14 @@ const editorColorMap = {
   "sideBar.folderIcon.foreground": "accent-2",
   "sideBar.fileIcon.foreground": "secondary",
 
-  // More detailed SideBar items...
-  "list.warningForeground": "accent",
-  "list.errorForeground": "primary",
-
   // Sidebar: Selections
+  "list.foreground": "text",
   "list.inactiveSelectionBackground": "interface-2",
   "list.activeSelectionBackground": "interface-3",
   "list.inactiveSelectionForeground": "text",
   "list.activeSelectionForeground": "text",
+  "list.focusOutline": "accent",
+  "list.inactiveFocusOutline": "interface-2",
   "list.hoverForeground": "text",
   "list.hoverBackground": "interface-2",
 
@@ -281,14 +319,6 @@ const editorColorMap = {
   "inputOption.activeBorder": "interface-2",
   "inputOption.activeBackground": "interface",
   "inputOption.activeForeground": "text",
-
-  // Input Validation
-  "inputValidation.infoBackground": "secondary",
-  "inputValidation.infoBorder": "secondary",
-  "inputValidation.warningBackground": "accent",
-  "inputValidation.warningBorder": "accent",
-  "inputValidation.errorBackground": "primary",
-  "inputValidation.errorBorder": "primary",
 
   // Dropdowns
   "dropdown.background": "background-2",
@@ -307,11 +337,15 @@ const editorColorMap = {
   "activityBarBadge.foreground": "background",
 };
 
-export function getVSCodeColors(palette) {
+export function getVSCodeColors(palette, mode) {
   const vsCodeColors = {};
 
   for (const [token, colorKey] of Object.entries(editorColorMap)) {
-    vsCodeColors[token] = palette[colorKey];
+    const colorEntry = palette[colorKey];
+    console.log({
+      [token]: applyCustomizations(colorEntry, token, mode),
+    });
+    vsCodeColors[token] = applyCustomizations(colorEntry, token, mode);
   }
 
   return vsCodeColors;
@@ -434,14 +468,14 @@ async function createVSIXFile(themeConfig, isDark) {
     publisher: "Railly Hugo",
     version: "0.0.1",
     engines: {
-      vscode: "^1.40.0",
+      vscode: "^1.70.0",
     },
     categories: ["Themes"],
     contributes: {
       themes: [
         {
           label: themeConfig.displayName,
-          uiTheme: isDark ? "vs-dark" : "vs-light",
+          uiTheme: isDark ? "vs-dark" : "vs",
           path: "./themes/theme.json",
         },
       ],
@@ -509,7 +543,12 @@ Happy coding! 💻✨`
       themePath,
       `${packageJson.name}-${packageJson.version}.vsix`
     );
-    await createVSIX({ cwd: themePath, packagePath: vsixPath });
+    await createVSIX({
+      cwd: themePath,
+      packagePath: vsixPath,
+      allowMissingRepository: true,
+      skipLicense: true,
+    });
     const vsixBuffer = fs.readFileSync(vsixPath);
 
     // Cleanup

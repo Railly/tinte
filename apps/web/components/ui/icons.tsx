@@ -195,7 +195,7 @@ function IconLoading({ className, ...props }: React.ComponentProps<"svg">) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={cn("size-4", className)}
+      className={cn("size-4 animate-spin", className)}
       {...props}
     >
       <path d="M12 2v4" />
@@ -210,7 +210,247 @@ function IconLoading({ className, ...props }: React.ComponentProps<"svg">) {
   );
 }
 
+function IconCopy({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={cn("size-4", className)}
+      {...props}
+    >
+      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+    </svg>
+  );
+}
+
+function IconDownload({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={cn("size-4", className)}
+      {...props}
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" x2="12" y1="15" y2="3" />
+    </svg>
+  );
+}
+
+function IconVercel({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 93 80"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={cn("size-4", className)}
+      {...props}
+    >
+      <g clip-path="url(#clip0_935_5)">
+        <path d="M46.1261 0L92.2523 79.8937H0L46.1261 0Z" fill="currentColor" />
+      </g>
+    </svg>
+  );
+}
+
+function IconSupabase({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 78 80"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={cn("size-4", className)}
+      {...props}
+    >
+      <g clip-path="url(#clip0_934_13)">
+        <path
+          d="M45.5063 78.6549C43.463 81.228 39.3199 79.8182 39.2707 76.5326L38.5508 28.4766H70.8636C76.7163 28.4766 79.9805 35.2365 76.3412 39.8202L45.5063 78.6549Z"
+          fill="url(#paint0_linear_934_13)"
+        />
+        <path
+          d="M45.5063 78.6549C43.463 81.228 39.3199 79.8182 39.2707 76.5326L38.5508 28.4766H70.8636C76.7163 28.4766 79.9805 35.2365 76.3412 39.8202L45.5063 78.6549Z"
+          fill="url(#paint1_linear_934_13)"
+          fill-opacity="0.2"
+        />
+        <path
+          d="M32.3647 1.329C34.408 -1.24447 38.5511 0.165607 38.6004 3.45126L38.9159 51.5072H7.00745C1.15455 51.5072 -2.10971 44.7473 1.52979 40.1636L32.3647 1.329Z"
+          fill="#3ECF8E"
+        />
+      </g>
+      <defs>
+        <linearGradient
+          id="paint0_linear_934_13"
+          x1="858.836"
+          y1="1094"
+          x2="2711.69"
+          y2="1871.08"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#249361" />
+          <stop offset="1" stop-color="#3ECF8E" />
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_934_13"
+          x1="116.844"
+          y1="-649.275"
+          x2="1306.29"
+          y2="1589.79"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop />
+          <stop offset="1" stop-opacity="0" />
+        </linearGradient>
+        <clipPath id="clip0_934_13">
+          <rect width="77.8707" height="80" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+function IconTailwind({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 133 80"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={cn("size-4", className)}
+      {...props}
+    >
+      <g clip-path="url(#clip0_934_21)">
+        <path
+          d="M66.4935 0C48.7619 0 37.6797 8.8658 33.2468 26.5974C39.8961 17.7316 47.6537 14.4069 56.5195 16.6234C61.5779 17.888 65.1934 21.5577 69.1954 25.6199C75.7147 32.2373 83.26 39.8961 99.7403 39.8961C117.472 39.8961 128.554 31.0303 132.987 13.2987C126.338 22.1645 118.58 25.4892 109.714 23.2727C104.656 22.0081 101.04 18.3384 97.0384 14.2762C90.5191 7.65882 82.9738 0 66.4935 0ZM33.2468 39.8961C15.5152 39.8961 4.4329 48.7619 0 66.4935C6.64935 57.6277 14.4069 54.303 23.2727 56.5195C28.3312 57.7841 31.9467 61.4538 35.9486 65.5161C42.4679 72.1334 50.0132 79.7922 66.4935 79.7922C84.2251 79.7922 95.3074 70.9264 99.7403 53.1948C93.0909 62.0606 85.3333 65.3853 76.4675 63.1688C71.4091 61.9042 67.7936 58.2345 63.7917 54.1723C57.2723 47.5549 49.727 39.8961 33.2468 39.8961Z"
+          fill="url(#paint0_linear_934_21)"
+        />
+      </g>
+      <defs>
+        <linearGradient
+          id="paint0_linear_934_21"
+          x1="-369.408"
+          y1="2553.35"
+          x2="11116.2"
+          y2="9175.68"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#2298BD" />
+          <stop offset="1" stop-color="#0ED7B5" />
+        </linearGradient>
+        <clipPath id="clip0_934_21">
+          <rect width="132.987" height="80" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+function IconSparkles({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("size-4", className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+      <path d="M20 3v4" />
+      <path d="M22 5h-4" />
+      <path d="M4 17v2" />
+      <path d="M5 18H3" />
+    </svg>
+  );
+}
+
+function IconSend({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("size-4", className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="m3 3 3 9-3 9 19-9Z" />
+      <path d="M6 12h16" />
+    </svg>
+  );
+}
+
+function IconPlus({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("size-4", className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <line x1="12" x2="12" y1="5" y2="19" />
+      <line x1="5" x2="19" y1="12" y2="12" />
+    </svg>
+  );
+}
+
+function IconSave({ className, ...props }: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("size-4", className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+      <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" />
+      <path d="M7 3v4a1 1 0 0 0 1 1h7" />
+    </svg>
+  );
+}
+
 export {
+  IconSave,
+  IconSparkles,
+  IconSend,
+  IconPlus,
+  IconTailwind,
+  IconSupabase,
+  IconVercel,
+  IconCopy,
+  IconDownload,
   IconLoading,
   IconHeart,
   IconInfo,

@@ -1,23 +1,42 @@
 import { Input } from "@/components/ui/input";
-import { IconPipette } from "@/components/ui/icons";
+import { IconInfo, IconPipette } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { createRef } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import { getThemeColorDescription } from "@/lib/core/config";
 
 interface TokenEditorProps {
   colorKey: string;
   colorValue: string;
   onColorChange: (value: string) => void;
+  shouldHighlight?: boolean;
 }
 
 export const TokenEditor = ({
   colorKey,
   colorValue,
   onColorChange,
+  shouldHighlight,
 }: TokenEditorProps) => {
   const ref = createRef<HTMLInputElement>();
 
   return (
-    <div className="grid md:grid-cols-[2fr_2fr_3fr] gap-4 items-center">
+    // <div
+    //   className="w-full flex flex-col font-mono py-2"
+    //   key={colorKey}
+    // ></div>
+    <div
+      className={cn(
+        "grid md:grid-cols-[1.2fr_2fr_2.2fr] gap-4 items-center border border-transparent p-1",
+        shouldHighlight &&
+          "border-primary dark:border-primary/70 bg-muted rounded-full"
+      )}
+    >
       <div
         className={cn(
           "relative w-full text-transparent transition-colors duration-200 hover:text-foreground dark:hover:text-foreground/70"
@@ -57,8 +76,21 @@ export const TokenEditor = ({
         name={`${colorKey}-text`}
         id={`${colorKey}-text`}
       />
-      <label htmlFor={`${colorKey}-text`} className="text-xs text-foreground">
-        {colorKey}
+      <label
+        htmlFor={`${colorKey}-text`}
+        className="text-xs text-foreground flex gap-2 items-center"
+      >
+        <span>{colorKey}</span>
+        <TooltipProvider>
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger>
+              <IconInfo />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">{getThemeColorDescription(colorKey)}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </label>
     </div>
   );

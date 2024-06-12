@@ -3,13 +3,14 @@ import { generateTokenColors } from "./tokens";
 import { ThemeConfig } from "./types";
 
 export function generateVSCodeTheme(themeConfig: ThemeConfig) {
+  console.log({ themeConfig });
   const { displayName, palette, tokenColors } = themeConfig;
 
   const darkTheme = {
     name: "one-hunter-dark",
     displayName,
     type: "dark",
-    colors: getVSCodeColors(palette.dark),
+    colors: getVSCodeColors(palette.dark, "dark"),
     tokenColors: generateTokenColors(palette.dark, tokenColors),
   };
 
@@ -17,7 +18,7 @@ export function generateVSCodeTheme(themeConfig: ThemeConfig) {
     name: "one-hunter-light",
     displayName,
     type: "light",
-    colors: getVSCodeColors(palette.light),
+    colors: getVSCodeColors(palette.light, "light"),
     tokenColors: generateTokenColors(palette.light, tokenColors),
   };
 

@@ -1,36 +1,33 @@
-import { CODE_SAMPLES } from "@/lib/constants";
 import { CodeEditor } from "./code-editor";
-import { LanguageSwitcher } from "./language-switcher";
-import { useState } from "react";
 
 interface PreviewProps {
   theme: any;
   code?: string;
   updateCode: (value: string | undefined) => void;
+  setColorPickerShouldBeHighlighted: React.Dispatch<
+    React.SetStateAction<{
+      key: string;
+      value: boolean;
+    }>
+  >;
+  selectedLanguage: string;
 }
 
-export const Preview = ({ theme, updateCode, code }: PreviewProps) => {
-  const [selectedLanguage, setSelectedLanguage] = useState("typescript");
-
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguage(language);
-    updateCode(CODE_SAMPLES[language]);
-  };
-
+export const Preview = ({
+  theme,
+  updateCode,
+  code,
+  setColorPickerShouldBeHighlighted,
+  selectedLanguage,
+}: PreviewProps) => {
   return (
-    <div className="flex flex-col gap-4 w-full h-full">
-      <div className="flex justify-between items-center">
-        <h1 className="text-sm font-mono uppercase font-bold">Preview</h1>
-        <LanguageSwitcher
-          selectedLanguage={selectedLanguage}
-          onLanguageChange={handleLanguageChange}
-        />
-      </div>
+    <div className="flex gap-4 w-full h-full">
       <CodeEditor
         theme={theme}
         code={code}
         onCodeChange={updateCode}
         language={selectedLanguage}
+        setColorPickerShouldBeHighlighted={setColorPickerShouldBeHighlighted}
       />
     </div>
   );

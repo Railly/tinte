@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { buttonVariants } from "./ui/button";
+import { SubscriptionForm } from "./subscription-form";
 
 export const Header = () => {
   return (
@@ -22,6 +23,7 @@ export const Header = () => {
         <h1 className="text-md font-bold">tinte</h1>
       </div>
       <div className="flex items-center gap-2">
+        <SubscriptionForm />
         <TooltipProvider>
           <ThemeSelector />
           {/* Donate Button Just a IconHeart */}
@@ -59,7 +61,7 @@ export const Header = () => {
               <span className="text-xs">Github</span>
             </TooltipContent>
           </Tooltip>
-          <Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger>
               <a
                 className={cn(
@@ -75,7 +77,7 @@ export const Header = () => {
             <TooltipContent>
               <span className="text-xs">Railly's Blog</span>
             </TooltipContent>
-          </Tooltip>
+          </Tooltip> */}
         </TooltipProvider>
       </div>
     </header>
