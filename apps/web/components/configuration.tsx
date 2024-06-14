@@ -4,16 +4,9 @@ import { TokenEditor } from "@/components/token-editor";
 import { tokenToScopeMapping } from "@/lib/core/config";
 
 interface ConfigurationProps {
-  loading: boolean;
   themeConfig: ThemeConfig;
   currentTheme: "light" | "dark";
-  isBackgroundless: boolean;
-  onBackgroundlessChange: () => void;
-  onThemeChange: (checked: boolean) => void;
   onPaletteColorChange: (colorKey: keyof Palette, value: string) => void;
-  onPresetSelect: (presetName: string) => void;
-  onCopyPalette: () => void;
-  onExportTheme: () => void;
   colorPickerShouldBeHighlighted: {
     key: string;
     value: boolean;

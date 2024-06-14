@@ -9,7 +9,11 @@ import {
 } from "./ui/select";
 import { CircularGradient } from "./circular-gradient";
 import { Label } from "./ui/label";
-import { FEATURED_THEME_LOGOS } from "@/lib/constants";
+import {
+  FEATURED_THEMES,
+  FEATURED_THEME_LOGOS,
+  RAY_SO_THEMES,
+} from "@/lib/constants";
 import { Button } from "./ui/button";
 import { IconLoading, IconSave, IconSend, IconSparkles } from "./ui/icons";
 import { cn } from "@/lib/utils";
@@ -33,7 +37,6 @@ import { useState } from "react";
 import { DarkLightPalette, ThemeConfig } from "@/lib/core/types";
 import { toast } from "sonner";
 import { Textarea } from "./ui/textarea";
-import { generateVSCodeThemeAI } from "@/lib/actions";
 
 interface PresetSelectorProps {
   label?: string;
@@ -45,8 +48,6 @@ interface PresetSelectorProps {
     newPResets?: Record<string, DarkLightPalette>
   ) => void;
   customThemes: Record<string, DarkLightPalette>;
-  featuredThemes: Array<keyof typeof FEATURED_THEME_LOGOS>;
-  raySoThemes: string[];
   noSaveButton?: boolean;
   noGenerateButton?: boolean;
   presets: Record<string, DarkLightPalette>;
@@ -60,8 +61,6 @@ export const PresetSelector = ({
   customThemes,
   themeConfig,
   onPresetSelect,
-  featuredThemes,
-  raySoThemes,
   noSaveButton = false,
   noGenerateButton = false,
   presets,
@@ -94,7 +93,7 @@ export const PresetSelector = ({
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Featured</SelectLabel>
-              {featuredThemes.map((presetName) => (
+              {FEATURED_THEMES.map((presetName) => (
                 <SelectItem key={presetName} value={presetName}>
                   <div className="flex items-center gap-2">
                     {FEATURED_THEME_LOGOS[presetName]}
@@ -126,7 +125,7 @@ export const PresetSelector = ({
             )}
             <SelectGroup className="border-t pt-1 mt-1">
               <SelectLabel>Ray.so</SelectLabel>
-              {raySoThemes.map((presetName) => (
+              {RAY_SO_THEMES.map((presetName) => (
                 <SelectItem key={presetName} value={presetName}>
                   <div className="flex items-center gap-2">
                     <CircularGradient
@@ -196,8 +195,6 @@ export const PresetSelector = ({
                     currentTheme={currentTheme}
                     themeConfig={themeConfig}
                     onPresetSelect={onPresetSelect}
-                    featuredThemes={featuredThemes}
-                    raySoThemes={raySoThemes}
                     noSaveButton
                     noGenerateButton
                     presets={presets}

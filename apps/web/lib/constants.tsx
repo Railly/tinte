@@ -827,3 +827,10 @@ export const FEATURED_THEME_LOGOS = {
   Supabase: <IconSupabase className="mx-0.5" />,
   Tailwind: <IconTailwind className="mx-0.5" />,
 };
+
+const PRESET_KEYS = Object.keys(PRESETS) as Array<keyof typeof PRESETS>;
+
+export const FEATURED_THEMES = PRESET_KEYS.slice(0, 5) as Array<
+  keyof typeof FEATURED_THEME_LOGOS
+>;
+export const RAY_SO_THEMES = PRESET_KEYS.slice(5);

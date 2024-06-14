@@ -1,7 +1,5 @@
-import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
-import util from "util";
 import { createVSIX } from "@vscode/vsce";
 
 export function generateTokenColors(palette, tokenColors) {
@@ -373,11 +371,9 @@ export function generateVSCodeTheme(themeConfig) {
   return { darkTheme, lightTheme };
 }
 
-const execPromise = util.promisify(exec);
-
 const allowedOrigins = ["https://tinte.railly.dev/"];
 
-export async function handler(event, context) {
+export async function handler(event) {
   const origin = event.headers.origin;
   const isAllowed = allowedOrigins.includes(origin);
 
