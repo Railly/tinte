@@ -10,7 +10,6 @@ interface SubscribedEmailProps {
 export const SubscribedEmail: React.FC<Readonly<SubscribedEmailProps>> = ({
   firstName,
   productName,
-  featuresLink,
   unsubscribeLink,
 }) => (
   <div
@@ -59,25 +58,26 @@ export const SubscribedEmail: React.FC<Readonly<SubscribedEmailProps>> = ({
                   As a subscriber, you'll be the first to know about our latest
                   features, updates, and exclusive offers.
                 </p>
-                <table width="100%" cellPadding="0" cellSpacing="0">
-                  <tr>
-                    <td align="center" style={{ padding: "20px 0" }}>
-                      <a
-                        href={featuresLink}
-                        style={{
-                          backgroundColor: "#1C3658",
-                          color: "#ffffff",
-                          textDecoration: "none",
-                          padding: "12px 24px",
-                          borderRadius: "4px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        Explore New Features
-                      </a>
-                    </td>
-                  </tr>
-                </table>
+                <p
+                  style={{ marginTop: "30px", fontSize: "12px", color: "#999" }}
+                >
+                  Stay connected with us on social media: Follow us on 𝕏:
+                  <br />
+                  <a
+                    href="https://twitter.com/@crafterstation"
+                    style={{ color: "#999", textDecoration: "underline" }}
+                  >
+                    @crafterstation
+                  </a>
+                  , and
+                  <a
+                    href="https://twitter.com/@raillyhugo"
+                    style={{ color: "#999", textDecoration: "underline" }}
+                  >
+                    @raillyhugo
+                  </a>
+                  .
+                </p>
                 <p
                   style={{ marginTop: "30px", fontSize: "12px", color: "#999" }}
                 >

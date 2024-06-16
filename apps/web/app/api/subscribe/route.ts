@@ -14,10 +14,8 @@ const ratelimit = new Ratelimit({
 export async function POST(request: NextRequest) {
   const { email, firstName } = await request.json();
 
-  // Extract the IP address from the request
   const ip = request.ip ?? request.headers.get("X-Forwarded-For") ?? "ip";
 
-  // Check rate limit
   const { success } = await ratelimit.limit(ip);
   if (!success) {
     return NextResponse.json(
@@ -26,8 +24,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Check if email is already subscribed
-  const isSubscribed = await redis.get(email);
+  const hashKey = `subscriptions:${email}`;
+  const field = "tinte";
+  const productName = "Tinte";
+
+  const isSubscribed = await redis.hget(hashKey, field);
+
   if (isSubscribed) {
     return NextResponse.json(
       { error: "Email already subscribed" },
@@ -35,23 +37,21 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Subscribe email to Redis
-  await redis.set(email, "subscribed");
+  await redis.hset(hashKey, { [field]: "subscribed" });
 
-  // Send confirmation email using Resend
   await resend.emails.send({
     from: "Railly Hugo <feedback@send.raillyhugo.com>",
     to: email,
     subject: "Subscription Confirmation",
     react: SubscribedEmail({
       firstName,
-      productName: "Tinte",
+      productName,
       featuresLink: "https://tinte.railly.dev/features",
       unsubscribeLink: `https://tinte.railly.dev/api/unsubscribe?email=${encodeURIComponent(
         email
       )}`,
     }),
-    text: `Welcome, ${firstName}! Thank you for subscribing to Tinte. We're thrilled to have you on board! As a subscriber, you'll be the first to know about our latest features, updates, and exclusive offers. If you wish to unsubscribe, click here: https://yourproduct.com/unsubscribe?email=${encodeURIComponent(
+    text: `Welcome, ${firstName}! Thank you for subscribing to ${productName}. We're thrilled to have you on board! As a subscriber, you'll be the first to know about our latest features, updates, and exclusive offers. If you wish to unsubscribe, click here: https://yourproduct.com/unsubscribe?email=${encodeURIComponent(
       email
     )}`,
   });

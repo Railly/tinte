@@ -14,8 +14,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Check if email is subscribed
-  const isSubscribed = await redis.get(email);
+  const hashKey = `subscriptions:${email}`;
+  const field = "tinte";
+
+  const isSubscribed = await redis.hget(hashKey, field);
   if (!isSubscribed) {
     return NextResponse.json(
       { error: "Email is not subscribed" },
@@ -23,8 +25,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Unsubscribe email from Redis
-  await redis.del(email);
+  await redis.hdel(hashKey, field);
 
   return NextResponse.json(
     { message: "Email unsubscribed successfully" },
