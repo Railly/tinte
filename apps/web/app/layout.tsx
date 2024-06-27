@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "Tinte - VS Code Theme Generator",
@@ -75,6 +76,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Analytics />
           <Toaster position="top-center" richColors />
         </Providers>
       </body>
