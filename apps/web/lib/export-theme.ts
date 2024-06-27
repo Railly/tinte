@@ -20,7 +20,7 @@ export const exportThemeAsVSIX = async (
   isDark: boolean
 ) => {
   const response = await fetch(
-    process.env.NODE_ENV === "production"
+    process.env.NODE_ENV === "development"
       ? "api/export-vsix"
       : process.env.NEXT_PUBLIC_EXPORT_API_URL!,
     {

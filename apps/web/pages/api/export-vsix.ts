@@ -42,7 +42,7 @@ export default async function handler(
 
   let parsedBody;
   try {
-    parsedBody = req.body; // Next.js automatically parses JSON body
+    parsedBody = req.body;
   } catch (jsonError) {
     console.error("JSON parsing error:", jsonError);
     res.writeHead(400, headers).end(JSON.stringify({ error: "Invalid JSON" }));
