@@ -6,6 +6,7 @@ import { GeistSans } from "geist/font/sans";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/react";
+import CounterscaleScript from "@/components/counterscale-script";
 
 export const metadata: Metadata = {
   title: "Tinte - VS Code Theme Generator",
@@ -77,6 +78,7 @@ export default function RootLayout({
         >
           {children}
           <Analytics />
+          <CounterscaleScript />
           <Toaster position="top-center" richColors />
         </Providers>
       </body>
