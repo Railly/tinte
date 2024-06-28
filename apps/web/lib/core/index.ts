@@ -3,7 +3,6 @@ import { generateTokenColors } from "./tokens";
 import { ThemeConfig } from "./types";
 
 export function generateVSCodeTheme(themeConfig: ThemeConfig) {
-  console.log({ themeConfig });
   const { displayName, palette, tokenColors } = themeConfig;
 
   const darkTheme = {

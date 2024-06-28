@@ -55,8 +55,6 @@ export default async function handler(
     const vsixBuffer = await createVSIXFile(themeConfig, isDark);
     const base64VsixBuffer = vsixBuffer.toString("base64");
 
-    console.log("Sending VSIX file response");
-
     res
       .status(200)
       .setHeader(
@@ -87,7 +85,6 @@ export default async function handler(
 
 async function createVSIXFile(themeConfig: ThemeConfig, isDark: boolean) {
   const theme = generateVSCodeTheme(themeConfig);
-  console.log({ theme }, "from export-vsix.ts");
 
   // Define paths
   const themePath = path.join(process.cwd(), "temp-theme");
@@ -188,8 +185,6 @@ Happy coding! 💻✨`
       skipLicense: true,
     });
     const vsixBuffer = fs.readFileSync(vsixPath);
-
-    console.log("VSIX file created successfully");
 
     // Cleanup
     fs.rmSync(themePath, { recursive: true, force: true });

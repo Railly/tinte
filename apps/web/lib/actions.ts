@@ -68,6 +68,5 @@ export const generateVSCodeThemeAI = async (formData: FormData) => {
       dark: result.object.dark,
     },
   };
-  console.log(JSON.stringify(formattedResult, null, 2));
   return formattedResult;
 };

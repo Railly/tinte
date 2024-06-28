@@ -20,7 +20,6 @@ export function useHighlighter({
 }) {
   const { theme: nextTheme } = useTheme();
   const [highlightedText, setHighlightedText] = useState("");
-  console.log({ language });
 
   useEffect(() => {
     async function highlight() {
@@ -62,7 +61,6 @@ export function useHighlighter({
                   ?.find((s) => s.trim().startsWith("--shiki-token-type"))
                   ?.split(":")[1]
                   ?.trim();
-                console.log({ node, shikiTokenType });
 
                 node.properties.className = [
                   "relative rounded-sm cursor-pointer",
@@ -110,7 +108,6 @@ export function useHighlighter({
                 ];
               },
               tokens: (tokens: ThemedToken[][]): ThemedToken[][] => {
-                console.log({ processedTokens, language });
                 return tokens.map((line, lineIndex) => {
                   return line.map((token) => {
                     const monacoToken = processedTokens[lineIndex + 1]?.find(

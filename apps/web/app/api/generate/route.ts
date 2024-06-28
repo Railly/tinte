@@ -47,18 +47,10 @@ const outputSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // call ratelimit with request ip
   const ip = req.ip ?? req.headers.get("X-Forwarded-For") ?? "ip";
-  console.log({ ip });
-  const { success, remaining } = await ratelimit.limit(ip);
+  const { success } = await ratelimit.limit(ip);
   const { prompt }: { prompt: string } = await req.json();
-  console.log({
-    success,
-    remaining,
-    prompt,
-  });
 
-  // block the request if unsuccessfull
   if (!success) {
     return new Response("Ratelimited!", { status: 429 });
   }
@@ -88,7 +80,6 @@ export async function POST(req: NextRequest) {
       dark: result.object.dark,
     },
   };
-  console.log(JSON.stringify(formattedResult, null, 2));
 
   return Response.json({ formattedResult });
 }

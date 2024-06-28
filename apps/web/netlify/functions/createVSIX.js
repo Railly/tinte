@@ -340,9 +340,6 @@ export function getVSCodeColors(palette, mode) {
 
   for (const [token, colorKey] of Object.entries(editorColorMap)) {
     const colorEntry = palette[colorKey];
-    console.log({
-      [token]: applyCustomizations(colorEntry, token, mode),
-    });
     vsCodeColors[token] = applyCustomizations(colorEntry, token, mode);
   }
 

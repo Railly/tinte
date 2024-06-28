@@ -78,7 +78,6 @@ export const PresetSelector = ({
 
   const currentPreset = presets[themeConfig.displayName]?.[currentTheme];
   const customThemeNames = Object.keys(customThemes);
-  console.log({ customThemes, customThemeNames });
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
@@ -325,17 +324,12 @@ export const PresetSelector = ({
                         try {
                           setIsGenerating(true);
                           const formData = new FormData();
-                          console.log({ prompt }, "gaaaa");
                           formData.append("prompt", prompt);
-                          formData.forEach((value, key) => {
-                            console.log(key, value);
-                          });
                           const response = await fetch("/api/generate", {
                             method: "POST",
                             body: JSON.stringify({ prompt }),
                           }).then((res) => res.json());
                           const result = response.formattedResult;
-                          console.log({ result });
                           const name = Object.keys(result)[0] as string;
                           setGeneratedThemeName(name);
                           setGeneratedTheme(result[name]);
