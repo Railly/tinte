@@ -15,7 +15,13 @@ import {
   RAY_SO_THEMES,
 } from "@/lib/constants";
 import { Button } from "./ui/button";
-import { IconLoading, IconSave, IconSend, IconSparkles } from "./ui/icons";
+import {
+  IconGenerate,
+  IconLoading,
+  IconSave,
+  IconSend,
+  IconSparkles,
+} from "./ui/icons";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -82,7 +88,7 @@ export const PresetSelector = ({
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <Label htmlFor="theme" className="text-muted-foreground">
-        {label || "Theme"}
+        {label || "Base Theme"}
       </Label>
       <div className="flex gap-2">
         <Select value={themeConfig.displayName} onValueChange={onPresetSelect}>
@@ -141,7 +147,7 @@ export const PresetSelector = ({
             </SelectGroup>
           </SelectContent>
         </Select>
-        {!noSaveButton && (
+        {/* {!noSaveButton && (
           <Dialog open={openSave} onOpenChange={setOpenSave}>
             <TooltipProvider>
               <Tooltip delayDuration={100}>
@@ -156,6 +162,7 @@ export const PresetSelector = ({
                       className={cn("hover:!brightness-110 transition-all")}
                     >
                       <IconSave className="size-5" />
+                      <span className="ml-2">Save</span>
                     </Button>
                   </TooltipTrigger>
                 </DialogTrigger>
@@ -278,7 +285,8 @@ export const PresetSelector = ({
                       }}
                       className={cn("hover:!brightness-110 transition-all")}
                     >
-                      <IconSparkles className="size-5" />
+                      <IconGenerate className="size-5" />
+                      <span className="ml-2">Generate</span>
                     </Button>
                   </TooltipTrigger>
                 </DialogTrigger>
@@ -443,7 +451,7 @@ export const PresetSelector = ({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-        )}
+        )} */}
       </div>
     </div>
   );

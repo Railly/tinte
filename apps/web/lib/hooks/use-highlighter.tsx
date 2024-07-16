@@ -1,7 +1,7 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { ThemedToken, getHighlighter } from "shiki";
-import { LANGS } from "../constants";
+import { LANGS, MONACO_SHIKI_LANGS } from "../constants";
 import { MonacoToken } from "../types";
 
 export function useHighlighter({
@@ -27,7 +27,7 @@ export function useHighlighter({
 
       const highlighter = await getHighlighter({
         themes: [theme.lightTheme, theme.darkTheme],
-        langs: LANGS,
+        langs: Object.values(MONACO_SHIKI_LANGS),
       });
 
       if (!highlighter) return;
@@ -48,7 +48,9 @@ export function useHighlighter({
 
       setHighlightedText(
         highlighter.codeToHtml(text, {
-          lang: language,
+          lang:
+            MONACO_SHIKI_LANGS[language as keyof typeof MONACO_SHIKI_LANGS] ||
+            "plaintext",
           themes: {
             light: theme.lightTheme.name,
             dark: theme.darkTheme.name,

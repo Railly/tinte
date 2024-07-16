@@ -3,6 +3,9 @@ import { useMonacoEditor } from "@/lib/hooks/use-monaco-editor";
 import MonacoEditor from "@monaco-editor/react";
 import React, { useRef, useEffect, useState } from "react";
 import { editor } from "monaco-editor";
+import { Button } from "./ui/button";
+import { IconSave } from "./ui/icons";
+import { MONACO_SHIKI_LANGS } from "@/lib/constants";
 
 interface CodeEditorProps {
   theme: any;
@@ -24,7 +27,9 @@ export const CodeEditor = ({
   language,
   setColorPickerShouldBeHighlighted,
 }: CodeEditorProps) => {
-  const editorRef = useRef<editor.IStandaloneCodeEditor>();
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const codeRef = useRef<HTMLPreElement>(null);
   const { currentThemeName, tokens } = useMonacoEditor({
     theme,
@@ -62,34 +67,58 @@ export const CodeEditor = ({
     editorRef.current = editor;
   };
 
+  useEffect(() => {
+    const resizeEditor = () => {
+      if (editorRef.current && containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        editorRef.current.layout({ width, height });
+      }
+    };
+
+    window.addEventListener("resize", resizeEditor);
+    resizeEditor(); // Initial layout
+
+    return () => window.removeEventListener("resize", resizeEditor);
+  }, []);
+
   return (
-    <div className="w-full h-full grid md:grid-cols-2 gap-4 max-h-[80vh]">
-      <pre
-        ref={codeRef}
-        className="overflow-x-auto border [&>pre]:p-4 text-sm !text-[13px] min-h-[40vh] max-h-[40vh]"
-        dangerouslySetInnerHTML={{ __html: highlightedText }}
-      />
-      <MonacoEditor
-        className="!w-full !h-[40vh] border"
-        theme={currentThemeName}
-        onMount={handleEditorDidMount}
-        height="100%"
-        language={language}
-        value={code}
-        onChange={onCodeChange}
-        options={{
-          fontFamily: "Geist Mono",
-          fontSize: 13,
-          padding: { top: 16 },
-          minimap: { enabled: false },
-          automaticLayout: true,
-          wordWrap: "on",
-          formatOnType: true,
-          lineDecorationsWidth: 1,
-          lineNumbersMinChars: 4,
-          tabSize: 2,
-        }}
-      />
+    <div
+      ref={containerRef}
+      className="w-full border rounded-md overflow-hidden"
+      style={{ height: "calc(80vh - 30px)" }}
+    >
+      <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
+        <h2 className="text-sm font-bold">Preview Editor</h2>
+        <Button variant="outline">
+          <IconSave />
+          <span className="ml-2">Save Theme</span>
+        </Button>
+      </div>
+      <div className="flex-grow !h-[70vh]" style={{ height: "70vh" }}>
+        {/* Adjust 40px based on your header height */}
+        <MonacoEditor
+          theme={currentThemeName}
+          onMount={handleEditorDidMount}
+          language={
+            MONACO_SHIKI_LANGS[language as keyof typeof MONACO_SHIKI_LANGS]
+          }
+          value={code}
+          onChange={onCodeChange}
+          height="calc(80vh - 40px)"
+          options={{
+            fontFamily: "Geist Mono",
+            fontSize: 13,
+            padding: { top: 16 },
+            minimap: { enabled: false },
+            automaticLayout: true,
+            wordWrap: "on",
+            formatOnType: true,
+            lineDecorationsWidth: 1,
+            lineNumbersMinChars: 4,
+            tabSize: 2,
+          }}
+        />
+      </div>
     </div>
   );
 };

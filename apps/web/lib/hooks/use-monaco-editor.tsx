@@ -3,7 +3,7 @@ import { useMonaco } from "@monaco-editor/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 import { useTheme } from "next-themes";
 import { getHighlighter } from "shiki";
-import { LANGS } from "../constants";
+import { LANGS, MONACO_SHIKI_LANGS } from "../constants";
 import { MonacoToken } from "../types";
 import { editor } from "monaco-editor";
 
@@ -19,7 +19,7 @@ export function useMonacoEditor({
   };
   text?: string;
   language: string;
-  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | undefined>;
+  editorRef: React.RefObject<editor.IStandaloneCodeEditor> | null;
 }) {
   const monaco = useMonaco();
   const { theme: nextTheme } = useTheme();
@@ -99,12 +99,14 @@ export function useMonacoEditor({
     if (!monaco) return;
     const highlighter = await getHighlighter({
       themes: [customTheme.lightTheme, customTheme.darkTheme],
-      langs: LANGS,
+      langs: Object.values(MONACO_SHIKI_LANGS),
     });
 
     LANGS.forEach((lang) => {
       if (!monaco) return;
-      monaco.languages.register({ id: lang });
+      monaco.languages.register({
+        id: MONACO_SHIKI_LANGS[lang as keyof typeof MONACO_SHIKI_LANGS],
+      });
     });
 
     shikiToMonaco(highlighter, monaco);

@@ -21,6 +21,8 @@ export function ThemeConfigurationPanel({
   handleLanguageChange,
   loading,
   exportVSIX,
+  advancedMode,
+  setAdvancedMode,
 }: {
   presets: any;
   setPresets: React.Dispatch<React.SetStateAction<any>>;
@@ -35,9 +37,11 @@ export function ThemeConfigurationPanel({
   handleLanguageChange: (language: string) => void;
   loading: boolean;
   exportVSIX: (themeConfig: any, isDark: boolean) => void;
+  advancedMode: boolean;
+  setAdvancedMode: (enabled: boolean) => void;
 }) {
   return (
-    <div className="flex flex-wrap md:flex-nowrap gap-10">
+    <div className="flex justify-center flex-wrap md:flex-nowrap gap-8 py-6 px-4 bg-muted/30 border rounded-t-md">
       <PresetSelector
         presets={presets}
         setPresets={setPresets}
@@ -60,7 +64,7 @@ export function ThemeConfigurationPanel({
       </div>
       <div className="flex flex-col gap-3">
         <Label htmlFor="light/dark-mode" className="text-muted-foreground">
-          Dark
+          Dark Mode
         </Label>
         <div className="flex items-center mt-1">
           <Switch
@@ -69,6 +73,18 @@ export function ThemeConfigurationPanel({
               setNextTheme?.(checked ? "dark" : "light")
             }
             checked={currentTheme === "dark"}
+          />
+        </div>
+      </div>
+      <div className="flex flex-col gap-3">
+        <Label htmlFor="advanced-mode" className="text-muted-foreground">
+          Advanced Mode
+        </Label>
+        <div className="flex items-center mt-1">
+          <Switch
+            id="advanced-mode"
+            checked={advancedMode}
+            onCheckedChange={setAdvancedMode}
           />
         </div>
       </div>
@@ -82,7 +98,7 @@ export function ThemeConfigurationPanel({
         </Label>
         <HelpModal />
       </div>
-      <div className="flex flex-col gap-3">
+      {/* <div className="flex flex-col gap-3">
         <Label htmlFor="how-to-install" className="text-muted-foreground">
           Actions
         </Label>
@@ -120,7 +136,7 @@ export function ThemeConfigurationPanel({
             )}
           </Button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
