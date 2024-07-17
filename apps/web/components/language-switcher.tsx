@@ -14,17 +14,21 @@ import { LANGS } from "@/lib/constants";
 interface LanguageSwitcherProps {
   selectedLanguage: string;
   onLanguageChange: (language: string) => void;
+  noLabel?: boolean;
 }
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   selectedLanguage,
   onLanguageChange,
+  noLabel,
 }) => {
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor="language" className="text-muted-foreground">
-        Language
-      </Label>
+      {!noLabel && (
+        <Label htmlFor="language" className="text-muted-foreground">
+          Language
+        </Label>
+      )}
       <Select value={selectedLanguage} onValueChange={onLanguageChange}>
         <SelectTrigger className="w-[145px]">
           <SelectValue id="language" placeholder="Select language">

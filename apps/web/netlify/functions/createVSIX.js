@@ -349,7 +349,7 @@ export function getVSCodeColors(palette, mode) {
 export function generateVSCodeTheme(themeConfig) {
   const { displayName, palette, tokenColors } = themeConfig;
 
-  const darkTheme = {
+  const dark = {
     name: "one-hunter-dark",
     displayName,
     type: "dark",
@@ -357,7 +357,7 @@ export function generateVSCodeTheme(themeConfig) {
     tokenColors: generateTokenColors(palette.dark, tokenColors),
   };
 
-  const lightTheme = {
+  const light = {
     name: "one-hunter-light",
     displayName,
     type: "light",
@@ -365,7 +365,7 @@ export function generateVSCodeTheme(themeConfig) {
     tokenColors: generateTokenColors(palette.light, tokenColors),
   };
 
-  return { darkTheme, lightTheme };
+  return { dark, light };
 }
 
 const allowedOrigins = ["https://tinte.railly.dev/"];
@@ -527,7 +527,7 @@ Happy coding! 💻✨`
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
   fs.writeFileSync(
     themeJsonPath,
-    JSON.stringify(isDark ? theme.darkTheme : theme.lightTheme, null, 2)
+    JSON.stringify(isDark ? theme.dark : theme.light, null, 2)
   );
 
   // Run vsce to package the theme

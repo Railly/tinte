@@ -169,7 +169,7 @@ Happy coding! 💻✨`
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
   fs.writeFileSync(
     themeJsonPath,
-    JSON.stringify(isDark ? theme.darkTheme : theme.lightTheme, null, 2)
+    JSON.stringify(isDark ? theme.dark : theme.light, null, 2)
   );
 
   // Run vsce to package the theme

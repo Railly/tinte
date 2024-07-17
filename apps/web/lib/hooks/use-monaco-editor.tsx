@@ -14,8 +14,8 @@ export function useMonacoEditor({
   editorRef,
 }: {
   theme: {
-    lightTheme: any;
-    darkTheme: any;
+    light: any;
+    dark: any;
   };
   text?: string;
   language: string;
@@ -34,7 +34,7 @@ export function useMonacoEditor({
   }, [nextTheme]);
 
   const currentThemeName = useMemo(() => {
-    return isDark ? monacoTheme.darkTheme.name : monacoTheme.lightTheme.name;
+    return isDark ? monacoTheme.dark.name : monacoTheme.light.name;
   }, [isDark, monacoTheme, nextTheme]);
 
   const getAllTokensWithStyles = (editor: editor.IStandaloneCodeEditor) => {
@@ -92,13 +92,10 @@ export function useMonacoEditor({
     }
   }, [monaco, editorRef?.current, language, text]);
 
-  async function initializeMonaco(customTheme: {
-    lightTheme: any;
-    darkTheme: any;
-  }) {
+  async function initializeMonaco(customTheme: { light: any; dark: any }) {
     if (!monaco) return;
     const highlighter = await getHighlighter({
-      themes: [customTheme.lightTheme, customTheme.darkTheme],
+      themes: [customTheme.light, customTheme.dark],
       langs: Object.values(MONACO_SHIKI_LANGS),
     });
 

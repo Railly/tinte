@@ -5,7 +5,7 @@ import { ThemeConfig } from "./types";
 export function generateVSCodeTheme(themeConfig: ThemeConfig) {
   const { displayName, palette, tokenColors } = themeConfig;
 
-  const darkTheme = {
+  const dark = {
     name: "one-hunter-dark",
     displayName,
     type: "dark",
@@ -13,7 +13,7 @@ export function generateVSCodeTheme(themeConfig: ThemeConfig) {
     tokenColors: generateTokenColors(palette.dark, tokenColors),
   };
 
-  const lightTheme = {
+  const light = {
     name: "one-hunter-light",
     displayName,
     type: "light",
@@ -21,5 +21,5 @@ export function generateVSCodeTheme(themeConfig: ThemeConfig) {
     tokenColors: generateTokenColors(palette.light, tokenColors),
   };
 
-  return { darkTheme, lightTheme };
+  return { dark, light };
 }

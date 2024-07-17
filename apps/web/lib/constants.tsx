@@ -2444,6 +2444,277 @@ celery = "5.1.2"
 `,
 };
 
+export const CODE_SAMPLES_SMALL: Record<string, string> = {
+  angular: `@Component({
+  selector: 'app-root',
+  template: '<h1>{{title}}</h1>'
+})
+export class AppComponent {
+  title = 'Hello Angular!';
+}`,
+
+  assembly: `section .text
+global _start
+_start:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, message
+    int 0x80`,
+
+  astro: `---
+const greeting = "Hello, Astro!";
+---
+<html>
+  <body>{greeting}</body>
+</html>`,
+
+  bash: `#!/bin/bash
+echo "Hello, Bash!"
+for i in {1..3}; do
+    echo "Count: $i"
+done`,
+
+  c: `#include <stdio.h>
+int main() {
+    for (int i = 0; i < 5; i++) {
+        printf("Hello, C!");
+    }
+    return 0;
+}`,
+
+  "c#": `using System;
+class Program {
+    static void Main() {
+        Console.WriteLine("Hello, C#!");
+    }
+}`,
+
+  "c++": `#include <iostream>
+int main() {
+    for (int i = 0; i < 5; i++) {
+        std::cout << "Hello, C++!" << std::endl;
+    }
+    return 0;
+}`,
+
+  css: `.button {
+  background-color: #0077be;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+}`,
+
+  dart: `void main() {
+  var greeting = 'Hello, Dart!';
+  var name = 'Alice';
+  print('\$greeting Welcome, \$name!');
+  print('Greeting length: \${greeting.length}');
+}`,
+
+  go: `package main
+import "fmt"
+
+func main() {
+    var message = "Hello, Go!"
+    fmt.Printf("Sum: %d\\n", x+y)
+}`,
+
+  html: `<!DOCTYPE html>
+<html>
+<head><title>Hello HTML</title></head>
+<body>
+    <h1>Hello, HTML!</h1>
+</body>
+</html>`,
+
+  java: `import java.util.List;
+
+public class HelloWorld {
+  public static void main(String[] args) {
+    System.out.println("Hello, Java!");
+  }
+}`,
+
+  javascript: `function greet(name) {
+  console.log(greet("TypeScript"));
+  return \`Hello, \${name}!\`;
+}
+const x: = 10;
+const y = 20;`,
+
+  json: `{
+  "greeting": "Hello, JSON!",
+  "numbers": [1, 2, 3],
+  "nested": {
+    "key": "value"
+  }
+}`,
+
+  jsx: `import React from 'react';
+
+function Greeting({ name }) {
+  return <h1>Hello, {name}!</h1>;
+}
+
+export default Greeting;`,
+
+  kotlin: `import kotlin.random.Random
+
+  fun main() {
+    val greeting = "Hello, Kotlin!"
+    val number = Random.nextInt(1, 10)
+    println("Random number: $number")
+}`,
+
+  latex: `\\documentclass{article}
+\\begin{document}
+Hello, \\LaTeX!
+Would you like to learn more about \\TeX?
+We can also write equations like \$E=mc^2\$.
+\\end{document}`,
+
+  lua: `local function greet(name)
+  local age = 30
+  print("Your age is: " .. age)
+  print("Hello, " .. name .. "!")
+end
+
+greet("Lua")`,
+
+  markdown: `# Hello, Markdown!
+## Welcome to the world of Markdown.
+
+This is a **bold** and *italic* text.
+- Item 1
+- Item 2
+- Item 3`,
+
+  ocaml: `let square x = x * x
+let sum_of_squares a b = square a + square b
+let result = sum_of_squares 3 4
+
+let () = Printf.printf "Sum of squares: %d\\n" result
+`,
+
+  php: `<?php
+$fruits = ["apple", "banana", "cherry"];
+$fruits[] = "date";
+foreach ($fruits as $index => $fruit) {
+    echo "Fruit $index: $fruit<br>";
+}
+?>
+`,
+
+  python: `import random
+names = ["Alice", "Bob", "Charlie", "David", "Eve"]
+def greet(name): return f"Hello, {name}!"
+
+random_names = random.sample(names, 3)
+print("\\n".join(greet(name) for name in random_names))`,
+
+  r: `fruits <- c("apple", "banana", "cherry", "date")
+capitalize <- function(x) paste0(toupper(substr(x, 1, 1)))
+fruit_info <- sapply(fruits, function(f) paste(capitalize(f))
+
+names(fruit_info) <- fruits
+print(fruit_info)`,
+
+  ruby: `def factorial(n)
+  (1..n).reduce(:*) || 1
+end
+
+(1..5).each do |i|
+  puts "Factorial of #{i} is #{factorial(i)}"
+end`,
+
+  rust: `fn fibonacci(n: u32) -> u32 {
+    match n {
+        0 => 0,
+        1 => 1,
+        _ => fibonacci(n - 1) + fibonacci(n - 2),
+    }
+}`,
+
+  scala: `def isPrime(n: Int): Boolean = 
+  (2 to math.sqrt(n).toInt).forall(n % _ != 0)
+
+val primes = (2 to 50).filter(isPrime)
+println(s"Primes up to 50: \${primes.mkString(", ")}")
+println(s"Number of primes: \${primes.length}")`,
+
+  solidity: `pragma solidity ^0.8.0;
+contract Greeter {
+    string public greeting = "Hello, Solidity!";
+    function setGreeting(string memory _greeting) public {
+        greeting = _greeting;
+    }
+}`,
+
+  sql: `SELECT 'Hello, SQL!' AS greeting;
+
+CREATE TABLE greetings (
+  id INT PRIMARY KEY,
+  message VARCHAR(50)
+);`,
+
+  svelte: `<script>
+  let name = 'Svelte';
+</script>
+
+<h1>Hello, {name}!</h1>
+<input bind:value={name}>`,
+
+  swift: `import Swift
+
+let names = ["Swift", "iOS", "macOS"]
+for name in names {
+    print("Hello, \\(name)!")
+    print("Name length: \\(name.count)")
+}`,
+
+  toml: `title = "TOML Example"
+[owner]
+name = "Tom Preston-Werner"
+dob = 1979-05-27T07:32:00-08:00`,
+
+  tsx: `import React from 'react';
+interface GreetingProps { name: string; }
+const Greeting: React.FC<GreetingProps> = ({ name }) => (
+  <h1>Hello, {name}!</h1>
+);
+export default Greeting;`,
+
+  typescript: `function greet(name: string): string {
+  console.log(greet("TypeScript"));
+  return \`Hello, \${name}!\`;
+}
+const x: number = 10;
+const y: number = 20;`,
+
+  vue: `<script setup>
+import { ref } from 'vue'
+const greeting = ref('Hello, Vue!')
+</script>
+<template>
+  <h1>{{ greeting }}</h1>
+</template>`,
+
+  xml: `<?xml version="1.0" encoding="UTF-8"?>
+<greeting>
+  <message>Hello, XML!</message>
+  <message>XML is fun!</message>
+  <message>Have a great day!</message>
+</greeting>`,
+
+  zig: `const std = @import("std");
+
+pub fn main() !void {
+    const message = "Hello, Zig!";
+    std.debug.print("Message: {}\\n", .{message});
+    return Ok;
+}`,
+};
+
 export const BACKGROUND_LESS_PALETTE = {
   dark: {
     text: "#EDEDED",
