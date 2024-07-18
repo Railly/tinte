@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { PrismaClient, TokenColors } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import {
   formatPalette,
   formatTheme,
-  formatTokenColors,
   invertTokenColors,
   sortThemes,
 } from "@/app/utils.";
