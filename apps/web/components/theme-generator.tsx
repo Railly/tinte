@@ -8,6 +8,7 @@ import { ThemeConfig, DarkLightPalette } from "@/lib/core/types";
 import { toast } from "sonner";
 import { entries } from "@/lib/utils";
 import { defaultThemeConfig } from "@/lib/core/config";
+import { fetchGeneratedTheme } from "@/app/utils.";
 
 interface ThemeGeneratorProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
@@ -52,27 +53,6 @@ export function ThemeGenerator({
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const fetchGeneratedTheme = async (
-    prompt: string
-  ): Promise<Record<string, DarkLightPalette>> => {
-    const response = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to generate theme");
-    }
-
-    const { formattedResult } = await response.json();
-    if (Object.keys(formattedResult).length === 0) {
-      throw new Error("No theme generated");
-    }
-
-    return formattedResult;
   };
 
   const updateThemeStates = (themeName: string, palette: DarkLightPalette) => {

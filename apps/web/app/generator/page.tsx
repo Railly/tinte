@@ -24,9 +24,12 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn, entries } from "@/lib/utils";
 import { PresetSelector } from "@/components/preset-selector";
 import { defaultThemeConfig } from "@/lib/core/config";
+import { fetchGeneratedTheme } from "../utils.";
+import { CircularGradient } from "@/components/circular-gradient";
+import { useRouter } from "next/navigation";
 
 export default function Page(): JSX.Element {
   const [initialThemes, setInitialThemes] = useState<ThemeConfig[]>([]);
@@ -64,7 +67,6 @@ function PageContent({
   const {
     tinteTheme,
     presets,
-    setPresets,
     isBackgroundless,
     toggleBackgroundless,
     updatePaletteColor,
@@ -114,7 +116,6 @@ function PageContent({
       [themeName]: palette,
       ...customThemes,
     };
-
     updateCustomThemes(newCustomThemes);
     updateThemeConfig({
       name,
@@ -143,6 +144,72 @@ function PageContent({
       setOpenCreateTheme(false);
     }
   };
+
+  const [themeDescription, setThemeDescription] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const generateTheme = async () => {
+    if (themeDescription.trim().length < 3) {
+      toast.error("Please provide a longer theme description");
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const generatedTheme = await fetchGeneratedTheme(themeDescription);
+      const _entries = entries(generatedTheme);
+      if (entries.length === 0) {
+        throw new Error("No theme generated");
+      }
+      const [generatedThemeName, generatedPalette] = _entries[0] as [
+        string,
+        DarkLightPalette,
+      ];
+
+      updateThemeStates(generatedThemeName, generatedPalette);
+      toast.success("Theme generated successfully");
+    } catch (error) {
+      console.error("Error generating theme:", error);
+      toast.error("Failed to generate theme");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const enhanceDescription = async () => {
+    if (themeDescription.trim().length < 3) {
+      toast.error("Please provide a longer theme description to enhance");
+      return;
+    }
+
+    setIsEnhancing(true);
+    try {
+      const response = await fetch("/api/enhance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: themeDescription }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to enhance description");
+      }
+
+      const { enhancedPrompt } = await response.json();
+      setThemeDescription(enhancedPrompt);
+      toast.success("Description enhanced successfully");
+    } catch (error) {
+      console.error("Error enhancing description:", error);
+      toast.error("Failed to enhance description");
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
+  const router = useRouter();
 
   return (
     <div className="flex h-screen">
@@ -215,29 +282,39 @@ function PageContent({
                 >
                   Cancel
                 </Button>
-                <Button onClick={saveTheme}>Create Theme</Button>
+                <Button disabled={isSaving} onClick={saveTheme}>
+                  Create Theme
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          <Sheet>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button className="w-10 h-10" variant="outline" size="icon">
                 <HamburgerMenuIcon className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[250px] left-16">
+            <SheetContent side="left" className="w-[250px] left-16 p-0 px-2">
               <div className="py-4 z-[55]">
-                <h2 className="text-lg font-semibold mb-4">Themes</h2>
+                <h2 className="text-md font-bold mb-4 ml-3">My Local Themes</h2>
                 {customThemes &&
-                  Object.keys(customThemes).map((themeName, index) => (
-                    <Button
-                      key={`${themeName}-${index}`}
-                      variant="ghost"
-                      className="w-full justify-start mb-2"
-                    >
-                      {themeName}
-                    </Button>
-                  ))}
+                  Object.entries(customThemes).map(
+                    ([themeName, palette], index) => (
+                      <Button
+                        key={`${themeName}-${index}`}
+                        variant="ghost"
+                        className="w-full justify-start mb-2"
+                        onClick={() => {
+                          router.replace(`/generator?theme=${themeName}`);
+                          applyPreset(themeName);
+                          setIsSheetOpen(false);
+                        }}
+                      >
+                        <CircularGradient palette={palette[currentTheme]} />
+                        <span className="ml-2">{themeName}</span>
+                      </Button>
+                    )
+                  )}
               </div>
             </SheetContent>
           </Sheet>
@@ -263,7 +340,12 @@ function PageContent({
             currentTheme={currentTheme as "light" | "dark"}
             onPaletteColorChange={updatePaletteColor}
             advancedMode={advancedMode}
-            onGenerateTheme={(description: string) => {}}
+            onGenerateTheme={generateTheme}
+            themeDescription={themeDescription}
+            setThemeDescription={setThemeDescription}
+            isGenerating={isGenerating}
+            isEnhancing={isEnhancing}
+            onEnhanceDescription={enhanceDescription}
           />
         </div>
         <div className="flex justify-center gap-4 items-center mx-2 self-end">

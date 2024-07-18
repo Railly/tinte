@@ -1,4 +1,4 @@
-import { Palette, TokenColorMap } from "@/lib/core/types";
+import { DarkLightPalette, Palette, TokenColorMap } from "@/lib/core/types";
 import { ThemePalettes, Themes, TokenColors } from "@prisma/client";
 
 export function formatPalette(palette: ThemePalettes | undefined) {
@@ -170,3 +170,24 @@ export function sortThemes(formattedThemes: any) {
 
   return sortedThemes;
 }
+
+export const fetchGeneratedTheme = async (
+  prompt: string
+): Promise<Record<string, DarkLightPalette>> => {
+  const response = await fetch("/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to generate theme");
+  }
+
+  const { formattedResult } = await response.json();
+  if (Object.keys(formattedResult).length === 0) {
+    throw new Error("No theme generated");
+  }
+
+  return formattedResult;
+};

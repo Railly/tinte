@@ -16,6 +16,7 @@ interface PreviewProps {
   userId?: string;
   onThemeSaved?: () => void;
   isLocalTheme?: boolean;
+  isSaving?: boolean;
 }
 
 export const Preview = ({

@@ -3,7 +3,13 @@ import { ThemeConfig, Palette } from "@/lib/core/types";
 import { tokenToScopeMapping } from "@/lib/core/config";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { IconGenerate, IconRandom, IconSpace, IconSparkles } from "./ui/icons";
+import {
+  IconGenerate,
+  IconLoading,
+  IconRandom,
+  IconSpace,
+  IconSparkles,
+} from "./ui/icons";
 import { hexToRgba } from "@uiw/react-color";
 import { SimplifiedTokenEditor } from "./simplified-token-editor";
 
@@ -16,6 +22,11 @@ interface ConfigurationProps {
     value: boolean;
   };
   onGenerateTheme: (description: string) => void;
+  isGenerating: boolean;
+  isEnhancing: boolean;
+  themeDescription: string;
+  setThemeDescription: (description: string) => void;
+  onEnhanceDescription: () => void;
   advancedMode: boolean;
 }
 
@@ -77,6 +88,11 @@ export const Configuration: React.FC<ConfigurationProps> = ({
   colorPickerShouldBeHighlighted,
   advancedMode,
   onGenerateTheme,
+  isGenerating,
+  isEnhancing,
+  themeDescription,
+  setThemeDescription,
+  onEnhanceDescription,
 }) => {
   const shouldHighlight = (tokenType: string) => {
     for (const [key, scopes] of Object.entries(tokenToScopeMapping)) {
@@ -127,8 +143,6 @@ export const Configuration: React.FC<ConfigurationProps> = ({
     "background",
     "background-2",
   ];
-
-  const [themeDescription, setThemeDescription] = useState("");
 
   const handleUIProgressionChange = (value: string) => {
     const updatedPalette = adjustUIProgression(
@@ -206,9 +220,14 @@ export const Configuration: React.FC<ConfigurationProps> = ({
           <Button
             variant="outline"
             onClick={() => onGenerateTheme(themeDescription)}
+            disabled={isGenerating || themeDescription.trim().length < 3}
           >
-            <IconGenerate />
-            <span className="ml-2">Generate Theme</span>
+            {isGenerating ? (
+              <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <IconGenerate className="w-4 h-4 mr-2" />
+            )}
+            <span>{isGenerating ? "Generating..." : "Generate Theme"}</span>
           </Button>
         </div>
 
@@ -224,11 +243,21 @@ export const Configuration: React.FC<ConfigurationProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {}}
+            onClick={onEnhanceDescription}
             className="absolute bottom-4 left-4 text-muted-foreground hover:text-foreground"
+            disabled={isEnhancing || themeDescription.trim().length < 3}
           >
-            <IconSparkles className="w-4 h-4 mr-1" />
-            Enhance Prompt
+            {isEnhancing ? (
+              <>
+                <IconLoading className="w-4 h-4 mr-1 animate-spin" />
+                Enhancing...
+              </>
+            ) : (
+              <>
+                <IconSparkles className="w-4 h-4 mr-1" />
+                Enhance
+              </>
+            )}
           </Button>
           <span className="absolute bottom-4 right-4 text-muted-foreground text-sm">
             {themeDescription.length}/150
