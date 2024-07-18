@@ -17,7 +17,6 @@ const ReadOnlyPreview = ({
   setLanguage,
   width = "100%",
 }: CodeEditorProps) => {
-  console.log({ theme, code, language });
   const { highlightedText } = useHighlighter({
     theme,
     text: code,

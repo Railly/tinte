@@ -121,18 +121,17 @@ export const CodeEditor = ({
       }
 
       const savedTheme = await response.json();
-      toast.success("Theme saved successfully!: " + JSON.stringify(savedTheme));
+      toast.success(`Theme "${savedTheme.display_name}" saved successfully!`);
 
       if (onThemeSaved) {
         onThemeSaved();
       }
 
       if (isLocalTheme) {
-        // Save to localStorage
         const localThemes = JSON.parse(
           localStorage.getItem("customThemes") || "{}"
         );
-        localThemes[themeData.name] = themeData.palette;
+        delete localThemes[themeData.displayName];
         localStorage.setItem("customThemes", JSON.stringify(localThemes));
       }
     } catch (error) {

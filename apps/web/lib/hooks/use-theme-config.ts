@@ -14,7 +14,6 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
   const searchParams = useSearchParams();
 
   const themeParam = searchParams?.get("theme");
-  console.log({ themeParam });
   const defaultTheme = initialThemes[0] || defaultThemeConfig;
 
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(defaultTheme);
@@ -48,11 +47,9 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
   }, [isLoaded]);
 
   useEffect(() => {
-    console.log({ isLoading, themeParam, initialLoadRef, GAA: "gaa" });
     if (!isLoading && themeParam && !initialLoadRef.current) {
       const decodedThemeName = decodeURIComponent(themeParam);
       const matchingTheme = Object.entries(presets).find(([name, theme]) => {
-        console.log({ name, theme });
         if ("displayName" in theme) {
           return (
             theme.displayName.toLowerCase() === decodedThemeName.toLowerCase()
@@ -61,7 +58,6 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
           return name.toLowerCase() === decodedThemeName.toLowerCase();
         }
       });
-      console.log({ matchingTheme });
       if (matchingTheme) {
         applyPreset(matchingTheme[0]);
       }

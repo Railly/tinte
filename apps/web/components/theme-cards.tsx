@@ -1,7 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IconEdit, IconGrid, IconZap } from "@/components/ui/icons";
+import {
+  IconEdit,
+  IconGrid,
+  IconSpace,
+  IconUsers,
+  IconZap,
+} from "@/components/ui/icons";
 import { ThemeCard } from "@/components/theme-card";
 import { useTheme } from "next-themes";
 import { DarkLightPalette, ThemeConfig } from "@/lib/core/types";
@@ -104,9 +110,10 @@ export function ThemeCards({
       />
     ));
   };
+  console.log({ communityThemes });
 
   return (
-    <section className="w-full">
+    <section className="w-full mt-4">
       <div className="flex w-full">
         <div className="flex w-full space-x-4">
           <Tabs className="w-full" defaultValue="all">
@@ -138,9 +145,9 @@ export function ThemeCards({
               <TabsTrigger
                 className="space-x-2"
                 variant="underline"
-                value="rayso"
+                value="community"
               >
-                <IconRaycast className="w-4 h-4" />
+                <IconUsers className="w-4 h-4" />
                 <span>Community</span>
               </TabsTrigger>
               <TabsTrigger
@@ -167,7 +174,7 @@ export function ThemeCards({
                 {renderThemeCards(raysoThemes)}
               </div>
             </TabsContent>
-            <TabsContent className="w-full" value="rayso">
+            <TabsContent className="w-full" value="community">
               <div className="w-full grid gap-4 mt-8 md:grid-cols-2 lg:grid-cols-4">
                 {renderThemeCards(communityThemes)}
               </div>

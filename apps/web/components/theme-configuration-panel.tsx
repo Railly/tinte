@@ -15,8 +15,6 @@ export function ThemeConfigurationPanel({
   setNextTheme,
   selectedLanguage,
   handleLanguageChange,
-  loading,
-  exportVSIX,
   advancedMode,
   setAdvancedMode,
 }: {
@@ -29,8 +27,6 @@ export function ThemeConfigurationPanel({
   setNextTheme?: (theme: "light" | "dark") => void;
   selectedLanguage: string;
   handleLanguageChange: (language: string) => void;
-  loading: boolean;
-  exportVSIX: (themeConfig: ThemeConfig, isDark: boolean) => void;
   advancedMode: boolean;
   setAdvancedMode: (enabled: boolean) => void;
 }) {

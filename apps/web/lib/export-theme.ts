@@ -19,21 +19,16 @@ export const exportThemeAsVSIX = async (
   themeConfig: ThemeConfig,
   isDark: boolean
 ) => {
-  const response = await fetch(
-    process.env.NODE_ENV === "development"
-      ? "api/export-vsix"
-      : process.env.NEXT_PUBLIC_EXPORT_API_URL!,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        themeConfig,
-        isDark,
-      }),
-    }
-  );
+  const response = await fetch(process.env.NEXT_PUBLIC_EXPORT_API_URL!, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      themeConfig,
+      isDark,
+    }),
+  });
 
   if (!response.ok) {
     throw new Error("Failed to export VSIX");

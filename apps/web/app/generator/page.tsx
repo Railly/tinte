@@ -71,7 +71,6 @@ function PageContent({
     setColorPickerShouldBeHighlighted,
   } = useCodeSample();
 
-  const { loading, exportVSIX } = useThemeExport();
   const [advancedMode, setAdvancedMode] = useState(false);
   const { user } = useUser();
 
@@ -120,9 +119,8 @@ function PageContent({
           </Sheet>
         </div>
       </div>
-
       <div className="flex-1 grid grid-rows-[auto_1fr_auto] h-full">
-        <Header />
+        <Header themeConfig={themeConfig} />
         <div className="grid grid-cols-2 gap-2 w-full h-full max-h-screen p-2 self-start overflow-auto">
           <Preview
             theme={tinteTheme}
@@ -156,8 +154,6 @@ function PageContent({
             setNextTheme={setNextTheme}
             selectedLanguage={selectedLanguage}
             handleLanguageChange={handleLanguageChange}
-            loading={loading}
-            exportVSIX={exportVSIX}
             advancedMode={advancedMode}
             setAdvancedMode={setAdvancedMode}
           />

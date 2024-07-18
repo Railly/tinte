@@ -7,6 +7,8 @@ import {
   IconExport,
   IconShare,
   IconEdit,
+  IconLoading,
+  IconDownload,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { ThemeSelector } from "@/components/theme-selector";
@@ -17,16 +19,32 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button, buttonVariants } from "./ui/button";
-import { SubscriptionForm } from "./subscription-form";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
-import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { ThemeConfig } from "@/lib/core/types";
+import { useTheme } from "next-themes";
+import { useThemeExport } from "@/lib/hooks/use-theme-export";
 
-export const Header = () => {
+export const Header = ({
+  themeConfig,
+}: {
+  themeConfig: ThemeConfig;
+}): JSX.Element => {
   const user = useUser();
-  const [themeName, setThemeName] = useState("Untitled Theme");
+  const { theme } = useTheme();
+  const { loading, exportVSIX } = useThemeExport();
+  const [themeName, setThemeName] = useState(
+    themeConfig.displayName || "My Awesome Theme"
+  );
+
+  useEffect(() => {
+    if (themeConfig.displayName) {
+      setThemeName(themeConfig.displayName);
+    }
+  }, [themeConfig.displayName]);
 
   const handleSave = () => {
     // Implement save functionality
@@ -34,13 +52,13 @@ export const Header = () => {
   };
 
   const handleGenerate = () => {
-    // Open AI generation modal
-    console.log("Opening AI generation modal");
+    // Implement generate functionality
+    console.log("Generating theme:", themeName);
   };
 
-  const handleExport = () => {
-    // Open export modal or dropdown
-    console.log("Opening export options");
+  const handleExport = async () => {
+    if (loading) return;
+    await exportVSIX(themeConfig, theme === "dark");
   };
 
   return (
@@ -67,7 +85,28 @@ export const Header = () => {
             </Link>
           </div>
         </div>
-        <div className="flex-grow max-w-sm mx-4"></div>
+        <div className="flex-grow max-w-sm mx-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative">
+                <Input
+                  value={themeName}
+                  onChange={(e) => setThemeName(e.target.value)}
+                  className="text-center font-medium pr-7"
+                  placeholder="Enter theme name"
+                  disabled
+                />
+                <span className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                  <IconEdit />
+                </span>
+              </div>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              <span className="text-xs">Rename</span>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <div className="flex items-center gap-2">
           {/* <Tooltip>
             <TooltipTrigger asChild>
@@ -91,7 +130,7 @@ export const Header = () => {
           </Tooltip> */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button disabled className="mr-2" variant="outline">
+              <Button className="mr-2" variant="outline" disabled>
                 <IconShare />
                 <span className="ml-2">Share</span>
               </Button>
@@ -102,9 +141,13 @@ export const Header = () => {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={handleExport}>
-                <IconExport />
-                <span className="ml-2">Export</span>
+              <Button disabled={loading} onClick={handleExport}>
+                {loading ? (
+                  <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <IconDownload className="w-4 h-4 mr-2" />
+                )}
+                <span>{loading ? "Exporting..." : "Export"}</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>

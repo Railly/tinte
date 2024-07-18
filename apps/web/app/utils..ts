@@ -66,6 +66,24 @@ export function formatTokenColors(tokenColors: TokenColors | undefined) {
   };
 }
 
+export function invertPalette(palette: Palette): Record<string, string> {
+  return {
+    text: palette.text,
+    text_2: palette["text-2"],
+    text_3: palette["text-3"],
+    interface: palette.interface,
+    interface_2: palette["interface-2"],
+    interface_3: palette["interface-3"],
+    background: palette.background,
+    background_2: palette["background-2"],
+    primary: palette.primary,
+    secondary: palette.secondary,
+    accent: palette.accent,
+    accent_2: palette["accent-2"],
+    accent_3: palette["accent-3"],
+  };
+}
+
 export function invertTokenColors(
   tokenColors: TokenColorMap
 ): Record<string, keyof Palette> {

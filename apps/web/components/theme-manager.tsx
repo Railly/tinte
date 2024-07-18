@@ -47,6 +47,8 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
     );
   };
 
+  console.log({ selectedTheme });
+
   return (
     <main className="flex gap-4 flex-col items-center py-4 px-8">
       <ColorChangingTitle themeConfig={themeConfig} />

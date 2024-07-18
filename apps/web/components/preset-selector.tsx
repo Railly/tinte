@@ -56,7 +56,6 @@ export const PresetSelector = ({
       category: "local",
     })
   ) as ThemeConfig[];
-  console.log({ customThemesList });
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
