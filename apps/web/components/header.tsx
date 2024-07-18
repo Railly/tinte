@@ -67,27 +67,7 @@ export const Header = () => {
             </Link>
           </div>
         </div>
-        <div className="flex-grow max-w-sm mx-4">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="relative">
-                <Input
-                  value={themeName}
-                  onChange={(e) => setThemeName(e.target.value)}
-                  className="text-center font-medium pr-7"
-                  placeholder="Enter theme name"
-                />
-                <span className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                  <IconEdit />
-                </span>
-              </div>
-            </TooltipTrigger>
-
-            <TooltipContent>
-              <span className="text-xs">Rename</span>
-            </TooltipContent>
-          </Tooltip>
-        </div>
+        <div className="flex-grow max-w-sm mx-4"></div>
         <div className="flex items-center gap-2">
           {/* <Tooltip>
             <TooltipTrigger asChild>
@@ -111,7 +91,7 @@ export const Header = () => {
           </Tooltip> */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button className="mr-2" variant="outline">
+              <Button disabled className="mr-2" variant="outline">
                 <IconShare />
                 <span className="ml-2">Share</span>
               </Button>
