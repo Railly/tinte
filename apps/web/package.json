@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpx prisma generate && next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
     "generate-theme": "vsce package"
