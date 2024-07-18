@@ -63,16 +63,13 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
     }
   }, [isLoading, themeParam, presets]);
 
-  const loadThemes = () => {
+  const loadAndProcessCustomThemes = (): Record<string, ThemeConfig> => {
     const customThemesRaw = window.localStorage.getItem("customThemes") || "{}";
     const customThemes = JSON.parse(customThemesRaw);
     setCustomThemes(customThemes);
-
-    const customThemesRecord: Record<string, ThemeConfig> = entries(
-      customThemes
-    ).reduce(
+    const proccesedCustomThemes = entries(customThemes).reduce(
       (acc, [themeName, palette]) => {
-        const name = themeName.toLocaleLowerCase().replace(/\s/g, "-");
+        const name = themeName.toLowerCase().replace(/\s/g, "-");
         acc[themeName] = {
           name,
           displayName: themeName,
@@ -84,6 +81,12 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
       },
       {} as Record<string, ThemeConfig>
     );
+    setPresets((prev) => ({ ...prev, ...proccesedCustomThemes }));
+    return proccesedCustomThemes;
+  };
+
+  const loadThemes = () => {
+    const customThemesRecord = loadAndProcessCustomThemes();
 
     const initialPresets = initialThemes.reduce(
       (acc, theme) => {
@@ -159,7 +162,23 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
   );
 
   const applyPreset = (presetName: string) => {
-    const preset = presets[presetName];
+    const updatedCustomThemes = loadAndProcessCustomThemes();
+
+    const initialPresets = initialThemes.reduce(
+      (acc, theme) => {
+        acc[theme.name] = theme;
+        return acc;
+      },
+      {} as Record<string, ThemeConfig>
+    );
+
+    const allPresets: Record<string, ThemeConfig> = {
+      ...initialPresets,
+      ...updatedCustomThemes,
+    };
+
+    setPresets(allPresets);
+    const preset = allPresets[presetName];
     if (!preset) return;
 
     setThemeConfig((prev) => {
@@ -204,7 +223,7 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
         body: JSON.stringify(theme),
       });
       if (!response.ok) throw new Error("Failed to save theme");
-      loadThemes(); // Reload themes after saving
+      loadThemes();
     } catch (error) {
       console.error("Error saving theme:", error);
     }
@@ -216,7 +235,7 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete theme");
-      loadThemes(); // Reload themes after deleting
+      loadThemes();
     } catch (error) {
       console.error("Error deleting theme:", error);
     }
@@ -225,6 +244,7 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
   return {
     tinteTheme,
     themeConfig,
+    setThemeConfig,
     selectedTheme,
     customThemes,
     presets,
@@ -239,5 +259,7 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
     setNextTheme,
     saveTheme,
     deleteTheme,
+    userId: user?.id,
+    setCustomThemes,
   };
 };

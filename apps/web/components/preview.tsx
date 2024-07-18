@@ -14,7 +14,7 @@ interface PreviewProps {
   selectedLanguage: string;
   themeConfig: ThemeConfig | DarkLightPalette;
   userId?: string;
-  onThemeSaved: () => void;
+  onThemeSaved?: () => void;
   isLocalTheme?: boolean;
 }
 

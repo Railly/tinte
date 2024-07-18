@@ -1,17 +1,11 @@
 import {
   IconTinte,
-  IconGithub,
-  IconHeart,
-  IconSave,
-  IconGenerate,
-  IconExport,
   IconShare,
   IconEdit,
   IconLoading,
   IconDownload,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
-import { ThemeSelector } from "@/components/theme-selector";
 import {
   Tooltip,
   TooltipContent,

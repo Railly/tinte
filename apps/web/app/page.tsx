@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   SignedIn,
   SignedOut,
@@ -13,6 +13,9 @@ import { HeaderLogo } from "@/components/header-logo";
 import { PrismaClient } from "@prisma/client";
 import { ThemeConfig } from "@/lib/core/types";
 import { formatTheme, sortThemes } from "./utils.";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 const prisma = new PrismaClient();
 
@@ -35,20 +38,36 @@ export default async function Page() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="flex h-14 items-center justify-between p-4 bg-background-2 border-b">
-        <HeaderLogo />
-        <ThemeSelector />
-        <div className="flex items-center space-x-4">
-          <SignedOut>
-            <SignInButton mode="modal">
-              <Button variant="ghost">Log in</Button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <Button variant="default">Get started</Button>
-            </SignUpButton>
-          </SignedOut>
+        <div className="flex items-center gap-4">
+          <HeaderLogo />
+          <Separator orientation="vertical" className="h-4" />
           <SignedIn>
-            <UserButton />
+            <Link
+              href="/generator"
+              className={cn(buttonVariants({ variant: "link" }), "px-0")}
+            >
+              Generator
+            </Link>
           </SignedIn>
+          <Link
+            href="/gallery"
+            className={cn(buttonVariants({ variant: "link" }), "px-0")}
+          >
+            Gallery
+          </Link>
+        </div>
+        <div className="flex gap-4">
+          <ThemeSelector />
+          <div className="flex items-center space-x-4">
+            <SignedOut>
+              <SignInButton mode="modal" forceRedirectUrl="/generator">
+                <Button variant="default">Log in</Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </div>
         </div>
       </header>
       <ThemeManager initialThemes={themes} />

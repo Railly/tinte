@@ -7,6 +7,7 @@ import { IconGenerate, IconLoading, IconSparkles } from "@/components/ui/icons";
 import { ThemeConfig, DarkLightPalette } from "@/lib/core/types";
 import { toast } from "sonner";
 import { entries } from "@/lib/utils";
+import { defaultThemeConfig } from "@/lib/core/config";
 
 interface ThemeGeneratorProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
@@ -75,7 +76,6 @@ export function ThemeGenerator({
   };
 
   const updateThemeStates = (themeName: string, palette: DarkLightPalette) => {
-    console.log({ themeName, palette });
     const name = themeName.toLowerCase().replace(/\s/g, "-");
     const newCustomThemes = {
       [themeName]: palette,
@@ -88,6 +88,7 @@ export function ThemeGenerator({
       displayName: themeName,
       palette: palette,
       category: "local",
+      tokenColors: defaultThemeConfig.tokenColors,
     });
   };
 

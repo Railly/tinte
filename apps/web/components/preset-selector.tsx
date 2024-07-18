@@ -53,7 +53,7 @@ export const PresetSelector = ({
     const customThemesRaw = window.localStorage.getItem("customThemes") || "{}";
     const customThemesJSON = JSON.parse(customThemesRaw);
     setCustomThemes(customThemesJSON);
-  }, []);
+  }, [presets]);
 
   const customThemesList = Object.entries(customThemes).map(
     ([name, palette]) => ({

@@ -14,9 +14,11 @@ import { DialogContent } from "@radix-ui/react-dialog";
 
 interface SignInDialogProps {
   label?: string;
+  redirectUrl?: string;
 }
 export const SignInDialog: React.FC<SignInDialogProps> = ({
   label = "Sign In",
+  redirectUrl = "/generator",
 }) => {
   const { theme } = useTheme();
   const { isSignedIn } = useUser();
@@ -40,6 +42,7 @@ export const SignInDialog: React.FC<SignInDialogProps> = ({
               baseTheme: theme === "dark" ? dark : experimental__simple,
             }}
             routing="hash"
+            forceRedirectUrl={redirectUrl}
           />
         </DialogContent>
       </DialogPortal>

@@ -135,7 +135,10 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
                 Edit
               </MotionButton>
             ) : (
-              <SignInDialog label="Edit" />
+              <SignInDialog
+                label="Edit"
+                redirectUrl={`/generator?theme=${tinteTheme.name}`}
+              />
             )}
             {tinteTheme.category === "local" && (
               <MotionButton

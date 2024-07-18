@@ -88,3 +88,7 @@
       0 0 100px 40px hsl(var(--background) / 0.2);
   }
 }
+
+.cl-modalBackdrop {
+  align-items: center !important;
+}

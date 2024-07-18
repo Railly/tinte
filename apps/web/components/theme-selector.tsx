@@ -22,7 +22,7 @@ import {
 export function ThemeSelector() {
   const { setTheme, theme } = useTheme();
   // eslint-disable-next-line no-unused-vars
-  const [_, startTransition] = React.useTransition();
+  const [, startTransition] = React.useTransition();
 
   return (
     <DropdownMenu>
@@ -31,17 +31,20 @@ export function ThemeSelector() {
           <TooltipTrigger>
             <DropdownMenuTrigger
               className={cn(
-                buttonVariants({ variant: "ghost" }),
-                "w-full py-0"
+                buttonVariants({ variant: "outline" }),
+                "py-0 text-sm w-[5.5rem]"
               )}
             >
               {theme === "light" ? (
-                <IconSun className="size-4" />
+                <IconSun className="size-3" />
               ) : theme === "dark" ? (
-                <IconMoon className="size-4" />
+                <IconMoon className="size-3" />
               ) : (
-                <IconComputer className="size-4" />
+                <IconComputer className="size-3" />
               )}
+              <span className="ml-2">
+                {theme && theme.charAt(0).toUpperCase() + theme.slice(1)}
+              </span>
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipContent>
