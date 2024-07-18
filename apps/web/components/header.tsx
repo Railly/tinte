@@ -21,6 +21,7 @@ import { SubscriptionForm } from "./subscription-form";
 import { Input } from "./ui/input";
 import { useState } from "react";
 import { Separator } from "./ui/separator";
+import Link from "next/link";
 
 export const Header = () => {
   const [themeName, setThemeName] = useState("Untitled Theme");
@@ -50,22 +51,18 @@ export const Header = () => {
           </div>
           <Separator orientation="vertical" className="h-4" />
           <div className="flex items-center gap-4">
-            <a
-              href="https://tinte.railly.dev"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/"
               className={cn(buttonVariants({ variant: "link" }), "px-0")}
             >
               Home
-            </a>
-            <a
-              href="https://gallery.railly.dev"
-              target="_blank"
-              rel="noopener noreferrer"
+            </Link>
+            <Link
+              href="/gallery"
               className={cn(buttonVariants({ variant: "link" }), "px-0")}
             >
               Gallery
-            </a>
+            </Link>
           </div>
         </div>
         <div className="flex-grow max-w-sm mx-4">

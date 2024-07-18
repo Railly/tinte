@@ -79,4 +79,12 @@
     color: var(--shiki-dark) !important;
     background-color: var(--shiki-dark-bg) !important;
   }
+
+  .custom-shadow {
+    box-shadow:
+      0 0 10px 0 hsl(var(--background) / 0.8),
+      0 0 30px 10px hsl(var(--background) / 0.6),
+      0 0 60px 20px hsl(var(--background) / 0.4),
+      0 0 100px 40px hsl(var(--background) / 0.2);
+  }
 }

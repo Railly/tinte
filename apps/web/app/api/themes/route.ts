@@ -1,59 +1,49 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
-import { ThemeSelector } from "@/components/theme-selector";
-import { ThemeManager } from "@/components/theme-manager";
-import { HeaderLogo } from "@/components/header-logo";
-import { PrismaClient, ThemePalettes, TokenColors } from "@prisma/client";
-import { ThemeConfig } from "@/lib/core/types";
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import type { Themes, ThemePalettes, TokenColors } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function getThemes() {
-  const themes = await prisma.themes.findMany({
-    include: {
-      ThemePalettes: true,
-      TokenColors: true,
-    },
-  });
+export const GET = async () => {
+  try {
+    const themes = await prisma.themes.findMany({
+      include: {
+        ThemePalettes: true,
+        TokenColors: true,
+      },
+    });
 
-  prisma.$disconnect();
+    const formattedThemes = themes.map((theme) => formatTheme(theme));
 
-  const formattedThemes = themes.map((theme) => ({
+    return NextResponse.json(formattedThemes);
+  } catch (error) {
+    console.error("Error fetching themes:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch themes" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+function formatTheme(
+  theme: Themes & { ThemePalettes: ThemePalettes[]; TokenColors: TokenColors[] }
+) {
+  const darkPalette = theme.ThemePalettes.find((p) => p.mode === "dark");
+  const lightPalette = theme.ThemePalettes.find((p) => p.mode === "light");
+  const tokenColors = theme.TokenColors[0]; // Assuming there's only one TokenColors entry per theme
+
+  return {
     name: theme.name,
     displayName: theme.display_name,
     category: theme.category,
     palette: {
-      dark: formatPalette(theme.ThemePalettes.find((p) => p.mode === "dark")),
-      light: formatPalette(theme.ThemePalettes.find((p) => p.mode === "light")),
+      dark: formatPalette(darkPalette),
+      light: formatPalette(lightPalette),
     },
-    tokenColors: formatTokenColors(theme.TokenColors[0]),
-  })) as ThemeConfig[];
-
-  const featuredOrder = [
-    "one-hunter",
-    "flexoki",
-    "vercel",
-    "tailwind",
-    "supabase",
-  ];
-
-  const sortedThemes = formattedThemes.sort((a, b) => {
-    if (a.category === "featured" && b.category === "featured") {
-      return featuredOrder.indexOf(a.name) - featuredOrder.indexOf(b.name);
-    }
-    if (a.category === "featured") return -1;
-    if (b.category === "featured") return 1;
-    return a.name.localeCompare(b.name);
-  });
-
-  return sortedThemes;
+    tokenColors: formatTokenColors(tokenColors),
+  };
 }
 
 function formatPalette(palette: ThemePalettes | undefined) {
@@ -119,31 +109,4 @@ function formatTokenColors(tokenColors: TokenColors | undefined) {
     calls: tokenColors.calls,
     punctuation: tokenColors.punctuation,
   };
-}
-
-export default async function Page() {
-  const themes = await getThemes();
-
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="flex h-14 items-center justify-between p-4 bg-background-2 border-b">
-        <HeaderLogo />
-        <ThemeSelector />
-        <div className="flex items-center space-x-4">
-          <SignedOut>
-            <SignInButton mode="modal">
-              <Button variant="ghost">Log in</Button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <Button variant="default">Get started</Button>
-            </SignUpButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
-        </div>
-      </header>
-      <ThemeManager initialThemes={themes} />
-    </div>
-  );
 }

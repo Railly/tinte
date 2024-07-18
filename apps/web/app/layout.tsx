@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/react";
 import CounterscaleScript from "@/components/counterscale-script";
+import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Tinte - VS Code Theme Generator",
@@ -62,26 +63,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }): JSX.Element {
   return (
-    <html lang="en">
-      <body
-        className={cn(
-          "font-sans antialiased min-h-screen relative",
-          GeistSans.variable,
-          GeistMono.variable
-        )}
-      >
-        <Providers
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={cn(
+            "font-sans antialiased min-h-screen relative",
+            GeistSans.variable,
+            GeistMono.variable
+          )}
         >
-          {children}
-          <Analytics />
-          <CounterscaleScript />
-          <Toaster position="top-center" richColors />
-        </Providers>
-      </body>
-    </html>
+          <Providers
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Analytics />
+            <CounterscaleScript />
+            <Toaster position="top-center" richColors />
+          </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

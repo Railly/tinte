@@ -23,8 +23,9 @@ export function useHighlighter({
 
   useEffect(() => {
     async function highlight() {
-      if (!text) return;
+      if (!text || !theme) return;
 
+      console.log({ theme });
       const highlighter = await getHighlighter({
         themes: [theme.light, theme.dark],
         langs: Object.values(MONACO_SHIKI_LANGS),

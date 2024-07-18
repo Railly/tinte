@@ -245,7 +245,6 @@ const editorColorMap = {
 } as const;
 
 export function getVSCodeColors(palette: Palette, mode: "light" | "dark") {
-  console.log({ palette, mode });
   const vsCodeColors: Record<string, string> = {};
 
   for (const [token, colorKey] of entries(editorColorMap)) {
