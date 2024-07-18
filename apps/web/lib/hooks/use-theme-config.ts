@@ -1,67 +1,128 @@
-import { useState } from "react";
-import { Palette, ThemeConfig } from "@/lib/core/types";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { ThemeConfig, DarkLightPalette, Palette } from "@/lib/core/types";
 import { defaultThemeConfig } from "@/lib/core/config";
 import { useTheme } from "next-themes";
-import { BACKGROUND_LESS_PALETTE, PRESETS } from "../constants";
-import { debounce } from "../utils";
 import { generateVSCodeTheme } from "../core";
+import { useUser } from "@clerk/nextjs";
+import { BACKGROUND_LESS_PALETTE } from "../constants";
+import { debounce } from "../utils";
+import { useSearchParams } from "next/navigation";
 
-export const useThemeConfig = () => {
-  if (typeof window === "undefined")
-    return {
-      presets: {},
-      setPresets: () => {},
-      isBackgroundless: false,
-      currentTheme: "light",
-      themeConfig: defaultThemeConfig,
-      updatePaletteColor: () => {},
-      setThemeConfig: () => {},
-      applyPreset: () => {},
-      toggleBackgroundless: () => {},
-    };
-
-  const customThemesRaw = window.localStorage.getItem("customThemes") || "{}";
-  const customThemesJSON = JSON.parse(customThemesRaw);
-  const lastPreset = window.localStorage.getItem("lastPreset");
-  const defaultPresetName = lastPreset || defaultThemeConfig.displayName;
+export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
+  const { user, isLoaded } = useUser();
   const { theme: nextTheme, setTheme: setNextTheme } = useTheme();
+  const searchParams = useSearchParams();
+
+  const themeParam = searchParams?.get("theme");
+  console.log({ themeParam });
+  const defaultTheme = initialThemes[0] || defaultThemeConfig;
+
+  const [themeConfig, setThemeConfig] = useState<ThemeConfig>(defaultTheme);
+  const [selectedTheme, setSelectedTheme] = useState(defaultTheme.displayName);
+  const [customThemes, setCustomThemes] = useState<
+    Record<string, DarkLightPalette>
+  >({});
+  const [presets, setPresets] = useState<Record<string, ThemeConfig>>({});
+  const [isBackgroundless, setIsBackgroundless] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const initialLoadRef = useRef(false);
+
+  const tinteTheme = useMemo(
+    () => generateVSCodeTheme(themeConfig),
+    [themeConfig]
+  );
+
   const currentTheme = (
     nextTheme === "system"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? typeof window !== "undefined" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light"
       : nextTheme
   ) as "light" | "dark";
 
-  const [presets, setPresets] = useState({
-    ...PRESETS,
-    ...customThemesJSON,
-  });
-  const [isBackgroundless, setIsBackgroundless] = useState(false);
-  const [themeConfig, setThemeConfig] = useState<ThemeConfig>({
-    ...defaultThemeConfig,
-    displayName: defaultPresetName,
-    name: defaultPresetName.toLowerCase().replace(/\s/g, "-"),
-    palette: presets[defaultPresetName] as ThemeConfig["palette"],
-  });
+  useEffect(() => {
+    if (isLoaded && !initialLoadRef.current) {
+      loadThemes();
+    }
+  }, [isLoaded]);
 
-  const tinteTheme = generateVSCodeTheme(themeConfig);
+  useEffect(() => {
+    console.log({ isLoading, themeParam, initialLoadRef, GAA: "gaa" });
+    if (!isLoading && themeParam && !initialLoadRef.current) {
+      const decodedThemeName = decodeURIComponent(themeParam);
+      const matchingTheme = Object.entries(presets).find(([name, theme]) => {
+        console.log({ name, theme });
+        if ("displayName" in theme) {
+          return (
+            theme.displayName.toLowerCase() === decodedThemeName.toLowerCase()
+          );
+        } else {
+          return name.toLowerCase() === decodedThemeName.toLowerCase();
+        }
+      });
+      console.log({ matchingTheme });
+      if (matchingTheme) {
+        applyPreset(matchingTheme[0]);
+      }
+      initialLoadRef.current = true;
+    }
+  }, [isLoading, themeParam, presets]);
+
+  const loadThemes = () => {
+    const customThemesRaw = window.localStorage.getItem("customThemes") || "{}";
+    const customThemesJSON = JSON.parse(customThemesRaw);
+    setCustomThemes(customThemesJSON);
+
+    const initialPresets = initialThemes.reduce(
+      (acc, theme) => {
+        acc[theme.name] = theme;
+        return acc;
+      },
+      {} as Record<string, ThemeConfig>
+    );
+    const allPresets = { ...initialPresets, ...customThemesJSON };
+    setPresets(allPresets);
+
+    const defaultTheme = initialThemes[0] || defaultThemeConfig;
+    setThemeConfig(defaultTheme);
+    setSelectedTheme(defaultTheme.displayName);
+
+    setIsLoading(false);
+  };
 
   const toggleBackgroundless = () => {
     if (!currentTheme) return;
     setIsBackgroundless((prevMode) => !prevMode);
-    setThemeConfig((prevConfig) => ({
-      ...prevConfig,
-      palette: {
-        ...prevConfig.palette,
+    setThemeConfig((prevConfig) => {
+      const currentPreset = presets[prevConfig.displayName];
+      let currentPalette = prevConfig.palette;
+
+      if (currentPreset) {
+        if ("palette" in currentPreset) {
+          // Case: preset is ThemeConfig
+          currentPalette = currentPreset.palette;
+        } else {
+          // Case: preset is DarkLightPalette
+          currentPalette = currentPreset as DarkLightPalette;
+        }
+      }
+
+      const newPalette = {
+        ...currentPalette,
         [currentTheme]: !isBackgroundless
           ? {
-              ...prevConfig.palette[currentTheme],
+              ...currentPalette[currentTheme],
               ...BACKGROUND_LESS_PALETTE[currentTheme],
             }
-          : presets[prevConfig.displayName]?.[currentTheme],
-      },
-    }));
+          : currentPalette[currentTheme],
+      };
+
+      return {
+        ...prevConfig,
+        palette: newPalette,
+      };
+    });
   };
 
   const updatePaletteColor = debounce(
@@ -82,42 +143,86 @@ export const useThemeConfig = () => {
     250
   );
 
-  const applyPreset = (presetName: string, newPresets?: typeof presets) => {
-    if (!currentTheme) return;
-    const _presets = newPresets || presets;
-    setThemeConfig((prevConfig) => ({
-      ...prevConfig,
-      displayName: presetName,
-      palette: {
-        light: isBackgroundless
-          ? {
-              ..._presets[presetName]?.light,
-              ...BACKGROUND_LESS_PALETTE.light,
-            }
-          : _presets[presetName]?.light,
-        dark: isBackgroundless
-          ? {
-              ..._presets[presetName]?.dark,
-              ...BACKGROUND_LESS_PALETTE.dark,
-            }
-          : _presets[presetName]?.dark,
-      },
-    }));
-    window.localStorage.setItem("lastPreset", presetName);
+  const applyPreset = (presetName: string) => {
+    const preset = presets[presetName];
+    if (!preset) return;
+
+    setThemeConfig((prev) => {
+      let newPalette: DarkLightPalette;
+      let newTokenColors = prev.tokenColors;
+
+      if ("palette" in preset && "tokenColors" in preset) {
+        newPalette = preset.palette;
+        newTokenColors = preset.tokenColors;
+      } else {
+        newPalette = preset as DarkLightPalette;
+      }
+
+      if (isBackgroundless) {
+        newPalette = {
+          light: { ...newPalette.light, ...BACKGROUND_LESS_PALETTE.light },
+          dark: { ...newPalette.dark, ...BACKGROUND_LESS_PALETTE.dark },
+        };
+      }
+
+      return {
+        ...prev,
+        name: presetName,
+        displayName: preset.displayName || presetName,
+        palette: newPalette,
+        tokenColors: newTokenColors,
+      };
+    });
+
+    setSelectedTheme(presetName);
+
+    if (!user) {
+      window.localStorage.setItem("lastPreset", presetName);
+    }
+  };
+
+  const saveTheme = async (theme: ThemeConfig) => {
+    try {
+      const response = await fetch("/api/themes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(theme),
+      });
+      if (!response.ok) throw new Error("Failed to save theme");
+      loadThemes(); // Reload themes after saving
+    } catch (error) {
+      console.error("Error saving theme:", error);
+    }
+  };
+
+  const deleteTheme = async (themeName: string) => {
+    try {
+      const response = await fetch(`/api/themes/${themeName}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete theme");
+      loadThemes(); // Reload themes after deleting
+    } catch (error) {
+      console.error("Error deleting theme:", error);
+    }
   };
 
   return {
     tinteTheme,
+    themeConfig,
+    selectedTheme,
+    customThemes,
     presets,
-    setPresets,
     isBackgroundless,
     currentTheme,
-    themeConfig,
-    updatePaletteColor,
-    setThemeConfig,
-    applyPreset,
+    isLoading,
+    setSelectedTheme,
+    setPresets,
     toggleBackgroundless,
-    customThemesJSON,
+    updatePaletteColor,
+    applyPreset,
     setNextTheme,
+    saveTheme,
+    deleteTheme,
   };
 };

@@ -6,14 +6,48 @@ import { useThemeConfig } from "@/lib/hooks/use-theme-config";
 import { useCodeSample } from "@/lib/hooks/use-code-sample";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
 import { ThemeConfigurationPanel } from "@/components/theme-configuration-panel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import RHLogoIcon from "@/public/rh-logo.svg";
+import { ThemeConfig } from "@/lib/core/types";
+import LoadingPage from "@/components/loading-page";
+import { useUser } from "@clerk/nextjs";
 
 export default function Page(): JSX.Element {
-  if (typeof window === "undefined") return <></>;
+  const [initialThemes, setInitialThemes] = useState<ThemeConfig[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchThemes = async () => {
+      try {
+        const response = await fetch("/api/themes");
+        if (!response.ok) throw new Error("Failed to fetch themes");
+        const themes = await response.json();
+        setInitialThemes(themes);
+      } catch (error) {
+        console.error("Error fetching themes:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchThemes();
+  }, []);
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  return <PageContent initialThemes={initialThemes} />;
+}
+
+function PageContent({
+  initialThemes,
+}: {
+  initialThemes: ThemeConfig[];
+}): JSX.Element {
   const {
     tinteTheme,
     presets,
@@ -24,9 +58,9 @@ export default function Page(): JSX.Element {
     themeConfig,
     currentTheme,
     applyPreset,
-    customThemesJSON,
+    customThemes,
     setNextTheme,
-  } = useThemeConfig();
+  } = useThemeConfig(initialThemes);
 
   const {
     selectedLanguage,
@@ -39,6 +73,13 @@ export default function Page(): JSX.Element {
 
   const { loading, exportVSIX } = useThemeExport();
   const [advancedMode, setAdvancedMode] = useState(false);
+  const { user } = useUser();
+
+  const handleThemeSaved = () => {
+    // Refresh themes or update state as needed
+    // For example, you might want to refetch the themes:
+    // fetchThemes();
+  };
 
   return (
     <div className="flex h-screen">
@@ -64,15 +105,16 @@ export default function Page(): JSX.Element {
             <SheetContent side="left" className="w-[250px] left-16">
               <div className="py-4 z-[55]">
                 <h2 className="text-lg font-semibold mb-4">Themes</h2>
-                {Object.keys(customThemesJSON).map((themeName, index) => (
-                  <Button
-                    key={`${themeName}-${index}`}
-                    variant="ghost"
-                    className="w-full justify-start mb-2"
-                  >
-                    {themeName}
-                  </Button>
-                ))}
+                {customThemes &&
+                  Object.keys(customThemes).map((themeName, index) => (
+                    <Button
+                      key={`${themeName}-${index}`}
+                      variant="ghost"
+                      className="w-full justify-start mb-2"
+                    >
+                      {themeName}
+                    </Button>
+                  ))}
               </div>
             </SheetContent>
           </Sheet>
@@ -90,6 +132,9 @@ export default function Page(): JSX.Element {
               setColorPickerShouldBeHighlighted
             }
             selectedLanguage={selectedLanguage}
+            themeConfig={themeConfig}
+            userId={user?.id}
+            onThemeSaved={handleThemeSaved}
           />
           <Configuration
             colorPickerShouldBeHighlighted={colorPickerShouldBeHighlighted}
@@ -97,21 +142,17 @@ export default function Page(): JSX.Element {
             currentTheme={currentTheme as "light" | "dark"}
             onPaletteColorChange={updatePaletteColor}
             advancedMode={advancedMode}
-            onGenerateTheme={(description: string) => {
-              // Implement logic to generate a theme based on the description
-            }}
+            onGenerateTheme={(description: string) => {}}
           />
         </div>
         <div className="flex justify-center gap-4 items-center mx-2 self-end">
           <ThemeConfigurationPanel
             presets={presets}
-            setPresets={setPresets}
             isBackgroundless={isBackgroundless}
             toggleBackgroundless={toggleBackgroundless}
             themeConfig={themeConfig}
             currentTheme={currentTheme as "light" | "dark"}
             applyPreset={applyPreset}
-            customThemesJSON={customThemesJSON}
             setNextTheme={setNextTheme}
             selectedLanguage={selectedLanguage}
             handleLanguageChange={handleLanguageChange}

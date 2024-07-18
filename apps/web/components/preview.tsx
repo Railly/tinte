@@ -1,4 +1,5 @@
 import { CodeEditor } from "./code-editor";
+import { ThemeConfig, DarkLightPalette } from "@/lib/core/types";
 
 interface PreviewProps {
   theme: any;
@@ -11,6 +12,9 @@ interface PreviewProps {
     }>
   >;
   selectedLanguage: string;
+  themeConfig: ThemeConfig | DarkLightPalette;
+  userId?: string;
+  onThemeSaved: () => void;
 }
 
 export const Preview = ({
@@ -19,6 +23,9 @@ export const Preview = ({
   code,
   setColorPickerShouldBeHighlighted,
   selectedLanguage,
+  themeConfig,
+  userId,
+  onThemeSaved,
 }: PreviewProps) => {
   return (
     <div className="flex gap-4 w-full h-full">
@@ -28,6 +35,9 @@ export const Preview = ({
         onCodeChange={updateCode}
         language={selectedLanguage}
         setColorPickerShouldBeHighlighted={setColorPickerShouldBeHighlighted}
+        themeConfig={themeConfig}
+        userId={userId}
+        onThemeSaved={onThemeSaved}
       />
     </div>
   );

@@ -6,18 +6,25 @@ import { editor } from "monaco-editor";
 import { Button } from "./ui/button";
 import { IconSave } from "./ui/icons";
 import { MONACO_SHIKI_LANGS } from "@/lib/constants";
+import { DarkLightPalette, ThemeConfig } from "@/lib/core/types";
+import { defaultThemeConfig } from "@/lib/core/config";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 interface CodeEditorProps {
   theme: any;
   code?: string;
   onCodeChange: (value: string | undefined) => void;
   language: string;
+  themeConfig: ThemeConfig | DarkLightPalette;
   setColorPickerShouldBeHighlighted: React.Dispatch<
     React.SetStateAction<{
       key: string;
       value: boolean;
     }>
   >;
+  onThemeSaved?: () => void;
+  userId?: string;
 }
 
 export const CodeEditor = ({
@@ -25,23 +32,21 @@ export const CodeEditor = ({
   code,
   onCodeChange,
   language,
+  themeConfig,
   setColorPickerShouldBeHighlighted,
+  onThemeSaved,
+  userId,
 }: CodeEditorProps) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const codeRef = useRef<HTMLPreElement>(null);
-  const { currentThemeName, tokens } = useMonacoEditor({
+  const { currentThemeName } = useMonacoEditor({
     theme,
     text: code,
     language,
     editorRef,
-  });
-  const { highlightedText } = useHighlighter({
-    theme,
-    text: code,
-    language,
-    tokens,
   });
   useEffect(() => {
     const codeElement = codeRef.current;
@@ -81,6 +86,63 @@ export const CodeEditor = ({
     return () => window.removeEventListener("resize", resizeEditor);
   }, []);
 
+  const saveTheme = async () => {
+    setIsSaving(true);
+    try {
+      let themeData: ThemeConfig;
+      let isLocalTheme = false;
+
+      if ("palette" in themeConfig) {
+        themeData = themeConfig;
+      } else {
+        isLocalTheme = true;
+        themeData = {
+          ...defaultThemeConfig,
+          name: currentThemeName,
+          displayName: currentThemeName,
+          palette: themeConfig,
+        };
+      }
+
+      const response = await fetch("/api/themes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...themeData,
+          userId,
+          isLocalTheme: isLocalTheme,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save theme");
+      }
+
+      const savedTheme = await response.json();
+      toast.success("Theme saved successfully!: " + JSON.stringify(savedTheme));
+
+      if (onThemeSaved) {
+        onThemeSaved();
+      }
+
+      if (isLocalTheme) {
+        // Save to localStorage
+        const localThemes = JSON.parse(
+          localStorage.getItem("customThemes") || "{}"
+        );
+        localThemes[themeData.name] = themeData.palette;
+        localStorage.setItem("customThemes", JSON.stringify(localThemes));
+      }
+    } catch (error) {
+      console.error("Error saving theme:", error);
+      toast.error("Failed to save theme. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -89,9 +151,9 @@ export const CodeEditor = ({
     >
       <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
         <h2 className="text-sm font-bold">Preview Editor</h2>
-        <Button variant="outline">
+        <Button variant="outline" onClick={saveTheme} disabled={isSaving}>
           <IconSave />
-          <span className="ml-2">Save Theme</span>
+          <span className="ml-2">{isSaving ? "Saving..." : "Save Theme"}</span>
         </Button>
       </div>
       <div className="flex-grow !h-[70vh]" style={{ height: "70vh" }}>

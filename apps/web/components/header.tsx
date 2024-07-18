@@ -22,8 +22,10 @@ import { Input } from "./ui/input";
 import { useState } from "react";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
+import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 
 export const Header = () => {
+  const user = useUser();
   const [themeName, setThemeName] = useState("Untitled Theme");
 
   const handleSave = () => {
@@ -45,10 +47,10 @@ export const Header = () => {
     <TooltipProvider>
       <header className="flex items-center justify-between gap-4 py-2 px-4 h-14 border-b">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <IconTinte />
             <h1 className="text-md font-bold">tinte</h1>
-          </div>
+          </Link>
           <Separator orientation="vertical" className="h-4" />
           <div className="flex items-center gap-4">
             <Link
@@ -131,10 +133,12 @@ export const Header = () => {
           </Tooltip>
           {/* Profile Template with initials RH */}
           <Separator orientation="vertical" className="h-4 mx-2" />
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-medium text-sm">
-              RH
-            </span>
+          <div className="w-8 h-8 flex justify-center items-center">
+            {!user.isLoaded ? (
+              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" />
+            ) : (
+              <UserButton />
+            )}
           </div>
           {/* <ThemeSelector /> */}
           {/* <Tooltip>

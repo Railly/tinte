@@ -1,21 +1,17 @@
 import { HelpModal } from "./help-modal";
 import { LanguageSwitcher } from "./language-switcher";
 import { PresetSelector } from "./preset-selector";
-import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
-import { IconCopy, IconDownload, IconLoading } from "./ui/icons";
-import { DarkLightPalette } from "@/lib/core/types";
+import { ThemeConfig } from "@/lib/core/types";
 
 export function ThemeConfigurationPanel({
   presets,
-  setPresets,
   isBackgroundless,
   toggleBackgroundless,
   themeConfig,
   currentTheme,
   applyPreset,
-  customThemesJSON,
   setNextTheme,
   selectedLanguage,
   handleLanguageChange,
@@ -24,19 +20,17 @@ export function ThemeConfigurationPanel({
   advancedMode,
   setAdvancedMode,
 }: {
-  presets: any;
-  setPresets: React.Dispatch<React.SetStateAction<any>>;
+  presets: Record<string, ThemeConfig>;
   isBackgroundless: boolean;
   toggleBackgroundless: () => void;
-  themeConfig: any;
+  themeConfig: ThemeConfig;
   currentTheme: "light" | "dark";
   applyPreset: (preset: string) => void;
-  customThemesJSON: Record<string, DarkLightPalette>;
   setNextTheme?: (theme: "light" | "dark") => void;
   selectedLanguage: string;
   handleLanguageChange: (language: string) => void;
   loading: boolean;
-  exportVSIX: (themeConfig: any, isDark: boolean) => void;
+  exportVSIX: (themeConfig: ThemeConfig, isDark: boolean) => void;
   advancedMode: boolean;
   setAdvancedMode: (enabled: boolean) => void;
 }) {
@@ -44,9 +38,7 @@ export function ThemeConfigurationPanel({
     <div className="flex justify-center flex-wrap md:flex-nowrap gap-8 py-6 px-4 bg-muted/30 border rounded-t-md">
       <PresetSelector
         presets={presets}
-        setPresets={setPresets}
-        customThemes={customThemesJSON}
-        currentTheme={currentTheme as "light" | "dark"}
+        currentTheme={currentTheme}
         themeConfig={themeConfig}
         onPresetSelect={applyPreset}
       />
@@ -98,45 +90,6 @@ export function ThemeConfigurationPanel({
         </Label>
         <HelpModal />
       </div>
-      {/* <div className="flex flex-col gap-3">
-        <Label htmlFor="how-to-install" className="text-muted-foreground">
-          Actions
-        </Label>
-        <div className="flex flex-wrap md:flex-nowrap gap-5">
-          <Button
-            variant="outline"
-            onClick={() => {
-              const jsonString = JSON.stringify(
-                themeConfig.palette[currentTheme as "light" | "dark"],
-                null,
-                2
-              );
-              navigator.clipboard.writeText(jsonString);
-            }}
-          >
-            <IconCopy className="mr-2" />
-            Copy Theme
-            <span className="text-xs font-mono ml-1">(.json)</span>
-          </Button>
-          <Button
-            onClick={() => exportVSIX(themeConfig, currentTheme === "dark")}
-            disabled={loading}
-          >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <IconLoading />
-                <span>Exporting...</span>
-              </div>
-            ) : (
-              <span className="flex items-center">
-                <IconDownload className="mr-2" />
-                Export Theme
-                <span className="text-xs font-mono ml-1">(.vsix)</span>
-              </span>
-            )}
-          </Button>
-        </div>
-      </div> */}
     </div>
   );
 }

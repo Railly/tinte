@@ -4,6 +4,7 @@ import { DarkLightPalette, SemanticToken, ThemeConfig } from "./types";
 export const defaultThemeConfig: ThemeConfig = {
   name: "one-hunter",
   displayName: "One Hunter",
+  category: "featured",
   palette: PRESETS["One Hunter"] as DarkLightPalette,
   tokenColors: {
     plain: "text",
