@@ -1,4 +1,3 @@
-import { useHighlighter } from "@/lib/hooks/use-highlighter";
 import { useMonacoEditor } from "@/lib/hooks/use-monaco-editor";
 import MonacoEditor from "@monaco-editor/react";
 import React, { useRef, useEffect, useState } from "react";
@@ -6,9 +5,7 @@ import { editor } from "monaco-editor";
 import { Button } from "./ui/button";
 import { IconSave } from "./ui/icons";
 import { MONACO_SHIKI_LANGS } from "@/lib/constants";
-import { DarkLightPalette, ThemeConfig } from "@/lib/core/types";
-import { defaultThemeConfig } from "@/lib/core/config";
-import { useUser } from "@clerk/nextjs";
+import { ThemeConfig } from "@/lib/core/types";
 import { toast } from "sonner";
 
 interface CodeEditorProps {
@@ -16,7 +13,7 @@ interface CodeEditorProps {
   code?: string;
   onCodeChange: (value: string | undefined) => void;
   language: string;
-  themeConfig: ThemeConfig | DarkLightPalette;
+  themeConfig: ThemeConfig;
   setColorPickerShouldBeHighlighted: React.Dispatch<
     React.SetStateAction<{
       key: string;
@@ -89,30 +86,15 @@ export const CodeEditor = ({
   const saveTheme = async () => {
     setIsSaving(true);
     try {
-      let themeData: ThemeConfig;
-      let isLocalTheme = false;
-
-      if ("palette" in themeConfig) {
-        themeData = themeConfig;
-      } else {
-        isLocalTheme = true;
-        themeData = {
-          ...defaultThemeConfig,
-          name: currentThemeName,
-          displayName: currentThemeName,
-          palette: themeConfig,
-        };
-      }
-
       const response = await fetch("/api/themes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...themeData,
+          ...themeConfig,
           userId,
-          isLocalTheme: isLocalTheme,
+          isLocalTheme: themeConfig,
         }),
       });
 
@@ -126,13 +108,16 @@ export const CodeEditor = ({
       if (onThemeSaved) {
         onThemeSaved();
       }
-
-      if (isLocalTheme) {
+      console.log({ themeConfig });
+      if (themeConfig.category === "local") {
         const localThemes = JSON.parse(
           localStorage.getItem("customThemes") || "{}"
         );
-        delete localThemes[themeData.displayName];
+        console.log({ localThemes, themeConfig });
+        delete localThemes[themeConfig.displayName];
+        console.log("After delete", localThemes);
         localStorage.setItem("customThemes", JSON.stringify(localThemes));
+        localStorage.removeItem;
       }
     } catch (error) {
       console.error("Error saving theme:", error);

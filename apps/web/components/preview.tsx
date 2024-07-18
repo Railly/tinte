@@ -15,6 +15,7 @@ interface PreviewProps {
   themeConfig: ThemeConfig | DarkLightPalette;
   userId?: string;
   onThemeSaved: () => void;
+  isLocalTheme?: boolean;
 }
 
 export const Preview = ({
@@ -35,7 +36,7 @@ export const Preview = ({
         onCodeChange={updateCode}
         language={selectedLanguage}
         setColorPickerShouldBeHighlighted={setColorPickerShouldBeHighlighted}
-        themeConfig={themeConfig}
+        themeConfig={themeConfig as ThemeConfig}
         userId={userId}
         onThemeSaved={onThemeSaved}
       />

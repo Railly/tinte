@@ -12,7 +12,7 @@ import { Label } from "./ui/label";
 import { cn } from "@/lib/utils";
 import { DarkLightPalette, ThemeConfig } from "@/lib/core/types";
 import { FEATURED_THEME_LOGOS } from "@/lib/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface PresetSelectorProps {
   label?: string;
@@ -31,12 +31,19 @@ export const PresetSelector = ({
   onPresetSelect,
   presets,
 }: PresetSelectorProps) => {
-  const featuredThemes = Object.values(presets).filter(
-    (theme) => theme.category === "featured"
-  );
-  const raysoThemes = Object.values(presets).filter(
-    (theme) => theme.category === "rayso"
-  );
+  const classifiedThemes = useMemo(() => {
+    const classifiedThemes: Record<string, ThemeConfig[]> = {
+      featured: [],
+      rayso: [],
+      community: [],
+    };
+
+    for (const [, theme] of Object.entries(presets)) {
+      classifiedThemes[theme.category]?.push(theme);
+    }
+
+    return classifiedThemes;
+  }, [presets]);
 
   const [customThemes, setCustomThemes] = useState<
     Record<string, DarkLightPalette>
@@ -70,7 +77,7 @@ export const PresetSelector = ({
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Featured</SelectLabel>
-              {featuredThemes.map((theme) => (
+              {classifiedThemes.featured?.map((theme) => (
                 <SelectItem key={theme.name} value={theme.name}>
                   <div className="flex items-center gap-2">
                     {
@@ -102,7 +109,20 @@ export const PresetSelector = ({
             )}
             <SelectGroup className="border-t pt-1 mt-1">
               <SelectLabel>Ray.so</SelectLabel>
-              {raysoThemes.map((theme) => (
+              {classifiedThemes.rayso?.map((theme) => (
+                <SelectItem key={theme.name} value={theme.name}>
+                  <div className="flex items-center gap-2">
+                    <CircularGradient palette={theme.palette[currentTheme]} />
+                    <span className="truncate max-w-[5.5rem]">
+                      {theme.displayName}
+                    </span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectGroup>
+            <SelectGroup>
+              <SelectLabel>Community</SelectLabel>
+              {classifiedThemes.community?.map((theme) => (
                 <SelectItem key={theme.name} value={theme.name}>
                   <div className="flex items-center gap-2">
                     <CircularGradient palette={theme.palette[currentTheme]} />

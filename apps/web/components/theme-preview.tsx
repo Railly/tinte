@@ -9,7 +9,6 @@ interface ThemePreviewProps {
 
 export function ThemePreview({ vscodeTheme }: ThemePreviewProps) {
   const [selectedLanguage, setSelectedLanguage] = useState("typescript");
-  console.log({ vscodeTheme });
 
   return (
     <div className="w-96 h-full flex border rounded-md shadow-md dark:shadow-foreground/5">

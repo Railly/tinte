@@ -8,6 +8,7 @@ import {
   sortThemes,
 } from "@/app/utils.";
 import { defaultThemeConfig } from "@/lib/core/config";
+import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient();
 
@@ -59,6 +60,8 @@ export const POST = async (req: Request) => {
         TokenColors: true,
       },
     });
+
+    revalidatePath("/", "page");
 
     return NextResponse.json(theme);
   } catch (error) {

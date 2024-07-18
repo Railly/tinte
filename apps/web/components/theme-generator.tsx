@@ -6,6 +6,7 @@ import { ShineButton } from "@/components/ui/shine-button";
 import { IconGenerate, IconLoading, IconSparkles } from "@/components/ui/icons";
 import { ThemeConfig, DarkLightPalette } from "@/lib/core/types";
 import { toast } from "sonner";
+import { entries } from "@/lib/utils";
 
 interface ThemeGeneratorProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
@@ -33,11 +34,11 @@ export function ThemeGenerator({
     setIsGenerating(true);
     try {
       const generatedTheme = await fetchGeneratedTheme(themeDescription);
-      const entries = Object.entries(generatedTheme);
+      const _entries = entries(generatedTheme);
       if (entries.length === 0) {
         throw new Error("No theme generated");
       }
-      const [generatedThemeName, generatedPalette] = entries[0] as [
+      const [generatedThemeName, generatedPalette] = _entries[0] as [
         string,
         DarkLightPalette,
       ];
@@ -74,6 +75,8 @@ export function ThemeGenerator({
   };
 
   const updateThemeStates = (themeName: string, palette: DarkLightPalette) => {
+    console.log({ themeName, palette });
+    const name = themeName.toLowerCase().replace(/\s/g, "-");
     const newCustomThemes = {
       [themeName]: palette,
       ...customThemes,
@@ -81,9 +84,10 @@ export function ThemeGenerator({
 
     updateCustomThemes(newCustomThemes);
     updateThemeConfig({
-      name: themeName.toLowerCase().replace(/\s/g, "-"),
+      name,
       displayName: themeName,
       palette: palette,
+      category: "local",
     });
   };
 

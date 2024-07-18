@@ -41,14 +41,13 @@ export function ThemeCards({
   const raysoThemes = initialThemes.filter(
     (theme) => theme.category === "rayso"
   );
-
   const communityThemes = initialThemes.filter(
     (theme) => theme.category === "community"
   );
 
   const customThemesList = Object.entries(customThemes).map(
     ([name, palette]) => ({
-      name,
+      name: name.toLowerCase().replace(/\s/g, "-"),
       displayName: name,
       palette,
       category: "local",
@@ -76,14 +75,10 @@ export function ThemeCards({
   const handleDeleteTheme = (themeName: string) => {
     const updatedCustomThemes = { ...customThemes };
     delete updatedCustomThemes[themeName];
-
-    // Update state
     updateCustomThemes(updatedCustomThemes);
 
-    // Update localStorage
     localStorage.setItem("customThemes", JSON.stringify(updatedCustomThemes));
 
-    // If the deleted theme was selected, select a default theme
     if (selectedTheme === themeName) {
       const defaultTheme = initialThemes[0];
       if (defaultTheme) {
@@ -100,17 +95,14 @@ export function ThemeCards({
       <ThemeCard
         key={index}
         showcaseColors={showcaseColors}
-        featuredTheme={theme.palette}
         nextTheme={nextTheme}
-        displayName={theme.displayName}
-        category={theme.category}
+        tinteTheme={theme}
         onUseTheme={() => handleUseTheme(theme)}
         isSelected={selectedTheme === theme.displayName}
         onDeleteTheme={() => handleDeleteTheme(theme.displayName)}
       />
     ));
   };
-  console.log({ communityThemes });
 
   return (
     <section className="w-full mt-4">

@@ -8,19 +8,15 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SignInDialog } from "./sign-in-dialog";
+import { ThemeConfig } from "@/lib/core/types";
 
 interface ThemeCardProps {
   showcaseColors: string[];
-  featuredTheme: {
-    dark: Record<string, string>;
-    light: Record<string, string>;
-  };
   nextTheme: string | undefined;
-  displayName: string;
   onUseTheme: () => void;
   onDeleteTheme?: () => void;
   isSelected: boolean;
-  category: "featured" | "rayso" | "community" | "local";
+  tinteTheme: ThemeConfig;
 }
 
 const cardVariants = {
@@ -46,13 +42,11 @@ const MotionButton = motion(Button);
 
 export const ThemeCard: React.FC<ThemeCardProps> = ({
   showcaseColors,
-  featuredTheme,
   nextTheme,
-  displayName,
   onUseTheme,
   onDeleteTheme,
   isSelected,
-  category,
+  tinteTheme,
 }) => {
   const router = useRouter();
   const currentTheme = nextTheme === "light" ? "light" : "dark";
@@ -60,13 +54,9 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
 
   const handleEditTheme = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (user.isSignedIn) router.push(`/generator?theme=${displayName}`);
+    if (user.isSignedIn) router.push(`/generator?theme=${tinteTheme.name}`);
     else router.push("/sign-in");
   };
-
-  // <SignInButton mode="modal">
-  //   <Button variant="ghost">Log in</Button>
-  // </SignInButton>
 
   return (
     <motion.div variants={cardVariants} initial="hidden" animate="visible">
@@ -87,7 +77,10 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
               key={colorKey}
               className="flex-1 h-full"
               style={{
-                backgroundColor: featuredTheme[currentTheme][colorKey],
+                backgroundColor:
+                  tinteTheme.palette[currentTheme][
+                    colorKey as keyof typeof tinteTheme.palette.light
+                  ],
                 zIndex: showcaseColors.length - index,
               }}
               whileHover={{
@@ -103,20 +96,20 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
             className="text-lg font-semibold text-foreground"
             variants={itemVariants}
           >
-            {displayName}
+            {tinteTheme.displayName}
           </motion.h2>
           <motion.div className="flex space-x-2 mt-2" variants={itemVariants}>
             <Badge variant="secondary">
-              {category === "rayso"
+              {tinteTheme.category === "rayso"
                 ? "Ray.so"
-                : category === "featured"
+                : tinteTheme.category === "featured"
                   ? "Featured"
-                  : category === "community"
+                  : tinteTheme.category === "community"
                     ? "Community"
                     : "Local"}
             </Badge>
             <Badge variant="outline">
-              {Object.keys(featuredTheme[currentTheme]).length} Colors
+              {Object.keys(tinteTheme.palette[currentTheme]).length} Colors
             </Badge>
           </motion.div>
           {isSelected && (
@@ -144,7 +137,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
             ) : (
               <SignInDialog label="Edit" />
             )}
-            {category === "local" && (
+            {tinteTheme.category === "local" && (
               <MotionButton
                 variant="outline"
                 size="sm"

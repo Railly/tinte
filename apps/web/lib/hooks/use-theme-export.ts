@@ -16,8 +16,10 @@ export const useThemeExport = () => {
       setLoading(true);
       toast.info("Exporting theme as VSIX...");
       await exportThemeAsVSIX(themeConfig, isDark);
+      toast.dismiss();
       toast.success("Theme exported as VSIX");
     } catch (error) {
+      toast.dismiss();
       console.error("Failed to export VSIX:", error);
       toast.error("Failed to export theme as VSIX");
     } finally {

@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { generateVSCodeTheme } from "../core";
 import { useUser } from "@clerk/nextjs";
 import { BACKGROUND_LESS_PALETTE } from "../constants";
-import { debounce } from "../utils";
+import { debounce, entries } from "../utils";
 import { useSearchParams } from "next/navigation";
 
 export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
@@ -51,9 +51,7 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
       const decodedThemeName = decodeURIComponent(themeParam);
       const matchingTheme = Object.entries(presets).find(([name, theme]) => {
         if ("displayName" in theme) {
-          return (
-            theme.displayName.toLowerCase() === decodedThemeName.toLowerCase()
-          );
+          return theme.name.toLowerCase() === decodedThemeName.toLowerCase();
         } else {
           return name.toLowerCase() === decodedThemeName.toLowerCase();
         }
@@ -67,8 +65,25 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
 
   const loadThemes = () => {
     const customThemesRaw = window.localStorage.getItem("customThemes") || "{}";
-    const customThemesJSON = JSON.parse(customThemesRaw);
-    setCustomThemes(customThemesJSON);
+    const customThemes = JSON.parse(customThemesRaw);
+    setCustomThemes(customThemes);
+
+    const customThemesRecord: Record<string, ThemeConfig> = entries(
+      customThemes
+    ).reduce(
+      (acc, [themeName, palette]) => {
+        const name = themeName.toLocaleLowerCase().replace(/\s/g, "-");
+        acc[themeName] = {
+          name,
+          displayName: themeName,
+          palette,
+          category: "local",
+          tokenColors: defaultThemeConfig.tokenColors,
+        };
+        return acc;
+      },
+      {} as Record<string, ThemeConfig>
+    );
 
     const initialPresets = initialThemes.reduce(
       (acc, theme) => {
@@ -77,7 +92,11 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
       },
       {} as Record<string, ThemeConfig>
     );
-    const allPresets = { ...initialPresets, ...customThemesJSON };
+
+    const allPresets: Record<string, ThemeConfig> = {
+      ...initialPresets,
+      ...customThemesRecord,
+    };
     setPresets(allPresets);
 
     const defaultTheme = initialThemes[0] || defaultThemeConfig;
@@ -162,8 +181,8 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
       }
 
       return {
-        ...prev,
         name: presetName,
+        category: preset.category,
         displayName: preset.displayName || presetName,
         palette: newPalette,
         tokenColors: newTokenColors,
