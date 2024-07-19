@@ -245,7 +245,7 @@ export const adjustUIProgression = (
   const updatedPalette = { ...palette };
   UI_COLORS.forEach((key, index) => {
     if (progression[index] !== undefined) {
-      updatedPalette[key] = progression[index];
+      updatedPalette[key] = progression[index] as string;
     }
   });
 
