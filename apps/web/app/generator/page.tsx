@@ -78,6 +78,7 @@ function PageContent({
     setCustomThemes,
     setNextTheme,
     userId,
+    updatePaletteColors,
   } = useThemeConfig(initialThemes);
 
   const {
@@ -339,6 +340,7 @@ function PageContent({
             themeConfig={themeConfig}
             currentTheme={currentTheme as "light" | "dark"}
             onPaletteColorChange={updatePaletteColor}
+            onMultiplePaletteColorsChange={updatePaletteColors}
             advancedMode={advancedMode}
             onGenerateTheme={generateTheme}
             themeDescription={themeDescription}

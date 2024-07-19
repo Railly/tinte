@@ -32,7 +32,7 @@ export function ThemeSelector() {
             <DropdownMenuTrigger
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "py-0 text-sm w-[5.5rem]"
+                "py-0 text-sm w-[6.5rem] justify-start"
               )}
             >
               {theme === "light" ? (

@@ -145,6 +145,7 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
 
   const updatePaletteColor = debounce(
     (colorKey: keyof Palette, value: string) => {
+      console.log(`Updating color: ${colorKey} to ${value}`);
       if (!currentTheme) return;
       setThemeConfig((prevConfig) => ({
         ...prevConfig,
@@ -160,6 +161,21 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
     },
     250
   );
+  const updatePaletteColors = debounce((colorUpdates: Partial<Palette>) => {
+    console.log("Updating colors:", colorUpdates);
+    if (!currentTheme) return;
+    setThemeConfig((prevConfig) => ({
+      ...prevConfig,
+      displayName: prevConfig.displayName ? prevConfig.displayName : "Custom",
+      palette: {
+        ...prevConfig.palette,
+        [currentTheme]: {
+          ...prevConfig.palette[currentTheme],
+          ...colorUpdates,
+        },
+      },
+    }));
+  }, 250);
 
   const applyPreset = (presetName: string) => {
     const updatedCustomThemes = loadAndProcessCustomThemes();
@@ -261,5 +277,6 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
     deleteTheme,
     userId: user?.id,
     setCustomThemes,
+    updatePaletteColors,
   };
 };

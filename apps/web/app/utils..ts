@@ -1,5 +1,6 @@
 import { DarkLightPalette, Palette, TokenColorMap } from "@/lib/core/types";
 import { ThemePalettes, Themes, TokenColors } from "@prisma/client";
+import { hexToRgba } from "@uiw/color-convert";
 
 export function formatPalette(palette: ThemePalettes | undefined) {
   if (!palette) return {};
@@ -190,4 +191,63 @@ export const fetchGeneratedTheme = async (
   }
 
   return formattedResult;
+};
+
+export const UI_COLORS = [
+  "background",
+  "background-2",
+  "interface",
+  "interface-2",
+  "interface-3",
+  "text",
+  "text-2",
+  "text-3",
+] as const;
+
+export const ORDERED_KEYS = [
+  "primary",
+  "secondary",
+  "ui-progression",
+  "accent",
+  "accent-2",
+  "accent-3",
+  ...UI_COLORS,
+] as const;
+
+export const calculateProgression = (
+  startColor: string,
+  endColor: string,
+  steps: number
+): string[] => {
+  const startRgba = hexToRgba(startColor);
+  const endRgba = hexToRgba(endColor);
+
+  return Array.from({ length: steps }, (_, i) => {
+    const t = i / (steps - 1);
+    const r = Math.round(startRgba.r + (endRgba.r - startRgba.r) * t);
+    const g = Math.round(startRgba.g + (endRgba.g - startRgba.g) * t);
+    const b = Math.round(startRgba.b + (endRgba.b - startRgba.b) * t);
+    return `#${r.toString(16).padStart(2, "0")}${g
+      .toString(16)
+      .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  });
+};
+
+export const adjustUIProgression = (
+  palette: Palette,
+  mode: "light" | "dark",
+  newBackgroundColor: string
+): Palette => {
+  const steps = UI_COLORS.length;
+  const endColor = mode === "dark" ? "#FFFFFF" : "#000000";
+  const progression = calculateProgression(newBackgroundColor, endColor, steps);
+
+  const updatedPalette = { ...palette };
+  UI_COLORS.forEach((key, index) => {
+    if (progression[index] !== undefined) {
+      updatedPalette[key] = progression[index];
+    }
+  });
+
+  return updatedPalette;
 };

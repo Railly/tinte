@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ThemeConfig, Palette } from "@/lib/core/types";
 import { tokenToScopeMapping } from "@/lib/core/config";
 import { Textarea } from "./ui/textarea";
@@ -10,8 +10,8 @@ import {
   IconSpace,
   IconSparkles,
 } from "./ui/icons";
-import { hexToRgba } from "@uiw/react-color";
 import { SimplifiedTokenEditor } from "./simplified-token-editor";
+import { adjustUIProgression, ORDERED_KEYS, UI_COLORS } from "@/app/utils.";
 
 interface ConfigurationProps {
   themeConfig: ThemeConfig;
@@ -28,57 +28,7 @@ interface ConfigurationProps {
   setThemeDescription: (description: string) => void;
   onEnhanceDescription: () => void;
   advancedMode: boolean;
-}
-
-function calculateProgression(
-  startColor: string,
-  endColor: string,
-  steps: number
-): string[] {
-  const startRgba = hexToRgba(startColor);
-  const endRgba = hexToRgba(endColor);
-
-  return Array.from({ length: steps }, (_, i) => {
-    const t = i / (steps - 1);
-    const r = Math.round(startRgba.r + (endRgba.r - startRgba.r) * t);
-    const g = Math.round(startRgba.g + (endRgba.g - startRgba.g) * t);
-    const b = Math.round(startRgba.b + (endRgba.b - startRgba.b) * t);
-    return `#${r.toString(16).padStart(2, "0")}${g
-      .toString(16)
-      .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-  });
-}
-
-function adjustUIProgression(
-  palette: Palette,
-  mode: "light" | "dark"
-): Palette {
-  const steps = 8;
-
-  let progression: string[];
-
-  if (mode === "dark") {
-    progression = calculateProgression(palette.text, palette.background, steps);
-  } else {
-    progression = calculateProgression(palette.background, palette.text, steps);
-  }
-
-  const safeProgression = [
-    ...progression,
-    ...Array(8).fill(progression[progression.length - 1] || "#000000"),
-  ].slice(0, 8);
-
-  return {
-    ...palette,
-    text: safeProgression[0],
-    "text-2": safeProgression[1],
-    "text-3": safeProgression[2],
-    "interface-3": safeProgression[3],
-    "interface-2": safeProgression[4],
-    interface: safeProgression[5],
-    "background-2": safeProgression[6],
-    background: safeProgression[7],
-  };
+  onMultiplePaletteColorsChange: (colorUpdates: Partial<Palette>) => void;
 }
 
 export const Configuration: React.FC<ConfigurationProps> = ({
@@ -93,67 +43,76 @@ export const Configuration: React.FC<ConfigurationProps> = ({
   themeDescription,
   setThemeDescription,
   onEnhanceDescription,
+  onMultiplePaletteColorsChange,
 }) => {
-  const shouldHighlight = (tokenType: string) => {
-    for (const [key, scopes] of Object.entries(tokenToScopeMapping)) {
-      if (
-        Array.isArray(scopes) &&
-        scopes.includes(colorPickerShouldBeHighlighted.key)
-      ) {
-        return (
-          themeConfig.tokenColors[key as keyof typeof tokenToScopeMapping] ===
-            tokenType && colorPickerShouldBeHighlighted.value
-        );
-      } else if (scopes === tokenType) {
-        return (
-          themeConfig.tokenColors[key as keyof typeof tokenToScopeMapping] ===
-            tokenType && colorPickerShouldBeHighlighted.value
-        );
-      }
-    }
-    return false;
+  const shouldHighlight = (tokenType: string): boolean => {
+    return Object.entries(tokenToScopeMapping).some(([key, scopes]) => {
+      const isMatch = Array.isArray(scopes)
+        ? scopes.includes(colorPickerShouldBeHighlighted.key)
+        : scopes === tokenType;
+      return (
+        isMatch &&
+        themeConfig.tokenColors[key as keyof typeof tokenToScopeMapping] ===
+          tokenType &&
+        colorPickerShouldBeHighlighted.value
+      );
+    });
   };
 
-  const isUIColor = (colorKey: string) => {
-    return [
-      "background",
-      "background-2",
-      "interface",
-      "interface-2",
-      "interface-3",
-      "text",
-      "text-2",
-      "text-3",
-    ].includes(colorKey);
-  };
+  const handleUIProgressionChange = (value: string): void => {
+    console.log("UI Progression Change:", value);
 
-  const orderedKeys = [
-    "primary",
-    "secondary",
-    "ui-progression",
-    "accent",
-    "accent-2",
-    "accent-3",
-    "text",
-    "text-2",
-    "text-3",
-    "interface",
-    "interface-2",
-    "interface-3",
-    "background",
-    "background-2",
-  ];
-
-  const handleUIProgressionChange = (value: string) => {
     const updatedPalette = adjustUIProgression(
       themeConfig.palette[currentTheme],
-      currentTheme
+      currentTheme,
+      value
     );
-    Object.entries(updatedPalette).forEach(([key, value]) => {
-      if (isUIColor(key)) {
-        onPaletteColorChange(key as keyof Palette, value);
-      }
-    });
+
+    console.log("Updated Palette:", updatedPalette);
+
+    const uiColorUpdates = UI_COLORS.reduce((acc, key) => {
+      acc[key] = updatedPalette[key];
+      return acc;
+    }, {} as Partial<Palette>);
+
+    onMultiplePaletteColorsChange(uiColorUpdates);
+  };
+
+  const renderColorEditor = (key: string, index: number) => {
+    if (key === "") return <div key={`empty-${index}`} />;
+
+    if (key === "ui-progression") {
+      return (
+        <SimplifiedTokenEditor
+          key={key}
+          colorKey={key}
+          colorValue={themeConfig.palette[currentTheme].background}
+          onColorChange={handleUIProgressionChange}
+          advancedMode={advancedMode}
+          isUIColor={true}
+          isProgressionToken={true}
+        />
+      );
+    }
+
+    const colorValue = themeConfig.palette[currentTheme][key as keyof Palette];
+
+    return (
+      <>
+        <SimplifiedTokenEditor
+          key={key}
+          colorKey={key}
+          shouldHighlight={shouldHighlight(key)}
+          colorValue={colorValue}
+          onColorChange={(value) =>
+            onPaletteColorChange(key as keyof Palette, value)
+          }
+          advancedMode={advancedMode}
+          isUIColor={UI_COLORS.includes(key as any)}
+        />
+        {key === "background-2" && <div key={`empty-${index}`} />}
+      </>
+    );
   };
 
   return (
@@ -175,42 +134,7 @@ export const Configuration: React.FC<ConfigurationProps> = ({
           </Button>
         </div>
         <div className="grid grid-cols-3 gap-2 p-2">
-          {orderedKeys.map((key, index) => {
-            if (key === "") {
-              return <div key={`empty-${index}`} />;
-            }
-
-            if (key === "ui-progression") {
-              return (
-                <SimplifiedTokenEditor
-                  key={key}
-                  colorKey={key}
-                  colorValue={themeConfig.palette[currentTheme].background}
-                  onColorChange={handleUIProgressionChange}
-                  advancedMode={advancedMode}
-                  isUIColor={true}
-                  isProgressionToken={true}
-                />
-              );
-            }
-
-            const colorValue =
-              themeConfig.palette[currentTheme][key as keyof Palette];
-
-            return (
-              <SimplifiedTokenEditor
-                key={key}
-                colorKey={key}
-                shouldHighlight={shouldHighlight(key)}
-                colorValue={colorValue}
-                onColorChange={(value) =>
-                  onPaletteColorChange(key as keyof Palette, value)
-                }
-                advancedMode={advancedMode}
-                isUIColor={isUIColor(key)}
-              />
-            );
-          })}
+          {ORDERED_KEYS.map(renderColorEditor)}
         </div>
       </div>
 
