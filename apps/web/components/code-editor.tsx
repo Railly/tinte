@@ -108,14 +108,11 @@ export const CodeEditor = ({
       if (onThemeSaved) {
         onThemeSaved();
       }
-      console.log({ themeConfig });
       if (themeConfig.category === "local") {
         const localThemes = JSON.parse(
           localStorage.getItem("customThemes") || "{}"
         );
-        console.log({ localThemes, themeConfig });
         delete localThemes[themeConfig.displayName];
-        console.log("After delete", localThemes);
         localStorage.setItem("customThemes", JSON.stringify(localThemes));
         localStorage.removeItem;
       }

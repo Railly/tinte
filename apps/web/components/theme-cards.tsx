@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   IconEdit,
   IconGrid,
+  IconMapPin,
   IconSpace,
   IconUsers,
   IconZap,
@@ -147,7 +148,7 @@ export function ThemeCards({
                 variant="underline"
                 value="custom"
               >
-                <IconEdit className="w-4 h-4" />
+                <IconMapPin className="w-4 h-4" />
                 <span>Local</span>
               </TabsTrigger>
             </TabsList>

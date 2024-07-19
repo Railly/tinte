@@ -21,7 +21,8 @@ interface SimplifiedTokenEditorProps {
   isUIColor?: boolean;
 }
 
-const getTextColor = (backgroundColor: string) => {
+const getTextColor = (backgroundColor?: string) => {
+  if (!backgroundColor) return "#000000";
   const hsla = hsvaToHsla(hexToHsva(backgroundColor));
   return hsla.l > 50 ? "#000000" : "#FFFFFF";
 };
@@ -36,7 +37,12 @@ export const SimplifiedTokenEditor: React.FC<SimplifiedTokenEditorProps> = ({
   isUIColor = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [localColor, setLocalColor] = useState(hexToHsva(colorValue));
+  const [localColor, setLocalColor] = useState(() => {
+    if (colorValue) {
+      return hexToHsva(colorValue);
+    }
+    return { h: 0, s: 0, v: 0, a: 1 };
+  });
 
   const handleColorChange = (color: { hex: string; hsva: any }) => {
     setLocalColor(color.hsva);

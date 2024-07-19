@@ -348,6 +348,8 @@ function PageContent({
             isGenerating={isGenerating}
             isEnhancing={isEnhancing}
             onEnhanceDescription={enhanceDescription}
+            presets={presets}
+            applyPreset={applyPreset}
           />
         </div>
         <div className="flex justify-center gap-4 items-center mx-2 self-end">

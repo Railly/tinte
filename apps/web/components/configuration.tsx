@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { ThemeConfig, Palette } from "@/lib/core/types";
 import { tokenToScopeMapping } from "@/lib/core/config";
 import { Textarea } from "./ui/textarea";
@@ -29,6 +29,8 @@ interface ConfigurationProps {
   onEnhanceDescription: () => void;
   advancedMode: boolean;
   onMultiplePaletteColorsChange: (colorUpdates: Partial<Palette>) => void;
+  presets: Record<string, ThemeConfig>;
+  applyPreset: (preset: string) => void;
 }
 
 export const Configuration: React.FC<ConfigurationProps> = ({
@@ -44,6 +46,8 @@ export const Configuration: React.FC<ConfigurationProps> = ({
   setThemeDescription,
   onEnhanceDescription,
   onMultiplePaletteColorsChange,
+  presets,
+  applyPreset,
 }) => {
   const shouldHighlight = (tokenType: string): boolean => {
     return Object.entries(tokenToScopeMapping).some(([key, scopes]) => {
@@ -60,15 +64,11 @@ export const Configuration: React.FC<ConfigurationProps> = ({
   };
 
   const handleUIProgressionChange = (value: string): void => {
-    console.log("UI Progression Change:", value);
-
     const updatedPalette = adjustUIProgression(
       themeConfig.palette[currentTheme],
       currentTheme,
       value
     );
-
-    console.log("Updated Palette:", updatedPalette);
 
     const uiColorUpdates = UI_COLORS.reduce((acc, key) => {
       acc[key] = updatedPalette[key];
@@ -77,6 +77,34 @@ export const Configuration: React.FC<ConfigurationProps> = ({
 
     onMultiplePaletteColorsChange(uiColorUpdates);
   };
+
+  const handleShuffleTheme = useCallback(() => {
+    const presetNames = Object.keys(presets);
+    const randomPresetName =
+      presetNames[Math.floor(Math.random() * presetNames.length)];
+    if (randomPresetName) applyPreset(randomPresetName);
+  }, [presets, applyPreset]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === "Space" && event.target instanceof HTMLElement) {
+        const targetTag = event.target.tagName.toLowerCase();
+        if (
+          !["input", "textarea"].includes(targetTag) &&
+          !event.target.isContentEditable
+        ) {
+          event.preventDefault();
+          handleShuffleTheme();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleShuffleTheme]);
 
   const renderColorEditor = (key: string, index: number) => {
     if (key === "") return <div key={`empty-${index}`} />;
@@ -123,7 +151,7 @@ export const Configuration: React.FC<ConfigurationProps> = ({
           <Button
             className="pr-1"
             variant="outline"
-            onClick={() => onGenerateTheme(themeDescription)}
+            onClick={() => handleShuffleTheme()}
           >
             <IconRandom />
             <span className="ml-2">Shuffle</span>
