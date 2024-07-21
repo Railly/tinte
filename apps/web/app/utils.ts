@@ -5,6 +5,7 @@ import {
   ThemeConfig,
   TokenColorMap,
 } from "@/lib/core/types";
+import { entries } from "@/lib/utils";
 import { ThemePalettes, Themes, TokenColors } from "@prisma/client";
 import { hexToRgba } from "@uiw/color-convert";
 
@@ -276,15 +277,13 @@ export function getThemeCategories(
     (theme) => theme.category === "community"
   );
 
-  const customThemesList = Object.entries(customThemes).map(
-    ([name, palette]) => ({
-      name: name.toLowerCase().replace(/\s/g, "-"),
-      displayName: name,
-      palette,
-      category: "local",
-      tokenColors: defaultThemeConfig.tokenColors,
-    })
-  ) as ThemeConfig[];
+  const customThemesList = entries(customThemes).map(([name, palette]) => ({
+    name: name.toLowerCase().replace(/\s/g, "-"),
+    displayName: name,
+    palette,
+    category: "user",
+    tokenColors: defaultThemeConfig.tokenColors,
+  })) as ThemeConfig[];
 
   const allThemes = [...customThemesList, ...initialThemes];
 
