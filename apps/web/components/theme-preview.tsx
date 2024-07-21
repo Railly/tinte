@@ -2,9 +2,10 @@
 import React, { useState } from "react";
 import ReadOnlyPreview from "@/components/read-only-preview";
 import { CODE_SAMPLES_SMALL } from "@/lib/constants";
+import { GeneratedVSCodeTheme } from "@/lib/core";
 
 interface ThemePreviewProps {
-  vscodeTheme: any;
+  vscodeTheme: GeneratedVSCodeTheme;
 }
 
 export function ThemePreview({ vscodeTheme }: ThemePreviewProps) {

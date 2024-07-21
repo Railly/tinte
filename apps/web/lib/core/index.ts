@@ -23,3 +23,5 @@ export function generateVSCodeTheme(themeConfig: ThemeConfig) {
 
   return { dark, light };
 }
+
+export type GeneratedVSCodeTheme = ReturnType<typeof generateVSCodeTheme>;

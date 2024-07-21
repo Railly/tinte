@@ -6,7 +6,7 @@ import {
   invertPalette,
   invertTokenColors,
   sortThemes,
-} from "@/app/utils.";
+} from "@/app/utils";
 import { defaultThemeConfig } from "@/lib/core/config";
 import { revalidatePath } from "next/cache";
 

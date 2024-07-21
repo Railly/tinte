@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -7,14 +7,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Colorful } from "@uiw/react-color";
-import { hsvaToHex, hexToHsva, hsvaToHsla } from "@uiw/color-convert";
+import {
+  hsvaToHex,
+  hexToHsva,
+  hsvaToHsla,
+  HexColor,
+  ColorResult,
+} from "@uiw/color-convert";
 import { IconLock, IconPipette } from "./ui/icons";
 import { cn } from "@/lib/utils";
 
 interface SimplifiedTokenEditorProps {
   colorKey: string;
   colorValue: string;
-  onColorChange: (value: string) => void;
+  onColorChange: (value: HexColor) => void;
   shouldHighlight?: boolean;
   advancedMode: boolean;
   isProgressionToken?: boolean;
@@ -37,22 +43,32 @@ export const SimplifiedTokenEditor: React.FC<SimplifiedTokenEditorProps> = ({
   isUIColor = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [localColor, setLocalColor] = useState(() => {
+  const localColor = useMemo(() => {
     if (colorValue) {
       return hexToHsva(colorValue);
     }
     return { h: 0, s: 0, v: 0, a: 1 };
-  });
+  }, [colorValue]);
 
-  const handleColorChange = (color: { hex: string; hsva: any }) => {
-    setLocalColor(color.hsva);
-    onColorChange(color.hex);
+  const handleColorChange = (color: ColorResult) => {
+    onColorChange(color.hex as HexColor);
   };
 
   const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newHex = e.target.value;
-    setLocalColor(hexToHsva(newHex));
+    const newHex = e.target.value as HexColor;
     onColorChange(newHex);
+  };
+
+  const handleHexInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pastedText = e.clipboardData.getData("text");
+    if (/^#[0-9A-Fa-f]{6}$/.test(pastedText)) {
+      onColorChange(pastedText as HexColor);
+      return;
+    }
+    if (/^[0-9A-Fa-f]{6}$/.test(pastedText)) {
+      onColorChange(`#${pastedText}` as HexColor);
+      return;
+    }
   };
 
   const handlePipette = async () => {
@@ -64,8 +80,7 @@ export const SimplifiedTokenEditor: React.FC<SimplifiedTokenEditorProps> = ({
     const eyeDropper = new window.EyeDropper();
     try {
       const result = await eyeDropper.open();
-      const newColor = result.sRGBHex;
-      setLocalColor(hexToHsva(newColor));
+      const newColor = result.sRGBHex as HexColor;
       onColorChange(newColor);
     } catch (e) {
       console.log("EyeDropper was canceled");
@@ -108,6 +123,7 @@ export const SimplifiedTokenEditor: React.FC<SimplifiedTokenEditorProps> = ({
             <Input
               value={hsvaToHex(localColor)}
               onChange={handleHexInputChange}
+              onPaste={handleHexInputPaste}
               className="w-[16.5ch]"
               disabled={isDisabled}
             />

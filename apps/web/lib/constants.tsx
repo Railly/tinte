@@ -3343,3 +3343,11 @@ export const FEATURED_THEMES = PRESET_KEYS.slice(0, 5) as Array<
   keyof typeof FEATURED_THEME_LOGOS
 >;
 export const RAY_SO_THEMES = PRESET_KEYS.slice(5);
+
+export const SHOWCASE_COLORS = [
+  "primary",
+  "secondary",
+  "accent",
+  "accent-2",
+  "accent-3",
+];

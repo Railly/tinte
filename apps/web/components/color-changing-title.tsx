@@ -3,18 +3,27 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { ThemeConfig } from "@/lib/core/types";
+import { cn } from "@/lib/utils";
 
 const words = ["Design", "Visualize", "Share"];
 const accentColors = ["accent", "accent-2", "accent-3"] as const;
 
 interface ColorChangingTitleProps {
   themeConfig: ThemeConfig;
+  isTextareaFocused: boolean;
 }
 
-export function ColorChangingTitle({ themeConfig }: ColorChangingTitleProps) {
+export function ColorChangingTitle({
+  themeConfig,
+  isTextareaFocused,
+}: ColorChangingTitleProps) {
   const { theme: nextTheme } = useTheme();
   const currentTheme = nextTheme === "dark" ? "dark" : "light";
   const [colorIndex, setColorIndex] = useState(0);
+
+  const rawWordClassName = cn("mx-1", {
+    "opacity-50": isTextareaFocused,
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,7 +34,7 @@ export function ColorChangingTitle({ themeConfig }: ColorChangingTitleProps) {
   }, []);
 
   return (
-    <h2 className="flex flex-col items-center text-3xl font-bold py-2">
+    <h2 className="flex flex-col items-center text-3xl font-bold py-2 transition-opacity">
       <span className="flex mr-2">
         {words.map((word, index) => (
           <span key={word} className="flex items-center">
@@ -42,13 +51,19 @@ export function ColorChangingTitle({ themeConfig }: ColorChangingTitleProps) {
             >
               {word}
             </motion.span>
-            {index < words.length - 2 && <span className="mx-1">,</span>}
-            {index === words.length - 2 && <span className="mx-1">and</span>}
-            {index < words.length - 1 && <span className="mr-1"></span>}
+            {index < words.length - 2 && (
+              <span className={rawWordClassName}>,</span>
+            )}
+            {index === words.length - 2 && (
+              <span className={rawWordClassName}>and</span>
+            )}
+            {index < words.length - 1 && (
+              <span className={rawWordClassName}></span>
+            )}
           </span>
         ))}
       </span>
-      <span>your VS Code theme</span>
+      <span className={rawWordClassName}>your VS Code theme</span>
     </h2>
   );
 }

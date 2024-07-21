@@ -3,21 +3,21 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IconCheck, IconEdit, IconTrash } from "@/components/ui/icons";
+import {
+  IconBrush,
+  IconCheck,
+  IconDownload,
+  IconLoading,
+} from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SignInDialog } from "./sign-in-dialog";
 import { ThemeConfig } from "@/lib/core/types";
-
-interface ThemeCardProps {
-  showcaseColors: string[];
-  nextTheme: string | undefined;
-  onUseTheme: () => void;
-  onDeleteTheme?: () => void;
-  isSelected: boolean;
-  tinteTheme: ThemeConfig;
-}
+import { SHOWCASE_COLORS } from "@/lib/constants";
+import { useTheme } from "next-themes";
+import { getThemeCategoryLabel } from "@/app/utils";
+import { useThemeExport } from "@/lib/hooks/use-theme-export";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -40,21 +40,36 @@ const itemVariants = {
 const MotionCard = motion(Card);
 const MotionButton = motion(Button);
 
+interface ThemeCardProps {
+  onUseTheme: () => void;
+  onDeleteTheme?: () => void;
+  isSelected: boolean;
+  themeConfig: ThemeConfig;
+  isTextareaFocused: boolean;
+}
+
 export const ThemeCard: React.FC<ThemeCardProps> = ({
-  showcaseColors,
-  nextTheme,
   onUseTheme,
-  onDeleteTheme,
+  // onDeleteTheme,
   isSelected,
-  tinteTheme,
+  themeConfig,
+  isTextareaFocused,
 }) => {
   const router = useRouter();
+  const { theme: nextTheme } = useTheme();
   const currentTheme = nextTheme === "light" ? "light" : "dark";
   const user = useUser();
+  const { loading, exportVSIX } = useThemeExport();
+
+  const handleDownloadTheme = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log({ themeConfig, currentTheme });
+    await exportVSIX(themeConfig, currentTheme === "dark");
+  };
 
   const handleEditTheme = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (user.isSignedIn) router.push(`/generator?theme=${tinteTheme.name}`);
+    if (user.isSignedIn) router.push(`/generator?theme=${themeConfig.name}`);
     else router.push("/sign-in");
   };
 
@@ -65,23 +80,31 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
           "overflow-hidden cursor-pointer transition-all duration-300",
           isSelected
             ? "border-primary shadow-lg"
-            : "border-transparent hover:border-accent"
+            : "border-transparent hover:border-accent",
+          {
+            "opacity-50": isTextareaFocused && !isSelected,
+          }
         )}
         onClick={onUseTheme}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        <motion.div className="flex h-10 relative" variants={itemVariants}>
-          {showcaseColors.map((colorKey, index) => (
+        <motion.div
+          className={cn("flex h-10 relative", {
+            grayscale: isTextareaFocused && !isSelected,
+          })}
+          variants={itemVariants}
+        >
+          {SHOWCASE_COLORS.map((colorKey, index) => (
             <motion.div
               key={colorKey}
               className="flex-1 h-full"
               style={{
                 backgroundColor:
-                  tinteTheme.palette[currentTheme][
-                    colorKey as keyof typeof tinteTheme.palette.light
+                  themeConfig.palette[currentTheme][
+                    colorKey as keyof typeof themeConfig.palette.light
                   ],
-                zIndex: showcaseColors.length - index,
+                zIndex: SHOWCASE_COLORS.length - index,
               }}
               whileHover={{
                 height: "calc(100% + 1rem)",
@@ -96,20 +119,14 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
             className="text-lg font-semibold text-foreground"
             variants={itemVariants}
           >
-            {tinteTheme.displayName}
+            {themeConfig.displayName}
           </motion.h2>
           <motion.div className="flex space-x-2 mt-2" variants={itemVariants}>
             <Badge variant="secondary">
-              {tinteTheme.category === "rayso"
-                ? "Ray.so"
-                : tinteTheme.category === "featured"
-                  ? "Featured"
-                  : tinteTheme.category === "community"
-                    ? "Community"
-                    : "Local"}
+              {getThemeCategoryLabel(themeConfig.category)}
             </Badge>
             <Badge variant="outline">
-              {Object.keys(tinteTheme.palette[currentTheme]).length} Colors
+              {Object.keys(themeConfig.palette[currentTheme]).length} Colors
             </Badge>
           </motion.div>
           {isSelected && (
@@ -131,16 +148,34 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <IconEdit className="mr-2 w-4 h-4" />
-                Edit
+                <IconBrush className="mr-2 w-4 h-4" />
+                Customize
               </MotionButton>
             ) : (
               <SignInDialog
                 label="Edit"
-                redirectUrl={`/generator?theme=${tinteTheme.name}`}
+                redirectUrl={`/generator?theme=${themeConfig.name}`}
               />
             )}
-            {tinteTheme.category === "local" && (
+            <MotionButton
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={handleDownloadTheme}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="animate-spin">
+                  <IconLoading className="mr-2 w-4 h-4" />
+                </span>
+              ) : (
+                <IconDownload className="mr-2 w-4 h-4" />
+              )}
+              Download
+            </MotionButton>
+            {/* {themeConfig.category === "local" && (
               <MotionButton
                 variant="outline"
                 size="sm"
@@ -155,7 +190,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
                 <IconTrash className="mr-2 w-4 h-4" />
                 Delete
               </MotionButton>
-            )}
+            )} */}
           </motion.div>
         </div>
       </MotionCard>

@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { cn, entries } from "@/lib/utils";
 import { PresetSelector } from "@/components/preset-selector";
 import { defaultThemeConfig } from "@/lib/core/config";
-import { fetchGeneratedTheme } from "../utils.";
+import { fetchGeneratedTheme } from "../utils";
 import { CircularGradient } from "@/components/circular-gradient";
 import { useRouter } from "next/navigation";
 
@@ -214,7 +214,7 @@ function PageContent({
 
   return (
     <div className="flex h-screen">
-      <div className="w-16 flex flex-col border-r z-[60]">
+      <div className="w-16 flex flex-col border-r z-50">
         <a
           className="flex items-center justify-center h-14 border-b"
           href="https://railly.dev"
@@ -295,9 +295,12 @@ function PageContent({
                 <HamburgerMenuIcon className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[250px] left-16 p-0 px-2">
+            <SheetContent
+              side="left"
+              className="w-[250px] top-14 left-16 p-0 px-2"
+            >
               <div className="py-4 z-[55]">
-                <h2 className="text-md font-bold mb-4 ml-3">My Local Themes</h2>
+                <h2 className="text-sm font-bold mb-4 ml-3">Local Themes</h2>
                 {customThemes &&
                   Object.entries(customThemes).map(
                     ([themeName, palette], index) => (

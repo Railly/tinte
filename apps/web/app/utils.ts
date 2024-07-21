@@ -1,4 +1,10 @@
-import { DarkLightPalette, Palette, TokenColorMap } from "@/lib/core/types";
+import { defaultThemeConfig } from "@/lib/core/config";
+import {
+  DarkLightPalette,
+  Palette,
+  ThemeConfig,
+  TokenColorMap,
+} from "@/lib/core/types";
 import { ThemePalettes, Themes, TokenColors } from "@prisma/client";
 import { hexToRgba } from "@uiw/color-convert";
 
@@ -151,7 +157,7 @@ export function formatTheme(
   };
 }
 
-export function sortThemes(formattedThemes: any) {
+export function sortThemes(formattedThemes: ThemeConfig[]) {
   const featuredOrder = [
     "one-hunter",
     "flexoki",
@@ -160,14 +166,16 @@ export function sortThemes(formattedThemes: any) {
     "supabase",
   ];
 
-  const sortedThemes = formattedThemes.sort((a: any, b: any) => {
-    if (a.category === "featured" && b.category === "featured") {
-      return featuredOrder.indexOf(a.name) - featuredOrder.indexOf(b.name);
+  const sortedThemes = formattedThemes.sort(
+    (a: ThemeConfig, b: ThemeConfig) => {
+      if (a.category === "featured" && b.category === "featured") {
+        return featuredOrder.indexOf(a.name) - featuredOrder.indexOf(b.name);
+      }
+      if (a.category === "featured") return -1;
+      if (b.category === "featured") return 1;
+      return a.name.localeCompare(b.name);
     }
-    if (a.category === "featured") return -1;
-    if (b.category === "featured") return 1;
-    return a.name.localeCompare(b.name);
-  });
+  );
 
   return sortedThemes;
 }
@@ -203,6 +211,8 @@ export const UI_COLORS = [
   "text-2",
   "text-3",
 ] as const;
+
+export type UIColor = (typeof UI_COLORS)[number];
 
 export const ORDERED_KEYS = [
   "primary",
@@ -250,4 +260,52 @@ export const adjustUIProgression = (
   });
 
   return updatedPalette;
+};
+
+export function getThemeCategories(
+  initialThemes: ThemeConfig[],
+  customThemes: Record<string, DarkLightPalette>
+) {
+  const featuredThemes = initialThemes.filter(
+    (theme) => theme.category === "featured"
+  );
+  const raysoThemes = initialThemes.filter(
+    (theme) => theme.category === "rayso"
+  );
+  const communityThemes = initialThemes.filter(
+    (theme) => theme.category === "community"
+  );
+
+  const customThemesList = Object.entries(customThemes).map(
+    ([name, palette]) => ({
+      name: name.toLowerCase().replace(/\s/g, "-"),
+      displayName: name,
+      palette,
+      category: "local",
+      tokenColors: defaultThemeConfig.tokenColors,
+    })
+  ) as ThemeConfig[];
+
+  const allThemes = [...customThemesList, ...initialThemes];
+
+  return {
+    featuredThemes,
+    raysoThemes,
+    communityThemes,
+    customThemesList,
+    allThemes,
+  };
+}
+
+export const getThemeCategoryLabel = (category: string) => {
+  switch (category) {
+    case "rayso":
+      return "Ray.so";
+    case "featured":
+      return "Featured";
+    case "community":
+      return "Community";
+    default:
+      return "Local";
+  }
 };

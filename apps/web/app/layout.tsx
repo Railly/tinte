@@ -66,7 +66,7 @@ export default function RootLayout({
       <html lang="en">
         <body
           className={cn(
-            "font-sans antialiased min-h-screen relative",
+            "font-sans antialiased min-h-screen bg-background text-foreground relative",
             GeistSans.variable,
             GeistMono.variable
           )}

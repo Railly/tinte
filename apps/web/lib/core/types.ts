@@ -24,7 +24,7 @@ export type DarkLightPalette = {
 export type ThemeConfig = {
   name: string;
   displayName: string;
-  category: "featured" | "rayso" | "community" | "local";
+  category: "featured" | "rayso" | "community" | "user";
   palette: DarkLightPalette;
   tokenColors: TokenColorMap;
 };

@@ -74,7 +74,7 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
           name,
           displayName: themeName,
           palette,
-          category: "local",
+          category: "user",
           tokenColors: defaultThemeConfig.tokenColors,
         };
         return acc;
@@ -153,7 +153,7 @@ export const useThemeConfig = (initialThemes: ThemeConfig[]) => {
           ...prevConfig.palette,
           [currentTheme]: {
             ...prevConfig.palette[currentTheme],
-            [colorKey]: value,
+            [colorKey]: value.startsWith("#") ? value : `#${value}`,
           },
         },
       }));
