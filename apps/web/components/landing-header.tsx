@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { ThemeSelector } from "@/components/theme-selector";
+import { BrowserThemeSelector } from "@/components/browser-theme-selector";
 import { HeaderLogo } from "./header-logo";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
@@ -14,20 +14,26 @@ export const LandingHeader: React.FC = () => (
       <SignedIn>
         <Link
           href="/generator"
-          className={cn(buttonVariants({ variant: "link" }), "px-0")}
+          className={cn(
+            buttonVariants({ variant: "link" }),
+            "px-0 text-muted-foreground hover:text-foreground"
+          )}
         >
-          Generator
+          Editor
         </Link>
       </SignedIn>
       <Link
         href="/gallery"
-        className={cn(buttonVariants({ variant: "link" }), "px-0")}
+        className={cn(
+          buttonVariants({ variant: "link" }),
+          "px-0 text-muted-foreground hover:text-foreground"
+        )}
       >
         Gallery
       </Link>
     </div>
     <div className="flex gap-4">
-      <ThemeSelector />
+      <BrowserThemeSelector />
       <div className="flex items-center space-x-4">
         <SignedOut>
           <SignInButton mode="modal" forceRedirectUrl="/generator">

@@ -1,35 +1,39 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ShineButton } from "@/components/ui/shine-button";
 import { IconGenerate, IconLoading, IconSparkles } from "@/components/ui/icons";
-import { ThemeConfig, DarkLightPalette } from "@/lib/core/types";
+import { ThemeConfig } from "@/lib/core/types";
 import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
 import { useDescriptionEnhancer } from "@/lib/hooks/use-theme-enhancer";
+import { useUser } from "@clerk/nextjs";
+import { SignInDialog } from "./sign-in-dialog";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface LandingThemeGeneratorProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
-  customThemes: Record<string, DarkLightPalette>;
-  updateCustomThemes: (
-    newCustomThemes: Record<string, DarkLightPalette>
-  ) => void;
   setIsTextareaFocused: (isFocused: boolean) => void;
 }
 
 export function LandingThemeGenerator({
   updateThemeConfig,
-  customThemes,
-  updateCustomThemes,
   setIsTextareaFocused,
 }: LandingThemeGeneratorProps) {
-  const [themeDescription, setThemeDescription] = useState("");
-  const { isGenerating, generateTheme } = useThemeGenerator(
-    updateThemeConfig,
-    customThemes,
-    updateCustomThemes
+  const user = useUser();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const signInDialogTriggerRef = useRef<HTMLButtonElement>(null);
+  const [themeDescription, setThemeDescription] = useState<string>(
+    searchParams?.get("description") || ""
   );
+  const { isGenerating, generateTheme } = useThemeGenerator(updateThemeConfig);
   const { isEnhancing, enhanceDescription } = useDescriptionEnhancer();
+
+  const handleGenerateTheme = async () => {
+    await generateTheme(themeDescription);
+    router.refresh();
+  };
 
   const handleEnhanceDescription = async () => {
     const enhancedDescription = await enhanceDescription(themeDescription);
@@ -38,26 +42,53 @@ export function LandingThemeGenerator({
     }
   };
 
-  const handleGenerateTheme = async () => {
-    await generateTheme(themeDescription);
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSignInOrGenerate();
+    }
+  };
+
+  const handleSignInOrGenerate = () => {
+    if (user.isSignedIn) {
+      handleGenerateTheme();
+    } else {
+      signInDialogTriggerRef.current?.click();
+    }
   };
 
   return (
     <div className="flex flex-col w-96 border rounded-md shadow-md dark:shadow-foreground/5">
       <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
         <h2 className="text-sm font-bold">Theme Generator</h2>
-        <ShineButton
-          variant="default"
-          onClick={handleGenerateTheme}
-          disabled={isGenerating || themeDescription.trim().length < 3}
-        >
-          {isGenerating ? (
-            <IconLoading className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <IconGenerate className="w-4 h-4 mr-2" />
-          )}
-          <span>{isGenerating ? "Generating..." : "Generate Theme"}</span>
-        </ShineButton>
+        {user.isSignedIn ? (
+          <ShineButton
+            variant="default"
+            onClick={handleSignInOrGenerate}
+            disabled={isGenerating || themeDescription.trim().length < 3}
+          >
+            {isGenerating ? (
+              <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <IconGenerate className="w-4 h-4 mr-2" />
+            )}
+            <span>{isGenerating ? "Generating..." : "Generate Theme"}</span>
+          </ShineButton>
+        ) : (
+          <SignInDialog
+            label={
+              <ShineButton
+                variant="default"
+                ref={signInDialogTriggerRef}
+                onClick={() => {}}
+              >
+                <IconGenerate className="mr-2 w-4 h-4" />
+                Generate Theme
+              </ShineButton>
+            }
+            redirectUrl={`/?description=${themeDescription}`}
+          />
+        )}
       </div>
       <div className="relative p-4">
         <Textarea
@@ -65,6 +96,7 @@ export function LandingThemeGenerator({
           value={themeDescription}
           onChange={(e) => setThemeDescription(e.target.value)}
           onFocus={() => setIsTextareaFocused(true)}
+          onKeyDown={handleKeyDown}
           className="resize-none w-full !h-[8.5rem] !pb-8"
           minLength={3}
           maxLength={150}

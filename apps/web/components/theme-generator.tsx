@@ -1,31 +1,53 @@
+import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
 import { Button } from "./ui/button";
 import { IconGenerate, IconLoading, IconSparkles } from "./ui/icons";
 import { Textarea } from "./ui/textarea";
+import { useDescriptionEnhancer } from "@/lib/hooks/use-theme-enhancer";
+import { ThemeConfig } from "@/lib/core/types";
+import { Dispatch, SetStateAction } from "react";
 
 interface ThemeGeneratorProps {
-  onGenerateTheme: (description: string) => void;
-  isGenerating: boolean;
-  isEnhancing: boolean;
   themeDescription: string;
   setThemeDescription: (description: string) => void;
-  onEnhanceDescription: () => void;
+  setThemeConfig: Dispatch<SetStateAction<ThemeConfig>>;
+  setIsColorModified: (isModified: boolean) => void;
 }
 
 export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
-  onGenerateTheme,
-  isGenerating,
-  isEnhancing,
   themeDescription,
   setThemeDescription,
-  onEnhanceDescription,
+  setThemeConfig,
+  setIsColorModified,
 }) => {
+  const { isGenerating, generateTheme } = useThemeGenerator(setThemeConfig);
+  const { isEnhancing, enhanceDescription } = useDescriptionEnhancer();
+
+  const handleGenerateTheme = async () => {
+    await generateTheme(themeDescription, "shallow");
+    setIsColorModified(true);
+  };
+
+  const handleEnhanceDescription = async () => {
+    const enhancedDescription = await enhanceDescription(themeDescription);
+    if (enhancedDescription) {
+      setThemeDescription(enhancedDescription);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleGenerateTheme();
+    }
+  };
+
   return (
     <div className="border rounded-md">
       <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
         <h2 className="text-sm font-bold">Theme Generator</h2>
         <Button
           variant="outline"
-          onClick={() => onGenerateTheme(themeDescription)}
+          onClick={handleGenerateTheme}
           disabled={isGenerating || themeDescription.trim().length < 3}
         >
           {isGenerating ? (
@@ -42,6 +64,7 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
           placeholder="Describe your theme here..."
           value={themeDescription}
           onChange={(e) => setThemeDescription(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="resize-none w-full !h-32 !pb-10"
           minLength={3}
           maxLength={150}
@@ -49,7 +72,7 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={onEnhanceDescription}
+          onClick={handleEnhanceDescription}
           className="absolute bottom-4 left-4 text-muted-foreground hover:text-foreground"
           disabled={isEnhancing || themeDescription.trim().length < 3}
         >

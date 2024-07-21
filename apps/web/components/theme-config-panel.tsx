@@ -1,9 +1,9 @@
 import { Palette, ThemeConfig } from "@/lib/core/types";
-import { useCallback, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
 import { ColorPalette } from "./color-palette";
 import { ThemeGenerator } from "./theme-generator";
 
-interface ConfigurationProps {
+interface ThemeConfigPanelProps {
   themeConfig: ThemeConfig;
   currentTheme: "light" | "dark";
   onPaletteColorChange: (colorKey: keyof Palette, value: string) => void;
@@ -11,36 +11,32 @@ interface ConfigurationProps {
     key: string;
     value: boolean;
   };
-  onGenerateTheme: (description: string) => void;
-  isGenerating: boolean;
-  isEnhancing: boolean;
   themeDescription: string;
   setThemeDescription: (description: string) => void;
-  onEnhanceDescription: () => void;
   advancedMode: boolean;
   onMultiplePaletteColorsChange: (colorUpdates: Partial<Palette>) => void;
-  presets: Record<string, ThemeConfig>;
-  applyPreset: (preset: string) => void;
+  themes: ThemeConfig[];
+  applyTheme: (preset: string) => void;
+  setThemeConfig: Dispatch<SetStateAction<ThemeConfig>>;
+  isColorModified: boolean;
+  setIsColorModified: Dispatch<SetStateAction<boolean>>;
 }
 
-export const Configuration: React.FC<ConfigurationProps> = ({
+export const ThemeConfigPanel: React.FC<ThemeConfigPanelProps> = ({
   themeConfig,
   currentTheme,
   onPaletteColorChange,
   colorPickerShouldBeHighlighted,
   advancedMode,
-  onGenerateTheme,
-  isGenerating,
-  isEnhancing,
   themeDescription,
   setThemeDescription,
-  onEnhanceDescription,
   onMultiplePaletteColorsChange,
-  presets,
-  applyPreset,
+  themes,
+  applyTheme,
+  setThemeConfig,
+  isColorModified,
+  setIsColorModified,
 }) => {
-  const [isColorModified, setIsColorModified] = useState(false);
-
   const handleShuffleTheme = useCallback(() => {
     if (isColorModified) {
       const confirmShuffle = window.confirm(
@@ -51,11 +47,11 @@ export const Configuration: React.FC<ConfigurationProps> = ({
         return;
       }
     }
-    const presetNames = Object.keys(presets);
+    const themeNames = themes.map((theme) => theme.displayName);
     const randomPresetName =
-      presetNames[Math.floor(Math.random() * presetNames.length)];
-    if (randomPresetName) applyPreset(randomPresetName);
-  }, [presets, applyPreset, isColorModified]);
+      themeNames[Math.floor(Math.random() * themeNames.length)];
+    if (randomPresetName) applyTheme(randomPresetName);
+  }, [themes, applyTheme, isColorModified]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -107,12 +103,10 @@ export const Configuration: React.FC<ConfigurationProps> = ({
         handleShuffleTheme={handleShuffleTheme}
       />
       <ThemeGenerator
-        onGenerateTheme={onGenerateTheme}
-        isGenerating={isGenerating}
-        isEnhancing={isEnhancing}
         themeDescription={themeDescription}
         setThemeDescription={setThemeDescription}
-        onEnhanceDescription={onEnhanceDescription}
+        setThemeConfig={setThemeConfig}
+        setIsColorModified={setIsColorModified}
       />
     </div>
   );

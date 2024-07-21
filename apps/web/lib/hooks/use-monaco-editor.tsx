@@ -6,17 +6,15 @@ import { getHighlighter } from "shiki";
 import { LANGS, MONACO_SHIKI_LANGS } from "../constants";
 import { MonacoToken } from "../types";
 import { editor } from "monaco-editor";
+import { GeneratedVSCodeTheme } from "../core";
 
 export function useMonacoEditor({
-  theme: monacoTheme,
+  vsCodeTheme,
   language,
   text,
   editorRef,
 }: {
-  theme: {
-    light: any;
-    dark: any;
-  };
+  vsCodeTheme: GeneratedVSCodeTheme;
   text?: string;
   language: string;
   editorRef: React.RefObject<editor.IStandaloneCodeEditor> | null;
@@ -34,8 +32,8 @@ export function useMonacoEditor({
   }, [nextTheme]);
 
   const currentThemeName = useMemo(() => {
-    return isDark ? monacoTheme.dark.name : monacoTheme.light.name;
-  }, [isDark, monacoTheme, nextTheme]);
+    return isDark ? vsCodeTheme.dark.name : vsCodeTheme.light.name;
+  }, [isDark, vsCodeTheme, nextTheme]);
 
   const getAllTokensWithStyles = (editor: editor.IStandaloneCodeEditor) => {
     const model = editor.getModel();
@@ -92,7 +90,8 @@ export function useMonacoEditor({
     }
   }, [monaco, editorRef?.current, language, text]);
 
-  async function initializeMonaco(customTheme: { light: any; dark: any }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function initializeMonaco(customTheme: any) {
     if (!monaco) return;
     const highlighter = await getHighlighter({
       themes: [customTheme.light, customTheme.dark],
@@ -112,10 +111,10 @@ export function useMonacoEditor({
   useEffect(() => {
     if (!monaco) return;
 
-    initializeMonaco(monacoTheme).then(() => {
+    initializeMonaco(vsCodeTheme).then(() => {
       monaco.editor.setTheme(currentThemeName);
     });
-  }, [monaco, monacoTheme, currentThemeName, language]);
+  }, [monaco, vsCodeTheme, currentThemeName, language]);
 
   return { isDark, currentThemeName, tokens };
 }

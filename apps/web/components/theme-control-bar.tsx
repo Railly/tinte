@@ -1,29 +1,29 @@
 import { HelpModal } from "./help-modal";
 import { LanguageSwitcher } from "./language-switcher";
-import { PresetSelector } from "./preset-selector";
+import { ThemeSelector } from "./theme-selector";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { ThemeConfig } from "@/lib/core/types";
 
-export function ThemeConfigurationPanel({
-  presets,
+export function ThemeControlBar({
+  themes,
   isBackgroundless,
   toggleBackgroundless,
   themeConfig,
   currentTheme,
-  applyPreset,
+  applyTheme,
   setNextTheme,
   selectedLanguage,
   handleLanguageChange,
   advancedMode,
   setAdvancedMode,
 }: {
-  presets: Record<string, ThemeConfig>;
+  themes: ThemeConfig[];
   isBackgroundless: boolean;
   toggleBackgroundless: () => void;
   themeConfig: ThemeConfig;
   currentTheme: "light" | "dark";
-  applyPreset: (preset: string) => void;
+  applyTheme: (preset: string) => void;
   setNextTheme?: (theme: "light" | "dark") => void;
   selectedLanguage: string;
   handleLanguageChange: (language: string) => void;
@@ -32,11 +32,11 @@ export function ThemeConfigurationPanel({
 }) {
   return (
     <div className="flex justify-center flex-wrap md:flex-nowrap gap-8 py-6 px-4 bg-muted/30 border rounded-t-md">
-      <PresetSelector
-        presets={presets}
+      <ThemeSelector
+        themes={themes}
         currentTheme={currentTheme}
         themeConfig={themeConfig}
-        onPresetSelect={applyPreset}
+        onSelectTheme={applyTheme}
       />
       <div className="flex flex-col gap-3">
         <Label htmlFor="backgroundless-mode" className="text-muted-foreground">

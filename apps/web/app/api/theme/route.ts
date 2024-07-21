@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import {
-  formatPalette,
   formatTheme,
   invertPalette,
   invertTokenColors,
@@ -9,6 +8,7 @@ import {
 } from "@/app/utils";
 import { defaultThemeConfig } from "@/lib/core/config";
 import { revalidatePath } from "next/cache";
+import { ThemeConfig } from "@/lib/core/types";
 
 const prisma = new PrismaClient();
 
@@ -36,14 +36,16 @@ export const GET = async () => {
 };
 
 export const POST = async (req: Request) => {
-  const { name, displayName, palette, userId } = await req.json();
+  const { name, displayName, palette, userId } =
+    (await req.json()) as ThemeConfig & { userId: string };
 
   try {
     const theme = await prisma.themes.create({
       data: {
         name,
         display_name: displayName,
-        category: "community",
+        category: "user",
+        is_public: false,
         User: userId,
         ThemePalettes: {
           create: [

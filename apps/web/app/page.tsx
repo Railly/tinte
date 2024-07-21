@@ -1,13 +1,12 @@
 import React from "react";
 import { ThemeManager } from "@/components/theme-manager";
 import { PrismaClient } from "@prisma/client";
-import { ThemeConfig } from "@/lib/core/types";
 import { formatTheme, sortThemes } from "./utils";
 import { LandingHeader } from "@/components/landing-header";
 
 const prisma = new PrismaClient();
 
-async function getThemes() {
+async function getAllThemes() {
   const themes = await prisma.themes.findMany({
     include: {
       ThemePalettes: true,
@@ -15,16 +14,16 @@ async function getThemes() {
     },
   });
   prisma.$disconnect();
-  return sortThemes(themes.map(formatTheme) as ThemeConfig[]);
+  return sortThemes(themes.map(formatTheme));
 }
 
 export default async function Page() {
-  const themes = await getThemes();
+  const allThemes = await getAllThemes();
 
   return (
     <>
       <LandingHeader />
-      <ThemeManager initialThemes={themes} />
+      <ThemeManager allThemes={allThemes} />
     </>
   );
 }

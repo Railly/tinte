@@ -6,23 +6,20 @@ import { ThemePreview } from "@/components/theme-preview";
 import { ThemeCards } from "@/components/theme-cards";
 import { defaultThemeConfig } from "@/lib/core/config";
 import { GeneratedVSCodeTheme, generateVSCodeTheme } from "@/lib/core";
-import { ThemeConfig, DarkLightPalette } from "@/lib/core/types";
+import { ThemeConfig } from "@/lib/core/types";
 
 interface ThemeManagerProps {
-  initialThemes: ThemeConfig[];
+  allThemes: ThemeConfig[];
 }
 
-export function ThemeManager({ initialThemes }: ThemeManagerProps) {
-  const defaultTheme = initialThemes[0] || defaultThemeConfig;
+export function ThemeManager({ allThemes }: ThemeManagerProps) {
+  const defaultTheme = allThemes[0] || defaultThemeConfig;
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(defaultTheme);
   const [selectedTheme, setSelectedTheme] = useState(defaultTheme.displayName);
   const [vscodeTheme, setVSCodeTheme] = useState<GeneratedVSCodeTheme>(
     generateVSCodeTheme(defaultTheme)
   );
-  const [customThemes, setCustomThemes] = useState<
-    Record<string, DarkLightPalette>
-  >({});
   const focusAreaRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -41,27 +38,11 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
     };
   }, []);
 
-  useEffect(() => {
-    const customThemesRaw = window.localStorage.getItem("customThemes") || "{}";
-    const customThemesJSON = JSON.parse(customThemesRaw);
-    setCustomThemes(customThemesJSON);
-  }, []);
-
   const updateThemeConfig = (newConfig: Partial<ThemeConfig>) => {
     const newThemeConfig = { ...themeConfig, ...newConfig };
     setThemeConfig(newThemeConfig);
     setSelectedTheme(newThemeConfig.displayName);
     setVSCodeTheme(generateVSCodeTheme(newThemeConfig));
-  };
-
-  const updateCustomThemes = (
-    newCustomThemes: Record<string, DarkLightPalette>
-  ) => {
-    setCustomThemes(newCustomThemes);
-    window.localStorage.setItem(
-      "customThemes",
-      JSON.stringify(newCustomThemes)
-    );
   };
 
   return (
@@ -76,19 +57,15 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
       >
         <LandingThemeGenerator
           updateThemeConfig={updateThemeConfig}
-          customThemes={customThemes}
-          updateCustomThemes={updateCustomThemes}
           setIsTextareaFocused={setIsTextareaFocused}
         />
         <ThemePreview vscodeTheme={vscodeTheme} />
       </section>
       <ThemeCards
         updateThemeConfig={updateThemeConfig}
-        initialThemes={initialThemes}
-        customThemes={customThemes}
+        allThemes={allThemes}
         selectedTheme={selectedTheme}
         setSelectedTheme={setSelectedTheme}
-        updateCustomThemes={updateCustomThemes}
         isTextareaFocused={isTextareaFocused}
       />
     </main>

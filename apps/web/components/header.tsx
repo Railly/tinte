@@ -4,6 +4,10 @@ import {
   IconEdit,
   IconLoading,
   IconDownload,
+  IconSave,
+  IconCopy,
+  IconLock,
+  IconGlobe,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import {
@@ -14,18 +18,28 @@ import {
 } from "@/components/ui/tooltip";
 import { Button, buttonVariants } from "./ui/button";
 import { Input } from "./ui/input";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { ThemeConfig } from "@/lib/core/types";
 import { useTheme } from "next-themes";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export const Header = ({
   themeConfig,
+  setThemeConfig,
 }: {
   themeConfig: ThemeConfig;
+  setThemeConfig: Dispatch<SetStateAction<ThemeConfig>>;
 }): JSX.Element => {
   const user = useUser();
   const { theme } = useTheme();
@@ -33,6 +47,10 @@ export const Header = ({
   const [themeName, setThemeName] = useState(
     themeConfig.displayName || "My Awesome Theme"
   );
+  const isEditing = themeConfig.displayName !== themeName;
+  const [isUpdating, setIsUpdating] = useState(false);
+  const canNotEdit = themeConfig.category !== "user";
+  const router = useRouter();
 
   useEffect(() => {
     if (themeConfig.displayName) {
@@ -40,19 +58,70 @@ export const Header = ({
     }
   }, [themeConfig.displayName]);
 
-  const handleSave = () => {
-    // Implement save functionality
-    console.log("Saving theme:", themeName);
-  };
-
-  const handleGenerate = () => {
-    // Implement generate functionality
-    console.log("Generating theme:", themeName);
-  };
-
   const handleExport = async () => {
     if (loading) return;
     await exportVSIX(themeConfig, theme === "dark");
+  };
+
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      await handleUpdateName(themeConfig);
+    }
+  };
+
+  const handleUpdateName = async (themeConfig: ThemeConfig) => {
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/theme/${themeConfig.id}/name`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          displayName: themeName,
+          userId: user.user?.id,
+        }),
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to update theme. Please try again.");
+        return;
+      }
+      toast.success("Theme updated successfully");
+      setThemeConfig({ ...themeConfig, displayName: themeName });
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating theme:", error);
+      toast.error("Failed to update theme. Please try again.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const updateThemeStatus = async (themeId: string, isPublic: boolean) => {
+    try {
+      const response = await fetch(`/api/themes/${themeId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isPublic, usserId: user.user?.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update theme public status");
+      }
+      toast.success(`Theme is now ${isPublic ? "public" : "private"}`);
+      setThemeConfig({ ...themeConfig, isPublic });
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating theme public status:", error);
+      throw error;
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setThemeName(e.target.value);
   };
 
   return (
@@ -66,17 +135,23 @@ export const Header = ({
           <Separator orientation="vertical" className="h-4" />
           <div className="flex items-center gap-4">
             <Link
-              href="/"
-              className={cn(buttonVariants({ variant: "link" }), "px-0")}
-            >
-              Home
-            </Link>
-            <Link
               href="/gallery"
-              className={cn(buttonVariants({ variant: "link" }), "px-0")}
+              className={cn(
+                buttonVariants({ variant: "link" }),
+                "px-0 text-muted-foreground hover:text-foreground"
+              )}
             >
               Gallery
             </Link>
+            <a
+              href="https://github.com/Railly/tinte"
+              className={cn(
+                buttonVariants({ variant: "link" }),
+                "px-0 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              GitHub
+            </a>
           </div>
         </div>
         <div className="flex-grow max-w-sm mx-4">
@@ -85,54 +160,82 @@ export const Header = ({
               <div className="relative">
                 <Input
                   value={themeName}
-                  onChange={(e) => setThemeName(e.target.value)}
-                  className="text-center font-medium pr-7"
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  className="text-center font-medium pr-10"
                   placeholder="Enter theme name"
-                  disabled
+                  disabled={canNotEdit}
                 />
                 <span className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                  <IconEdit />
+                  {isEditing ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleUpdateName(themeConfig)}
+                    >
+                      {isUpdating ? (
+                        <IconLoading className="w-4 h-4" />
+                      ) : (
+                        <IconSave className="w-4 h-4" />
+                      )}
+                    </Button>
+                  ) : (
+                    <IconEdit
+                      className={cn("h-4 w-4", canNotEdit && "opacity-50")}
+                    />
+                  )}
                 </span>
               </div>
             </TooltipTrigger>
-
             <TooltipContent>
-              <span className="text-xs">Rename</span>
+              <span className="text-xs">
+                {canNotEdit ? "Can't edit system themes" : "Rename Theme"}
+              </span>
             </TooltipContent>
           </Tooltip>
         </div>
         <div className="flex items-center gap-2">
-          {/* <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" onClick={handleSave}>
-                <IconSave />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <span className="text-xs">Save Theme</span>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" onClick={handleGenerate}>
-                <IconGenerate />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <span className="text-xs">Generate with AI</span>
-            </TooltipContent>
-          </Tooltip> */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button className="mr-2" variant="outline" disabled>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="mr-2" variant="outline">
                 <IconShare />
                 <span className="ml-2">Share</span>
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <span className="text-xs">Share Theme</span>
-            </TooltipContent>
-          </Tooltip>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/t/${themeConfig.id}`
+                  )
+                }
+              >
+                <IconCopy className="mr-2 h-4 w-4" />
+                <span>Copy Link</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() =>
+                  updateThemeStatus(themeConfig.id, !themeConfig.isPublic)
+                }
+                disabled={canNotEdit}
+              >
+                {themeConfig.isPublic ? (
+                  <>
+                    <IconLock className="mr-2 h-4 w-4" />
+                    <span>Make Private</span>
+                  </>
+                ) : (
+                  <>
+                    <IconGlobe className="mr-2 h-4 w-4" />
+                    <span>Make Public</span>
+                  </>
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button disabled={loading} onClick={handleExport}>
@@ -148,7 +251,6 @@ export const Header = ({
               <span className="text-xs">Export Theme</span>
             </TooltipContent>
           </Tooltip>
-          {/* Profile Template with initials RH */}
           <Separator orientation="vertical" className="h-4 mx-2" />
           <div className="w-8 h-8 flex justify-center items-center">
             {!user.isLoaded ? (
@@ -157,38 +259,6 @@ export const Header = ({
               <UserButton />
             )}
           </div>
-          {/* <ThemeSelector /> */}
-          {/* <Tooltip>
-            <TooltipTrigger asChild>
-              <a
-                className={cn(buttonVariants({ variant: "ghost" }))}
-                href="https://donate.railly.dev"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <IconHeart />
-              </a>
-            </TooltipTrigger>
-            <TooltipContent>
-              <span className="text-xs">Support</span>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <a
-                className={cn(buttonVariants({ variant: "ghost" }))}
-                href="https://github.com/Railly/tinte"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <IconGithub className="text-foreground" />
-              </a>
-            </TooltipTrigger>
-            <TooltipContent>
-              <span className="text-xs">Github</span>
-            </TooltipContent>
-          </Tooltip> */}
-          {/* <SubscriptionForm /> */}
         </div>
       </header>
     </TooltipProvider>

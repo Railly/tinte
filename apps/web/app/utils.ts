@@ -1,17 +1,16 @@
-import { defaultThemeConfig } from "@/lib/core/config";
 import {
   DarkLightPalette,
   Palette,
   ThemeConfig,
   TokenColorMap,
 } from "@/lib/core/types";
-import { entries } from "@/lib/utils";
 import { ThemePalettes, Themes, TokenColors } from "@prisma/client";
 import { hexToRgba } from "@uiw/color-convert";
 
 export function formatPalette(palette: ThemePalettes | undefined) {
   if (!palette) return {};
   return {
+    id: palette.xata_id,
     text: palette.text,
     "text-2": palette.text_2,
     "text-3": palette.text_3,
@@ -76,6 +75,7 @@ export function formatTokenColors(tokenColors: TokenColors | undefined) {
 
 export function invertPalette(palette: Palette): Record<string, string> {
   return {
+    xata_id: palette.id,
     text: palette.text,
     text_2: palette["text-2"],
     text_3: palette["text-3"],
@@ -147,9 +147,12 @@ export function formatTheme(
   const tokenColors = theme.TokenColors[0];
 
   return {
+    id: theme.xata_id,
     name: theme.name,
     displayName: theme.display_name,
+    isPublic: theme.is_public,
     category: theme.category,
+    createdAt: theme.xata_createdat,
     palette: {
       dark: formatPalette(darkPalette),
       light: formatPalette(lightPalette),
@@ -167,16 +170,25 @@ export function sortThemes(formattedThemes: ThemeConfig[]) {
     "supabase",
   ];
 
-  const sortedThemes = formattedThemes.sort(
-    (a: ThemeConfig, b: ThemeConfig) => {
+  const sortedThemes = formattedThemes.sort((a, b) => {
+    if (a.category === "user" && b.category === "user") {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+
+    if (a.category === "user") return -1;
+    if (b.category === "user") return 1;
+
+    if (a.name && b.name) {
       if (a.category === "featured" && b.category === "featured") {
         return featuredOrder.indexOf(a.name) - featuredOrder.indexOf(b.name);
       }
       if (a.category === "featured") return -1;
       if (b.category === "featured") return 1;
+
       return a.name.localeCompare(b.name);
     }
-  );
+    return 0;
+  });
 
   return sortedThemes;
 }
@@ -263,35 +275,21 @@ export const adjustUIProgression = (
   return updatedPalette;
 };
 
-export function getThemeCategories(
-  initialThemes: ThemeConfig[],
-  customThemes: Record<string, DarkLightPalette>
-) {
-  const featuredThemes = initialThemes.filter(
+export function getThemeCategories(allThemes: ThemeConfig[]) {
+  const featuredThemes = allThemes.filter(
     (theme) => theme.category === "featured"
   );
-  const raysoThemes = initialThemes.filter(
-    (theme) => theme.category === "rayso"
-  );
-  const communityThemes = initialThemes.filter(
+  const raysoThemes = allThemes.filter((theme) => theme.category === "rayso");
+  const communityThemes = allThemes.filter(
     (theme) => theme.category === "community"
   );
-
-  const customThemesList = entries(customThemes).map(([name, palette]) => ({
-    name: name.toLowerCase().replace(/\s/g, "-"),
-    displayName: name,
-    palette,
-    category: "user",
-    tokenColors: defaultThemeConfig.tokenColors,
-  })) as ThemeConfig[];
-
-  const allThemes = [...customThemesList, ...initialThemes];
+  const userThemes = allThemes.filter((theme) => theme.category === "user");
 
   return {
     featuredThemes,
     raysoThemes,
     communityThemes,
-    customThemesList,
+    userThemes,
     allThemes,
   };
 }
@@ -302,9 +300,11 @@ export const getThemeCategoryLabel = (category: string) => {
       return "Ray.so";
     case "featured":
       return "Featured";
+    case "user":
+      return "User";
     case "community":
       return "Community";
     default:
-      return "Local";
+      return "Unknown";
   }
 };

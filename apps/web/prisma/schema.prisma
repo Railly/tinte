@@ -56,7 +56,7 @@ model Themes {
   name           String?
   display_name   String?
   is_public      Boolean?        @default(false)
-  category       String?         @default("custom")
+  category       String?         @default("user")
   ThemeLikes     ThemeLikes[]
   ThemePalettes  ThemePalettes[]
   Users          Users?          @relation(fields: [User], references: [xata_id], onUpdate: NoAction, map: "User_link")

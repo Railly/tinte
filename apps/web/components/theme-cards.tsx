@@ -1,38 +1,34 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IconGrid, IconUser, IconUsers, IconZap } from "@/components/ui/icons";
+import { IconGrid, IconTinte, IconUser, IconZap } from "@/components/ui/icons";
 import { ThemeCard } from "@/components/theme-card";
-import { DarkLightPalette, ThemeConfig } from "@/lib/core/types";
+import { ThemeConfig } from "@/lib/core/types";
 import IconRaycast from "@/public/logos/raycast.svg";
-import { toast } from "sonner";
 import { getThemeCategories } from "@/app/utils";
-import { cn } from "@/lib/utils";
+import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { EmptyState } from "./empty-state";
 
 interface ThemeCardsProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
-  initialThemes: ThemeConfig[];
-  customThemes: Record<string, DarkLightPalette>;
+  allThemes: ThemeConfig[];
   selectedTheme: string;
   setSelectedTheme: (themeName: string) => void;
-  updateCustomThemes: (
-    newCustomThemes: Record<string, DarkLightPalette>
-  ) => void;
   isTextareaFocused: boolean;
 }
 
 export function ThemeCards({
   updateThemeConfig,
-  initialThemes,
-  customThemes,
+  allThemes,
   selectedTheme,
   setSelectedTheme,
-  updateCustomThemes,
   isTextareaFocused,
 }: ThemeCardsProps) {
+  const user = useUser();
   const themeCategories = useMemo(() => {
-    return getThemeCategories(initialThemes, customThemes);
-  }, [initialThemes, customThemes]);
+    return getThemeCategories(allThemes);
+  }, [allThemes]);
 
   const handleUseTheme = (theme: ThemeConfig) => {
     setSelectedTheme(theme.displayName);
@@ -40,24 +36,6 @@ export function ThemeCards({
       ...theme,
       name: theme.displayName.toLowerCase().replace(/\s/g, "-"),
     });
-  };
-
-  const handleDeleteTheme = (themeName: string) => {
-    const updatedCustomThemes = { ...customThemes };
-    delete updatedCustomThemes[themeName];
-    updateCustomThemes(updatedCustomThemes);
-
-    localStorage.setItem("customThemes", JSON.stringify(updatedCustomThemes));
-
-    if (selectedTheme === themeName) {
-      const defaultTheme = initialThemes[0];
-      if (defaultTheme) {
-        setSelectedTheme(defaultTheme.displayName);
-        updateThemeConfig(defaultTheme);
-      }
-    }
-
-    toast.success(`Local theme "${themeName}" deleted successfully`);
   };
 
   return (
@@ -95,7 +73,7 @@ export function ThemeCards({
                 variant="underline"
                 value="community"
               >
-                <IconUsers className="w-4 h-4" />
+                <IconTinte className="w-4 h-4" />
                 <span>Community</span>
               </TabsTrigger>
               <TabsTrigger
@@ -103,7 +81,15 @@ export function ThemeCards({
                 variant="underline"
                 value="custom"
               >
-                <IconUser className="w-4 h-4" />
+                <SignedIn>
+                  <img
+                    src={user.user?.imageUrl}
+                    className="w-4 h-4 rounded-full"
+                  />
+                </SignedIn>
+                <SignedOut>
+                  <IconUser className="w-4 h-4" />
+                </SignedOut>
                 <span>Your Themes</span>
               </TabsTrigger>
             </TabsList>
@@ -112,8 +98,8 @@ export function ThemeCards({
                 themes={themeCategories.allThemes}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
-                onDeleteTheme={handleDeleteTheme}
                 isTextareaFocused={isTextareaFocused}
+                type="all"
               />
             </TabsContent>
             <TabsContent className="w-full" value="featured">
@@ -121,8 +107,8 @@ export function ThemeCards({
                 themes={themeCategories.featuredThemes}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
-                onDeleteTheme={handleDeleteTheme}
                 isTextareaFocused={isTextareaFocused}
+                type="featured"
               />
             </TabsContent>
             <TabsContent className="w-full" value="rayso">
@@ -130,8 +116,8 @@ export function ThemeCards({
                 themes={themeCategories.raysoThemes}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
-                onDeleteTheme={handleDeleteTheme}
                 isTextareaFocused={isTextareaFocused}
+                type="rayso"
               />
             </TabsContent>
             <TabsContent className="w-full" value="community">
@@ -139,17 +125,17 @@ export function ThemeCards({
                 themes={themeCategories.communityThemes}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
-                onDeleteTheme={handleDeleteTheme}
                 isTextareaFocused={isTextareaFocused}
+                type="community"
               />
             </TabsContent>
             <TabsContent className="w-full" value="custom">
               <ThemeCardGrid
-                themes={themeCategories.customThemesList}
+                themes={themeCategories.userThemes}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
-                onDeleteTheme={handleDeleteTheme}
                 isTextareaFocused={isTextareaFocused}
+                type="user"
               />
             </TabsContent>
           </Tabs>
@@ -163,17 +149,20 @@ interface ThemeCardGridProps {
   themes: ThemeConfig[];
   selectedTheme: string;
   onUseTheme: (theme: ThemeConfig) => void;
-  onDeleteTheme: (themeName: string) => void;
   isTextareaFocused: boolean;
+  type: "community" | "user" | "all" | "featured" | "rayso";
 }
 
 function ThemeCardGrid({
   themes,
   selectedTheme,
   onUseTheme,
-  onDeleteTheme,
   isTextareaFocused,
+  type,
 }: ThemeCardGridProps) {
+  if (themes.length === 0) {
+    return <EmptyState type={type} />;
+  }
   return (
     <div className="w-full grid gap-4 mt-8 md:grid-cols-2 lg:grid-cols-4">
       {themes.map((theme, index) => (
@@ -183,7 +172,6 @@ function ThemeCardGrid({
           onUseTheme={() => onUseTheme(theme)}
           isTextareaFocused={isTextareaFocused}
           isSelected={selectedTheme === theme.displayName}
-          onDeleteTheme={() => onDeleteTheme(theme.displayName)}
         />
       ))}
     </div>

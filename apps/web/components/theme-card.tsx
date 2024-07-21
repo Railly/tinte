@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -7,17 +8,21 @@ import {
   IconBrush,
   IconCheck,
   IconDownload,
+  IconGlobe,
   IconLoading,
+  IconLock,
+  IconTinte,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { SignInDialog } from "./sign-in-dialog";
 import { ThemeConfig } from "@/lib/core/types";
-import { SHOWCASE_COLORS } from "@/lib/constants";
+import { FEATURED_THEME_LOGOS, SHOWCASE_COLORS } from "@/lib/constants";
 import { useTheme } from "next-themes";
 import { getThemeCategoryLabel } from "@/app/utils";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
+import IconRaycast from "@/public/logos/raycast.svg";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -42,7 +47,6 @@ const MotionButton = motion(Button);
 
 interface ThemeCardProps {
   onUseTheme: () => void;
-  onDeleteTheme?: () => void;
   isSelected: boolean;
   themeConfig: ThemeConfig;
   isTextareaFocused: boolean;
@@ -50,7 +54,6 @@ interface ThemeCardProps {
 
 export const ThemeCard: React.FC<ThemeCardProps> = ({
   onUseTheme,
-  // onDeleteTheme,
   isSelected,
   themeConfig,
   isTextareaFocused,
@@ -63,14 +66,12 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
 
   const handleDownloadTheme = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log({ themeConfig, currentTheme });
     await exportVSIX(themeConfig, currentTheme === "dark");
   };
 
   const handleEditTheme = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (user.isSignedIn) router.push(`/generator?theme=${themeConfig.name}`);
-    else router.push("/sign-in");
+    router.push(`/generator?theme=${themeConfig.name}`);
   };
 
   return (
@@ -82,19 +83,14 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
             ? "border-primary shadow-lg"
             : "border-transparent hover:border-accent",
           {
-            "opacity-50": isTextareaFocused && !isSelected,
+            "opacity-50 grayscale": isTextareaFocused && !isSelected,
           }
         )}
         onClick={onUseTheme}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        <motion.div
-          className={cn("flex h-10 relative", {
-            grayscale: isTextareaFocused && !isSelected,
-          })}
-          variants={itemVariants}
-        >
+        <motion.div className="flex h-10 relative" variants={itemVariants}>
           {SHOWCASE_COLORS.map((colorKey, index) => (
             <motion.div
               key={colorKey}
@@ -123,10 +119,36 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
           </motion.h2>
           <motion.div className="flex space-x-2 mt-2" variants={itemVariants}>
             <Badge variant="secondary">
+              {themeConfig.category === "user" && (
+                <img
+                  src={user.user?.imageUrl}
+                  className="w-5 h-5 mr-2 rounded-full"
+                />
+              )}
+              {themeConfig.category === "community" && (
+                <IconTinte className="w-4 h-4 mr-2" />
+              )}
+              {themeConfig.category === "rayso" && (
+                <IconRaycast className="w-4 h-4 mr-2" />
+              )}
+              {themeConfig.category === "featured" && (
+                <div className="mr-2">
+                  {
+                    FEATURED_THEME_LOGOS[
+                      themeConfig.displayName as keyof typeof FEATURED_THEME_LOGOS
+                    ]
+                  }
+                </div>
+              )}
               {getThemeCategoryLabel(themeConfig.category)}
             </Badge>
             <Badge variant="outline">
-              {Object.keys(themeConfig.palette[currentTheme]).length} Colors
+              {themeConfig.isPublic ? (
+                <IconGlobe className="w-4 h-4 mr-2 text-cyan-700 dark:text-cyan-400" />
+              ) : (
+                <IconLock className="w-3 h-3 mr-2 text-rose-600 dark:text-rose-400" />
+              )}
+              {themeConfig.isPublic ? "Public" : "Private"}
             </Badge>
           </motion.div>
           {isSelected && (
@@ -153,7 +175,18 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
               </MotionButton>
             ) : (
               <SignInDialog
-                label="Edit"
+                label={
+                  <MotionButton
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <IconBrush className="mr-2 w-4 h-4" />
+                    Customize
+                  </MotionButton>
+                }
                 redirectUrl={`/generator?theme=${themeConfig.name}`}
               />
             )}
@@ -175,22 +208,6 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
               )}
               Download
             </MotionButton>
-            {/* {themeConfig.category === "user" && (
-              <MotionButton
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteTheme?.();
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <IconTrash className="mr-2 w-4 h-4" />
-                Delete
-              </MotionButton>
-            )} */}
           </motion.div>
         </div>
       </MotionCard>

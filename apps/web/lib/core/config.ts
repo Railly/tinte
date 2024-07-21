@@ -5,6 +5,7 @@ export const defaultThemeConfig: ThemeConfig = {
   name: "one-hunter",
   displayName: "One Hunter",
   category: "featured",
+  createdAt: new Date(),
   palette: PRESETS["One Hunter"] as DarkLightPalette,
   tokenColors: {
     plain: "text",
