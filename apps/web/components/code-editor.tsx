@@ -108,7 +108,7 @@ export const CodeEditor = ({
       if (onThemeSaved) {
         onThemeSaved();
       }
-      if (themeConfig.category === "local") {
+      if (themeConfig.category === "user") {
         const localThemes = JSON.parse(
           localStorage.getItem("customThemes") || "{}"
         );

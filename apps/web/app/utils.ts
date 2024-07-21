@@ -155,7 +155,7 @@ export function formatTheme(
       light: formatPalette(lightPalette),
     },
     tokenColors: formatTokenColors(tokenColors),
-  };
+  } as ThemeConfig;
 }
 
 export function sortThemes(formattedThemes: ThemeConfig[]) {

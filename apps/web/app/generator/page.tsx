@@ -122,7 +122,7 @@ function PageContent({
       name,
       displayName: themeName,
       palette: palette,
-      category: "local",
+      category: "user",
       tokenColors: defaultThemeConfig.tokenColors,
     });
   };

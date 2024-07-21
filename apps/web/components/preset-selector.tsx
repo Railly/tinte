@@ -60,7 +60,7 @@ export const PresetSelector = ({
       name,
       displayName: name,
       palette,
-      category: "local",
+      category: "user",
     })
   ) as ThemeConfig[];
 

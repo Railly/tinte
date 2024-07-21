@@ -175,7 +175,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
               )}
               Download
             </MotionButton>
-            {/* {themeConfig.category === "local" && (
+            {/* {themeConfig.category === "user" && (
               <MotionButton
                 variant="outline"
                 size="sm"
