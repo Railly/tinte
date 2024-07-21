@@ -2,9 +2,11 @@ import { PRESETS } from "../constants";
 import { DarkLightPalette, SemanticToken, ThemeConfig } from "./types";
 
 export const defaultThemeConfig: ThemeConfig = {
+  id: "one-hunter",
   name: "one-hunter",
   displayName: "One Hunter",
   category: "featured",
+  isPublic: true,
   createdAt: new Date(),
   palette: PRESETS["One Hunter"] as DarkLightPalette,
   tokenColors: {

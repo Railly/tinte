@@ -2741,6 +2741,7 @@ export const BACKGROUND_LESS_PALETTE = {
 export const PRESETS: Record<string, DarkLightPalette> = {
   "One Hunter": {
     dark: {
+      id: "one-hunter-dark",
       text: "#E3E1E1",
       interface: "#35373A",
       "text-2": "#A3A3A3",
@@ -2756,6 +2757,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       secondary: "#E3E1E2",
     },
     light: {
+      id: "one-hunter-light",
       text: "#1D2127",
       interface: "#dedede",
       "text-2": "#808080",
@@ -2773,6 +2775,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Flexoki: {
     dark: {
+      id: "flexoki-dark",
       text: "#CECDC3",
       "text-2": "#87857F",
       "text-3": "#575653",
@@ -2788,6 +2791,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#4485BE",
     },
     light: {
+      id: "flexoki-light",
       text: "#100F0F",
       "text-2": "#6F6E68",
       "text-3": "#B7B5AC",
@@ -2805,6 +2809,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Vercel: {
     dark: {
+      id: "vercel-dark",
       text: "#EDEDED",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -2820,6 +2825,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#EDEDED",
     },
     light: {
+      id: "vercel-light",
       text: "#1D2127",
       "text-2": "#808080",
       "text-3": "#b3b3b3",
@@ -2837,6 +2843,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Supabase: {
     dark: {
+      id: "supabase-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -2852,6 +2859,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#EDEDED",
     },
     light: {
+      id: "supabase-light",
       text: "#171717",
       "text-2": "#595959",
       "text-3": "#8c8c8c",
@@ -2869,6 +2877,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Tailwind: {
     dark: {
+      id: "tailwind-dark",
       text: "#F9FAFB",
       "text-2": "#98aecd",
       "text-3": "#6486b4",
@@ -2884,6 +2893,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#FDE68A",
     },
     light: {
+      id: "tailwind-light",
       text: "#1D2127",
       "text-2": "#808080",
       "text-3": "#b3b3b3",
@@ -2901,6 +2911,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Bitmap: {
     dark: {
+      id: "bitmap-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -2916,6 +2927,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#E42C37",
     },
     light: {
+      id: "bitmap-light",
       text: "#685B5B",
       "text-2": "#948484",
       "text-3": "#b8adad",
@@ -2933,6 +2945,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Noir: {
     dark: {
+      id: "noir-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -2948,6 +2961,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#FFFFFF",
     },
     light: {
+      id: "noir-light",
       text: "#111111",
       "text-2": "#666666",
       "text-3": "#999999",
@@ -2965,6 +2979,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Ice: {
     dark: {
+      id: "ice-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -2980,6 +2995,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#00B0E9",
     },
     light: {
+      id: "ice-light",
       text: "#1C1B29",
       "text-2": "#25778e",
       "text-3": "#49b3d0",
@@ -2997,6 +3013,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Sand: {
     dark: {
+      id: "sand-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3012,6 +3029,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#C2B181",
     },
     light: {
+      id: "sand-light",
       text: "#262217",
       "text-2": "#706443",
       "text-3": "#a99a70",
@@ -3029,6 +3047,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Forest: {
     dark: {
+      id: "forest-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3044,6 +3063,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#AAB4A2",
     },
     light: {
+      id: "forest-light",
       text: "#262217",
       "text-2": "#668f56",
       "text-3": "#aac69f",
@@ -3061,6 +3081,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Breeze: {
     dark: {
+      id: "breeze-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3076,6 +3097,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#55E7B1",
     },
     light: {
+      id: "breeze-light",
       text: "#1D2127",
       "text-2": "#bd3d74",
       "text-3": "#d77ea5",
@@ -3093,6 +3115,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Candy: {
     dark: {
+      id: "candy-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3108,6 +3131,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#7A7FFD",
     },
     light: {
+      id: "candy-light",
       text: "#1D2127",
       "text-2": "#808080",
       "text-3": "#b3b3b3",
@@ -3125,6 +3149,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Crimson: {
     dark: {
+      id: "crimson-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3140,6 +3165,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#FDA97A",
     },
     light: {
+      id: "crimson-light",
       text: "#685B5B",
       "text-2": "#a88b8a",
       "text-3": "#b79f9f",
@@ -3157,6 +3183,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Falcon: {
     dark: {
+      id: "falcon-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3172,6 +3199,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#BD9C9C",
     },
     light: {
+      id: "falcon-light",
       text: "#464C65",
       "text-2": "#637b9c",
       "text-3": "#a2b0c3",
@@ -3189,6 +3217,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Meadow: {
     dark: {
+      id: "meadow-dark",
       text: "#EDEDED",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3204,6 +3233,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#45B114",
     },
     light: {
+      id: "meadow-light",
       text: "#1D2127",
       "text-2": "#8caa55",
       "text-3": "#bacc99",
@@ -3221,6 +3251,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Midnight: {
     dark: {
+      id: "midnight-dark",
       text: "#FFFFFF",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3236,6 +3267,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#75D2B1",
     },
     light: {
+      id: "midnight-light",
       text: "#434447",
       "text-2": "#63859c",
       "text-3": "#a2b6c3",
@@ -3253,6 +3285,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Raindrop: {
     dark: {
+      id: "raindrop-dark",
       text: "#EDEDED",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3268,6 +3301,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#9984EE",
     },
     light: {
+      id: "raindrop-light",
       text: "#1D2127",
       "text-2": "#4868ad",
       "text-3": "#90abe4",
@@ -3285,6 +3319,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
   },
   Sunset: {
     dark: {
+      id: "sunset-dark",
       text: "#EDEDED",
       "text-2": "#A3A3A3",
       "text-3": "#8F8F8F",
@@ -3300,6 +3335,7 @@ export const PRESETS: Record<string, DarkLightPalette> = {
       "accent-3": "#E7CF55",
     },
     light: {
+      id: "sunset-light",
       text: "#737568",
       "text-2": "#a47141",
       "text-3": "#e5ac76",
