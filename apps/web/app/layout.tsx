@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import { cn } from "@/lib/utils";
@@ -24,7 +24,6 @@ export const metadata: Metadata = {
     "vs code theme generator",
   ],
   authors: [{ name: "Railly Hugo" }],
-  themeColor: "#000000",
   openGraph: {
     title: "Tinte - VS Code Theme Generator",
     description:
@@ -56,6 +55,13 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -63,20 +69,17 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body
-          className={cn(
-            "font-sans antialiased min-h-screen bg-background text-foreground relative",
-            GeistSans.variable,
-            GeistMono.variable
-          )}
-        >
-          <Providers
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+      <html
+        lang="en"
+        className={cn(
+          "font-sans antialiased bg-background text-foreground",
+          GeistSans.variable,
+          GeistMono.variable
+        )}
+        suppressHydrationWarning
+      >
+        <body className="min-h-screen relative">
+          <Providers>
             {children}
             <Analytics />
             <CounterscaleScript />

@@ -260,7 +260,7 @@ function IconVercel({ className, ...props }: React.ComponentProps<"svg">) {
       className={cn("size-4", className)}
       {...props}
     >
-      <g clip-path="url(#clip0_935_5)">
+      <g clipPath="url(#clip0_935_5)">
         <path d="M46.1261 0L92.2523 79.8937H0L46.1261 0Z" fill="currentColor" />
       </g>
     </svg>
@@ -278,7 +278,7 @@ function IconSupabase({ className, ...props }: React.ComponentProps<"svg">) {
       className={cn("size-4", className)}
       {...props}
     >
-      <g clip-path="url(#clip0_934_13)">
+      <g clipPath="url(#clip0_934_13)">
         <path
           d="M45.5063 78.6549C43.463 81.228 39.3199 79.8182 39.2707 76.5326L38.5508 28.4766H70.8636C76.7163 28.4766 79.9805 35.2365 76.3412 39.8202L45.5063 78.6549Z"
           fill="url(#paint0_linear_934_13)"
@@ -286,7 +286,7 @@ function IconSupabase({ className, ...props }: React.ComponentProps<"svg">) {
         <path
           d="M45.5063 78.6549C43.463 81.228 39.3199 79.8182 39.2707 76.5326L38.5508 28.4766H70.8636C76.7163 28.4766 79.9805 35.2365 76.3412 39.8202L45.5063 78.6549Z"
           fill="url(#paint1_linear_934_13)"
-          fill-opacity="0.2"
+          fillOpacity="0.2"
         />
         <path
           d="M32.3647 1.329C34.408 -1.24447 38.5511 0.165607 38.6004 3.45126L38.9159 51.5072H7.00745C1.15455 51.5072 -2.10971 44.7473 1.52979 40.1636L32.3647 1.329Z"
@@ -302,8 +302,8 @@ function IconSupabase({ className, ...props }: React.ComponentProps<"svg">) {
           y2="1871.08"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#249361" />
-          <stop offset="1" stop-color="#3ECF8E" />
+          <stop stopColor="#249361" />
+          <stop offset="1" stopColor="#3ECF8E" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_934_13"
@@ -314,7 +314,7 @@ function IconSupabase({ className, ...props }: React.ComponentProps<"svg">) {
           gradientUnits="userSpaceOnUse"
         >
           <stop />
-          <stop offset="1" stop-opacity="0" />
+          <stop offset="1" stopOpacity="0" />
         </linearGradient>
         <clipPath id="clip0_934_13">
           <rect width="77.8707" height="80" fill="white" />
@@ -335,7 +335,7 @@ function IconTailwind({ className, ...props }: React.ComponentProps<"svg">) {
       className={cn("size-4", className)}
       {...props}
     >
-      <g clip-path="url(#clip0_934_21)">
+      <g clipPath="url(#clip0_934_21)">
         <path
           d="M66.4935 0C48.7619 0 37.6797 8.8658 33.2468 26.5974C39.8961 17.7316 47.6537 14.4069 56.5195 16.6234C61.5779 17.888 65.1934 21.5577 69.1954 25.6199C75.7147 32.2373 83.26 39.8961 99.7403 39.8961C117.472 39.8961 128.554 31.0303 132.987 13.2987C126.338 22.1645 118.58 25.4892 109.714 23.2727C104.656 22.0081 101.04 18.3384 97.0384 14.2762C90.5191 7.65882 82.9738 0 66.4935 0ZM33.2468 39.8961C15.5152 39.8961 4.4329 48.7619 0 66.4935C6.64935 57.6277 14.4069 54.303 23.2727 56.5195C28.3312 57.7841 31.9467 61.4538 35.9486 65.5161C42.4679 72.1334 50.0132 79.7922 66.4935 79.7922C84.2251 79.7922 95.3074 70.9264 99.7403 53.1948C93.0909 62.0606 85.3333 65.3853 76.4675 63.1688C71.4091 61.9042 67.7936 58.2345 63.7917 54.1723C57.2723 47.5549 49.727 39.8961 33.2468 39.8961Z"
           fill="url(#paint0_linear_934_21)"
@@ -350,8 +350,8 @@ function IconTailwind({ className, ...props }: React.ComponentProps<"svg">) {
           y2="9175.68"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#2298BD" />
-          <stop offset="1" stop-color="#0ED7B5" />
+          <stop stopColor="#2298BD" />
+          <stop offset="1" stopColor="#0ED7B5" />
         </linearGradient>
         <clipPath id="clip0_934_21">
           <rect width="132.987" height="80" fill="white" />

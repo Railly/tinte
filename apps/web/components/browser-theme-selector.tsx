@@ -21,32 +21,42 @@ import {
 
 export function BrowserThemeSelector() {
   const { setTheme, theme } = useTheme();
-  // eslint-disable-next-line no-unused-vars
   const [, startTransition] = React.useTransition();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger>
-            <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "py-0 text-sm w-[6.5rem] justify-start"
-              )}
-            >
-              {theme === "light" ? (
-                <IconSun className="size-3" />
-              ) : theme === "dark" ? (
-                <IconMoon className="size-3" />
-              ) : (
-                <IconComputer className="size-3" />
-              )}
-              <span className="ml-2">
-                {theme && theme.charAt(0).toUpperCase() + theme.slice(1)}
-              </span>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
+          <DropdownMenuTrigger asChild>
+            <TooltipTrigger asChild>
+              <button
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "py-0 text-sm w-[6.5rem] justify-start"
+                )}
+              >
+                {theme === "light" ? (
+                  <IconSun className="size-3" />
+                ) : theme === "dark" ? (
+                  <IconMoon className="size-3" />
+                ) : (
+                  <IconComputer className="size-3" />
+                )}
+                <span className="ml-2">
+                  {theme && theme.charAt(0).toUpperCase() + theme.slice(1)}
+                </span>
+              </button>
+            </TooltipTrigger>
+          </DropdownMenuTrigger>
           <TooltipContent>
             <span className="text-xs mt-4">Theme</span>
           </TooltipContent>
