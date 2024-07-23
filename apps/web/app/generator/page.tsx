@@ -13,7 +13,7 @@ async function getAllThemes() {
 
   if (userId) {
     whereClause = {
-      OR: [{ is_public: true }, { user_id: userId }],
+      OR: [{ is_public: true }, { User: userId }],
     };
   } else {
     whereClause = { is_public: true };
