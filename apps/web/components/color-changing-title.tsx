@@ -40,7 +40,7 @@ export function ColorChangingTitle({
             <motion.span
               animate={{
                 color:
-                  themeConfig.palette[currentTheme][
+                  themeConfig.palette[currentTheme]?.[
                     accentColors[
                       (colorIndex + index) % accentColors.length
                     ] as keyof (typeof themeConfig.palette)[typeof currentTheme]

@@ -75,8 +75,6 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
     router.push(`/generator?theme=${themeConfig.name}`);
   };
 
-  console.log({ themeConfig });
-
   return (
     <motion.div variants={cardVariants} initial="hidden" animate="visible">
       <MotionCard
@@ -100,7 +98,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
               className="flex-1 h-full"
               style={{
                 backgroundColor:
-                  themeConfig.palette[currentTheme][
+                  themeConfig.palette[currentTheme]?.[
                     colorKey as keyof typeof themeConfig.palette.light
                   ],
                 zIndex: SHOWCASE_COLORS.length - index,
