@@ -13,50 +13,79 @@ import {
 import { ThemeConfig } from "@/lib/core/types";
 import { ThemeSelector } from "@/components/theme-selector";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
+import { IconLoading } from "./ui/icons";
+import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 
-interface ThemeDialogProps {
+interface CreateThemeDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  onSelectTheme: (newThemeName: string) => void;
   themeConfig: ThemeConfig;
-  onSave: (newThemeName: string) => void;
   themes: ThemeConfig[];
-  currentTheme: "light" | "dark";
   applyTheme: (themeName: string) => void;
+  title: string;
+  description: string;
+  saveButtonContent: React.ReactNode;
+  loadingButtonText: string;
 }
 
-export const ThemeDialog: React.FC<ThemeDialogProps> = ({
+export const CreateThemeDialog: React.FC<CreateThemeDialogProps> = ({
   isOpen,
   onClose,
+  onSelectTheme,
   themeConfig,
-  onSave,
   themes,
-  currentTheme,
   applyTheme,
+  title,
+  description,
+  saveButtonContent,
+  loadingButtonText,
 }) => {
+  const { saveTheme, isSaving } = useThemeGenerator();
   const [newThemeName, setNewThemeName] = useState("");
+  const { currentTheme } = useBinaryTheme();
 
-  const handleSave = () => {
-    onSave(newThemeName);
-    onClose();
+  const handleSave = async () => {
+    try {
+      if (!newThemeName) {
+        toast.error("Please enter a theme name");
+        return;
+      }
+      await saveTheme({
+        ...themeConfig,
+        displayName: newThemeName,
+      });
+      onSelectTheme(newThemeName);
+      toast.success("Theme saved successfully");
+      onClose();
+    } catch (error) {
+      console.error("Error saving theme:", error);
+      toast.error("Failed to save theme");
+    }
   };
+  console.log({
+    themeConfig,
+    currentTheme,
+    ga: themeConfig.palette[currentTheme],
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Make a copy</DialogTitle>
-          <DialogDescription>
-            Create a copy of this theme by providing a new name
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-3">
-            <Label htmlFor="newThemeName">New Theme Name</Label>
+            <Label htmlFor="newThemeName">Theme Name</Label>
             <Input
               id="newThemeName"
               value={newThemeName}
               onChange={(e) => setNewThemeName(e.target.value)}
-              placeholder="Enter new theme name"
+              placeholder="Enter theme name"
             />
           </div>
           <ThemeSelector
@@ -89,7 +118,16 @@ export const ThemeDialog: React.FC<ThemeDialogProps> = ({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Create </Button>
+          <Button onClick={handleSave} disabled={isSaving || !newThemeName}>
+            {isSaving ? (
+              <>
+                <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+                {loadingButtonText}
+              </>
+            ) : (
+              <>{saveButtonContent}</>
+            )}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

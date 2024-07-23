@@ -2,10 +2,10 @@ import { Palette, ThemeConfig } from "@/lib/core/types";
 import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
 import { ColorPalette } from "./color-palette";
 import { ThemeGenerator } from "./theme-generator";
+import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 
 interface ThemeConfigPanelProps {
   themeConfig: ThemeConfig;
-  currentTheme: "light" | "dark";
   onPaletteColorChange: (colorKey: keyof Palette, value: string) => void;
   colorPickerShouldBeHighlighted: {
     key: string;
@@ -24,7 +24,6 @@ interface ThemeConfigPanelProps {
 
 export const ThemeConfigPanel: React.FC<ThemeConfigPanelProps> = ({
   themeConfig,
-  currentTheme,
   onPaletteColorChange,
   colorPickerShouldBeHighlighted,
   advancedMode,
@@ -37,6 +36,7 @@ export const ThemeConfigPanel: React.FC<ThemeConfigPanelProps> = ({
   isColorModified,
   setIsColorModified,
 }) => {
+  const { currentTheme } = useBinaryTheme();
   const handleShuffleTheme = useCallback(() => {
     if (isColorModified) {
       const confirmShuffle = window.confirm(

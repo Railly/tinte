@@ -3,8 +3,9 @@ import { ThemeConfig, DarkLightPalette } from "@/lib/core/types";
 import { toast } from "sonner";
 import { entries } from "@/lib/utils";
 import { defaultThemeConfig } from "@/lib/core/config";
-import { fetchGeneratedTheme } from "@/app/utils";
+import { fetchGeneratedTheme, getThemeName } from "@/app/utils";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export const useThemeGenerator = (
   updateThemeConfig?:
@@ -15,6 +16,7 @@ export const useThemeGenerator = (
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const router = useRouter();
 
   const generateTheme = async (
     themeDescription: string,
@@ -67,9 +69,7 @@ export const useThemeGenerator = (
         },
         body: JSON.stringify({
           ...themeConfig,
-          name: themeConfig.displayName
-            ?.toLocaleLowerCase()
-            .replace(/\s/g, "-"),
+          name: getThemeName(themeConfig.displayName),
           userId: user.user?.id,
         }),
       });
@@ -77,6 +77,7 @@ export const useThemeGenerator = (
       if (!response.ok) {
         throw new Error("Failed to save theme");
       }
+      router.refresh();
     } catch (error) {
       console.error("Error saving theme:", error);
       toast.error("Failed to save theme. Please try again.");
@@ -117,7 +118,6 @@ export const useThemeGenerator = (
     palette: DarkLightPalette,
     type: "shallow" | "deep"
   ) => {
-    const name = themeName.toLowerCase().replace(/\s/g, "-");
     const newTheme = {
       palette: palette,
       category: "user",
@@ -139,7 +139,7 @@ export const useThemeGenerator = (
 
     if (type === "deep") {
       Object.assign(newTheme, {
-        name,
+        name: getThemeName(themeName),
         displayName: themeName,
       });
       await saveTheme(newTheme);

@@ -6,7 +6,7 @@ import { IconGrid, IconTinte, IconUser, IconZap } from "@/components/ui/icons";
 import { ThemeCard } from "@/components/theme-card";
 import { ThemeConfig } from "@/lib/core/types";
 import IconRaycast from "@/public/logos/raycast.svg";
-import { getThemeCategories } from "@/app/utils";
+import { getThemeCategories, getThemeName } from "@/app/utils";
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { EmptyState } from "./empty-state";
 
@@ -34,7 +34,7 @@ export function ThemeCards({
     setSelectedTheme(theme.displayName);
     updateThemeConfig({
       ...theme,
-      name: theme.displayName.toLowerCase().replace(/\s/g, "-"),
+      name: getThemeName(theme.displayName),
     });
   };
 

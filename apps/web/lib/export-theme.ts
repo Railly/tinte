@@ -1,5 +1,6 @@
 import { ThemeConfig } from "@/lib/core/types";
 import { generateVSCodeTheme } from "@/lib/core";
+import { getThemeName } from "@/app/utils";
 
 export const exportThemeAsJSON = (themeConfig: ThemeConfig) => {
   const theme = generateVSCodeTheme(themeConfig);
@@ -40,9 +41,10 @@ export const exportThemeAsVSIX = async (
 
   const fileNameMatch =
     contentDisposition && contentDisposition.match(/filename="(.+)"/);
+
   const fileName = fileNameMatch
     ? fileNameMatch[1]
-    : themeConfig.displayName.replace(/\s/g, "-") +
+    : getThemeName(themeConfig.displayName) +
       `-${isDark ? "dark" : "light"}-0.0.1.vsix`;
 
   const link = document.createElement("a");

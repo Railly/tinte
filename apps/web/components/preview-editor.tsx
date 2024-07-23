@@ -6,7 +6,7 @@ import React, {
   SetStateAction,
 } from "react";
 import { GeneratedVSCodeTheme } from "@/lib/core";
-import { ThemeConfig } from "@/lib/core/types";
+import { DarkLightPalette, ThemeConfig } from "@/lib/core/types";
 import { useMonacoEditor } from "@/lib/hooks/use-monaco-editor";
 import MonacoEditor from "@monaco-editor/react";
 import { editor } from "monaco-editor";
@@ -14,7 +14,7 @@ import { Button } from "./ui/button";
 import { IconCopy, IconLoading, IconSave } from "./ui/icons";
 import { MONACO_SHIKI_LANGS } from "@/lib/constants";
 import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
-import { ThemeDialog } from "./theme-dialog";
+import { CreateThemeDialog } from "./create-theme-dialog";
 import { useRouter } from "next/navigation";
 
 interface PreviewProps {
@@ -31,9 +31,9 @@ interface PreviewProps {
   themeConfig: ThemeConfig;
   isSaving?: boolean;
   themes: ThemeConfig[];
-  currentTheme: "light" | "dark";
   applyTheme: (themeName: string) => void;
   setIsColorModified: Dispatch<SetStateAction<boolean>>;
+  onSelectTheme: (themeName: string, palette?: DarkLightPalette) => void;
 }
 
 export const PreviewEditor = ({
@@ -44,9 +44,9 @@ export const PreviewEditor = ({
   language,
   themeConfig,
   applyTheme,
-  currentTheme,
   themes,
   setIsColorModified,
+  onSelectTheme,
 }: PreviewProps) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,18 +57,9 @@ export const PreviewEditor = ({
     language,
     editorRef,
   });
-  const { saveTheme, updateTheme, isSaving, isUpdating } = useThemeGenerator();
+  const { updateTheme, isSaving, isUpdating } = useThemeGenerator();
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const router = useRouter();
-
-  const handleCopy = async (newThemeName: string) => {
-    await saveTheme({
-      ...themeConfig,
-      displayName: newThemeName,
-    });
-    setIsCopyDialogOpen(false);
-    router.refresh();
-  };
 
   const handleUpdate = async () => {
     await updateTheme(themeConfig);
@@ -186,13 +177,21 @@ export const PreviewEditor = ({
             }}
           />
         </div>
-        <ThemeDialog
+        <CreateThemeDialog
+          title="Make a Copy"
+          description="Create a copy of this theme by providing a new name"
+          saveButtonContent={
+            <>
+              <IconCopy className="w-4 h-4 mr-2" />
+              Create Copy
+            </>
+          }
+          loadingButtonText="Copying..."
           isOpen={isCopyDialogOpen}
           onClose={() => setIsCopyDialogOpen(false)}
+          onSelectTheme={onSelectTheme}
           themeConfig={themeConfig}
-          onSave={handleCopy}
           themes={themes}
-          currentTheme={currentTheme}
           applyTheme={applyTheme}
         />
       </div>

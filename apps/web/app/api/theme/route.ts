@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import {
   formatTheme,
   invertPalette,
+  invertPaletteWithoutId,
   invertTokenColors,
   sortThemes,
 } from "@/app/utils";
@@ -49,8 +50,8 @@ export const POST = async (req: Request) => {
         User: userId,
         ThemePalettes: {
           create: [
-            { mode: "light", ...invertPalette(palette.light) },
-            { mode: "dark", ...invertPalette(palette.dark) },
+            { mode: "light", ...invertPaletteWithoutId(palette.light) },
+            { mode: "dark", ...invertPaletteWithoutId(palette.dark) },
           ],
         },
         TokenColors: {

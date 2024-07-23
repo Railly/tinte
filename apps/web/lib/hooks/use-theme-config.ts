@@ -1,16 +1,15 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { ThemeConfig, DarkLightPalette, Palette } from "@/lib/core/types";
 import { defaultThemeConfig } from "@/lib/core/config";
-import { useTheme } from "next-themes";
 import { generateVSCodeTheme } from "../core";
 import { useUser } from "@clerk/nextjs";
 import { BACKGROUND_LESS_PALETTE } from "../constants";
 import { debounce } from "../utils";
 import { useSearchParams } from "next/navigation";
+import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 
 export const useThemeConfig = (allThemes: ThemeConfig[]) => {
   const { isLoaded } = useUser();
-  const { theme: nextTheme, setTheme: setNextTheme } = useTheme();
   const searchParams = useSearchParams();
   const decodedThemeName = decodeURIComponent(searchParams?.get("theme") || "");
 
@@ -31,14 +30,7 @@ export const useThemeConfig = (allThemes: ThemeConfig[]) => {
     [themeConfig]
   );
 
-  const currentTheme = (
-    nextTheme === "system"
-      ? typeof window !== "undefined" &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-      : nextTheme
-  ) as "light" | "dark";
+  const { currentTheme } = useBinaryTheme();
 
   useEffect(() => {
     if (isLoaded && !initialLoadRef.current) {
@@ -162,13 +154,11 @@ export const useThemeConfig = (allThemes: ThemeConfig[]) => {
     selectedTheme,
     themes: allThemes,
     isBackgroundless,
-    currentTheme,
     isLoading,
     setSelectedTheme,
     toggleBackgroundless,
     updatePaletteColor,
     applyTheme,
-    setNextTheme,
     updatePaletteColors,
   };
 };

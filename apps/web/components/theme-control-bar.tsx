@@ -4,15 +4,14 @@ import { ThemeSelector } from "./theme-selector";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { ThemeConfig } from "@/lib/core/types";
+import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 
 export function ThemeControlBar({
   themes,
   isBackgroundless,
   toggleBackgroundless,
   themeConfig,
-  currentTheme,
   applyTheme,
-  setNextTheme,
   selectedLanguage,
   handleLanguageChange,
   advancedMode,
@@ -22,14 +21,13 @@ export function ThemeControlBar({
   isBackgroundless: boolean;
   toggleBackgroundless: () => void;
   themeConfig: ThemeConfig;
-  currentTheme: "light" | "dark";
   applyTheme: (preset: string) => void;
-  setNextTheme?: (theme: "light" | "dark") => void;
   selectedLanguage: string;
   handleLanguageChange: (language: string) => void;
   advancedMode: boolean;
   setAdvancedMode: (enabled: boolean) => void;
 }) {
+  const { currentTheme, setTheme } = useBinaryTheme();
   return (
     <div className="flex justify-center flex-wrap md:flex-nowrap gap-8 py-6 px-4 bg-muted/30 border rounded-t-md">
       <ThemeSelector
@@ -57,9 +55,7 @@ export function ThemeControlBar({
         <div className="flex items-center mt-1">
           <Switch
             id="light/dark-mode"
-            onCheckedChange={(checked) =>
-              setNextTheme?.(checked ? "dark" : "light")
-            }
+            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
             checked={currentTheme === "dark"}
           />
         </div>
@@ -84,7 +80,7 @@ export function ThemeControlBar({
         <Label htmlFor="how-to-install" className="text-muted-foreground">
           Help
         </Label>
-        <HelpModal />
+        {/* <HelpModal /> */}
       </div>
     </div>
   );

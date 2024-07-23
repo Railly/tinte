@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { PrismaClient } from "@prisma/client";
+import { getThemeName } from "@/app/utils";
 
 const prisma = new PrismaClient();
 
@@ -25,7 +26,7 @@ export const PATCH = async (
         User: userId,
       },
       data: {
-        name: displayName.toLocaleLowerCase().replace(/\s/g, "-"),
+        name: getThemeName(displayName),
         display_name: displayName,
       },
     });
