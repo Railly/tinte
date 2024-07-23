@@ -194,7 +194,7 @@ export const Header = ({
         <div className="flex items-center gap-2">
           <ShareThemeDialog
             themeConfig={themeConfig}
-            isOwner={user.user?.id === themeConfig.user.clerk_id}
+            isOwner={user.user?.id === themeConfig.user?.clerk_id}
             canNotEdit={canNotEdit}
             updateThemeStatus={updateThemeStatus}
           />

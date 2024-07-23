@@ -8,6 +8,7 @@ export const defaultThemeConfig: ThemeConfig = {
   category: "featured",
   isPublic: true,
   createdAt: new Date(),
+  user: null,
   palette: PRESETS["One Hunter"] as DarkLightPalette,
   tokenColors: {
     plain: "text",

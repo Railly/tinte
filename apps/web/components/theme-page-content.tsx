@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { ThemeConfig } from "@/lib/core/types";
 import { useUser } from "@clerk/nextjs";
@@ -8,8 +9,6 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { generateVSCodeTheme } from "@/lib/core";
 import { ThemePreview } from "./theme-preview";
-import { BrowserThemeSelector } from "./browser-theme-selector";
-import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { LandingHeader } from "./landing-header";
 
@@ -19,7 +18,7 @@ export function ThemePageContent({
   themeConfig: ThemeConfig;
 }) {
   const { user } = useUser();
-  const isOwner = user?.id === themeConfig.user.clerk_id;
+  const isOwner = user?.id === themeConfig.user?.clerk_id;
   const vsCodeTheme = useMemo(
     () => generateVSCodeTheme(themeConfig),
     [themeConfig]
@@ -53,12 +52,12 @@ export function ThemePageContent({
                 </h1>
                 <div className="flex items-center gap-4 mb-6">
                   <img
-                    src={themeConfig.user.image_url || ""}
+                    src={themeConfig.user?.image_url || ""}
                     className="w-10 h-10 rounded-full"
                   />
                   <div>
                     <p className="font-medium">
-                      {themeConfig.user.username || "Anonymous"}
+                      {themeConfig.user?.username || "Anonymous"}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Theme Creator

@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import {
   formatTheme,
-  invertPalette,
   invertPaletteWithoutId,
   invertTokenColors,
   sortThemes,
@@ -19,6 +18,7 @@ export const GET = async () => {
       include: {
         ThemePalettes: true,
         TokenColors: true,
+        Users: true,
       },
     });
 

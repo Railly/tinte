@@ -31,7 +31,7 @@ export type ThemeConfig = {
   isPublic: boolean;
   category: "featured" | "rayso" | "community" | "user";
   createdAt: Date;
-  user: Users;
+  user: Users | null;
   palette: DarkLightPalette;
   tokenColors: TokenColorMap;
 };
