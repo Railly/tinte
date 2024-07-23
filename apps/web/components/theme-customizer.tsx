@@ -14,12 +14,16 @@ import { CreateThemeDialog } from "./create-theme-dialog";
 import { ThemeSheet } from "./theme-sheet";
 import { IconPlus, IconSave } from "./ui/icons";
 import { Button } from "./ui/button";
+import { useUser } from "@clerk/nextjs";
+import { SignInDialog } from "./sign-in-dialog";
 
 export function ThemeCustomizer({
   allThemes,
 }: {
   allThemes: ThemeConfig[];
 }): JSX.Element {
+  const { user } = useUser();
+
   const {
     vsCodeTheme,
     themes,
@@ -46,6 +50,7 @@ export function ThemeCustomizer({
   const [isColorModified, setIsColorModified] = useState(false);
   const [themeDescription, setThemeDescription] = useState("");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
 
   const handleSelectTheme = async (
     themeName: string,
@@ -63,6 +68,14 @@ export function ThemeCustomizer({
     applyTheme(themeName);
   };
 
+  const handlePlusButtonClick = () => {
+    if (user) {
+      setIsSheetOpen(true);
+    } else {
+      setIsSignInDialogOpen(true);
+    }
+  };
+
   return (
     <div className="flex h-screen">
       <div className="w-16 flex flex-col border-r z-50">
@@ -76,7 +89,7 @@ export function ThemeCustomizer({
         </a>
         <div className="flex flex-col items-center py-4 gap-4">
           <Button
-            onClick={() => setOpenCreateTheme(true)}
+            onClick={handlePlusButtonClick}
             className="w-10 h-10"
             variant="outline"
             size="icon"
@@ -100,12 +113,16 @@ export function ThemeCustomizer({
             themes={themes}
             applyTheme={applyTheme}
           />
-
           <ThemeSheet
             isOpen={isSheetOpen}
             setIsOpen={setIsSheetOpen}
             themes={themes}
             onSelectTheme={handleSelectTheme}
+          />
+          <SignInDialog
+            open={isSignInDialogOpen}
+            setOpen={setIsSignInDialogOpen}
+            redirectUrl={`/generator?theme=${themeConfig.name}`}
           />
         </div>
       </div>

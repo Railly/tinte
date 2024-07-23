@@ -1,3 +1,4 @@
+import React from "react";
 import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
 import { Button } from "./ui/button";
 import { IconGenerate, IconLoading, IconSparkles } from "./ui/icons";
@@ -5,6 +6,8 @@ import { Textarea } from "./ui/textarea";
 import { useDescriptionEnhancer } from "@/lib/hooks/use-theme-enhancer";
 import { ThemeConfig } from "@/lib/core/types";
 import { Dispatch, SetStateAction } from "react";
+import { useUser } from "@clerk/nextjs";
+import { SignInDialog } from "./sign-in-dialog";
 
 interface ThemeGeneratorProps {
   themeDescription: string;
@@ -19,8 +22,13 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
   setThemeConfig,
   setIsColorModified,
 }) => {
+  const user = useUser();
   const { isGenerating, generateTheme } = useThemeGenerator(setThemeConfig);
   const { isEnhancing, enhanceDescription } = useDescriptionEnhancer();
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = React.useState(false);
+  const [signInAction, setSignInAction] = React.useState<
+    "generate" | "enhance"
+  >("generate");
 
   const handleGenerateTheme = async () => {
     await generateTheme(themeDescription, "shallow");
@@ -37,7 +45,20 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      handleGenerateTheme();
+      handleSignInOrAction("generate");
+    }
+  };
+
+  const handleSignInOrAction = (action: "generate" | "enhance") => {
+    if (user.isSignedIn) {
+      if (action === "generate") {
+        handleGenerateTheme();
+      } else {
+        handleEnhanceDescription();
+      }
+    } else {
+      setSignInAction(action);
+      setIsSignInDialogOpen(true);
     }
   };
 
@@ -47,15 +68,15 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
         <h2 className="text-sm font-bold">Theme Generator</h2>
         <Button
           variant="outline"
-          onClick={handleGenerateTheme}
+          onClick={() => handleSignInOrAction("generate")}
           disabled={isGenerating || themeDescription.trim().length < 3}
         >
           {isGenerating ? (
-            <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+            <IconLoading className="w-4 h-4 mr-2" />
           ) : (
             <IconGenerate className="w-4 h-4 mr-2" />
           )}
-          <span>{isGenerating ? "Generating..." : "Generate Theme"}</span>
+          <span>{isGenerating ? "Generating..." : "Generate"}</span>
         </Button>
       </div>
 
@@ -72,7 +93,7 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={handleEnhanceDescription}
+          onClick={() => handleSignInOrAction("enhance")}
           className="absolute bottom-4 left-4 text-muted-foreground hover:text-foreground"
           disabled={isEnhancing || themeDescription.trim().length < 3}
         >
@@ -92,6 +113,11 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
           {themeDescription.length}/150
         </span>
       </div>
+      <SignInDialog
+        open={isSignInDialogOpen}
+        setOpen={setIsSignInDialogOpen}
+        redirectUrl={`/?description=${themeDescription}&action=${signInAction}`}
+      />
     </div>
   );
 };

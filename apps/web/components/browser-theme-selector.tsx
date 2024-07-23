@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -38,23 +38,15 @@ export function BrowserThemeSelector() {
         <Tooltip>
           <DropdownMenuTrigger asChild>
             <TooltipTrigger asChild>
-              <button
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "py-0 text-sm w-[6.5rem] justify-start"
-                )}
-              >
+              <Button variant="ghost" size="icon">
                 {theme === "light" ? (
-                  <IconSun className="size-3" />
+                  <IconSun />
                 ) : theme === "dark" ? (
-                  <IconMoon className="size-3" />
+                  <IconMoon />
                 ) : (
-                  <IconComputer className="size-3" />
+                  <IconComputer />
                 )}
-                <span className="ml-2">
-                  {theme && theme.charAt(0).toUpperCase() + theme.slice(1)}
-                </span>
-              </button>
+              </Button>
             </TooltipTrigger>
           </DropdownMenuTrigger>
           <TooltipContent>

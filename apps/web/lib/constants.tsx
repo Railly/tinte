@@ -3374,14 +3374,14 @@ export const FEATURED_THEME_LOGOS = {
   "One Hunter": (
     <img
       className="size-5 border rounded-full"
-      src="one-hunter-logo.png"
+      src="/one-hunter-logo.png"
       alt="One Hunter Logo"
     />
   ),
   Flexoki: (
     <img
       className="size-5 border rounded-full"
-      src="flexoki-logo.png"
+      src="/flexoki-logo.png"
       alt="Flexoki Logo"
     />
   ),

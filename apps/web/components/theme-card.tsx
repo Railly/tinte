@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,11 +20,11 @@ import { useUser } from "@clerk/nextjs";
 import { SignInDialog } from "./sign-in-dialog";
 import { ThemeConfig } from "@/lib/core/types";
 import { FEATURED_THEME_LOGOS, SHOWCASE_COLORS } from "@/lib/constants";
-import { useTheme } from "next-themes";
 import { getThemeCategoryLabel } from "@/app/utils";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
 import IconRaycast from "@/public/logos/raycast.svg";
 import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
+import { ThemeCardOptions } from "./theme-card-options";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -64,15 +64,20 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
   const { currentTheme } = useBinaryTheme();
   const user = useUser();
   const { loading, exportVSIX } = useThemeExport();
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
 
   const handleDownloadTheme = async (e: React.MouseEvent) => {
     e.stopPropagation();
     await exportVSIX(themeConfig, currentTheme === "dark");
   };
 
-  const handleEditTheme = (e: React.MouseEvent) => {
+  const handleSignInOrEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    router.push(`/generator?theme=${themeConfig.name}`);
+    if (user.isSignedIn) {
+      router.push(`/generator?theme=${themeConfig.name}`);
+    } else {
+      setIsSignInDialogOpen(true);
+    }
   };
 
   return (
@@ -112,13 +117,19 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
           ))}
         </motion.div>
         <div className="p-4 bg-background relative">
-          <motion.h2
-            className="text-lg font-semibold text-foreground"
+          <div className="flex justify-between items-start mb-2">
+            <motion.h2
+              className="text-lg font-semibold text-foreground"
+              variants={itemVariants}
+            >
+              {themeConfig.displayName}
+            </motion.h2>
+            <ThemeCardOptions themeConfig={themeConfig} />
+          </div>
+          <motion.div
+            className="flex flex-wrap gap-2 mt-2"
             variants={itemVariants}
           >
-            {themeConfig.displayName}
-          </motion.h2>
-          <motion.div className="flex space-x-2 mt-2" variants={itemVariants}>
             <Badge variant="secondary">
               {themeConfig.category === "user" && (
                 <>
@@ -126,6 +137,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
                     <img
                       src={themeConfig.user?.image_url}
                       className="w-5 h-5 mr-2 rounded-full"
+                      alt={themeConfig.user?.username || "User"}
                     />
                   ) : (
                     <IconUser className="w-4 h-4 mr-2" />
@@ -159,46 +171,28 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
               )}
               {themeConfig.isPublic ? "Public" : "Private"}
             </Badge>
-          </motion.div>
-          {isSelected && (
-            <motion.div
-              variants={itemVariants}
-              className="absolute top-4 right-4 text-xs ext-primary font-medium flex items-center"
-            >
-              <IconCheck className="mr-1 w-4 h-4" />
-              Selected
-            </motion.div>
-          )}
-          <motion.div variants={itemVariants} className="mt-4 space-x-2 flex">
-            {user.isSignedIn ? (
-              <MotionButton
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={handleEditTheme}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            {isSelected && (
+              <Badge
+                variant="default"
+                className="bg-primary text-primary-foreground"
               >
-                <IconBrush className="mr-2 w-4 h-4" />
-                Customize
-              </MotionButton>
-            ) : (
-              <SignInDialog
-                label={
-                  <MotionButton
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <IconBrush className="mr-2 w-4 h-4" />
-                    Customize
-                  </MotionButton>
-                }
-                redirectUrl={`/generator?theme=${themeConfig.name}`}
-              />
+                <IconCheck className="mr-1 w-3 h-3" />
+                Selected
+              </Badge>
             )}
+          </motion.div>
+          <motion.div variants={itemVariants} className="mt-4 space-x-2 flex">
+            <MotionButton
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={handleSignInOrEdit}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <IconBrush className="mr-2 w-4 h-4" />
+              Customize
+            </MotionButton>
             <MotionButton
               variant="outline"
               size="sm"
@@ -220,6 +214,11 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
           </motion.div>
         </div>
       </MotionCard>
+      <SignInDialog
+        open={isSignInDialogOpen}
+        setOpen={setIsSignInDialogOpen}
+        redirectUrl={`/generator?theme=${themeConfig.name}`}
+      />
     </motion.div>
   );
 };

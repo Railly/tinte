@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ShineButton } from "@/components/ui/shine-button";
@@ -23,22 +23,26 @@ export function LandingThemeGenerator({
   const user = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const signInDialogTriggerRef = useRef<HTMLButtonElement>(null);
   const [themeDescription, setThemeDescription] = useState<string>(
     searchParams?.get("description") || ""
   );
   const { isGenerating, generateTheme } = useThemeGenerator(updateThemeConfig);
   const { isEnhancing, enhanceDescription } = useDescriptionEnhancer();
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
 
   const handleGenerateTheme = async () => {
     await generateTheme(themeDescription);
     router.refresh();
   };
 
-  const handleEnhanceDescription = async () => {
-    const enhancedDescription = await enhanceDescription(themeDescription);
-    if (enhancedDescription) {
-      setThemeDescription(enhancedDescription);
+  const handleSignInOrEnhance = async () => {
+    if (user.isSignedIn) {
+      const enhancedDescription = await enhanceDescription(themeDescription);
+      if (enhancedDescription) {
+        setThemeDescription(enhancedDescription);
+      }
+    } else {
+      setIsSignInDialogOpen(true);
     }
   };
 
@@ -53,7 +57,7 @@ export function LandingThemeGenerator({
     if (user.isSignedIn) {
       handleGenerateTheme();
     } else {
-      signInDialogTriggerRef.current?.click();
+      setIsSignInDialogOpen(true);
     }
   };
 
@@ -61,34 +65,18 @@ export function LandingThemeGenerator({
     <div className="flex flex-col w-80 md:w-96 border rounded-md shadow-md dark:shadow-foreground/5">
       <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
         <h2 className="text-sm font-bold">Theme Generator</h2>
-        {user.isSignedIn ? (
-          <ShineButton
-            variant="default"
-            onClick={handleSignInOrGenerate}
-            disabled={isGenerating || themeDescription.trim().length < 3}
-          >
-            {isGenerating ? (
-              <IconLoading className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <IconGenerate className="w-4 h-4 mr-2" />
-            )}
-            <span>{isGenerating ? "Generating..." : "Generate"}</span>
-          </ShineButton>
-        ) : (
-          <SignInDialog
-            label={
-              <ShineButton
-                variant="default"
-                ref={signInDialogTriggerRef}
-                onClick={() => {}}
-              >
-                <IconGenerate className="mr-2 w-4 h-4" />
-                Generate Theme
-              </ShineButton>
-            }
-            redirectUrl={`/?description=${themeDescription}`}
-          />
-        )}
+        <ShineButton
+          variant="default"
+          onClick={handleSignInOrGenerate}
+          disabled={isGenerating || themeDescription.trim().length < 3}
+        >
+          {isGenerating ? (
+            <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <IconGenerate className="w-4 h-4 mr-2" />
+          )}
+          <span>{isGenerating ? "Generating..." : "Generate"}</span>
+        </ShineButton>
       </div>
       <div className="relative p-4">
         <Textarea
@@ -103,7 +91,7 @@ export function LandingThemeGenerator({
         />
         <Button
           size="sm"
-          onClick={handleEnhanceDescription}
+          onClick={handleSignInOrEnhance}
           variant="outline"
           className="absolute bottom-6 left-6 text-muted-foreground hover:text-foreground transition-all duration-200"
           disabled={isEnhancing || themeDescription.trim().length < 3}
@@ -125,6 +113,11 @@ export function LandingThemeGenerator({
           {themeDescription.length}/150
         </span>
       </div>
+      <SignInDialog
+        open={isSignInDialogOpen}
+        setOpen={setIsSignInDialogOpen}
+        redirectUrl={`/?description=${themeDescription}`}
+      />
     </div>
   );
 }

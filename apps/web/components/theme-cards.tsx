@@ -27,7 +27,7 @@ export function ThemeCards({
 }: ThemeCardsProps) {
   const user = useUser();
   const themeCategories = useMemo(() => {
-    return getThemeCategories(allThemes);
+    return getThemeCategories(allThemes, user.user?.id);
   }, [allThemes]);
 
   const handleUseTheme = (theme: ThemeConfig) => {

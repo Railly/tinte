@@ -14,6 +14,7 @@ import { ThemeConfig } from "@/lib/core/types";
 import { FEATURED_THEME_LOGOS } from "@/lib/constants";
 import { useMemo } from "react";
 import { getThemeCategories } from "@/app/utils";
+import { useUser } from "@clerk/nextjs";
 
 interface ThemeSelectorProps {
   label?: string;
@@ -34,8 +35,9 @@ export const ThemeSelector = ({
   onSelectTheme,
   themes,
 }: ThemeSelectorProps) => {
+  const user = useUser();
   const themeCategories = useMemo(() => {
-    return getThemeCategories(themes);
+    return getThemeCategories(themes, user.user?.id);
   }, [themes]);
 
   return (

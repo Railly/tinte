@@ -38,7 +38,11 @@ export const ThemeSheet: React.FC<ThemeSheetProps> = ({
           <h2 className="text-sm font-bold border-b pb-4 px-4 mb-4">
             Your Themes
           </h2>
-          {themes.filter((theme) => theme.category === "user").length === 0 ? (
+          {themes.filter(
+            (theme) =>
+              theme.category === "user" &&
+              theme.user?.clerk_id === user.user?.id
+          ).length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
               <SignedIn>
                 <img

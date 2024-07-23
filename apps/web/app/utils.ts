@@ -4,6 +4,7 @@ import {
   ThemeConfig,
   TokenColorMap,
 } from "@/lib/core/types";
+import { User } from "@clerk/nextjs/server";
 import { ThemePalettes, Themes, TokenColors, Users } from "@prisma/client";
 import { hexToRgba } from "@uiw/color-convert";
 
@@ -300,7 +301,7 @@ export const adjustUIProgression = (
   return updatedPalette;
 };
 
-export function getThemeCategories(allThemes: ThemeConfig[]) {
+export function getThemeCategories(allThemes: ThemeConfig[], userId?: string) {
   const featuredThemes = allThemes.filter(
     (theme) => theme.category === "featured"
   );
@@ -308,7 +309,9 @@ export function getThemeCategories(allThemes: ThemeConfig[]) {
   const communityThemes = allThemes.filter(
     (theme) => theme.category === "community"
   );
-  const userThemes = allThemes.filter((theme) => theme.category === "user");
+  const userThemes = allThemes.filter(
+    (theme) => theme.category === "user" && theme.user?.clerk_id === userId
+  );
 
   return {
     featuredThemes,
@@ -336,3 +339,14 @@ export const getThemeCategoryLabel = (category: string) => {
 
 export const getThemeName = (displayName: string | undefined) =>
   displayName ? displayName.toLocaleLowerCase().replace(/\s/g, "-") : "";
+
+export function isThemeOwner(
+  userId: string | undefined,
+  themeConfig: ThemeConfig
+): boolean {
+  if (!userId || !themeConfig.user) {
+    return false;
+  }
+
+  return userId === themeConfig.user.clerk_id;
+}

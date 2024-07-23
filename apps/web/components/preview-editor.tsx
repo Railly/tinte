@@ -16,6 +16,8 @@ import { MONACO_SHIKI_LANGS } from "@/lib/constants";
 import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
 import { CreateThemeDialog } from "./create-theme-dialog";
 import { useRouter } from "next/navigation";
+import { SignInDialog } from "./sign-in-dialog";
+import { useUser } from "@clerk/nextjs";
 
 interface PreviewProps {
   vsCodeTheme: GeneratedVSCodeTheme;
@@ -48,6 +50,7 @@ export const PreviewEditor = ({
   setIsColorModified,
   onSelectTheme,
 }: PreviewProps) => {
+  const user = useUser();
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const codeRef = useRef<HTMLPreElement>(null);
@@ -59,7 +62,12 @@ export const PreviewEditor = ({
   });
   const { updateTheme, isSaving, isUpdating } = useThemeGenerator();
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
   const router = useRouter();
+
+  const handleOpenCopyDialog = () => {
+    setIsCopyDialogOpen(true);
+  };
 
   const handleUpdate = async () => {
     await updateTheme(themeConfig);
@@ -132,26 +140,36 @@ export const PreviewEditor = ({
               )}
             </Button>
           )}
-          {themeConfig.category !== "user" && (
-            <Button
-              variant="outline"
-              onClick={() => setIsCopyDialogOpen(true)}
-              disabled={isSaving}
-              className="ml-2"
-            >
-              {isSaving ? (
-                <>
-                  <IconLoading className="w-4 h-4 mr-2 animate-spin" />
-                  Copying...
-                </>
-              ) : (
-                <>
-                  <IconCopy className="w-4 h-4 mr-2" />
-                  Make a Copy
-                </>
-              )}
-            </Button>
-          )}
+          {themeConfig.category !== "user" &&
+            (user.isSignedIn ? (
+              <Button
+                variant="outline"
+                onClick={handleOpenCopyDialog}
+                disabled={isSaving}
+                className="ml-2"
+              >
+                {isSaving ? (
+                  <>
+                    <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+                    Copying...
+                  </>
+                ) : (
+                  <>
+                    <IconCopy className="w-4 h-4 mr-2" />
+                    Make a Copy
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => setIsSignInDialogOpen(true)}
+                className="ml-2"
+              >
+                <IconCopy className="w-4 h-4 mr-2" />
+                Make a Copy
+              </Button>
+            ))}
         </div>
         <div className="flex-grow !h-[70vh]" style={{ height: "70vh" }}>
           <MonacoEditor
@@ -195,6 +213,11 @@ export const PreviewEditor = ({
           applyTheme={applyTheme}
         />
       </div>
+      <SignInDialog
+        open={isSignInDialogOpen}
+        setOpen={setIsSignInDialogOpen}
+        redirectUrl={`/?theme=${themeConfig.name}`}
+      />
     </div>
   );
 };

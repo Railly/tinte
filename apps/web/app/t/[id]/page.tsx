@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { PrismaClient } from "@prisma/client";
 import { formatTheme } from "@/app/utils";
 import { ThemePageContent } from "@/components/theme-page-content";
+import { auth } from "@clerk/nextjs/server";
 
 interface ThemePageProps {
   params: {
@@ -12,6 +13,8 @@ interface ThemePageProps {
 const prisma = new PrismaClient();
 
 async function getThemeById(id: string) {
+  const { userId } = auth();
+
   const theme = await prisma.themes.findUnique({
     where: { xata_id: id },
     include: {
@@ -21,9 +24,10 @@ async function getThemeById(id: string) {
     },
   });
 
-  if (!theme) {
+  if (!theme || (!theme.is_public && theme.User !== userId)) {
     notFound();
   }
+
   prisma.$disconnect();
   return formatTheme(theme);
 }

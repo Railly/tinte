@@ -4,6 +4,9 @@ import {
   IconLoading,
   IconDownload,
   IconSave,
+  IconGlobe,
+  IconLock,
+  IconUser,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import {
@@ -24,6 +27,8 @@ import { useThemeExport } from "@/lib/hooks/use-theme-export";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ShareThemeDialog } from "./share-theme-dialog";
+import { SignInDialog } from "./sign-in-dialog";
+import { isThemeOwner } from "@/app/utils";
 
 export const Header = ({
   themeConfig,
@@ -42,6 +47,7 @@ export const Header = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const canNotEdit = themeConfig.category !== "user";
   const router = useRouter();
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
 
   useEffect(() => {
     if (themeConfig.displayName) {
@@ -154,6 +160,18 @@ export const Header = ({
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="relative">
+                <span
+                  className={cn(
+                    "absolute left-2 top-2 transform",
+                    canNotEdit && "opacity-50"
+                  )}
+                >
+                  {themeConfig.isPublic ? (
+                    <IconGlobe className="w-4 h-4 mr-2 text-cyan-700 dark:text-cyan-400" />
+                  ) : (
+                    <IconLock className="w-3.5 h-3.5 mr-2 text-rose-600 dark:text-rose-400" />
+                  )}
+                </span>
                 <Input
                   value={themeName}
                   onChange={handleInputChange}
@@ -194,7 +212,7 @@ export const Header = ({
         <div className="flex items-center gap-2">
           <ShareThemeDialog
             themeConfig={themeConfig}
-            isOwner={user.user?.id === themeConfig.user?.clerk_id}
+            isOwner={isThemeOwner(user.user?.id, themeConfig)}
             canNotEdit={canNotEdit}
             updateThemeStatus={updateThemeStatus}
           />
@@ -214,15 +232,28 @@ export const Header = ({
             </TooltipContent>
           </Tooltip>
           <Separator orientation="vertical" className="h-4 mx-2" />
-          <div className="w-8 h-8 flex justify-center items-center">
+          <div className="flex justify-center items-center">
             {!user.isLoaded ? (
-              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" />
-            ) : (
+              <div className="w-9 h-9 bg-gray-200 rounded-full animate-pulse" />
+            ) : user.isSignedIn ? (
               <UserButton />
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSignInDialogOpen(true)}
+              >
+                <IconUser className="w-4 h-4" />
+              </Button>
             )}
           </div>
         </div>
       </header>
+      <SignInDialog
+        open={isSignInDialogOpen}
+        setOpen={setIsSignInDialogOpen}
+        redirectUrl={`/generator?theme=${themeConfig.name}`}
+      />
     </TooltipProvider>
   );
 };

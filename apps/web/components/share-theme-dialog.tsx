@@ -27,7 +27,7 @@ interface ShareThemeDialogProps {
   themeConfig: ThemeConfig;
   isOwner: boolean;
   canNotEdit: boolean;
-  updateThemeStatus: (themeId: string, isPublic: boolean) => Promise<void>;
+  updateThemeStatus?: (themeId: string, isPublic: boolean) => Promise<void>;
 }
 
 export const ShareThemeDialog: React.FC<ShareThemeDialogProps> = ({
@@ -52,7 +52,7 @@ export const ShareThemeDialog: React.FC<ShareThemeDialogProps> = ({
   const handleUpdateThemeStatus = async (checked: boolean) => {
     setIsMakingPublic(true);
     try {
-      await updateThemeStatus(themeConfig.id, checked);
+      await updateThemeStatus?.(themeConfig.id, checked);
     } finally {
       setIsMakingPublic(false);
     }
@@ -159,7 +159,7 @@ export const ShareThemeDialog: React.FC<ShareThemeDialogProps> = ({
             </Button>
           </div>
         </div>
-        {isOwner && (
+        {isOwner && updateThemeStatus && (
           <div className="flex items-center space-x-2 mt-4">
             <Label htmlFor="public-switch" className="flex items-center">
               Make theme public

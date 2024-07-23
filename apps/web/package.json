@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.24",
-    "@clerk/nextjs": "^5.2.4",
+    "@clerk/nextjs": "^5.2.5",
     "@clerk/themes": "^2.1.12",
     "@monaco-editor/react": "^4.6.0",
     "@prisma/adapter-pg": "^5.17.0",

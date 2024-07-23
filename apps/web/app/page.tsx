@@ -8,12 +8,16 @@ const prisma = new PrismaClient();
 
 async function getAllThemes() {
   const themes = await prisma.themes.findMany({
+    where: {
+      is_public: true,
+    },
     include: {
       ThemePalettes: true,
       TokenColors: true,
       Users: true,
     },
   });
+
   prisma.$disconnect();
   return sortThemes(themes.map(formatTheme));
 }
