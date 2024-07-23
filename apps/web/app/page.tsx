@@ -1,26 +1,7 @@
 import React from "react";
 import { ThemeManager } from "@/components/theme-manager";
-import { PrismaClient } from "@prisma/client";
-import { formatTheme, sortThemes } from "./utils";
 import { LandingHeader } from "@/components/landing-header";
-
-const prisma = new PrismaClient();
-
-async function getAllThemes() {
-  const themes = await prisma.themes.findMany({
-    where: {
-      is_public: true,
-    },
-    include: {
-      ThemePalettes: true,
-      TokenColors: true,
-      Users: true,
-    },
-  });
-
-  prisma.$disconnect();
-  return sortThemes(themes.map(formatTheme));
-}
+import { getAllThemes } from "@/lib/api";
 
 export default async function Page() {
   const allThemes = await getAllThemes();
