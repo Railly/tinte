@@ -65,11 +65,6 @@ export const CreateThemeDialog: React.FC<CreateThemeDialogProps> = ({
       toast.error("Failed to save theme");
     }
   };
-  console.log({
-    themeConfig,
-    currentTheme,
-    ga: themeConfig.palette[currentTheme],
-  });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

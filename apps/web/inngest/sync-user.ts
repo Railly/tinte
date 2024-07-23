@@ -8,7 +8,7 @@ export const syncUser = inngest.createFunction(
   { event: "clerk/user.created" },
   async ({ event, step }) => {
     const user = event.data;
-    const { id: clerk_id, username } = user;
+    const { id: clerk_id, username, imageUrl } = user;
 
     await step.run("Sync user to database", async () => {
       await prisma.users.create({
@@ -16,6 +16,7 @@ export const syncUser = inngest.createFunction(
           clerk_id,
           username,
           xata_id: clerk_id,
+          image_url: imageUrl,
         },
       });
     });

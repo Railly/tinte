@@ -1,3 +1,5 @@
+import { Users } from "@prisma/client";
+
 export type Palette = {
   id: string;
   text: string;
@@ -29,6 +31,7 @@ export type ThemeConfig = {
   isPublic: boolean;
   category: "featured" | "rayso" | "community" | "user";
   createdAt: Date;
+  user: Users;
   palette: DarkLightPalette;
   tokenColors: TokenColorMap;
 };

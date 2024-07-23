@@ -1,4 +1,4 @@
-import { HelpModal } from "./help-modal";
+import { HelpDialog } from "./help-dialog";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeSelector } from "./theme-selector";
 import { Label } from "./ui/label";
@@ -9,7 +9,7 @@ import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 export function ThemeControlBar({
   themes,
   isBackgroundless,
-  toggleBackgroundless,
+  setBackgroundlessMode,
   themeConfig,
   applyTheme,
   selectedLanguage,
@@ -19,7 +19,7 @@ export function ThemeControlBar({
 }: {
   themes: ThemeConfig[];
   isBackgroundless: boolean;
-  toggleBackgroundless: () => void;
+  setBackgroundlessMode: (checked?: boolean) => void;
   themeConfig: ThemeConfig;
   applyTheme: (preset: string) => void;
   selectedLanguage: string;
@@ -44,7 +44,9 @@ export function ThemeControlBar({
           <Switch
             id="backgroundless-mode"
             checked={!isBackgroundless}
-            onCheckedChange={toggleBackgroundless}
+            onCheckedChange={(checked) => {
+              setBackgroundlessMode(!checked);
+            }}
           />
         </div>
       </div>
@@ -55,7 +57,10 @@ export function ThemeControlBar({
         <div className="flex items-center mt-1">
           <Switch
             id="light/dark-mode"
-            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+            onCheckedChange={(checked) => {
+              setTheme(checked ? "dark" : "light");
+              applyTheme(themeConfig.displayName);
+            }}
             checked={currentTheme === "dark"}
           />
         </div>
@@ -80,7 +85,7 @@ export function ThemeControlBar({
         <Label htmlFor="how-to-install" className="text-muted-foreground">
           Help
         </Label>
-        {/* <HelpModal /> */}
+        <HelpDialog />
       </div>
     </div>
   );

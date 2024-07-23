@@ -17,7 +17,7 @@ export function ThemeManager({ allThemes }: ThemeManagerProps) {
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(defaultTheme);
   const [selectedTheme, setSelectedTheme] = useState(defaultTheme.displayName);
-  const [vscodeTheme, setVSCodeTheme] = useState<GeneratedVSCodeTheme>(
+  const [vsCodeTheme, setVSCodeTheme] = useState<GeneratedVSCodeTheme>(
     generateVSCodeTheme(defaultTheme)
   );
   const focusAreaRef = useRef<HTMLElement>(null);
@@ -53,13 +53,13 @@ export function ThemeManager({ allThemes }: ThemeManagerProps) {
       />
       <section
         ref={focusAreaRef}
-        className="sticky top-4 bg-background z-20 flex items-center gap-4 justify-center bg-interface rounded-lg custom-shadow"
+        className="sticky top-4 bg-background z-20 flex flex-col md:flex-row items-center gap-4 justify-center bg-interface rounded-lg custom-shadow"
       >
         <LandingThemeGenerator
           updateThemeConfig={updateThemeConfig}
           setIsTextareaFocused={setIsTextareaFocused}
         />
-        <ThemePreview vscodeTheme={vscodeTheme} />
+        <ThemePreview vsCodeTheme={vsCodeTheme} />
       </section>
       <ThemeCards
         updateThemeConfig={updateThemeConfig}

@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
 import { ThemeConfig } from "@/lib/core/types";
 import { cn } from "@/lib/utils";
+import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 
 const words = ["Design", "Visualize", "Share"];
 const accentColors = ["accent", "accent-2", "accent-3"] as const;
@@ -17,8 +17,7 @@ export function ColorChangingTitle({
   themeConfig,
   isTextareaFocused,
 }: ColorChangingTitleProps) {
-  const { theme: nextTheme } = useTheme();
-  const currentTheme = nextTheme === "dark" ? "dark" : "light";
+  const { currentTheme } = useBinaryTheme();
   const [colorIndex, setColorIndex] = useState(0);
 
   const rawWordClassName = cn("mx-1", {
@@ -34,7 +33,7 @@ export function ColorChangingTitle({
   }, []);
 
   return (
-    <h2 className="flex flex-col items-center text-3xl font-bold py-2 transition-opacity">
+    <h2 className="flex flex-col items-center text-xl md:text-3xl font-bold py-2 transition-opacity">
       <span className="flex mr-2">
         {words.map((word, index) => (
           <span key={word} className="flex items-center">

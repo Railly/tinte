@@ -1808,6 +1808,10 @@ interface User {
   id: number;
   name: string;
   email: string;
+  address: {
+    city: string;
+    zipcode: string;
+  };
 }
 
 @Component({
@@ -2094,8 +2098,12 @@ let () =
   Printf.printf "In-order traversal: ";
   List.iter (Printf.printf "%d ") (inorder tree);
   print_newline ()
-`,
 
+(* Output: In-order traversal: 1 3 4 5 6 7 9 *)
+
+print_endline "Hello, OCaml!"
+print_endline "This is an example of OCaml code."
+print_endline "Enjoy learning OCaml!"`,
   powershell: `# Function to get system information
 function Get-SystemInfo {
     $computerSystem = Get-CimInstance CIM_ComputerSystem
@@ -2472,7 +2480,10 @@ const greeting = "Hello, Astro!";
 echo "Hello, Bash!"
 for i in {1..3}; do
     echo "Count: $i"
-done`,
+done
+# Output:
+# Hello, Bash!
+`,
 
   c: `#include <stdio.h>
 int main() {
@@ -2675,19 +2686,24 @@ for name in names {
   toml: `title = "TOML Example"
 [owner]
 name = "Tom Preston-Werner"
-dob = 1979-05-27T07:32:00-08:00`,
+[database]
+server = "lcoalhost"
+[clients]
+data = ["alpha", "beta", "gamma"]`,
 
-  tsx: `import React from 'react';
-interface GreetingProps { name: string; }
+  tsx: `interface GreetingProps { name: string; }
+
 const Greeting: React.FC<GreetingProps> = ({ name }) => (
   <h1>Hello, {name}!</h1>
 );
+
 export default Greeting;`,
 
   typescript: `function greet(name: string): string {
   console.log(greet("TypeScript"));
   return \`Hello, \${name}!\`;
 }
+// Variable types
 const x: number = 10;
 const y: number = 20;`,
 
@@ -2704,6 +2720,7 @@ const greeting = ref('Hello, Vue!')
   <message>Hello, XML!</message>
   <message>XML is fun!</message>
   <message>Have a great day!</message>
+  <message>Goodbye!</message>
 </greeting>`,
 
   zig: `const std = @import("std");

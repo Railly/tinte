@@ -43,7 +43,10 @@ export function ThemeCards({
       <div className="flex w-full">
         <div className="flex w-full space-x-4">
           <Tabs className="w-full" defaultValue="all">
-            <TabsList variant="underline">
+            <TabsList
+              className="max-w-full overflow-scroll"
+              variant="underline"
+            >
               <TabsTrigger
                 className="space-x-2"
                 variant="underline"
@@ -164,7 +167,7 @@ function ThemeCardGrid({
     return <EmptyState type={type} />;
   }
   return (
-    <div className="w-full grid gap-4 mt-8 md:grid-cols-2 lg:grid-cols-4">
+    <div className="w-full grid gap-4 mt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {themes.map((theme, index) => (
         <ThemeCard
           key={index}

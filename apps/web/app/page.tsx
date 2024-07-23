@@ -11,6 +11,7 @@ async function getAllThemes() {
     include: {
       ThemePalettes: true,
       TokenColors: true,
+      Users: true,
     },
   });
   prisma.$disconnect();

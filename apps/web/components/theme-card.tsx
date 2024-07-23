@@ -12,6 +12,7 @@ import {
   IconLoading,
   IconLock,
   IconTinte,
+  IconUser,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -23,6 +24,7 @@ import { useTheme } from "next-themes";
 import { getThemeCategoryLabel } from "@/app/utils";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
 import IconRaycast from "@/public/logos/raycast.svg";
+import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -59,8 +61,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
   isTextareaFocused,
 }) => {
   const router = useRouter();
-  const { theme: nextTheme } = useTheme();
-  const currentTheme = nextTheme === "light" ? "light" : "dark";
+  const { currentTheme } = useBinaryTheme();
   const user = useUser();
   const { loading, exportVSIX } = useThemeExport();
 
@@ -73,6 +74,8 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
     e.stopPropagation();
     router.push(`/generator?theme=${themeConfig.name}`);
   };
+
+  console.log({ themeConfig });
 
   return (
     <motion.div variants={cardVariants} initial="hidden" animate="visible">
@@ -120,10 +123,17 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
           <motion.div className="flex space-x-2 mt-2" variants={itemVariants}>
             <Badge variant="secondary">
               {themeConfig.category === "user" && (
-                <img
-                  src={user.user?.imageUrl}
-                  className="w-5 h-5 mr-2 rounded-full"
-                />
+                <>
+                  {themeConfig.user?.image_url ? (
+                    <img
+                      src={themeConfig.user?.image_url}
+                      className="w-5 h-5 mr-2 rounded-full"
+                    />
+                  ) : (
+                    <IconUser className="w-4 h-4 mr-2" />
+                  )}
+                  {themeConfig.user?.username || "Anonymous"}
+                </>
               )}
               {themeConfig.category === "community" && (
                 <IconTinte className="w-4 h-4 mr-2" />
@@ -140,7 +150,8 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
                   }
                 </div>
               )}
-              {getThemeCategoryLabel(themeConfig.category)}
+              {themeConfig.category !== "user" &&
+                getThemeCategoryLabel(themeConfig.category)}
             </Badge>
             <Badge variant="outline">
               {themeConfig.isPublic ? (

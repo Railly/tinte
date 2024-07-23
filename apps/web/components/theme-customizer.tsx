@@ -24,7 +24,7 @@ export function ThemeCustomizer({
     vsCodeTheme,
     themes,
     isBackgroundless,
-    toggleBackgroundless,
+    setBackgroundlessMode,
     updatePaletteColor,
     themeConfig,
     setThemeConfig,
@@ -111,7 +111,7 @@ export function ThemeCustomizer({
       </div>
       <div className="flex-1 grid grid-rows-[auto_1fr_auto] h-full">
         <Header themeConfig={themeConfig} setThemeConfig={setThemeConfig} />
-        <div className="grid grid-cols-2 gap-2 w-full h-full max-h-screen p-2 self-start overflow-auto">
+        <div className="grid md:grid-cols-2 gap-2 w-full h-full max-h-screen p-2 self-start overflow-auto">
           <PreviewEditor
             vsCodeTheme={vsCodeTheme}
             code={code}
@@ -145,7 +145,7 @@ export function ThemeCustomizer({
           <ThemeControlBar
             themes={themes}
             isBackgroundless={isBackgroundless}
-            toggleBackgroundless={toggleBackgroundless}
+            setBackgroundlessMode={setBackgroundlessMode}
             themeConfig={themeConfig}
             applyTheme={applyTheme}
             selectedLanguage={selectedLanguage}

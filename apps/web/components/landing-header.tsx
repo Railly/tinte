@@ -31,6 +31,15 @@ export const LandingHeader: React.FC = () => (
       >
         Gallery
       </Link>
+      <a
+        href="https://github.com/Railly/tinte"
+        className={cn(
+          buttonVariants({ variant: "link" }),
+          "px-0 text-muted-foreground hover:text-foreground"
+        )}
+      >
+        GitHub
+      </a>
     </div>
     <div className="flex gap-4">
       <BrowserThemeSelector />

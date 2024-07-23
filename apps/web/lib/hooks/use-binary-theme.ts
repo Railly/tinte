@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-
-type Theme = "light" | "dark" | "system";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
 
 const getSystemTheme = () => {
   if (typeof window !== "undefined" && window.matchMedia) {
@@ -11,17 +10,16 @@ const getSystemTheme = () => {
   return "light";
 };
 
-export const useBinaryTheme = (initialTheme: Theme = "system") => {
-  const [theme, setTheme] = useState<"light" | "dark" | "system">(initialTheme);
+export const useBinaryTheme = () => {
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    // This effect runs only on the client-side
     if (theme === "system") {
       setTheme(getSystemTheme());
     }
   }, [theme]);
 
-  const currentTheme = theme === "system" ? getSystemTheme() : theme;
+  const currentTheme = (theme || getSystemTheme()) as "light" | "dark";
 
   return { currentTheme, setTheme };
 };

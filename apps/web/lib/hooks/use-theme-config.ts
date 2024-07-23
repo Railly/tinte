@@ -59,26 +59,34 @@ export const useThemeConfig = (allThemes: ThemeConfig[]) => {
     setIsLoading(false);
   };
 
-  const toggleBackgroundless = () => {
+  const setBackgroundlessMode = (mode?: boolean) => {
     if (!currentTheme) return;
-    setIsBackgroundless((prevMode) => !prevMode);
-    setThemeConfig((prevConfig) => {
-      const currentPalette = prevConfig.palette;
+    const originalPalette = allThemes.find(
+      (theme) => theme.displayName === themeConfig.displayName
+    )?.palette;
+    if (!originalPalette) return;
 
-      const newPalette = {
-        ...currentPalette,
-        [currentTheme]: !isBackgroundless
-          ? {
-              ...currentPalette[currentTheme],
-              ...BACKGROUND_LESS_PALETTE[currentTheme],
-            }
-          : currentPalette[currentTheme],
-      };
+    setIsBackgroundless((prevMode) => {
+      const newMode = mode !== undefined ? mode : !prevMode;
 
-      return {
-        ...prevConfig,
-        palette: newPalette,
-      };
+      setThemeConfig((prevConfig) => {
+        const newPalette = {
+          ...originalPalette,
+          [currentTheme]: newMode
+            ? {
+                ...originalPalette[currentTheme],
+                ...BACKGROUND_LESS_PALETTE[currentTheme],
+              }
+            : originalPalette[currentTheme],
+        };
+
+        return {
+          ...prevConfig,
+          palette: newPalette,
+        };
+      });
+
+      return newMode;
     });
   };
 
@@ -138,6 +146,7 @@ export const useThemeConfig = (allThemes: ThemeConfig[]) => {
         category: theme.category,
         displayName: theme.displayName || themeName,
         isPublic: theme.isPublic,
+        user: theme.user,
         palette,
         tokenColors: prev.tokenColors,
         createdAt: theme.createdAt,
@@ -156,7 +165,7 @@ export const useThemeConfig = (allThemes: ThemeConfig[]) => {
     isBackgroundless,
     isLoading,
     setSelectedTheme,
-    toggleBackgroundless,
+    setBackgroundlessMode,
     updatePaletteColor,
     applyTheme,
     updatePaletteColors,

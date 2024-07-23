@@ -1,13 +1,9 @@
 import {
   IconTinte,
-  IconShare,
   IconEdit,
   IconLoading,
   IconDownload,
   IconSave,
-  IconCopy,
-  IconLock,
-  IconGlobe,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import {
@@ -27,12 +23,7 @@ import { useTheme } from "next-themes";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+import { ShareThemeDialog } from "./share-theme-dialog";
 
 export const Header = ({
   themeConfig,
@@ -100,16 +91,21 @@ export const Header = ({
 
   const updateThemeStatus = async (themeId: string, isPublic: boolean) => {
     try {
-      const response = await fetch(`/api/themes/${themeId}/status`, {
+      toast.info(
+        `Making ${themeConfig.displayName} ${isPublic ? "public" : "private"}`
+      );
+      const response = await fetch(`/api/theme/${themeId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ isPublic, usserId: user.user?.id }),
+        body: JSON.stringify({ isPublic, userId: user.user?.id }),
       });
 
+      toast.dismiss();
       if (!response.ok) {
-        throw new Error("Failed to update theme public status");
+        toast.error("Failed to update theme status");
+        return;
       }
       toast.success(`Theme is now ${isPublic ? "public" : "private"}`);
       setThemeConfig({ ...themeConfig, isPublic });
@@ -196,46 +192,12 @@ export const Header = ({
           </Tooltip>
         </div>
         <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="mr-2" variant="outline">
-                <IconShare />
-                <span className="ml-2">Share</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() =>
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/t/${themeConfig.id}`
-                  )
-                }
-              >
-                <IconCopy className="mr-2 h-4 w-4" />
-                <span>Copy Link</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() =>
-                  updateThemeStatus(themeConfig.id, !themeConfig.isPublic)
-                }
-                disabled={canNotEdit}
-              >
-                {themeConfig.isPublic ? (
-                  <>
-                    <IconLock className="mr-2 h-4 w-4" />
-                    <span>Make Private</span>
-                  </>
-                ) : (
-                  <>
-                    <IconGlobe className="mr-2 h-4 w-4" />
-                    <span>Make Public</span>
-                  </>
-                )}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ShareThemeDialog
+            themeConfig={themeConfig}
+            isOwner={user.user?.id === themeConfig.user.clerk_id}
+            canNotEdit={canNotEdit}
+            updateThemeStatus={updateThemeStatus}
+          />
           <Tooltip>
             <TooltipTrigger asChild>
               <Button disabled={loading} onClick={handleExport}>

@@ -1,13 +1,15 @@
 import { useHighlighter } from "@/lib/hooks/use-highlighter";
 import { LanguageSwitcher } from "./language-switcher";
 import { cn } from "@/lib/utils";
+import { GeneratedVSCodeTheme } from "@/lib/core";
 
-interface CodeEditorProps {
-  theme: any;
+interface ReadOnlyPreviewProps {
+  theme: GeneratedVSCodeTheme;
   code?: string;
   language: string;
   setLanguage: (language: string) => void;
   width?: string;
+  height?: string;
 }
 
 const ReadOnlyPreview = ({
@@ -16,7 +18,8 @@ const ReadOnlyPreview = ({
   language,
   setLanguage,
   width = "100%",
-}: CodeEditorProps) => {
+  height = "h-[10.5rem]",
+}: ReadOnlyPreviewProps) => {
   const { highlightedText } = useHighlighter({
     theme,
     text: code,
@@ -33,15 +36,21 @@ const ReadOnlyPreview = ({
           noLabel
         />
       </div>
-      <div className="w-full flex-grow overflow-hidden">
-        <pre
-          className={cn(
-            "w-full h-[10.5rem] overflow-auto [&>pre]:flex [&>pre]:flex-shrink [&>pre]:rounded-b-md [&>pre]:h-full [&>pre]:p-4 text-sm !text-[13px]",
-            !highlightedText && "bg-muted animate-pulse"
-          )}
-          style={{ width }}
-          dangerouslySetInnerHTML={{ __html: highlightedText }}
-        />
+      <div
+        className={cn("flex-grow overflow-hidden", height)}
+        style={{
+          width,
+        }}
+      >
+        <div className="h-full overflow-auto">
+          <pre
+            className={cn(
+              "w-full min-h-full [&>pre]:p-4 [&>pre]:h-full text-sm !text-[13px]",
+              !highlightedText && "bg-muted animate-pulse"
+            )}
+            dangerouslySetInnerHTML={{ __html: highlightedText }}
+          />
+        </div>
       </div>
     </div>
   );

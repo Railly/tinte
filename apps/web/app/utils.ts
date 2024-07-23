@@ -4,7 +4,7 @@ import {
   ThemeConfig,
   TokenColorMap,
 } from "@/lib/core/types";
-import { ThemePalettes, Themes, TokenColors } from "@prisma/client";
+import { ThemePalettes, Themes, TokenColors, Users } from "@prisma/client";
 import { hexToRgba } from "@uiw/color-convert";
 
 export function formatPalette(palette: ThemePalettes | undefined) {
@@ -160,7 +160,11 @@ export function invertTokenColors(
 }
 
 export function formatTheme(
-  theme: Themes & { ThemePalettes: ThemePalettes[]; TokenColors: TokenColors[] }
+  theme: Themes & {
+    ThemePalettes: ThemePalettes[];
+    TokenColors: TokenColors[];
+    Users: Users | null;
+  }
 ) {
   const darkPalette = theme.ThemePalettes.find((p) => p.mode === "dark");
   const lightPalette = theme.ThemePalettes.find((p) => p.mode === "light");
@@ -173,6 +177,7 @@ export function formatTheme(
     isPublic: theme.is_public,
     category: theme.category,
     createdAt: theme.xata_createdat,
+    user: theme.Users,
     palette: {
       dark: formatPalette(darkPalette),
       light: formatPalette(lightPalette),

@@ -56,7 +56,7 @@ model Themes {
   name           String?
   display_name   String?
   is_public      Boolean?        @default(false)
-  category       String?         @default("user")
+  category       String?         @default("custom")
   ThemeLikes     ThemeLikes[]
   ThemePalettes  ThemePalettes[]
   Users          Users?          @relation(fields: [User], references: [xata_id], onUpdate: NoAction, map: "User_link")
@@ -123,6 +123,7 @@ model Users {
   xata_updatedat DateTime     @default(now()) @db.Timestamptz(6)
   clerk_id       String?      @unique(map: "Users__pgroll_new_clerk_id_key")
   username       String?      @unique(map: "Users__pgroll_new_username_key")
+  image_url      String?
   ThemeLikes     ThemeLikes[]
   Themes         Themes[]
 }
