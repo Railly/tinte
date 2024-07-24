@@ -6,10 +6,29 @@ import { notFound } from "next/navigation";
 const prisma = new PrismaClient();
 
 export async function getAllThemes() {
-  const themes = await prisma.themes.findMany({
-    where: {
+  const { userId } = auth();
+
+  let whereClause = {};
+
+  if (userId) {
+    whereClause = {
+      OR: [
+        {
+          is_public: true,
+        },
+        {
+          User: userId,
+        },
+      ],
+    };
+  } else {
+    whereClause = {
       is_public: true,
-    },
+    };
+  }
+
+  const themes = await prisma.themes.findMany({
+    where: whereClause,
     include: {
       ThemePalettes: true,
       TokenColors: true,
