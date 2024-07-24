@@ -2,8 +2,8 @@
 "use client";
 import { ThemeConfig } from "@/lib/core/types";
 import { useUser } from "@clerk/nextjs";
-import { ShareThemeDialog } from "./share-theme-dialog";
-import { Button, buttonVariants } from "./ui/button";
+import { ShareThemeDialog } from "../../../components/share-theme-dialog";
+import { Button, buttonVariants } from "../../../components/ui/button";
 import {
   IconDownload,
   IconEdit,
@@ -13,26 +13,22 @@ import {
   IconLock,
   IconTinte,
   IconLoading,
-} from "./ui/icons";
+} from "../../../components/ui/icons";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { generateVSCodeTheme } from "@/lib/core";
-import { ThemePreview } from "./theme-preview";
+import { ThemePreview } from "../../../components/theme-preview";
 import { cn } from "@/lib/utils";
-import { LandingHeader } from "./landing-header";
+import { LandingHeader } from "../../../components/landing-header";
 import IconRaycast from "@/public/logos/raycast.svg";
 import { motion } from "framer-motion";
 import { isThemeOwner, getThemeCategoryLabel } from "@/app/utils";
-import { Badge } from "./ui/badge";
+import { Badge } from "../../../components/ui/badge";
 import { FEATURED_THEME_LOGOS } from "@/lib/constants";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
 import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 
-export function ThemePageContent({
-  themeConfig,
-}: {
-  themeConfig: ThemeConfig;
-}) {
+export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
   const user = useUser();
   const { currentTheme } = useBinaryTheme();
   const isOwner = isThemeOwner(user.user?.id, themeConfig);
@@ -179,7 +175,7 @@ export function ThemePageContent({
                       animate={{ scale: 1 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <IconHeart className="w-5 h-5 text-red-500" />
+                      <IconHeart className="text-rose-500" />
                       {likes}
                     </motion.span>
                   </div>
@@ -189,7 +185,7 @@ export function ThemePageContent({
                     className="w-full text-foreground transition-all bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
                     onClick={handleLike}
                   >
-                    <IconHeart className="mr-2 h-5 w-5" />
+                    <IconHeart className="mr-2" />
                     Like
                   </Button>
                   <Button

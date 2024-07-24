@@ -11,13 +11,14 @@ import { useMonacoEditor } from "@/lib/hooks/use-monaco-editor";
 import MonacoEditor from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import { Button } from "./ui/button";
-import { IconCopy, IconLoading, IconSave } from "./ui/icons";
+import { IconCopy, IconLoading, IconSave, IconTrash } from "./ui/icons";
 import { MONACO_SHIKI_LANGS } from "@/lib/constants";
 import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
 import { CreateThemeDialog } from "./create-theme-dialog";
 import { useRouter } from "next/navigation";
 import { SignInDialog } from "./sign-in-dialog";
 import { useUser } from "@clerk/nextjs";
+import { DeleteThemeDialog } from "./delete-theme-dialog";
 
 interface PreviewProps {
   vsCodeTheme: GeneratedVSCodeTheme;
@@ -63,6 +64,7 @@ export const PreviewEditor = ({
   const { updateTheme, isSaving, isUpdating } = useThemeGenerator();
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const router = useRouter();
 
   const handleOpenCopyDialog = () => {
@@ -121,24 +123,33 @@ export const PreviewEditor = ({
         <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
           <h2 className="text-sm font-bold">Preview Editor</h2>
           {themeConfig.category === "user" && (
-            <Button
-              variant="outline"
-              onClick={handleUpdate}
-              disabled={isUpdating}
-              className="ml-2"
-            >
-              {isUpdating ? (
-                <>
-                  <IconLoading className="w-4 h-4 mr-2 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <IconSave className="w-4 h-4 mr-2" />
-                  Update
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleUpdate}
+                disabled={isUpdating}
+                className="ml-2"
+              >
+                {isUpdating ? (
+                  <>
+                    <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <IconSave className="w-4 h-4 mr-2" />
+                    Update
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline-destructive"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <IconTrash className="w-4 h-4 mr-2" />
+                Delete
+              </Button>
+            </div>
           )}
           {themeConfig.category !== "user" &&
             (user.isSignedIn ? (
@@ -217,6 +228,12 @@ export const PreviewEditor = ({
         open={isSignInDialogOpen}
         setOpen={setIsSignInDialogOpen}
         redirectUrl={`/?theme=${themeConfig.name}`}
+      />
+      <DeleteThemeDialog
+        isOpen={isDeleteDialogOpen}
+        setIsOpen={setIsDeleteDialogOpen}
+        themeConfig={themeConfig}
+        onDeleted={() => applyTheme("One Hunter")}
       />
     </div>
   );

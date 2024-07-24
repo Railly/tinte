@@ -307,10 +307,13 @@ export function getThemeCategories(allThemes: ThemeConfig[], userId?: string) {
   );
   const raysoThemes = allThemes.filter((theme) => theme.category === "rayso");
   const communityThemes = allThemes.filter(
-    (theme) => theme.category === "community"
+    (theme) =>
+      theme.isPublic &&
+      theme.category === "user" &&
+      !isThemeOwner(userId, theme)
   );
   const userThemes = allThemes.filter(
-    (theme) => theme.category === "user" && theme.user?.clerk_id === userId
+    (theme) => theme.category === "user" && isThemeOwner(userId, theme)
   );
 
   return {

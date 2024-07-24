@@ -62,3 +62,36 @@ export const PUT = async (
     await prisma.$disconnect();
   }
 };
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  const { userId } = await req.json();
+
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    await prisma.themes.delete({
+      where: {
+        xata_id: id,
+        User: userId,
+      },
+    });
+
+    revalidatePath("/");
+
+    return NextResponse.json({ message: "Theme deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting theme:", error);
+    return NextResponse.json(
+      { error: "Failed to delete theme" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}

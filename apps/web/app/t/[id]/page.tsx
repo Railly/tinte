@@ -1,5 +1,5 @@
 import { getThemeById } from "@/lib/api";
-import { ThemePageContent } from "@/components/theme-page-content";
+import { ThemeContent } from "./theme-content";
 
 interface ThemePageProps {
   params: {
@@ -10,5 +10,5 @@ interface ThemePageProps {
 export default async function ThemePage({ params }: ThemePageProps) {
   const theme = await getThemeById(params.id);
 
-  return <ThemePageContent themeConfig={theme} />;
+  return <ThemeContent themeConfig={theme} />;
 }

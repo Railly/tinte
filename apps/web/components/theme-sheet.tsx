@@ -9,6 +9,7 @@ import { IconUser } from "./ui/icons";
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { DarkLightPalette, ThemeConfig } from "@/lib/core/types";
 import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
+import { isThemeOwner } from "@/app/utils";
 
 interface ThemeSheetProps {
   isOpen: boolean;
@@ -40,8 +41,7 @@ export const ThemeSheet: React.FC<ThemeSheetProps> = ({
           </h2>
           {themes.filter(
             (theme) =>
-              theme.category === "user" &&
-              theme.user?.clerk_id === user.user?.id
+              theme.category === "user" && isThemeOwner(user.user?.id, theme)
           ).length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
               <SignedIn>

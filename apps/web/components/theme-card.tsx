@@ -176,8 +176,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
                 variant="default"
                 className="bg-primary text-primary-foreground"
               >
-                <IconCheck className="mr-1 w-3 h-3" />
-                Selected
+                <IconCheck className="w-3.5 h-3.5" />
               </Badge>
             )}
           </motion.div>

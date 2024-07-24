@@ -143,7 +143,9 @@ export const useThemeGenerator = (
         displayName: themeName,
       });
       await saveTheme(newTheme);
-      updateTheme(newTheme as ThemeConfig);
+      (updateThemeConfig as (newConfig: Partial<ThemeConfig>) => void)?.(
+        newTheme
+      );
     }
   };
 
