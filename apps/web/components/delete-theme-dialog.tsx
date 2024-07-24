@@ -18,7 +18,7 @@ interface DeleteThemeDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   themeConfig: ThemeConfig;
-  onDeleted: () => void;
+  onDeleted?: () => void;
 }
 
 export const DeleteThemeDialog: React.FC<DeleteThemeDialogProps> = ({
@@ -76,7 +76,7 @@ export const DeleteThemeDialog: React.FC<DeleteThemeDialogProps> = ({
           <Button
             onClick={async () => {
               await handleDelete();
-              onDeleted();
+              onDeleted?.();
             }}
             disabled={isDeleting}
             variant="destructive"
