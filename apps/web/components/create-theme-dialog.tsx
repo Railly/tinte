@@ -95,16 +95,19 @@ export const CreateThemeDialog: React.FC<CreateThemeDialogProps> = ({
             <Label>Preview</Label>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
               {Object.entries(themeConfig.palette[currentTheme]).map(
-                ([key, value]) => (
-                  <div
-                    key={key}
-                    className={cn(
-                      "h-8 rounded-full",
-                      "border-2 border-black/20 dark:border-white/20"
-                    )}
-                    style={{ backgroundColor: value }}
-                  />
-                )
+                ([key, value]) => {
+                  if (key === "id") return;
+                  return (
+                    <div
+                      key={key}
+                      className={cn(
+                        "h-8 rounded-full",
+                        "border-2 border-black/20 dark:border-white/20"
+                      )}
+                      style={{ backgroundColor: value }}
+                    />
+                  );
+                }
               )}
             </div>
           </div>

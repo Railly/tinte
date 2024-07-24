@@ -70,7 +70,7 @@ export function ThemeCustomizer({
 
   const handlePlusButtonClick = () => {
     if (user) {
-      setIsSheetOpen(true);
+      setOpenCreateTheme(true);
     } else {
       setIsSignInDialogOpen(true);
     }

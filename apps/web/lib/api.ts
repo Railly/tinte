@@ -1,4 +1,4 @@
-import { formatTheme, sortThemes } from "@/app/utils";
+import { formatTheme, isThemeOwner, sortThemes } from "@/app/utils";
 import { auth } from "@clerk/nextjs/server";
 import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
@@ -52,7 +52,31 @@ export async function getThemeById(id: string) {
     },
   });
 
-  if (!theme || (!theme.is_public && theme.User !== userId)) {
+  if (!theme) {
+    notFound();
+  }
+
+  const formattedTheme = formatTheme(theme);
+
+  if (!theme.is_public && !isThemeOwner(userId, formattedTheme)) {
+    notFound();
+  }
+
+  prisma.$disconnect();
+  return formatTheme(theme);
+}
+
+export async function getUnprotectedThemeById(id: string) {
+  const theme = await prisma.themes.findUnique({
+    where: { xata_id: id },
+    include: {
+      ThemePalettes: true,
+      TokenColors: true,
+      Users: true,
+    },
+  });
+
+  if (!theme) {
     notFound();
   }
 

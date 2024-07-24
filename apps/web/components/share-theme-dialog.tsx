@@ -114,7 +114,7 @@ export const ShareThemeDialog: React.FC<ShareThemeDialogProps> = ({
               </p>
             )}
             {themeConfig.isPublic && isOwner && (
-              <p className="flex flex-col gap-1 text-xs text-muted-foreground mt-2 p-2 rounded-md border border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/10">
+              <p className="flex flex-col gap-1 text-xs text-muted-foreground mt-2 p-2 rounded-md border border-teal-500/50 bg-teal-50/50 dark:bg-teal-950/10">
                 <span className="font-bold inline-flex items-center gap-1">
                   <IconGlobe className="w-4 h-4" />
                   Your theme is public.

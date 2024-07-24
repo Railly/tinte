@@ -344,7 +344,7 @@ export const getThemeName = (displayName: string | undefined) =>
   displayName ? displayName.toLocaleLowerCase().replace(/\s/g, "-") : "";
 
 export function isThemeOwner(
-  userId: string | undefined,
+  userId: string | null | undefined,
   themeConfig: ThemeConfig
 ): boolean {
   if (!userId || !themeConfig.user) {

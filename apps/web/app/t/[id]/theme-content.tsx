@@ -7,7 +7,6 @@ import { Button, buttonVariants } from "../../../components/ui/button";
 import {
   IconDownload,
   IconEdit,
-  IconHeart,
   IconUser,
   IconGlobe,
   IconLock,
@@ -36,13 +35,9 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
     () => generateVSCodeTheme(themeConfig),
     [themeConfig]
   );
-  const [likes, setLikes] = useState(0);
-
-  const handleLike = () => {
-    setLikes((prevLikes) => prevLikes + 1);
-  };
 
   const { loading, exportVSIX } = useThemeExport();
+  const [imageLoading, setImageLoading] = useState(true);
 
   const handleDownloadTheme = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -52,28 +47,11 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
   return (
     <div className="flex flex-col min-h-screen">
       <LandingHeader />
-      <main className="flex-1 overflow-auto p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-8">
-            <motion.div
-              className="flex-1"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <ThemePreview
-                vsCodeTheme={vsCodeTheme}
-                width="w-full"
-                small={false}
-                height="h-[80vh]"
-              />
-            </motion.div>
-            <motion.div
-              className="w-full md:w-1/3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+      <main className="flex-1 overflow-hidden">
+        <div className="h-full flex">
+          {/* Left Column */}
+          <div className="w-1/2 p-4 overflow-y-auto">
+            <div>
               <div className="bg-card rounded-lg shadow-md dark:shadow-foreground/5 border p-8 backdrop-blur-sm bg-opacity-30">
                 <h1 className="text-3xl font-bold mb-6">
                   {themeConfig.displayName}
@@ -83,21 +61,16 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
                     <>
                       <IconRaycast className="w-12 h-12 rounded-full" />
                       <div>
-                        <p className="font-medium">
-                          Ray.so Theme by
-                          <a
-                            href="https://ray.so"
-                            className={cn(
-                              buttonVariants({ variant: "link" }),
-                              "px-0 pl-2"
-                            )}
-                          >
-                            Raycast
-                          </a>
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Theme Creator
-                        </p>
+                        <p className="font-medium">Ray.so Theme</p>
+                        <a
+                          href="https://ray.so"
+                          className={cn(
+                            buttonVariants({ variant: "link" }),
+                            "px-0 text-sm text-muted-foreground"
+                          )}
+                        >
+                          Raycast
+                        </a>
                       </div>
                     </>
                   ) : (
@@ -165,31 +138,8 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
                     {themeConfig.isPublic ? "Public" : "Private"}
                   </Badge>
                 </div>
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Likes</span>
-                    <motion.span
-                      className="font-medium flex items-center gap-1"
-                      key={likes}
-                      initial={{ scale: 1.5 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <IconHeart className="text-rose-500" />
-                      {likes}
-                    </motion.span>
-                  </div>
-                </div>
                 <div className="space-y-4">
                   <Button
-                    className="w-full text-foreground transition-all bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
-                    onClick={handleLike}
-                  >
-                    <IconHeart className="mr-2" />
-                    Like
-                  </Button>
-                  <Button
-                    variant="outline"
                     className="w-full"
                     onClick={handleDownloadTheme}
                     disabled={loading}
@@ -219,8 +169,37 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
                     canNotEdit={!isOwner}
                   />
                 </div>
+                <div className="relative mt-4">
+                  {imageLoading && (
+                    <div
+                      className="absolute inset-0 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
+                      style={{ height: 321, width: 612 }}
+                    />
+                  )}
+                  <img
+                    src={`/api/og?id=${themeConfig.id}`}
+                    alt={`${themeConfig.displayName} theme preview`}
+                    className={cn(
+                      "w-full h-auto rounded-lg shadow-lg",
+                      imageLoading ? "invisible" : "visible"
+                    )}
+                    height={630}
+                    width={1200}
+                    onLoad={() => setImageLoading(false)}
+                  />
+                </div>
               </div>
-            </motion.div>
+            </div>
+          </div>
+
+          {/* Right Column - Code Editor */}
+          <div className="w-1/2 h-full p-4">
+            <ThemePreview
+              vsCodeTheme={vsCodeTheme}
+              width="w-full"
+              small={false}
+              height="h-[88vh]"
+            />
           </div>
         </div>
       </main>
