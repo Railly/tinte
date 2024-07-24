@@ -14,7 +14,7 @@ import {
   IconLoading,
 } from "../../../components/ui/icons";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { generateVSCodeTheme } from "@/lib/core";
 import { ThemePreview } from "../../../components/theme-preview";
 import { cn } from "@/lib/utils";
@@ -37,6 +37,14 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
 
   const { loading, exportVSIX } = useThemeExport();
   const [imageLoading, setImageLoading] = useState(true);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = `${process.env.NEXT_PUBLIC_BASE_URL}/api/og?id=${themeConfig.id}`;
+    img.onload = () => {
+      setImageLoading(false);
+    };
+  }, [themeConfig.id]);
 
   const handleDownloadTheme = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -169,24 +177,19 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
               </div>
               <div className="relative mt-4">
                 {imageLoading && (
-                  <div
-                    className="absolute inset-0 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-                    style={{
-                      height: "100%",
-                      width: "100%",
-                    }}
-                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-lg">
+                    <IconLoading />
+                  </div>
                 )}
                 <img
                   src={`${process.env.NEXT_PUBLIC_BASE_URL}/api/og?id=${themeConfig.id}`}
                   alt={`${themeConfig.displayName} theme preview`}
                   className={cn(
-                    "w-full h-auto rounded-lg shadow-lg",
-                    imageLoading ? "invisible" : "visible"
+                    "w-full h-auto rounded-lg shadow-lg transition-opacity duration-300",
+                    imageLoading ? "opacity-0" : "opacity-100"
                   )}
                   height={630}
                   width={1200}
-                  onLoad={() => setImageLoading(false)}
                 />
               </div>
             </div>
