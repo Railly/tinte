@@ -58,7 +58,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
         <div className="h-full flex flex-col lg:flex-row">
           {/* Left Column */}
           <div className="w-full lg:w-1/2 p-4 overflow-y-auto">
-            <div className="bg-card rounded-lg shadow-md dark:shadow-foreground/5 border p-4 sm:p-8 backdrop-blur-sm bg-opacity-30">
+            <div className="bg-card h-full md:h-[88vh] rounded-lg shadow-md dark:shadow-foreground/5 border p-4 sm:p-8 backdrop-blur-sm bg-opacity-30">
               <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
                 {themeConfig.displayName}
               </h1>

@@ -103,6 +103,7 @@ export function ThemeCards({
                 onUseTheme={handleUseTheme}
                 isTextareaFocused={isTextareaFocused}
                 type="all"
+                updateThemeConfig={updateThemeConfig}
               />
             </TabsContent>
             <TabsContent className="w-full" value="featured">
@@ -139,6 +140,7 @@ export function ThemeCards({
                 onUseTheme={handleUseTheme}
                 isTextareaFocused={isTextareaFocused}
                 type="user"
+                updateThemeConfig={updateThemeConfig}
               />
             </TabsContent>
           </Tabs>
@@ -154,6 +156,7 @@ interface ThemeCardGridProps {
   onUseTheme: (theme: ThemeConfig) => void;
   isTextareaFocused: boolean;
   type: "community" | "user" | "all" | "featured" | "rayso";
+  updateThemeConfig?: (newConfig: Partial<ThemeConfig>) => void;
 }
 
 function ThemeCardGrid({
@@ -162,6 +165,7 @@ function ThemeCardGrid({
   onUseTheme,
   isTextareaFocused,
   type,
+  updateThemeConfig,
 }: ThemeCardGridProps) {
   if (themes.length === 0) {
     return <EmptyState type={type} />;
@@ -172,9 +176,11 @@ function ThemeCardGrid({
         <ThemeCard
           key={index}
           themeConfig={theme}
+          themes={themes}
           onUseTheme={() => onUseTheme(theme)}
           isTextareaFocused={isTextareaFocused}
           isSelected={selectedTheme === theme.displayName}
+          updateThemeConfig={updateThemeConfig}
         />
       ))}
     </div>

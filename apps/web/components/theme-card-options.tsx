@@ -13,13 +13,18 @@ import { ThemeConfig } from "@/lib/core/types";
 import { useUser } from "@clerk/nextjs";
 import { isThemeOwner } from "@/app/utils";
 import { DeleteThemeDialog } from "./delete-theme-dialog";
+import { toast } from "sonner";
 
 interface ThemeCardOptionsProps {
   themeConfig: ThemeConfig;
+  updateThemeConfig?: (newConfig: Partial<ThemeConfig>) => void;
+  themes: ThemeConfig[];
 }
 
 export const ThemeCardOptions: React.FC<ThemeCardOptionsProps> = ({
   themeConfig,
+  updateThemeConfig,
+  themes,
 }) => {
   const router = useRouter();
   const user = useUser();
@@ -28,6 +33,40 @@ export const ThemeCardOptions: React.FC<ThemeCardOptionsProps> = ({
 
   const handlePreview = () => {
     router.push(`/t/${themeConfig.id}`);
+  };
+  const updateThemeStatus = async (themeId: string, isPublic: boolean) => {
+    try {
+      toast.info(
+        `Making ${themeConfig.displayName} ${isPublic ? "public" : "private"}`
+      );
+      const response = await fetch(`/api/theme/${themeId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isPublic, userId: user.user?.id }),
+      });
+
+      toast.dismiss();
+      if (!response.ok) {
+        toast.error("Failed to update theme status");
+        return;
+      }
+      toast.success(`Theme is now ${isPublic ? "public" : "private"}`);
+      updateThemeConfig?.({ ...themeConfig, isPublic });
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating theme public status:", error);
+      throw error;
+    }
+  };
+
+  const handleDeleted = () => {
+    const firstTheme = themes[0];
+    if (!firstTheme) {
+      return;
+    }
+    updateThemeConfig?.(firstTheme);
   };
 
   return (
@@ -51,6 +90,7 @@ export const ThemeCardOptions: React.FC<ThemeCardOptionsProps> = ({
               themeConfig={themeConfig}
               isOwner={isOwner}
               canNotEdit={!isOwner}
+              updateThemeStatus={updateThemeStatus}
             />
           </DropdownMenuItem>
           {isThemeOwner(user.user?.id, themeConfig) && (
@@ -73,6 +113,7 @@ export const ThemeCardOptions: React.FC<ThemeCardOptionsProps> = ({
         isOpen={isDeleteDialogOpen}
         setIsOpen={setIsDeleteDialogOpen}
         themeConfig={themeConfig}
+        onDeleted={handleDeleted}
       />
     </>
   );

@@ -48,17 +48,21 @@ const MotionCard = motion(Card);
 const MotionButton = motion(Button);
 
 interface ThemeCardProps {
+  themes: ThemeConfig[];
   onUseTheme: () => void;
   isSelected: boolean;
   themeConfig: ThemeConfig;
   isTextareaFocused: boolean;
+  updateThemeConfig?: (newConfig: Partial<ThemeConfig>) => void;
 }
 
 export const ThemeCard: React.FC<ThemeCardProps> = ({
+  themes,
   onUseTheme,
   isSelected,
   themeConfig,
   isTextareaFocused,
+  updateThemeConfig,
 }) => {
   const router = useRouter();
   const { currentTheme } = useBinaryTheme();
@@ -124,7 +128,11 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
             >
               {themeConfig.displayName}
             </motion.h2>
-            <ThemeCardOptions themeConfig={themeConfig} />
+            <ThemeCardOptions
+              themeConfig={themeConfig}
+              updateThemeConfig={updateThemeConfig}
+              themes={themes}
+            />
           </div>
           <motion.div
             className="flex flex-wrap gap-2 mt-2"
