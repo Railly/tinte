@@ -7,6 +7,7 @@ import { ThemeCards } from "@/components/theme-cards";
 import { defaultThemeConfig } from "@/lib/core/config";
 import { GeneratedVSCodeTheme, generateVSCodeTheme } from "@/lib/core";
 import { ThemeConfig } from "@/lib/core/types";
+import { ScrollToTopButton } from "./scroll-to-top";
 
 interface ThemeManagerProps {
   allThemes: ThemeConfig[];
@@ -18,7 +19,7 @@ export function ThemeManager({ allThemes }: ThemeManagerProps) {
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(defaultTheme);
   const [selectedTheme, setSelectedTheme] = useState(defaultTheme.displayName);
   const [vsCodeTheme, setVSCodeTheme] = useState<GeneratedVSCodeTheme>(
-    generateVSCodeTheme(defaultTheme)
+    generateVSCodeTheme(defaultTheme),
   );
   const focusAreaRef = useRef<HTMLElement>(null);
 
@@ -53,7 +54,7 @@ export function ThemeManager({ allThemes }: ThemeManagerProps) {
       />
       <section
         ref={focusAreaRef}
-        className="sticky top-4 bg-background z-20 flex flex-col md:flex-row items-center gap-4 justify-center bg-interface rounded-lg custom-shadow"
+        className="md:sticky md:top-4 bg-background z-20 flex flex-col md:flex-row items-center gap-4 justify-center bg-interface rounded-lg custom-shadow"
       >
         <LandingThemeGenerator
           updateThemeConfig={updateThemeConfig}
@@ -68,6 +69,7 @@ export function ThemeManager({ allThemes }: ThemeManagerProps) {
         setSelectedTheme={setSelectedTheme}
         isTextareaFocused={isTextareaFocused}
       />
+      <ScrollToTopButton />
     </main>
   );
 }

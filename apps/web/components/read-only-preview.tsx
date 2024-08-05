@@ -46,7 +46,7 @@ const ReadOnlyPreview = ({
           <pre
             className={cn(
               "w-full min-h-full [&>pre]:p-4 [&>pre]:h-full text-sm !text-[13px]",
-              !highlightedText && "bg-muted animate-pulse"
+              !highlightedText && "bg-muted animate-pulse",
             )}
             dangerouslySetInnerHTML={{ __html: highlightedText }}
           />

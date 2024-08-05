@@ -1,3 +1,4 @@
+/* eslint-disable turbo/no-undeclared-env-vars */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { ThemeConfig } from "@/lib/core/types";
@@ -32,7 +33,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
   const isOwner = isThemeOwner(user.user?.id, themeConfig);
   const vsCodeTheme = useMemo(
     () => generateVSCodeTheme(themeConfig),
-    [themeConfig]
+    [themeConfig],
   );
 
   const { loading, exportVSIX } = useThemeExport();
@@ -72,7 +73,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
                         href="https://ray.so"
                         className={cn(
                           buttonVariants({ variant: "link" }),
-                          "px-0 text-sm text-muted-foreground"
+                          "px-0 text-sm text-muted-foreground",
                         )}
                       >
                         Raycast
@@ -163,7 +164,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
                   href={`/generator?theme=${themeConfig.name}`}
                   className={cn(
                     "w-full",
-                    buttonVariants({ variant: "outline" })
+                    buttonVariants({ variant: "outline" }),
                   )}
                 >
                   <IconEdit className="mr-2" />
@@ -186,7 +187,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
                   alt={`${themeConfig.displayName} theme preview`}
                   className={cn(
                     "w-full h-auto rounded-lg shadow-lg transition-opacity duration-300",
-                    imageLoading ? "opacity-0" : "opacity-100"
+                    imageLoading ? "opacity-0" : "opacity-100",
                   )}
                   height={630}
                   width={1200}

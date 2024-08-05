@@ -1,3 +1,4 @@
+/* eslint-disable turbo/no-undeclared-env-vars */
 import { Metadata } from "next";
 import { getThemeById } from "@/lib/api";
 import { ThemeContent } from "./theme-content";

@@ -26,7 +26,7 @@ export function ThemePreview({
       className={cn(
         "flex border rounded-md shadow-md dark:shadow-foreground/5",
         width,
-        height
+        height,
       )}
     >
       <ReadOnlyPreview

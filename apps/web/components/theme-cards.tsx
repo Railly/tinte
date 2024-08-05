@@ -41,61 +41,64 @@ export function ThemeCards({
   return (
     <section className="w-full mt-4 transition-opacity">
       <div className="flex w-full">
-        <div className="flex w-full space-x-4">
+      <div className="w-full">
           <Tabs className="w-full" defaultValue="all">
-            <TabsList
-              className="max-w-full overflow-scroll"
-              variant="underline"
-            >
-              <TabsTrigger
-                className="space-x-2"
+            <div className="overflow-x-auto">
+              <TabsList
+                className="inline-flex w-auto min-w-full"
                 variant="underline"
-                value="all"
               >
-                <IconGrid className="w-4 h-4" />
-                <span>All</span>
-              </TabsTrigger>
-              <TabsTrigger
-                className="space-x-2"
-                variant="underline"
-                value="featured"
-              >
-                <IconZap className="w-4 h-4" />
-                <span>Featured</span>
-              </TabsTrigger>
-              <TabsTrigger
-                className="space-x-2"
-                variant="underline"
-                value="rayso"
-              >
-                <IconRaycast className="w-4 h-4" />
-                <span>Ray.so</span>
-              </TabsTrigger>
-              <TabsTrigger
-                className="space-x-2"
-                variant="underline"
-                value="community"
-              >
-                <IconTinte className="w-4 h-4" />
-                <span>Community</span>
-              </TabsTrigger>
-              <TabsTrigger
-                className="space-x-2"
-                variant="underline"
-                value="custom"
-              >
-                <SignedIn>
-                  <img
-                    src={user.user?.imageUrl}
-                    className="w-4 h-4 rounded-full"
-                  />
-                </SignedIn>
-                <SignedOut>
-                  <IconUser className="w-4 h-4" />
-                </SignedOut>
-                <span>Your Themes</span>
-              </TabsTrigger>
-            </TabsList>
+                <TabsTrigger
+                  className="space-x-2 whitespace-nowrap"
+                  variant="underline"
+                  value="all"
+                >
+                  <IconGrid className="w-4 h-4" />
+                  <span>All</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  className="space-x-2 whitespace-nowrap"
+                  variant="underline"
+                  value="featured"
+                >
+                  <IconZap className="w-4 h-4" />
+                  <span>Featured</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  className="space-x-2 whitespace-nowrap"
+                  variant="underline"
+                  value="rayso"
+                >
+                  <IconRaycast className="w-4 h-4" />
+                  <span>Ray.so</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  className="space-x-2 whitespace-nowrap"
+                  variant="underline"
+                  value="community"
+                >
+                  <IconTinte className="w-4 h-4" />
+                  <span>Community</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  className="space-x-2 whitespace-nowrap"
+                  variant="underline"
+                  value="custom"
+                >
+                  <SignedIn>
+                    <img
+                      src={user.user?.imageUrl}
+                      className="w-4 h-4 rounded-full"
+                      alt="User avatar"
+                    />
+                  </SignedIn>
+                  <SignedOut>
+                    <IconUser className="w-4 h-4" />
+                  </SignedOut>
+                  <span>Your Themes</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
             <TabsContent className="w-full" value="all">
               <ThemeCardGrid
                 themes={themeCategories.allThemes}
