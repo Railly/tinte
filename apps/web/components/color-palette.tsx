@@ -52,7 +52,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
     const updatedPalette = adjustUIProgression(
       themeConfig.palette[currentTheme],
       currentTheme,
-      value
+      value,
     );
 
     const uiColorUpdates = UI_COLORS.reduce((acc, key) => {
@@ -128,7 +128,7 @@ const ColorEditor: React.FC<ColorEditorProps> = ({
       <SimplifiedTokenEditor
         colorKey={colorKey}
         colorValue={themeConfig.palette[currentTheme].background}
-        onColorChange={handleUIProgressionChange}
+        onColorChange={(value) => handleUIProgressionChange(value)}
         advancedMode={advancedMode}
         isUIColor={true}
         isProgressionToken={true}

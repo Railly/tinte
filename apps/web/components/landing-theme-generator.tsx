@@ -7,8 +7,6 @@ import { IconGenerate, IconLoading, IconSparkles } from "@/components/ui/icons";
 import { ThemeConfig } from "@/lib/core/types";
 import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
 import { useDescriptionEnhancer } from "@/lib/hooks/use-theme-enhancer";
-import { useUser } from "@clerk/nextjs";
-import { SignInDialog } from "./sign-in-dialog";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface LandingThemeGeneratorProps {
@@ -20,44 +18,30 @@ export function LandingThemeGenerator({
   updateThemeConfig,
   setIsTextareaFocused,
 }: LandingThemeGeneratorProps) {
-  const user = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [themeDescription, setThemeDescription] = useState<string>(
-    searchParams?.get("description") || ""
+    searchParams?.get("description") || "",
   );
   const { isGenerating, generateTheme } = useThemeGenerator(updateThemeConfig);
   const { isEnhancing, enhanceDescription } = useDescriptionEnhancer();
-  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
 
   const handleGenerateTheme = async () => {
     await generateTheme(themeDescription);
     router.refresh();
   };
 
-  const handleSignInOrEnhance = async () => {
-    if (user.isSignedIn) {
-      const enhancedDescription = await enhanceDescription(themeDescription);
-      if (enhancedDescription) {
-        setThemeDescription(enhancedDescription);
-      }
-    } else {
-      setIsSignInDialogOpen(true);
+  const handleEnhanceDescription = async () => {
+    const enhancedDescription = await enhanceDescription(themeDescription);
+    if (enhancedDescription) {
+      setThemeDescription(enhancedDescription);
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      handleSignInOrGenerate();
-    }
-  };
-
-  const handleSignInOrGenerate = () => {
-    if (user.isSignedIn) {
       handleGenerateTheme();
-    } else {
-      setIsSignInDialogOpen(true);
     }
   };
 
@@ -67,7 +51,7 @@ export function LandingThemeGenerator({
         <h2 className="text-sm font-bold">Theme Generator</h2>
         <ShineButton
           variant="default"
-          onClick={handleSignInOrGenerate}
+          onClick={handleGenerateTheme}
           disabled={isGenerating || themeDescription.trim().length < 3}
         >
           {isGenerating ? (
@@ -91,7 +75,7 @@ export function LandingThemeGenerator({
         />
         <Button
           size="sm"
-          onClick={handleSignInOrEnhance}
+          onClick={handleEnhanceDescription}
           variant="outline"
           className="absolute bottom-6 left-6 text-muted-foreground hover:text-foreground transition-all duration-200"
           disabled={isEnhancing || themeDescription.trim().length < 3}
@@ -113,11 +97,6 @@ export function LandingThemeGenerator({
           {themeDescription.length}/150
         </span>
       </div>
-      <SignInDialog
-        open={isSignInDialogOpen}
-        setOpen={setIsSignInDialogOpen}
-        redirectUrl={`/?description=${themeDescription}`}
-      />
     </div>
   );
 }

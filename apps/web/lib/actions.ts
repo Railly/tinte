@@ -15,7 +15,7 @@ const getColorSchema = (colorKey: string, extraDescription = "") =>
   z
     .string()
     .describe(
-      DESCRIPTION + getThemeColorDescription(colorKey) + " " + extraDescription
+      DESCRIPTION + getThemeColorDescription(colorKey) + " " + extraDescription,
     );
 
 const getPaletteSchema = (theme: "light" | "dark") =>
@@ -44,7 +44,7 @@ const outputSchema = z.object({
 export const generateVSCodeThemeAI = async (formData: FormData) => {
   const { prompt } = inputSchema.parse(Object.fromEntries(formData.entries()));
   const result = await generateObject({
-    model: openai("gpt-3.5-turbo-0125"),
+    model: openai("gpt-4o-mini"),
     system: `You are an expert Visual Studio Code theme generator. Create visually appealing dark/light themes based on the user's prompt:
   - Use a consistent, limited color palette with complementary colors.
   - Ensure high contrast between background and foreground for readability.

@@ -102,12 +102,12 @@ export const CreateThemeDialog: React.FC<CreateThemeDialogProps> = ({
                       key={key}
                       className={cn(
                         "h-8 rounded-full",
-                        "border-2 border-black/20 dark:border-white/20"
+                        "border-2 border-black/20 dark:border-white/20",
                       )}
                       style={{ backgroundColor: value }}
                     />
                   );
-                }
+                },
               )}
             </div>
           </div>

@@ -4,9 +4,8 @@ import {
   ThemeConfig,
   TokenColorMap,
 } from "@/lib/core/types";
-import { User } from "@clerk/nextjs/server";
 import { ThemePalettes, Themes, TokenColors, Users } from "@prisma/client";
-import { hexToRgba } from "@uiw/color-convert";
+import { hexToRgba, rgbaToHex } from "@uiw/color-convert";
 
 export function formatPalette(palette: ThemePalettes | undefined) {
   if (!palette) return {};
@@ -94,7 +93,7 @@ export function invertPalette(palette: Palette): Record<string, string> {
 }
 
 export function invertPaletteWithoutId(
-  palette: Palette
+  palette: Palette,
 ): Record<string, string> {
   return {
     text: palette.text,
@@ -114,7 +113,7 @@ export function invertPaletteWithoutId(
 }
 
 export function invertTokenColors(
-  tokenColors: TokenColorMap
+  tokenColors: TokenColorMap,
 ): Record<string, keyof Palette> {
   return {
     plain: tokenColors.plain,
@@ -165,7 +164,7 @@ export function formatTheme(
     ThemePalettes: ThemePalettes[];
     TokenColors: TokenColors[];
     Users: Users | null;
-  }
+  },
 ) {
   const darkPalette = theme.ThemePalettes.find((p) => p.mode === "dark");
   const lightPalette = theme.ThemePalettes.find((p) => p.mode === "light");
@@ -220,7 +219,7 @@ export function sortThemes(formattedThemes: ThemeConfig[]) {
 }
 
 export const fetchGeneratedTheme = async (
-  prompt: string
+  prompt: string,
 ): Promise<Record<string, DarkLightPalette>> => {
   const response = await fetch("/api/generate", {
     method: "POST",
@@ -266,7 +265,7 @@ export const ORDERED_KEYS = [
 export const calculateProgression = (
   startColor: string,
   endColor: string,
-  steps: number
+  steps: number,
 ): string[] => {
   const startRgba = hexToRgba(startColor);
   const endRgba = hexToRgba(endColor);
@@ -276,44 +275,63 @@ export const calculateProgression = (
     const r = Math.round(startRgba.r + (endRgba.r - startRgba.r) * t);
     const g = Math.round(startRgba.g + (endRgba.g - startRgba.g) * t);
     const b = Math.round(startRgba.b + (endRgba.b - startRgba.b) * t);
-    return `#${r.toString(16).padStart(2, "0")}${g
-      .toString(16)
-      .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+    return rgbaToHex({ r, g, b, a: 1 });
   });
 };
 
 export const adjustUIProgression = (
   palette: Palette,
   mode: "light" | "dark",
-  newBackgroundColor: string
+  newBackgroundColor: string,
 ): Palette => {
   const steps = UI_COLORS.length;
+  const updatedPalette = { ...palette };
+
+  const orderedUIColors = [
+    "background",
+    "background-2",
+    "interface",
+    "interface-2",
+    "interface-3",
+    "text-3",
+    "text-2",
+    "text",
+  ];
+
   const endColor = mode === "dark" ? "#FFFFFF" : "#000000";
   const progression = calculateProgression(newBackgroundColor, endColor, steps);
 
-  const updatedPalette = { ...palette };
-  UI_COLORS.forEach((key, index) => {
-    if (progression[index] !== undefined) {
-      updatedPalette[key] = progression[index] as string;
-    }
-  });
+  if (mode === "dark") {
+    orderedUIColors.forEach((key, index) => {
+      updatedPalette[key as keyof Palette] = progression[index] as string;
+    });
+  } else {
+    // Light mode
+    orderedUIColors.forEach((key, index) => {
+      if (key === "background") {
+        updatedPalette[key] = newBackgroundColor;
+      } else {
+        updatedPalette[key as keyof Palette] = progression[index] as string;
+      }
+    });
+  }
 
   return updatedPalette;
 };
 
 export function getThemeCategories(allThemes: ThemeConfig[], userId?: string) {
   const featuredThemes = allThemes.filter(
-    (theme) => theme.category === "featured"
+    (theme) => theme.category === "featured",
   );
   const raysoThemes = allThemes.filter((theme) => theme.category === "rayso");
   const communityThemes = allThemes.filter(
     (theme) =>
       theme.isPublic &&
       theme.category === "user" &&
-      !isThemeOwner(userId, theme)
+      !isThemeOwner(userId, theme),
   );
   const userThemes = allThemes.filter(
-    (theme) => theme.category === "user" && isThemeOwner(userId, theme)
+    (theme) => theme.category === "user" && isThemeOwner(userId, theme),
   );
 
   return {
@@ -345,7 +363,7 @@ export const getThemeName = (displayName: string | undefined) =>
 
 export function isThemeOwner(
   userId: string | null | undefined,
-  themeConfig: ThemeConfig
+  themeConfig: ThemeConfig,
 ): boolean {
   if (!userId || !themeConfig.user) {
     return false;

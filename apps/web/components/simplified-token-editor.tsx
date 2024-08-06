@@ -96,7 +96,7 @@ export const SimplifiedTokenEditor: React.FC<SimplifiedTokenEditorProps> = ({
           className={cn(
             "w-full h-16 text-sm font-medium hover:brightness-[1.20] transition-all relative",
             shouldHighlight && "ring-2 ring-primary",
-            isDisabled && "disabled:opacity-30 cursor-not-allowed"
+            isDisabled && "disabled:opacity-30 cursor-not-allowed",
           )}
           style={{
             backgroundColor: colorValue,
@@ -104,7 +104,7 @@ export const SimplifiedTokenEditor: React.FC<SimplifiedTokenEditorProps> = ({
           }}
           disabled={isDisabled}
         >
-          {colorKey}
+          {isProgressionToken ? "ui-progression" : colorKey}
           {isDisabled && (
             <div className="absolute top-1 right-1">
               <IconLock className="w-4 h-4" />

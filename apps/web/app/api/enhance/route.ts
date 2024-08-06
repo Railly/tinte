@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   }
 
   const result = await generateObject({
-    model: openai("gpt-3.5-turbo-0125"),
+    model: openai("gpt-4o-mini"),
     system: `You are an expert at enhancing theme descriptions for Visual Studio Code. Your task is to take a user's initial theme idea and expand it into a more detailed and creative description. Follow these guidelines:
     - Maintain the core concept of the original prompt
     - Add specific color suggestions or palettes

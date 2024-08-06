@@ -29,7 +29,7 @@ export function ThemeControlBar({
 }) {
   const { currentTheme, setTheme } = useBinaryTheme();
   return (
-    <div className="flex justify-center flex-wrap md:flex-nowrap gap-8 py-6 px-4 bg-muted/30 border rounded-t-md">
+    <div className="flex justify-center flex-wrap md:flex-nowrap gap-4 md:gap-8 py-4 md:py-6 px-2 md:px-4 bg-muted/30 border rounded-t-md">
       <ThemeSelector
         themes={themes}
         currentTheme={currentTheme}

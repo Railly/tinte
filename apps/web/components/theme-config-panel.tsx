@@ -40,7 +40,7 @@ export const ThemeConfigPanel: React.FC<ThemeConfigPanelProps> = ({
   const handleShuffleTheme = useCallback(() => {
     if (isColorModified) {
       const confirmShuffle = window.confirm(
-        "You have unsaved changes. Do you want to proceed without saving?"
+        "You have unsaved changes. Do you want to proceed without saving?",
       );
       if (!confirmShuffle) {
         setIsColorModified(false);

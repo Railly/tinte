@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import {
   formatTheme,
   invertPaletteWithoutId,
@@ -29,7 +29,7 @@ export const GET = async () => {
     console.error("Error fetching themes:", error);
     return NextResponse.json(
       { error: "Failed to fetch themes" },
-      { status: 500 }
+      { status: 500 },
     );
   } finally {
     await prisma.$disconnect();
@@ -38,29 +38,38 @@ export const GET = async () => {
 
 export const POST = async (req: Request) => {
   const { name, displayName, palette, userId } =
-    (await req.json()) as ThemeConfig & { userId: string };
+    (await req.json()) as ThemeConfig & { userId: string | undefined };
+  console.log({ name, displayName, palette, userId });
 
   try {
-    const theme = await prisma.themes.create({
-      data: {
-        name,
-        display_name: displayName,
-        category: "user",
-        is_public: false,
-        User: userId,
-        ThemePalettes: {
-          create: [
-            { mode: "light", ...invertPaletteWithoutId(palette.light) },
-            { mode: "dark", ...invertPaletteWithoutId(palette.dark) },
-          ],
-        },
-        TokenColors: {
-          create: [invertTokenColors(defaultThemeConfig.tokenColors)],
-        },
+    const themeData: Prisma.ThemesCreateInput = {
+      name: name,
+      display_name: displayName,
+      category: "user",
+      is_public: true,
+      ThemePalettes: {
+        create: [
+          { mode: "light", ...invertPaletteWithoutId(palette.light) },
+          { mode: "dark", ...invertPaletteWithoutId(palette.dark) },
+        ],
       },
+      TokenColors: {
+        create: [invertTokenColors(defaultThemeConfig.tokenColors)],
+      },
+    };
+
+    if (userId !== undefined) {
+      themeData.Users = {
+        connect: { xata_id: userId },
+      };
+    }
+
+    const theme = await prisma.themes.create({
+      data: themeData,
       include: {
         ThemePalettes: true,
         TokenColors: true,
+        Users: true,
       },
     });
 
@@ -71,7 +80,7 @@ export const POST = async (req: Request) => {
     console.error("Error creating theme:", error);
     return NextResponse.json(
       { error: "Failed to create theme" },
-      { status: 500 }
+      { status: 500 },
     );
   } finally {
     await prisma.$disconnect();

@@ -7,6 +7,8 @@ import {
   IconGlobe,
   IconLock,
   IconUser,
+  IconShare,
+  IconPalette,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import {
@@ -29,6 +31,13 @@ import { useRouter } from "next/navigation";
 import { ShareThemeDialog } from "./share-theme-dialog";
 import { SignInDialog } from "./sign-in-dialog";
 import { isThemeOwner } from "@/app/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { GitHubLogoIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 
 export const Header = ({
   themeConfig,
@@ -41,7 +50,7 @@ export const Header = ({
   const { theme } = useTheme();
   const { loading, exportVSIX } = useThemeExport();
   const [themeName, setThemeName] = useState(
-    themeConfig.displayName || "My Awesome Theme"
+    themeConfig.displayName || "My Awesome Theme",
   );
   const isEditing = themeConfig.displayName !== themeName;
   const [isUpdating, setIsUpdating] = useState(false);
@@ -98,7 +107,7 @@ export const Header = ({
   const updateThemeStatus = async (themeId: string, isPublic: boolean) => {
     try {
       toast.info(
-        `Making ${themeConfig.displayName} ${isPublic ? "public" : "private"}`
+        `Making ${themeConfig.displayName} ${isPublic ? "public" : "private"}`,
       );
       const response = await fetch(`/api/theme/${themeId}/status`, {
         method: "PATCH",
@@ -128,19 +137,19 @@ export const Header = ({
 
   return (
     <TooltipProvider>
-      <header className="flex items-center justify-between gap-4 py-2 px-4 h-14 border-b">
+      <header className="flex items-center justify-between py-2 px-4 h-14 border-b">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
             <IconTinte />
             <h1 className="text-md font-bold">tinte</h1>
           </Link>
-          <Separator orientation="vertical" className="h-4" />
-          <div className="flex items-center gap-4">
+          <Separator orientation="vertical" className="h-4 hidden md:block" />
+          <div className="hidden md:flex items-center gap-4">
             <Link
               href="/gallery"
               className={cn(
                 buttonVariants({ variant: "link" }),
-                "px-0 text-muted-foreground hover:text-foreground"
+                "px-0 text-muted-foreground hover:text-foreground",
               )}
             >
               Gallery
@@ -149,7 +158,7 @@ export const Header = ({
               href="https://github.com/Railly/tinte"
               className={cn(
                 buttonVariants({ variant: "link" }),
-                "px-0 text-muted-foreground hover:text-foreground"
+                "px-0 text-muted-foreground hover:text-foreground",
               )}
             >
               GitHub
@@ -163,7 +172,7 @@ export const Header = ({
                 <span
                   className={cn(
                     "absolute left-2 top-2 transform",
-                    canNotEdit && "opacity-50"
+                    canNotEdit && "opacity-50",
                   )}
                 >
                   {themeConfig.isPublic ? (
@@ -210,28 +219,85 @@ export const Header = ({
           </Tooltip>
         </div>
         <div className="flex items-center gap-2">
-          <ShareThemeDialog
-            themeConfig={themeConfig}
-            isOwner={isThemeOwner(user.user?.id, themeConfig)}
-            canNotEdit={canNotEdit}
-            updateThemeStatus={updateThemeStatus}
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <HamburgerMenuIcon className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/gallery">
+                    <IconPalette className="w-4 h-4 mr-1" />
+                    Gallery
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a
+                    href="https://github.com/Railly/tinte"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center"
+                  >
+                    <GitHubLogoIcon className="w-4 h-4 mr-1" />
+                    GitHub
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleExport}
+                  disabled={loading}
+                  className="flex items-center"
+                >
+                  {loading ? (
+                    <IconLoading className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <IconDownload className="w-4 h-4 mr-1" />
+                  )}
+                  <span>{loading ? "Exporting..." : "Export Theme"}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const dialog = document.querySelector(
+                      "[data-share-dialog]",
+                    ) as HTMLElement;
+                    if (dialog) dialog.click();
+                  }}
+                  className="flex items-center"
+                >
+                  <IconShare className="w-4 h-4 mr-1" />
+                  Share Theme
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="hidden md:flex items-center gap-2">
+            <ShareThemeDialog
+              themeConfig={themeConfig}
+              isOwner={isThemeOwner(user.user?.id, themeConfig)}
+              canNotEdit={canNotEdit}
+              updateThemeStatus={updateThemeStatus}
+            />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button disabled={loading} onClick={handleExport}>
+                  {loading ? (
+                    <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <IconDownload className="w-4 h-4 mr-2" />
+                  )}
+                  <span>{loading ? "Exporting..." : "Export"}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <span className="text-xs">Export Theme</span>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <Separator
+            orientation="vertical"
+            className="h-4 mx-2 hidden md:block"
           />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button disabled={loading} onClick={handleExport}>
-                {loading ? (
-                  <IconLoading className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <IconDownload className="w-4 h-4 mr-2" />
-                )}
-                <span>{loading ? "Exporting..." : "Export"}</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <span className="text-xs">Export Theme</span>
-            </TooltipContent>
-          </Tooltip>
-          <Separator orientation="vertical" className="h-4 mx-2" />
           <div className="flex justify-center items-center">
             {!user.isLoaded ? (
               <div className="w-9 h-9 bg-gray-200 rounded-full animate-pulse" />

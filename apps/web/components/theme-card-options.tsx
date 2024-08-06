@@ -37,7 +37,7 @@ export const ThemeCardOptions: React.FC<ThemeCardOptionsProps> = ({
   const updateThemeStatus = async (themeId: string, isPublic: boolean) => {
     try {
       toast.info(
-        `Making ${themeConfig.displayName} ${isPublic ? "public" : "private"}`
+        `Making ${themeConfig.displayName} ${isPublic ? "public" : "private"}`,
       );
       const response = await fetch(`/api/theme/${themeId}/status`, {
         method: "PATCH",

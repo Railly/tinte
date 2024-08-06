@@ -12,7 +12,7 @@ import { ThemeControlBar } from "./theme-control-bar";
 import { getThemeName } from "@/app/utils";
 import { CreateThemeDialog } from "./create-theme-dialog";
 import { ThemeSheet } from "./theme-sheet";
-import { IconPlus, IconSave } from "./ui/icons";
+import { IconPlus, IconSave, IconComputer, IconPalette } from "./ui/icons";
 import { Button } from "./ui/button";
 import { useUser } from "@clerk/nextjs";
 import { SignInDialog } from "./sign-in-dialog";
@@ -23,6 +23,7 @@ export function ThemeCustomizer({
   allThemes: ThemeConfig[];
 }): JSX.Element {
   const { user } = useUser();
+  const [activeView, setActiveView] = useState<"preview" | "config">("preview");
 
   const {
     vsCodeTheme,
@@ -54,7 +55,7 @@ export function ThemeCustomizer({
 
   const handleSelectTheme = async (
     themeName: string,
-    palette?: DarkLightPalette
+    palette?: DarkLightPalette,
   ) => {
     const updatedConfig: ThemeConfig = {
       ...themeConfig,
@@ -77,8 +78,8 @@ export function ThemeCustomizer({
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="w-16 flex flex-col border-r z-50">
+    <div className="flex flex-col md:flex-row h-screen">
+      <div className="hidden md:flex w-full md:w-16 md:flex-col border-b md:border-r z-50">
         <a
           className="flex items-center justify-center h-14 border-b"
           href="https://railly.dev"
@@ -126,37 +127,66 @@ export function ThemeCustomizer({
           />
         </div>
       </div>
-      <div className="flex-1 grid grid-rows-[auto_1fr_auto] h-full">
+      <div className="flex-1 grid grid-rows-[auto_auto_1fr_auto] md:grid-rows-[auto_1fr_auto] h-full overflow-auto">
         <Header themeConfig={themeConfig} setThemeConfig={setThemeConfig} />
-        <div className="grid md:grid-cols-2 gap-2 w-full h-full max-h-screen p-2 self-start overflow-auto">
-          <PreviewEditor
-            vsCodeTheme={vsCodeTheme}
-            code={code}
-            onCodeChange={handleCodeChange}
-            setColorPickerShouldBeHighlighted={
-              setColorPickerShouldBeHighlighted
+        <div className="md:hidden flex justify-center my-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              setActiveView(activeView === "preview" ? "config" : "preview")
             }
-            language={selectedLanguage}
-            themeConfig={themeConfig}
-            themes={themes}
-            applyTheme={applyTheme}
-            setIsColorModified={setIsColorModified}
-            onSelectTheme={handleSelectTheme}
-          />
-          <ThemeConfigPanel
-            colorPickerShouldBeHighlighted={colorPickerShouldBeHighlighted}
-            themeConfig={themeConfig}
-            onPaletteColorChange={updatePaletteColor}
-            onMultiplePaletteColorsChange={updatePaletteColors}
-            advancedMode={advancedMode}
-            themeDescription={themeDescription}
-            setThemeDescription={setThemeDescription}
-            themes={themes}
-            applyTheme={applyTheme}
-            setThemeConfig={setThemeConfig}
-            isColorModified={isColorModified}
-            setIsColorModified={setIsColorModified}
-          />
+          >
+            {activeView === "preview" ? (
+              <>
+                <IconPalette className="w-4 h-4 mr-2" />
+                Show Config
+              </>
+            ) : (
+              <>
+                <IconComputer className="w-4 h-4 mr-2" />
+                Show Preview
+              </>
+            )}
+          </Button>
+        </div>
+        <div className="grid md:grid-cols-2 gap-2 w-full h-full max-h-screen p-2 self-start overflow-auto">
+          <div
+            className={`${activeView === "preview" ? "block" : "hidden"} md:block`}
+          >
+            <PreviewEditor
+              vsCodeTheme={vsCodeTheme}
+              code={code}
+              onCodeChange={handleCodeChange}
+              setColorPickerShouldBeHighlighted={
+                setColorPickerShouldBeHighlighted
+              }
+              language={selectedLanguage}
+              themeConfig={themeConfig}
+              themes={themes}
+              applyTheme={applyTheme}
+              setIsColorModified={setIsColorModified}
+              onSelectTheme={handleSelectTheme}
+            />
+          </div>
+          <div
+            className={`${activeView === "config" ? "block" : "hidden"} md:block`}
+          >
+            <ThemeConfigPanel
+              colorPickerShouldBeHighlighted={colorPickerShouldBeHighlighted}
+              themeConfig={themeConfig}
+              onPaletteColorChange={updatePaletteColor}
+              onMultiplePaletteColorsChange={updatePaletteColors}
+              advancedMode={advancedMode}
+              themeDescription={themeDescription}
+              setThemeDescription={setThemeDescription}
+              themes={themes}
+              applyTheme={applyTheme}
+              setThemeConfig={setThemeConfig}
+              isColorModified={isColorModified}
+              setIsColorModified={setIsColorModified}
+            />
+          </div>
         </div>
         <div className="flex justify-center gap-4 items-center mx-2 self-end">
           <ThemeControlBar
