@@ -29,8 +29,9 @@ export function ScrollToTopButton() {
 
   return (
     <Button
+      variant="secondary"
       onClick={scrollToTop}
-      className="fixed top-4 flex gap-2 rounded-full z-[50] md:hidden"
+      className="border border-primary fixed top-4 flex gap-2 rounded-full z-[50] md:hidden"
       aria-label="Scroll to top"
     >
       <ArrowUpIcon />

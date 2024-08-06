@@ -13,7 +13,7 @@ export const useCodeSample = () => {
   const defaultLanguage = lastLanguage || DEFAULT_LANGUAGE;
   const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
   const [code, setCode] = useState<string | undefined>(
-    CODE_SAMPLES[defaultLanguage]
+    CODE_SAMPLES[defaultLanguage],
   );
 
   const handleLanguageChange = (language: string) => {
@@ -25,6 +25,9 @@ export const useCodeSample = () => {
   useEffect(() => {
     const lastLanguage = window.localStorage.getItem("lastLanguage");
     setLastLanguage(lastLanguage);
+    setCode(
+      lastLanguage ? CODE_SAMPLES[lastLanguage] : CODE_SAMPLES[defaultLanguage],
+    );
     setSelectedLanguage(lastLanguage || DEFAULT_LANGUAGE);
   }, []);
 

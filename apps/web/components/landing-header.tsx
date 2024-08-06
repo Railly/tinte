@@ -16,26 +16,29 @@ export const LandingHeader: React.FC = () => (
           href="/generator"
           className={cn(
             buttonVariants({ variant: "link" }),
-            "px-0 text-muted-foreground hover:text-foreground"
+            "px-0 text-muted-foreground hover:text-foreground",
           )}
         >
           Editor
         </Link>
       </SignedIn>
-      <Link
-        href="/gallery"
-        className={cn(
-          buttonVariants({ variant: "link" }),
-          "px-0 text-muted-foreground hover:text-foreground"
-        )}
-      >
-        Gallery
-      </Link>
+
+      <SignedOut>
+        <Link
+          href="/gallery"
+          className={cn(
+            buttonVariants({ variant: "link" }),
+            "px-0 text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Gallery
+        </Link>
+      </SignedOut>
       <a
         href="https://github.com/Railly/tinte"
         className={cn(
           buttonVariants({ variant: "link" }),
-          "px-0 text-muted-foreground hover:text-foreground"
+          "px-0 text-muted-foreground hover:text-foreground",
         )}
       >
         GitHub

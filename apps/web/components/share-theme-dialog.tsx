@@ -22,12 +22,14 @@ import {
 } from "./ui/icons";
 import { toast } from "sonner";
 import { ThemeConfig } from "@/lib/core/types";
+import { cn } from "@/lib/utils";
 
 interface ShareThemeDialogProps {
   themeConfig: ThemeConfig;
   isOwner: boolean;
   canNotEdit: boolean;
   updateThemeStatus?: (themeId: string, isPublic: boolean) => Promise<void>;
+  justIcon?: boolean;
 }
 
 export const ShareThemeDialog: React.FC<ShareThemeDialogProps> = ({
@@ -35,6 +37,7 @@ export const ShareThemeDialog: React.FC<ShareThemeDialogProps> = ({
   isOwner,
   canNotEdit,
   updateThemeStatus,
+  justIcon = false,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMakingPublic, setIsMakingPublic] = useState(false);
@@ -76,18 +79,18 @@ export const ShareThemeDialog: React.FC<ShareThemeDialogProps> = ({
 
   const shareViaTwitter = () => {
     const text = encodeURIComponent(
-      `Check out this VS Code theme I created: ${themeConfig.displayName}`
+      `Check out this VS Code theme I created: ${themeConfig.displayName}`,
     );
     const url = encodeURIComponent(link);
     window.open(
       `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-      "_blank"
+      "_blank",
     );
   };
 
   const shareViaWhatsApp = () => {
     const text = encodeURIComponent(
-      `Check out this VS Code theme I created: ${themeConfig.displayName} ${link}`
+      `Check out this VS Code theme I created: ${themeConfig.displayName} ${link}`,
     );
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };
@@ -95,9 +98,13 @@ export const ShareThemeDialog: React.FC<ShareThemeDialogProps> = ({
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="mr-2 w-full" variant="outline">
+        <Button
+          className={cn(!justIcon && "w-full")}
+          size={justIcon ? "sm" : "default"}
+          variant="outline"
+        >
           <IconShare />
-          <span className="ml-2">Share</span>
+          {!justIcon && <span className="ml-2">Share</span>}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

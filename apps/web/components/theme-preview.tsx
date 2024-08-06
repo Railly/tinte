@@ -14,7 +14,7 @@ interface ThemePreviewProps {
 
 export function ThemePreview({
   vsCodeTheme,
-  width = "w-80 md:w-96",
+  width = "w-full md:w-96",
   height = "h-[13.8rem]",
   small = true,
 }: ThemePreviewProps) {

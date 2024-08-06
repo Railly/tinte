@@ -21,11 +21,13 @@ import { useUser } from "@clerk/nextjs";
 import { SignInDialog } from "./sign-in-dialog";
 import { ThemeConfig } from "@/lib/core/types";
 import { FEATURED_THEME_LOGOS, SHOWCASE_COLORS } from "@/lib/constants";
-import { getThemeCategoryLabel } from "@/app/utils";
+import { getThemeCategoryLabel, isThemeOwner } from "@/app/utils";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
 import IconRaycast from "@/public/logos/raycast.svg";
 import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 import { ThemeCardOptions } from "./theme-card-options";
+import { ShareThemeDialog } from "./share-theme-dialog";
+import { toast } from "sonner";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -81,6 +83,35 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
     router.push(`/t/${themeConfig.id}`);
   };
 
+  const isOwner = isThemeOwner(user.user?.id, themeConfig);
+
+  const updateThemeStatus = async (themeId: string, isPublic: boolean) => {
+    try {
+      toast.info(
+        `Making ${themeConfig.displayName} ${isPublic ? "public" : "private"}`,
+      );
+      const response = await fetch(`/api/theme/${themeId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isPublic, userId: user.user?.id }),
+      });
+
+      toast.dismiss();
+      if (!response.ok) {
+        toast.error("Failed to update theme status");
+        return;
+      }
+      toast.success(`Theme is now ${isPublic ? "public" : "private"}`);
+      updateThemeConfig?.({ ...themeConfig, isPublic });
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating theme public status:", error);
+      throw error;
+    }
+  };
+
   return (
     <MotionCard
       className={cn(
@@ -94,7 +125,6 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
       )}
       onClick={onUseTheme}
       whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
       variants={cardVariants}
       initial="hidden"
       animate="visible"
@@ -183,7 +213,6 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
         </div>
         <div className="mt-4 flex gap-2">
           <MotionButton
-            variant="outline"
             size="sm"
             className="flex-1"
             onClick={handleSignInOrEdit}
@@ -207,19 +236,24 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
           <MotionButton
             variant="outline"
             size="sm"
-            className="flex-1"
             onClick={handleDownloadTheme}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             disabled={loading}
           >
             {loading ? (
-              <IconLoading className="mr-2 w-4 h-4 animate-spin" />
+              <IconLoading className="w-4 h-4 animate-spin" />
             ) : (
-              <IconDownload className="mr-2 w-4 h-4" />
+              <IconDownload className="w-4 h-4" />
             )}
-            Download
           </MotionButton>
+          <ShareThemeDialog
+            themeConfig={themeConfig}
+            isOwner={isOwner}
+            canNotEdit={!isOwner}
+            updateThemeStatus={updateThemeStatus}
+            justIcon
+          />
         </div>
       </div>
       <SignInDialog

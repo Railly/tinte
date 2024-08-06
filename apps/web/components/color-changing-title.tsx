@@ -33,7 +33,7 @@ export function ColorChangingTitle({
   }, []);
 
   return (
-    <h2 className="flex flex-col items-center text-xl md:text-3xl font-bold py-2 transition-opacity">
+    <h2 className="flex flex-col items-center text-2xl md:text-3xl font-bold py-2 transition-opacity">
       <span className="flex mr-2">
         {words.map((word, index) => (
           <span key={word} className="flex items-center">

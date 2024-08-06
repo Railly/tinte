@@ -45,6 +45,7 @@ export function ThemeCustomizer({
     colorPickerShouldBeHighlighted,
     setColorPickerShouldBeHighlighted,
   } = useCodeSample();
+  console.log({ code, selectedLanguage });
 
   const [advancedMode, setAdvancedMode] = useState(false);
   const [openCreateTheme, setOpenCreateTheme] = useState(false);

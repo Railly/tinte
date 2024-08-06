@@ -7,12 +7,12 @@ import { ShareThemeDialog } from "../../../components/share-theme-dialog";
 import { Button, buttonVariants } from "../../../components/ui/button";
 import {
   IconDownload,
-  IconEdit,
   IconUser,
   IconGlobe,
   IconLock,
   IconTinte,
   IconLoading,
+  IconBrush,
 } from "../../../components/ui/icons";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -167,7 +167,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
                     buttonVariants({ variant: "outline" }),
                   )}
                 >
-                  <IconEdit className="mr-2" />
+                  <IconBrush className="mr-2 w-4 h-4" />
                   Edit
                 </Link>
                 <ShareThemeDialog

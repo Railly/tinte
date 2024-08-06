@@ -1,5 +1,3 @@
-# Tinte
-
 <h3 align="center">
   <img src="https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/tinte-logo.png" width="100" alt="Tinte Logo"/><br/>
   <img src="https://raw.githubusercontent.com/crafter-station/website/main/public/transparent.png" height="30" width="0px"/>
@@ -7,193 +5,84 @@
 </h3>
 
 <p align="center">
-An opinionated multi-platform color theme generator 🎨 <br>
+An opinionated VS Code Theme Generator 🎨
 </p>
 
-## Disclaimer
+## About Tinte
 
-Visit the web version of this project at [Tinte](https://tinte-x.vercel.app/)
+Tinte is an opinionated (VS Code) Theme Generator. It allows users to create, customize, and export beautiful color themes with ease.
 
-<img src="./tinte-preview.png" alt="Tinte Preview" width="100%"/>
+> While the current version is tailored for VS Code, we have plans to extend support to other popular editors and terminals in the future, including JetBrains IDEs, Zed, Neovim, and more.
 
-<img src="./tinte-preview-2.png" alt="Tinte Preview 2" width="100%"/>
+### Key Features
 
-## Table of Contents
+- **VS Code Support**: Currently focused on creating themes for Visual Studio Code.
+- **Intuitive Interface**: User-friendly design for effortless theme creation.
+- **Real-Time Preview**: See your changes instantly as you customize.
+- **Export Options**: Easily export your themes as VSIX file (VS Code extension).
+- **Community Sharing**: Share and discover themes created by other users.
 
-- [Tinte](#tinte)
-  - [Motivation](#motivation)
-  - [Features](#features)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Customizing Semantic Coloring for VS Code](#customizing-semantic-coloring-for-vs-code)
-  - [Adding Generators](#adding-generators)
-  - [Contributing](#contributing)
-  - [License](#license)
+## Getting Started
 
-## Motivation
+To get started with Tinte:
 
-The main goal is to allow developers to create their own themes for their favorite tools, without having to worry about the nitty-gritty details of theme creation. Tinte provides a solid foundation for theme creation, with the flexibility to tweak as needed.
-
-You only need to define your color palette once, and Tinte will generate your theme for all supported platforms.
-
-## Features
-
-- **Default Themes**: Out of the box support for [One Hunter Theme](https://github.com/Railly/one-hunter-vscode) and [Flexoki](https://github.com/kepano/flexoki)
-- **Wide Range of Platforms:** Generate themes for Alacritty, GIMP, iTerm2, Kitty, Lite-xl, theme.sh, Vanilla-CSS, VSCode, Warp, Windows Terminal, and Xresources.
-- **Modular Structure:** Each generator is isolated, making it easy to add more in the future.
-- **Opinionated Defaults:** Provides a solid foundation for theme creation, with the flexibility to tweak as needed.
-
-## Installation
-
-Coming soon via [NPM](https://www.npmjs.com/package/tinte)
-
-## Usage
-
-### 1. **Update the `Theme` type and `currentTheme` constant**
-
-```ts
-// src/types.ts
-export type MyTheme = "Flexoki" | "One Hunter" | "Your Theme Name";
-```
-
-```ts
-// config/index.ts
-export const currentTheme: MyTheme = "Your Theme Name";
-```
-
-### 2. **Introduce a New Color Palette**
-
-Define your new color palette according to the `Palette` type.
-
-```ts
-// src/palettes/your-theme-name.ts
-export const YourThemePalette: Palette = {
-  base: {
-    ... // base colors
-  },
-  red: {
-    ... // red colors
-  }
-  ... // other colors
-}
-```
-
-Add this palette to the main palette mapping.
-
-```ts
-// src/config/index.ts
-import { YourThemePalette } from "../palettes/your-theme-name.ts";
-
-export const palettes: Record<MyTheme, Palette> = {
-  ... // other palettes
-  "Your Theme Name": YourThemePalette,
-};
-```
-
-### 3. Select your shades.
-
-In the example below, we're using the `500`, `300` shades, for light and dark themes respectively.
-
-```ts
-// src/mappedPalette.ts
-export const mappedPalette = {
-  ... // other tones
-  ...generateColorTones({
-      lightContrastShade: 500,
-      darkContrastShade: 300
-    })
-}
-```
-
-> Make sure you have these shades defined in your `palette`.
-
-### 4. **Generate Your Theme**
-
-Run the following command to generate your theme:
-
-```bash
-npm run build
-```
-
-Your multi-platform themes will be generated in the `_generated/your-theme-name` directory.
-
-## Customizing Semantic Coloring for VS Code
-
-To customize semantic coloring for VS Code:
-
-- Go to `config/customize/vscode`.
-- Create a new object named `YourThemeMappedTokens` that maps the desired tokens to your color choices.
-- There are opinionated groups of tokens that can be customized, such as:
-
-  `plain`, `classes`,
-  `interfaces`, `structs`, `enums`, `keys`, `methods`, `functions`, `variables`, `variablesOther`, `globalVariables`, `localVariables`, `parameters`, `properties`, `strings`, `stringEscapeSequences`, `keywords`, `keywordsControl`, `storageModifiers`, `comments`, `docComments`, `numbers`, `booleans`, `operators`, `macros`, `preprocessor`, `urls`, `tags`, `jsxTags`, `attributes`, `types`, `constants`, `labels`, `namespaces`, `modules`, `typeParameters`, `exceptions`, `decorators`, `calls`, `punctuation`.
-
-- Each of them can be remapped to a color of your choice, such as:
-
-  `tx`, `tx-2`, `tx-2`, `ui`,`ui-2`,`ui-2`, `bg`, `bg-2`, `re`, `re-2`, `gr`, `gr-2`, `ye`, `ye-2`, `bl`, `bl-2`, `ma`, `ma-2`, `cy`, `cy-2`, `pu`, `pu-2` `or`, `or-2`.
-
-  > To learn more about this semantic coloring, check out [this article](https://stephango.com/flexoki).
-
-## Adding Generators
-
-To add a new generator, you'll need to:
-
-- Create a new file `src/generators/your-generator/generate.ts` that exports a function that takes a `name` and `ThemeType` (light/dark) as arguments and writes the generated theme to a file.
-
-- You should use `mappedPalette` to get the colors for your theme.
-
-  > `mappedPalette` maps the abbreviated color names with the respective dark and light shade.
-
-- Add the new generator to the `generators` and `providers` objects in `src/generators/index.ts`.
-
-```ts
-// src/generators/index.ts
-import { generateYourProviderTheme } from "./your-generator/generate.ts"
-
-export const generators = {
-  ... // other generators
-  "Your Generator": generateYourProviderTheme,
-};
-
-export const providers = [
-  ... // other providers
-  {
-    name: "Your Provider",
-    theme: ["Light", "Dark"],
-  },
-];
-```
-
-## Screenshots
-
-### One Hunter Generated (VS Code)
-
-#### Screenshots
-
-| Dark Theme                                                                                                                       | Light Theme                                                                                                                        |
-| -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| ![Dark Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/one-hunter-dark.jpg) | ![Light Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/one-hunter-light.jpg) |
-
-### Flexoki Generated (VS Code)
-
-| Dark Theme                                                                                                                    | Light Theme                                                                                                                     |
-| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| ![Dark Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/flexoki-dark.jpg) | ![Light Theme Screenshot](https://raw.githubusercontent.com/Railly/website/main/public/images/private-github/flexoki-light.jpg) |
-
-## Roadmap
-
-1. CLI for generating themes: `tinte generate`
-2. Support for more platforms (e.g. Sublime Text, Vim, etc.)
-3. Web app for generating themes.
+1. Visit [tinte.railly.dev](https://tinte.railly.dev)
+2. Try the prompt enhancer + theme generator powered by Vercel AI SDK.
+3. Click on Edit to customize the theme to your liking.
+4. (Optional) Click on Preview to see how the theme looks in VS Code.
+5. (Optional) Click on Share to copy a shareable link.
+6. Click on Export to download the theme as a VSIX file.
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+We welcome contributions! If you'd like to contribute to Tinte, please:
 
-## Credits
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-This project was heavily inspired by [Flexoki](https://github.com/kepano/flexoki), an inky color scheme for prose and code
+## Support
+
+If you encounter any issues or have questions, please [open an issue](https://github.com/Railly/tinte/issues) on our GitHub repository.
+
+## Support Me
+
+If you find Tinte helpful and would like to support my work, you can do so through the following methods:
+
+### GitHub Sponsors
+
+<a href="https://www.github.com/sponsors/Railly">
+  <img src="https://raw.githubusercontent.com/Railly/obsidian-simple-flashcards/master/github-sponsor.png" alt="Sponsor with GitHub" height="45px" />
+</a>
+
+### Buy Me a Coffee
+
+<a href="https://www.buymeacoffee.com/raillyhugo" target="_blank">
+	<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="45px">
+</a>
+
+### PayPal
+
+<a href="https://www.paypal.com/donate/?hosted_button_id=J3PJ5N6LVZCPY">
+  <img src="https://raw.githubusercontent.com/Railly/Railly/main/buttons/donate-with-paypal.png" alt="Donate with PayPal" height="45px" />
+</a>
+
+### Yape
+
+<a href="https://donate.railly.dev?open-yape-dialog=true">
+  <img src="https://raw.githubusercontent.com/Railly/donate/main/public/donate-with-yape.png" alt="Donate with Yape" height="45px" />
+</a>
+
+## Thank You! 🙏
+
+Your support means a lot to me and helps me continue creating valuable content and projects for the community. Thank you for considering supporting my work!
+
+If you have any questions or just want to connect, feel free to reach out to me.
+
+Happy theming! 🎨✨
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+This project is licensed under the [MIT License](LICENSE.md).

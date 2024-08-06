@@ -46,7 +46,7 @@ export function LandingThemeGenerator({
   };
 
   return (
-    <div className="flex flex-col w-80 md:w-96 border rounded-md shadow-md dark:shadow-foreground/5">
+    <div className="flex flex-col w-full md:w-96 border rounded-md shadow-md dark:shadow-foreground/5">
       <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
         <h2 className="text-sm font-bold">Theme Generator</h2>
         <ShineButton
