@@ -45,7 +45,6 @@ export function ThemeCustomizer({
     colorPickerShouldBeHighlighted,
     setColorPickerShouldBeHighlighted,
   } = useCodeSample();
-  console.log({ code, selectedLanguage });
 
   const [advancedMode, setAdvancedMode] = useState(false);
   const [openCreateTheme, setOpenCreateTheme] = useState(false);
@@ -56,7 +55,7 @@ export function ThemeCustomizer({
 
   const handleSelectTheme = async (
     themeName: string,
-    palette?: DarkLightPalette,
+    palette?: DarkLightPalette
   ) => {
     const updatedConfig: ThemeConfig = {
       ...themeConfig,

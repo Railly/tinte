@@ -17,10 +17,29 @@ Tinte is an opinionated (VS Code) Theme Generator. It allows users to create, cu
 ### Key Features
 
 - **VS Code Support**: Currently focused on creating themes for Visual Studio Code.
-- **Intuitive Interface**: User-friendly design for effortless theme creation.
+- **Ray.so Themes in VS Code**: Download and use fantasy [ray.so](https://www.ray.so/) within VS Code.
+- **Intuitive Editor**: User-friendly editor for effortless theme creation.
 - **Real-Time Preview**: See your changes instantly as you customize.
 - **Export Options**: Easily export your themes as VSIX file (VS Code extension).
 - **Community Sharing**: Share and discover themes created by other users.
+
+### Screenshots
+
+#### Landing
+
+![image](https://github.com/user-attachments/assets/add1f9de-dfa0-4af6-9599-4ebf1b0337b1)
+
+#### Preview
+
+![image](https://github.com/user-attachments/assets/ad7e6d64-a5f6-48be-bfd2-d842417f1b57)
+
+#### Editor
+
+![image](https://github.com/user-attachments/assets/7f0bc795-e6e8-4a04-b395-a4fc1d0a7d6e)
+
+#### OpenGraph
+
+![image](https://github.com/user-attachments/assets/9c8d28e8-cdbf-484b-a044-3d75c8d7f501)
 
 ## Getting Started
 
