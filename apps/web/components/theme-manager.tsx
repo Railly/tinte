@@ -60,7 +60,11 @@ export function ThemeManager({ allThemes }: ThemeManagerProps) {
           updateThemeConfig={updateThemeConfig}
           setIsTextareaFocused={setIsTextareaFocused}
         />
-        <ThemePreview vsCodeTheme={vsCodeTheme} withEditButton />
+        <ThemePreview
+          vsCodeTheme={vsCodeTheme}
+          themeConfig={themeConfig}
+          withEditButton
+        />
       </section>
       <ThemeCards
         updateThemeConfig={updateThemeConfig}

@@ -3,10 +3,16 @@ import { LanguageSwitcher } from "./language-switcher";
 import { cn } from "@/lib/utils";
 import { GeneratedVSCodeTheme } from "@/lib/core";
 import { Button } from "./ui/button";
-import { IconBrush, IconEdit } from "./ui/icons";
+import { IconBrush } from "./ui/icons";
+import { ThemeConfig } from "@/lib/core/types";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { SignInDialog } from "./sign-in-dialog";
 
 interface ReadOnlyPreviewProps {
   theme: GeneratedVSCodeTheme;
+  themeConfig: ThemeConfig;
   code?: string;
   language: string;
   setLanguage: (language: string) => void;
@@ -23,12 +29,26 @@ const ReadOnlyPreview = ({
   width = "100%",
   height = "h-[10.5rem]",
   withEditButton = false,
+  themeConfig,
 }: ReadOnlyPreviewProps) => {
   const { highlightedText } = useHighlighter({
     theme,
     text: code,
     language,
   });
+
+  const router = useRouter();
+  const user = useUser();
+  const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
+
+  const handleSignInOrEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (user.isSignedIn) {
+      router.push(`/generator?theme=${themeConfig.name}`);
+    } else {
+      setIsSignInDialogOpen(true);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -41,7 +61,7 @@ const ReadOnlyPreview = ({
             noLabel
           />
           {withEditButton && (
-            <Button size="sm">
+            <Button size="sm" onClick={handleSignInOrEdit}>
               <IconBrush className="mr-2" />
               Edit
             </Button>
@@ -64,6 +84,11 @@ const ReadOnlyPreview = ({
           />
         </div>
       </div>
+      <SignInDialog
+        open={isSignInDialogOpen}
+        setOpen={setIsSignInDialogOpen}
+        redirectUrl={`/generator?theme=${themeConfig.name}`}
+      />
     </div>
   );
 };

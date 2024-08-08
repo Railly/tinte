@@ -4,9 +4,11 @@ import ReadOnlyPreview from "@/components/read-only-preview";
 import { CODE_SAMPLES, CODE_SAMPLES_SMALL } from "@/lib/constants";
 import { GeneratedVSCodeTheme } from "@/lib/core";
 import { cn } from "@/lib/utils";
+import { ThemeConfig } from "@/lib/core/types";
 
 interface ThemePreviewProps {
   vsCodeTheme: GeneratedVSCodeTheme;
+  themeConfig: ThemeConfig;
   width?: string;
   height?: string;
   small?: boolean;
@@ -15,6 +17,7 @@ interface ThemePreviewProps {
 
 export function ThemePreview({
   vsCodeTheme,
+  themeConfig,
   width = "w-full md:w-96",
   height = "h-[13.8rem]",
   small = true,
@@ -32,6 +35,7 @@ export function ThemePreview({
       )}
     >
       <ReadOnlyPreview
+        themeConfig={themeConfig}
         theme={vsCodeTheme}
         code={_CODE_SAMPLES[selectedLanguage]}
         language={selectedLanguage}
