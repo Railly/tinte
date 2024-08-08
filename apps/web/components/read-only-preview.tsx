@@ -12,7 +12,7 @@ import { SignInDialog } from "./sign-in-dialog";
 
 interface ReadOnlyPreviewProps {
   theme: GeneratedVSCodeTheme;
-  themeConfig: ThemeConfig;
+  themeConfig?: ThemeConfig;
   code?: string;
   language: string;
   setLanguage: (language: string) => void;
@@ -44,7 +44,7 @@ const ReadOnlyPreview = ({
   const handleSignInOrEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (user.isSignedIn) {
-      router.push(`/generator?theme=${themeConfig.name}`);
+      router.push(`/generator?theme=${themeConfig?.name}`);
     } else {
       setIsSignInDialogOpen(true);
     }
@@ -87,7 +87,7 @@ const ReadOnlyPreview = ({
       <SignInDialog
         open={isSignInDialogOpen}
         setOpen={setIsSignInDialogOpen}
-        redirectUrl={`/generator?theme=${themeConfig.name}`}
+        redirectUrl={`/generator?theme=${themeConfig?.name}`}
       />
     </div>
   );

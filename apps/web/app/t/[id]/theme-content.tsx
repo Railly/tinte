@@ -199,6 +199,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
           {/* Right Column - Code Editor */}
           <div className="w-full lg:w-1/2 h-[50vh] lg:h-full p-4">
             <ThemePreview
+              themeConfig={themeConfig}
               vsCodeTheme={vsCodeTheme}
               width="w-full"
               small={false}

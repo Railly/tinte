@@ -8,7 +8,7 @@ import { ThemeConfig } from "@/lib/core/types";
 
 interface ThemePreviewProps {
   vsCodeTheme: GeneratedVSCodeTheme;
-  themeConfig: ThemeConfig;
+  themeConfig?: ThemeConfig;
   width?: string;
   height?: string;
   small?: boolean;
