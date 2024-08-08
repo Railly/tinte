@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { SignInDialog } from "./sign-in-dialog";
 import { useUser } from "@clerk/nextjs";
 import { DeleteThemeDialog } from "./delete-theme-dialog";
+import { isThemeOwner } from "@/app/utils";
 
 interface PreviewProps {
   vsCodeTheme: GeneratedVSCodeTheme;
@@ -65,6 +66,8 @@ export const PreviewEditor = ({
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const canEdit = isThemeOwner(user.user?.id, themeConfig);
+  const canCopy = user.user?.id && !canEdit;
   const router = useRouter();
 
   const handleOpenCopyDialog = () => {
@@ -122,40 +125,36 @@ export const PreviewEditor = ({
       >
         <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
           <h2 className="text-sm font-bold">Preview Editor</h2>
-          {themeConfig.category === "user" &&
-            user.user?.id === themeConfig.user?.clerk_id && (
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handleUpdate}
-                  disabled={isUpdating}
-                  className="ml-2"
-                >
-                  {isUpdating ? (
-                    <>
-                      <IconLoading className="w-4 h-4 mr-2 animate-spin" />
-                      Updating...
-                    </>
-                  ) : (
-                    <>
-                      <IconSave className="w-4 h-4 mr-2" />
-                      Update
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline-destructive"
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                >
-                  <IconTrash className="w-4 h-4 mr-2" />
-                  Delete
-                </Button>
-              </div>
-            )}
-          {((themeConfig.category !== "user" && user.isSignedIn) ||
-            (themeConfig.category === "user" &&
-              user.user?.id !== themeConfig.user?.clerk_id &&
-              user.isSignedIn)) && (
+          {canEdit && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleUpdate}
+                disabled={isUpdating}
+                className="ml-2"
+              >
+                {isUpdating ? (
+                  <>
+                    <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <IconSave className="w-4 h-4 mr-2" />
+                    Update
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline-destructive"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <IconTrash className="w-4 h-4 mr-2" />
+                Delete
+              </Button>
+            </div>
+          )}
+          {canCopy && (
             <Button
               variant="outline"
               onClick={handleOpenCopyDialog}

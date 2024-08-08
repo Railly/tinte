@@ -54,7 +54,7 @@ export const Header = ({
   );
   const isEditing = themeConfig.displayName !== themeName;
   const [isUpdating, setIsUpdating] = useState(false);
-  const canNotEdit = themeConfig.category !== "user";
+  const canNotEdit = !isThemeOwner(user.user?.id, themeConfig);
   const router = useRouter();
   const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
 

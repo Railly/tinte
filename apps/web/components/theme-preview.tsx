@@ -10,6 +10,7 @@ interface ThemePreviewProps {
   width?: string;
   height?: string;
   small?: boolean;
+  withEditButton?: boolean;
 }
 
 export function ThemePreview({
@@ -17,6 +18,7 @@ export function ThemePreview({
   width = "w-full md:w-96",
   height = "h-[13.8rem]",
   small = true,
+  withEditButton = false,
 }: ThemePreviewProps) {
   const [selectedLanguage, setSelectedLanguage] = useState("typescript");
   const _CODE_SAMPLES = small ? CODE_SAMPLES_SMALL : CODE_SAMPLES;
@@ -35,6 +37,7 @@ export function ThemePreview({
         language={selectedLanguage}
         setLanguage={setSelectedLanguage}
         height={height}
+        withEditButton={withEditButton}
       />
     </div>
   );
