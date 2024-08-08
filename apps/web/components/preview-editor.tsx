@@ -122,65 +122,69 @@ export const PreviewEditor = ({
       >
         <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
           <h2 className="text-sm font-bold">Preview Editor</h2>
-          {themeConfig.category === "user" && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={handleUpdate}
-                disabled={isUpdating}
-                className="ml-2"
-              >
-                {isUpdating ? (
-                  <>
-                    <IconLoading className="w-4 h-4 mr-2 animate-spin" />
-                    Updating...
-                  </>
-                ) : (
-                  <>
-                    <IconSave className="w-4 h-4 mr-2" />
-                    Update
-                  </>
-                )}
-              </Button>
-              <Button
-                variant="outline-destructive"
-                onClick={() => setIsDeleteDialogOpen(true)}
-              >
-                <IconTrash className="w-4 h-4 mr-2" />
-                Delete
-              </Button>
-            </div>
+          {themeConfig.category === "user" &&
+            user.user?.id === themeConfig.user?.clerk_id && (
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleUpdate}
+                  disabled={isUpdating}
+                  className="ml-2"
+                >
+                  {isUpdating ? (
+                    <>
+                      <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <IconSave className="w-4 h-4 mr-2" />
+                      Update
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline-destructive"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                >
+                  <IconTrash className="w-4 h-4 mr-2" />
+                  Delete
+                </Button>
+              </div>
+            )}
+          {((themeConfig.category !== "user" && user.isSignedIn) ||
+            (themeConfig.category === "user" &&
+              user.user?.id !== themeConfig.user?.clerk_id &&
+              user.isSignedIn)) && (
+            <Button
+              variant="outline"
+              onClick={handleOpenCopyDialog}
+              disabled={isSaving}
+              className="ml-2"
+            >
+              {isSaving ? (
+                <>
+                  <IconLoading className="w-4 h-4 mr-2 animate-spin" />
+                  Copying...
+                </>
+              ) : (
+                <>
+                  <IconCopy className="w-4 h-4 mr-2" />
+                  Make a Copy
+                </>
+              )}
+            </Button>
           )}
-          {themeConfig.category !== "user" &&
-            (user.isSignedIn ? (
-              <Button
-                variant="outline"
-                onClick={handleOpenCopyDialog}
-                disabled={isSaving}
-                className="ml-2"
-              >
-                {isSaving ? (
-                  <>
-                    <IconLoading className="w-4 h-4 mr-2 animate-spin" />
-                    Copying...
-                  </>
-                ) : (
-                  <>
-                    <IconCopy className="w-4 h-4 mr-2" />
-                    Make a Copy
-                  </>
-                )}
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => setIsSignInDialogOpen(true)}
-                className="ml-2"
-              >
-                <IconCopy className="w-4 h-4 mr-2" />
-                Make a Copy
-              </Button>
-            ))}
+          {!user.isSignedIn && (
+            <Button
+              variant="outline"
+              onClick={() => setIsSignInDialogOpen(true)}
+              className="ml-2"
+            >
+              <IconCopy className="w-4 h-4 mr-2" />
+              Make a Copy
+            </Button>
+          )}
         </div>
         <div className="flex-grow !h-[70vh]" style={{ height: "70vh" }}>
           <MonacoEditor
