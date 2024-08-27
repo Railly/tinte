@@ -12,10 +12,13 @@ import { EmptyState } from "./empty-state";
 
 interface ThemeCardsProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
-  allThemes: ThemeConfig[];
+  allThemes: (ThemeConfig | undefined)[];
   selectedTheme: string;
   setSelectedTheme: (themeName: string) => void;
   isTextareaFocused: boolean;
+  currentCategory: string;
+  setCurrentCategory: (category: string) => void;
+  isValidating: boolean;
 }
 
 export function ThemeCards({
@@ -24,11 +27,20 @@ export function ThemeCards({
   selectedTheme,
   setSelectedTheme,
   isTextareaFocused,
+  currentCategory,
+  setCurrentCategory,
+  isValidating,
 }: ThemeCardsProps) {
+  console.log({ allThemes });
   const user = useUser();
+
   const themeCategories = useMemo(() => {
     return getThemeCategories(allThemes, user.user?.id);
-  }, [allThemes]);
+  }, [allThemes, user.user?.id]);
+
+  const handleTabChange = (category: string) => {
+    setCurrentCategory(category);
+  };
 
   const handleUseTheme = (theme: ThemeConfig) => {
     setSelectedTheme(theme.displayName);
@@ -41,8 +53,12 @@ export function ThemeCards({
   return (
     <section className="w-full mt-4 transition-opacity">
       <div className="flex w-full">
-      <div className="w-full">
-          <Tabs className="w-full" defaultValue="all">
+        <div className="w-full">
+          <Tabs
+            className="w-full"
+            value={currentCategory}
+            onValueChange={handleTabChange}
+          >
             <div className="overflow-x-auto">
               <TabsList
                 className="inline-flex w-auto min-w-full"
@@ -101,49 +117,54 @@ export function ThemeCards({
             </div>
             <TabsContent className="w-full" value="all">
               <ThemeCardGrid
-                themes={themeCategories.allThemes}
+                themes={themeCategories.allThemes as ThemeConfig[]}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
                 isTextareaFocused={isTextareaFocused}
                 type="all"
                 updateThemeConfig={updateThemeConfig}
+                isValidating={isValidating}
               />
             </TabsContent>
             <TabsContent className="w-full" value="featured">
               <ThemeCardGrid
-                themes={themeCategories.featuredThemes}
+                themes={themeCategories.featuredThemes as ThemeConfig[]}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
                 isTextareaFocused={isTextareaFocused}
                 type="featured"
+                isValidating={isValidating}
               />
             </TabsContent>
             <TabsContent className="w-full" value="rayso">
               <ThemeCardGrid
-                themes={themeCategories.raysoThemes}
+                themes={themeCategories.raysoThemes as ThemeConfig[]}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
                 isTextareaFocused={isTextareaFocused}
                 type="rayso"
+                isValidating={isValidating}
               />
             </TabsContent>
             <TabsContent className="w-full" value="community">
               <ThemeCardGrid
-                themes={themeCategories.communityThemes}
+                themes={themeCategories.communityThemes as ThemeConfig[]}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
                 isTextareaFocused={isTextareaFocused}
                 type="community"
+                isValidating={isValidating}
               />
             </TabsContent>
             <TabsContent className="w-full" value="custom">
               <ThemeCardGrid
-                themes={themeCategories.userThemes}
+                themes={themeCategories.userThemes as ThemeConfig[]}
                 selectedTheme={selectedTheme}
                 onUseTheme={handleUseTheme}
                 isTextareaFocused={isTextareaFocused}
                 type="user"
                 updateThemeConfig={updateThemeConfig}
+                isValidating={isValidating}
               />
             </TabsContent>
           </Tabs>
@@ -160,6 +181,7 @@ interface ThemeCardGridProps {
   isTextareaFocused: boolean;
   type: "community" | "user" | "all" | "featured" | "rayso";
   updateThemeConfig?: (newConfig: Partial<ThemeConfig>) => void;
+  isValidating: boolean;
 }
 
 function ThemeCardGrid({
@@ -169,8 +191,9 @@ function ThemeCardGrid({
   isTextareaFocused,
   type,
   updateThemeConfig,
+  isValidating,
 }: ThemeCardGridProps) {
-  if (themes.length === 0) {
+  if (themes.length === 0 && !isValidating) {
     return <EmptyState type={type} />;
   }
   return (
@@ -182,7 +205,7 @@ function ThemeCardGrid({
           themes={themes}
           onUseTheme={() => onUseTheme(theme)}
           isTextareaFocused={isTextareaFocused}
-          isSelected={selectedTheme === theme.displayName}
+          isSelected={selectedTheme === theme?.displayName}
           updateThemeConfig={updateThemeConfig}
         />
       ))}

@@ -319,19 +319,22 @@ export const adjustUIProgression = (
   return updatedPalette;
 };
 
-export function getThemeCategories(allThemes: ThemeConfig[], userId?: string) {
+export function getThemeCategories(
+  allThemes: (ThemeConfig | undefined)[],
+  userId?: string,
+) {
   const featuredThemes = allThemes.filter(
-    (theme) => theme.category === "featured",
+    (theme) => theme?.category === "featured",
   );
-  const raysoThemes = allThemes.filter((theme) => theme.category === "rayso");
+  const raysoThemes = allThemes.filter((theme) => theme?.category === "rayso");
   const communityThemes = allThemes.filter(
     (theme) =>
-      theme.isPublic &&
-      theme.category === "user" &&
+      theme?.isPublic &&
+      theme?.category === "user" &&
       !isThemeOwner(userId, theme),
   );
   const userThemes = allThemes.filter(
-    (theme) => theme.category === "user" && isThemeOwner(userId, theme),
+    (theme) => theme?.category === "user" && isThemeOwner(userId, theme),
   );
 
   return {
