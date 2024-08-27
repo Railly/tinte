@@ -13,8 +13,8 @@ import { EmptyState } from "./empty-state";
 interface ThemeCardsProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
   allThemes: (ThemeConfig | undefined)[];
-  selectedTheme: string;
-  setSelectedTheme: (themeName: string) => void;
+  selectedTheme: ThemeConfig;
+  setSelectedTheme: (ThemeConfig: string) => void;
   isTextareaFocused: boolean;
   currentCategory: string;
   setCurrentCategory: (category: string) => void;
@@ -176,7 +176,7 @@ export function ThemeCards({
 
 interface ThemeCardGridProps {
   themes: ThemeConfig[];
-  selectedTheme: string;
+  selectedTheme: ThemeConfig;
   onUseTheme: (theme: ThemeConfig) => void;
   isTextareaFocused: boolean;
   type: "community" | "user" | "all" | "featured" | "rayso";
@@ -205,7 +205,7 @@ function ThemeCardGrid({
           themes={themes}
           onUseTheme={() => onUseTheme(theme)}
           isTextareaFocused={isTextareaFocused}
-          isSelected={selectedTheme === theme?.displayName}
+          isSelected={selectedTheme.id === theme?.id}
           updateThemeConfig={updateThemeConfig}
         />
       ))}

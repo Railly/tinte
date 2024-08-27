@@ -25,9 +25,7 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
   const [isTextareaFocused, setIsTextareaFocused] = React.useState(false);
   const [themeConfig, setThemeConfig] =
     React.useState<ThemeConfig>(defaultTheme);
-  const [selectedTheme, setSelectedTheme] = React.useState(
-    defaultTheme.displayName,
-  );
+  const [selectedTheme, setSelectedTheme] = React.useState(defaultTheme);
   const [vsCodeTheme, setVSCodeTheme] = React.useState<GeneratedVSCodeTheme>(
     generateVSCodeTheme(defaultTheme),
   );
@@ -90,7 +88,7 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
   const updateThemeConfig = (newConfig: Partial<ThemeConfig>) => {
     const newThemeConfig = { ...themeConfig, ...newConfig };
     setThemeConfig(newThemeConfig);
-    setSelectedTheme(newThemeConfig.displayName);
+    setSelectedTheme(newThemeConfig);
     setVSCodeTheme(generateVSCodeTheme(newThemeConfig));
   };
 
