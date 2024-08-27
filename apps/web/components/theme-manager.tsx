@@ -21,7 +21,7 @@ export function ThemeManager({ allThemes }: ThemeManagerProps) {
   const [vsCodeTheme, setVSCodeTheme] = useState<GeneratedVSCodeTheme>(
     generateVSCodeTheme(defaultTheme),
   );
-  const focusAreaRef = useRef<HTMLElement>(null);
+  const focusAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -52,11 +52,9 @@ export function ThemeManager({ allThemes }: ThemeManagerProps) {
         themeConfig={themeConfig}
         isTextareaFocused={isTextareaFocused}
       />
-      <section
-        ref={focusAreaRef}
-        className="w-full md:sticky md:top-4 bg-background z-20 flex flex-col md:flex-row items-center gap-4 justify-center bg-interface rounded-lg custom-shadow"
-      >
+      <section className="w-full md:sticky md:top-4 bg-background z-20 flex flex-col md:flex-row items-center gap-4 justify-center bg-interface rounded-lg custom-shadow">
         <LandingThemeGenerator
+          ref={focusAreaRef}
           updateThemeConfig={updateThemeConfig}
           setIsTextareaFocused={setIsTextareaFocused}
         />

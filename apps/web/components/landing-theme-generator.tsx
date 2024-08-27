@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { forwardRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ShineButton } from "@/components/ui/shine-button";
@@ -14,10 +14,10 @@ interface LandingThemeGeneratorProps {
   setIsTextareaFocused: (isFocused: boolean) => void;
 }
 
-export function LandingThemeGenerator({
-  updateThemeConfig,
-  setIsTextareaFocused,
-}: LandingThemeGeneratorProps) {
+export const LandingThemeGenerator = forwardRef<
+  HTMLDivElement,
+  LandingThemeGeneratorProps
+>(({ updateThemeConfig, setIsTextareaFocused }, ref) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [themeDescription, setThemeDescription] = useState<string>(
@@ -46,7 +46,10 @@ export function LandingThemeGenerator({
   };
 
   return (
-    <div className="flex flex-col w-full md:w-96 border rounded-md shadow-md dark:shadow-foreground/5">
+    <div
+      ref={ref}
+      className="flex flex-col w-full md:w-96 border rounded-md shadow-md dark:shadow-foreground/5"
+    >
       <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
         <h2 className="text-sm font-bold">Theme Generator</h2>
         <ShineButton
@@ -99,4 +102,4 @@ export function LandingThemeGenerator({
       </div>
     </div>
   );
-}
+});
