@@ -17,7 +17,7 @@ const outputSchema = z.object({
   enhancedPrompt: z
     .string()
     .min(10)
-    .max(170)
+    .max(200)
     .describe("Enhanced theme description prompt"),
 });
 

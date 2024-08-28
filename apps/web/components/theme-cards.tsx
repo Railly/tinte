@@ -14,7 +14,7 @@ interface ThemeCardsProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
   allThemes: (ThemeConfig | undefined)[];
   selectedTheme: ThemeConfig;
-  setSelectedTheme: (ThemeConfig: string) => void;
+  setSelectedTheme: (themeConfig: ThemeConfig) => void;
   isTextareaFocused: boolean;
   currentCategory: string;
   setCurrentCategory: (category: string) => void;
@@ -43,7 +43,7 @@ export function ThemeCards({
   };
 
   const handleUseTheme = (theme: ThemeConfig) => {
-    setSelectedTheme(theme.displayName);
+    setSelectedTheme(theme);
     updateThemeConfig({
       ...theme,
       name: getThemeName(theme.displayName),

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { getThemeColorDescription } from "./core/config";
 
 const inputSchema = z.object({
-  prompt: z.string().min(3).max(150).describe("User's theme description"),
+  prompt: z.string().min(3).max(200).describe("User's theme description"),
 });
 
 const DESCRIPTION = "A 6-digit hex color code. ";

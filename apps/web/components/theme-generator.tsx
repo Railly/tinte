@@ -16,6 +16,8 @@ interface ThemeGeneratorProps {
   setIsColorModified: (isModified: boolean) => void;
 }
 
+const MAX_CHARS = 200;
+
 export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
   themeDescription,
   setThemeDescription,
@@ -88,7 +90,7 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
           onKeyDown={handleKeyDown}
           className="resize-none w-full !h-32 !pb-10"
           minLength={3}
-          maxLength={150}
+          maxLength={MAX_CHARS}
         />
         <Button
           variant="ghost"
@@ -110,7 +112,7 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
           )}
         </Button>
         <span className="absolute bottom-4 right-4 text-muted-foreground text-sm">
-          {themeDescription.length}/150
+          {themeDescription.length}/{MAX_CHARS}
         </span>
       </div>
       <SignInDialog

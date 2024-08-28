@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -28,6 +27,7 @@ import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 import { ThemeCardOptions } from "./theme-card-options";
 import { ShareThemeDialog } from "./share-theme-dialog";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -60,7 +60,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
 }) => {
   const router = useRouter();
   const { currentTheme } = useBinaryTheme();
-  const user = useUser();
+  const { user } = useUser();
   const { loading, exportVSIX } = useThemeExport();
   const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
 
@@ -71,7 +71,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
 
   const handleSignInOrEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (user.isSignedIn) {
+    if (user) {
       router.push(`/generator?theme=${themeConfig.name}`);
     } else {
       setIsSignInDialogOpen(true);
@@ -83,7 +83,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
     router.push(`/t/${themeConfig.id}`);
   };
 
-  const isOwner = isThemeOwner(user.user?.id, themeConfig);
+  const isOwner = isThemeOwner(user?.id, themeConfig);
 
   const updateThemeStatus = async (themeId: string, isPublic: boolean) => {
     try {
@@ -95,7 +95,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ isPublic, userId: user.user?.id }),
+        body: JSON.stringify({ isPublic, userId: user?.id }),
       });
 
       toast.dismiss();
@@ -166,8 +166,10 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
               <>
                 {themeConfig.user?.image_url ? (
                   <img
-                    src={themeConfig.user?.image_url}
-                    className="w-5 h-5 mr-2 rounded-full"
+                    src={themeConfig.user.image_url}
+                    width={20}
+                    height={20}
+                    className="mr-2 rounded-full"
                     alt={themeConfig.user?.username || "User"}
                   />
                 ) : (
@@ -223,19 +225,9 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
             Edit
           </MotionButton>
           <MotionButton
-            variant="outline"
+            variant="secondary"
             size="sm"
             className="flex-1"
-            onClick={handlePreview}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <IconEye className="mr-2 w-4 h-4" />
-            Preview
-          </MotionButton>
-          <MotionButton
-            variant="outline"
-            size="sm"
             onClick={handleDownloadTheme}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -244,8 +236,20 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
             {loading ? (
               <IconLoading className="w-4 h-4 animate-spin" />
             ) : (
-              <IconDownload className="w-4 h-4" />
+              <>
+                <IconDownload className="mr-2 w-4 h-4" />
+                Download
+              </>
             )}
+          </MotionButton>
+          <MotionButton
+            variant="outline"
+            size="sm"
+            onClick={handlePreview}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <IconEye className="w-4 h-4" />
           </MotionButton>
           <ShareThemeDialog
             themeConfig={themeConfig}

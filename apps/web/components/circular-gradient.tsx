@@ -15,8 +15,9 @@ export const CircularGradient = ({
       className={cn("w-4 h-4 rounded-full flex", className)}
       style={{
         backgroundImage:
-          palette &&
-          `linear-gradient(140deg, ${palette.primary}, ${palette.accent})`,
+          palette && palette.primary && palette.accent
+            ? `linear-gradient(140deg, ${palette.primary}, ${palette.accent})`
+            : undefined,
       }}
     />
   );

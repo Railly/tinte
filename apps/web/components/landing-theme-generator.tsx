@@ -14,6 +14,8 @@ interface LandingThemeGeneratorProps {
   setIsTextareaFocused: (isFocused: boolean) => void;
 }
 
+const MAX_CHARS = 200;
+
 export const LandingThemeGenerator = forwardRef<
   HTMLDivElement,
   LandingThemeGeneratorProps
@@ -74,7 +76,7 @@ export const LandingThemeGenerator = forwardRef<
           onKeyDown={handleKeyDown}
           className="resize-none w-full !h-[8.5rem] !pb-8"
           minLength={3}
-          maxLength={150}
+          maxLength={MAX_CHARS}
         />
         <Button
           size="sm"
@@ -97,7 +99,7 @@ export const LandingThemeGenerator = forwardRef<
         </Button>
 
         <span className="absolute bottom-6 right-6 text-muted-foreground text-sm">
-          {themeDescription.length}/150
+          {themeDescription.length}/{MAX_CHARS}
         </span>
       </div>
     </div>
