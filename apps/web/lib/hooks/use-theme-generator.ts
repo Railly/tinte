@@ -8,7 +8,9 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 export const useThemeGenerator = (
-  updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void,
+  updateThemeConfig?:
+    | ((newConfig: Partial<ThemeConfig>) => void)
+    | Dispatch<SetStateAction<ThemeConfig>>,
 ) => {
   const { user } = useUser();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -147,7 +149,9 @@ export const useThemeGenerator = (
         Object.assign(newTheme, { id: savedTheme.xata_id });
       }
 
-      updateThemeConfig(newTheme);
+      (updateThemeConfig as (newConfig: Partial<ThemeConfig>) => void)?.(
+        newTheme,
+      );
     }
 
     return newTheme;
