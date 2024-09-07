@@ -62,7 +62,6 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
   const { user } = useUser();
   const { loading, exportVSIX } = useThemeExport();
   const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
-  console.log({ isSelected, name: themeConfig.name });
 
   const handleDownloadTheme = async (e: React.MouseEvent) => {
     e.stopPropagation();

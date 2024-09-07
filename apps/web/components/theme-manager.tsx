@@ -84,7 +84,6 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
   const updateThemeConfig = useCallback(
     (newConfig: Partial<ThemeConfig>) => {
       const newThemeConfig = { ...themeConfig, ...newConfig };
-      console.log({ themeConfig, newConfig, newThemeConfig });
       setThemeConfig(newThemeConfig);
       setSelectedTheme(newThemeConfig);
       setVSCodeTheme(generateVSCodeTheme(newThemeConfig));

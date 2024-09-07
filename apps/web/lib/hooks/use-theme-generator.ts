@@ -142,12 +142,10 @@ export const useThemeGenerator = (
         displayName: themeName,
       });
       const savedTheme = await saveTheme(newTheme);
-      console.log({ savedTheme });
 
       if (savedTheme && savedTheme.xata_id) {
         Object.assign(newTheme, { id: savedTheme.xata_id });
       }
-      console.log({ newTheme });
 
       updateThemeConfig(newTheme);
     }
