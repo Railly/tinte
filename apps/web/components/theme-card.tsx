@@ -27,7 +27,6 @@ import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
 import { ThemeCardOptions } from "./theme-card-options";
 import { ShareThemeDialog } from "./share-theme-dialog";
 import { toast } from "sonner";
-import Image from "next/image";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -63,6 +62,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
   const { user } = useUser();
   const { loading, exportVSIX } = useThemeExport();
   const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
+  console.log({ isSelected, name: themeConfig.name });
 
   const handleDownloadTheme = async (e: React.MouseEvent) => {
     e.stopPropagation();

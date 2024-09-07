@@ -8,11 +8,9 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 export const useThemeGenerator = (
-  updateThemeConfig?:
-    | ((newConfig: Partial<ThemeConfig>) => void)
-    | Dispatch<SetStateAction<ThemeConfig>>
+  updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void,
 ) => {
-  const user = useUser();
+  const { user } = useUser();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -20,7 +18,7 @@ export const useThemeGenerator = (
 
   const generateTheme = async (
     themeDescription: string,
-    type: "shallow" | "deep" = "deep"
+    type: "shallow" | "deep" = "deep",
   ) => {
     if (themeDescription.trim().length < 3) {
       toast.error("Please provide a longer theme description");
@@ -42,14 +40,14 @@ export const useThemeGenerator = (
       const savedTheme = await updateThemeStates(
         generatedThemeName,
         generatedPalette,
-        type
+        type,
       );
-      const succesMessage =
+      const successMessage =
         type === "shallow"
           ? "Theme generated successfully"
           : "Theme generated and saved successfully";
 
-      toast.success(succesMessage);
+      toast.success(successMessage);
       return savedTheme;
     } catch (error) {
       console.error("Error generating theme:", error);
@@ -70,14 +68,16 @@ export const useThemeGenerator = (
         body: JSON.stringify({
           ...themeConfig,
           name: getThemeName(themeConfig.displayName),
-          userId: user.user?.id,
+          userId: user?.id,
         }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to save theme");
       }
+      const savedTheme = await response.json();
       router.refresh();
+      return savedTheme;
     } catch (error) {
       console.error("Error saving theme:", error);
       toast.error("Failed to save theme. Please try again.");
@@ -96,7 +96,7 @@ export const useThemeGenerator = (
         },
         body: JSON.stringify({
           ...themeConfig,
-          userId: user.user?.id,
+          userId: user?.id,
         }),
       });
 
@@ -116,7 +116,7 @@ export const useThemeGenerator = (
   const updateThemeStates = async (
     themeName: string,
     palette: DarkLightPalette,
-    type: "shallow" | "deep"
+    type: "shallow" | "deep",
   ) => {
     const newTheme = {
       palette: palette,
@@ -125,16 +125,15 @@ export const useThemeGenerator = (
     } as Partial<ThemeConfig>;
 
     if (type === "shallow") {
-      (updateThemeConfig as Dispatch<SetStateAction<ThemeConfig>>)?.((prev) => {
-        const newPalette = {
-          light: { ...prev.palette.light, ...palette.light },
-          dark: { ...prev.palette.dark, ...palette.dark },
-        };
-        return {
+      (updateThemeConfig as Dispatch<SetStateAction<ThemeConfig>>)?.(
+        (prev) => ({
           ...prev,
-          palette: newPalette,
-        };
-      });
+          palette: {
+            light: { ...prev.palette.light, ...palette.light },
+            dark: { ...prev.palette.dark, ...palette.dark },
+          },
+        }),
+      );
     }
 
     if (type === "deep") {
@@ -142,11 +141,18 @@ export const useThemeGenerator = (
         name: getThemeName(themeName),
         displayName: themeName,
       });
-      await saveTheme(newTheme);
-      (updateThemeConfig as (newConfig: Partial<ThemeConfig>) => void)?.(
-        newTheme
-      );
+      const savedTheme = await saveTheme(newTheme);
+      console.log({ savedTheme });
+
+      if (savedTheme && savedTheme.xata_id) {
+        Object.assign(newTheme, { id: savedTheme.xata_id });
+      }
+      console.log({ newTheme });
+
+      updateThemeConfig(newTheme);
     }
+
+    return newTheme;
   };
 
   return {

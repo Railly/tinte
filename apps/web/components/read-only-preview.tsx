@@ -54,7 +54,7 @@ const ReadOnlyPreview = ({
     <div className="flex flex-col h-full w-full">
       <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
         <h2 className="text-sm font-bold">Preview</h2>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-2">
           <LanguageSwitcher
             selectedLanguage={language}
             onLanguageChange={setLanguage}

@@ -33,10 +33,10 @@ export function ColorChangingTitle({
   }, []);
 
   return (
-    <h2 className="flex flex-col items-center text-2xl md:text-3xl font-bold py-2 transition-opacity">
-      <span className="flex mr-2">
+    <h2 className="flex flex-col items-center text-xl sm:text-2xl md:text-3xl font-bold py-2 transition-opacity text-center px-4">
+      <span className="flex flex-wrap justify-center">
         {words.map((word, index) => (
-          <span key={word} className="flex items-center">
+          <span key={word} className="flex items-center mx-1 my-1">
             <motion.span
               animate={{
                 color:
@@ -51,18 +51,19 @@ export function ColorChangingTitle({
               {word}
             </motion.span>
             {index < words.length - 2 && (
-              <span className={rawWordClassName}>,</span>
+              <span className={cn(rawWordClassName, "hidden sm:inline")}>
+                ,
+              </span>
             )}
             {index === words.length - 2 && (
-              <span className={rawWordClassName}>and</span>
-            )}
-            {index < words.length - 1 && (
-              <span className={rawWordClassName}></span>
+              <span className={cn(rawWordClassName, "hidden sm:inline")}>
+                and
+              </span>
             )}
           </span>
         ))}
       </span>
-      <span className={rawWordClassName}>your VS Code theme</span>
+      <span className={cn(rawWordClassName)}>your VS Code theme</span>
     </h2>
   );
 }

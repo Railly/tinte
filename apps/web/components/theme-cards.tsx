@@ -31,7 +31,6 @@ export function ThemeCards({
   setCurrentCategory,
   isValidating,
 }: ThemeCardsProps) {
-  console.log({ allThemes });
   const user = useUser();
 
   const themeCategories = useMemo(() => {
@@ -196,6 +195,7 @@ function ThemeCardGrid({
   if (themes.length === 0 && !isValidating) {
     return <EmptyState type={type} />;
   }
+  console.log({ selectedTheme, themes });
   return (
     <div className="w-full grid gap-4 mt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {themes.map((theme, index) => (

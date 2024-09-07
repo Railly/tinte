@@ -7,7 +7,7 @@ export function HeaderLogo() {
   return (
     <div className="flex items-center gap-3.5 px-1">
       <a
-        className="flex items-center justify-center h-14 border-b"
+        className="flex items-center justify-center h-14"
         href="https://railly.dev"
         target="_blank"
         rel="noopener noreferrer"

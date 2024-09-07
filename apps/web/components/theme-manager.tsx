@@ -33,11 +33,8 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
   const focusAreaRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const { data, size, setSize, isValidating } = useInfiniteThemes(
-    initialThemes,
-    currentCategory,
-    user?.id,
-  );
+  const { data, size, setSize, isValidating, refreshFirstPage } =
+    useInfiniteThemes(initialThemes, currentCategory, user?.id);
 
   const allThemes = data
     ? data.flatMap((page) => page.themes)
@@ -50,10 +47,9 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
     }
   }, [hasMore, setSize, size, isValidating]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        console.log({ currentCategory, user });
         if (currentCategory === "custom" && !user) return;
         if (entries[0]?.isIntersecting && !isValidating) {
           loadMoreThemes();
@@ -67,7 +63,7 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
     }
 
     return () => observer.disconnect();
-  }, [loadMoreThemes, isValidating, currentCategory]);
+  }, [loadMoreThemes, isValidating, currentCategory, user]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -85,12 +81,17 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
     };
   }, []);
 
-  const updateThemeConfig = (newConfig: Partial<ThemeConfig>) => {
-    const newThemeConfig = { ...themeConfig, ...newConfig };
-    setThemeConfig(newThemeConfig);
-    setSelectedTheme(newThemeConfig);
-    setVSCodeTheme(generateVSCodeTheme(newThemeConfig));
-  };
+  const updateThemeConfig = useCallback(
+    (newConfig: Partial<ThemeConfig>) => {
+      const newThemeConfig = { ...themeConfig, ...newConfig };
+      console.log({ themeConfig, newConfig, newThemeConfig });
+      setThemeConfig(newThemeConfig);
+      setSelectedTheme(newThemeConfig);
+      setVSCodeTheme(generateVSCodeTheme(newThemeConfig));
+      refreshFirstPage(); // Use refreshFirstPage instead of setRefreshKey
+    },
+    [themeConfig, refreshFirstPage],
+  );
 
   const handleCategoryChange = useCallback(
     (newCategory: string) => {

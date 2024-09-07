@@ -39,7 +39,7 @@ export const AchievementBanner: React.FC = () => {
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-gradient-to-r from-primary to-amber-900 dark:to-amber-100 text-primary-foreground py-2 px-4 text-center"
+      className="bg-gradient-to-r from-amber-100/50 to-amber-300/40 dark:from-primary dark:to-amber-100 text-foreground dark:text-primary-foreground py-2 px-4 text-center"
     >
       <p className="text-xs sm:text-sm font-medium flex flex-wrap justify-center items-center gap-1">
         <span>🏆 We won 3rd place at the</span>
