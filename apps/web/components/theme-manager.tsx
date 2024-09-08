@@ -87,9 +87,16 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
       setThemeConfig(newThemeConfig);
       setSelectedTheme(newThemeConfig);
       setVSCodeTheme(generateVSCodeTheme(newThemeConfig));
-      refreshFirstPage(); // Use refreshFirstPage instead of setRefreshKey
+
+      // Only refresh the first page if it's a new theme
+      if (
+        newConfig.id &&
+        !allThemes.some((theme) => theme.id === newConfig.id)
+      ) {
+        refreshFirstPage();
+      }
     },
-    [themeConfig, refreshFirstPage],
+    [themeConfig, allThemes, refreshFirstPage],
   );
 
   const handleCategoryChange = useCallback(

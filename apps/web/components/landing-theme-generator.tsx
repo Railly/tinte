@@ -7,7 +7,7 @@ import { IconGenerate, IconLoading, IconSparkles } from "@/components/ui/icons";
 import { ThemeConfig } from "@/lib/core/types";
 import { useThemeGenerator } from "@/lib/hooks/use-theme-generator";
 import { useDescriptionEnhancer } from "@/lib/hooks/use-theme-enhancer";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 interface LandingThemeGeneratorProps {
   updateThemeConfig: (newConfig: Partial<ThemeConfig>) => void;
@@ -20,7 +20,6 @@ export const LandingThemeGenerator = forwardRef<
   HTMLDivElement,
   LandingThemeGeneratorProps
 >(({ updateThemeConfig, setIsTextareaFocused }, ref) => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [themeDescription, setThemeDescription] = useState<string>(
     searchParams?.get("description") || "",
@@ -29,8 +28,10 @@ export const LandingThemeGenerator = forwardRef<
   const { isEnhancing, enhanceDescription } = useDescriptionEnhancer();
 
   const handleGenerateTheme = async () => {
-    await generateTheme(themeDescription);
-    router.refresh();
+    const newTheme = await generateTheme(themeDescription);
+    if (newTheme) {
+      updateThemeConfig(newTheme);
+    }
   };
 
   const handleEnhanceDescription = async () => {

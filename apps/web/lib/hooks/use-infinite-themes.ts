@@ -1,6 +1,6 @@
 import useSWRInfinite from "swr/infinite";
 import { useCallback } from "react";
-import { ThemeConfig } from "@/lib/core/types"; // Adjust this import path as needed
+import { ThemeConfig } from "@/lib/core/types";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -37,31 +37,20 @@ export function useInfiniteThemes(
 
   const refreshFirstPage = useCallback(() => {
     mutate(
-      async () => {
+      async (currentData) => {
         const firstPageUrl = getKey(0, null);
         if (firstPageUrl) {
           const updatedFirstPage = await fetcher(firstPageUrl);
           return [
             updatedFirstPage,
-            ...(data?.slice(1) || []),
+            ...(currentData?.slice(1) || []),
           ] as ThemeResponse[];
         }
-        return data as ThemeResponse[];
+        return currentData as ThemeResponse[];
       },
-      {
-        optimisticData: (currentData) => {
-          if (currentData && currentData.length > 0) {
-            return [
-              { ...currentData[0], themes: [] },
-              ...currentData.slice(1),
-            ] as ThemeResponse[];
-          }
-          return currentData as ThemeResponse[];
-        },
-        revalidate: false,
-      },
+      { revalidate: false },
     );
-  }, [mutate, data, getKey]);
+  }, [mutate, getKey]);
 
   return {
     data,
