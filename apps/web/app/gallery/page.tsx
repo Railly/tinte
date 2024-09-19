@@ -1,16 +1,16 @@
 import React from "react";
-import { LandingHeader } from "@/components/landing-header";
 import { getAllThemes } from "@/lib/api";
 import { GalleryContent } from "./gallery-content";
 import { ShineButton } from "@/components/ui/shine-button";
 import Link from "next/link";
+import { GeneralHeader } from "@/components/general-header";
 
 export default async function GalleryPage() {
   const allThemes = await getAllThemes();
 
   return (
     <>
-      <LandingHeader />
+      <GeneralHeader />
       <main className="flex flex-col items-center py-8 px-4 md:px-8">
         <div className="w-full flex justify-between items-center mb-8">
           <div className="flex-1" />

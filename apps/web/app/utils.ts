@@ -401,6 +401,9 @@ export const convertShadcnThemeToTheme = (shadcnTheme: ShadcnThemes): Theme => {
       : shadcnTheme.charts;
 
   return {
+    id: shadcnTheme.xata_id,
+    name: shadcnTheme.name,
+    displayName: shadcnTheme.display_name as string,
     light: lightScheme,
     dark: darkScheme,
     fonts: fonts,

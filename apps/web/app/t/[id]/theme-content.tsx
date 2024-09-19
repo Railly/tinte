@@ -19,13 +19,13 @@ import { useEffect, useMemo, useState } from "react";
 import { generateVSCodeTheme } from "@/lib/core";
 import { ThemePreview } from "../../../components/theme-preview";
 import { cn } from "@/lib/utils";
-import { LandingHeader } from "../../../components/landing-header";
 import IconRaycast from "@/public/logos/raycast.svg";
 import { isThemeOwner, getThemeCategoryLabel } from "@/app/utils";
 import { Badge } from "../../../components/ui/badge";
 import { FEATURED_THEME_LOGOS } from "@/lib/constants";
 import { useThemeExport } from "@/lib/hooks/use-theme-export";
 import { useBinaryTheme } from "@/lib/hooks/use-binary-theme";
+import { GeneralHeader } from "@/components/general-header";
 
 export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
   const user = useUser();
@@ -54,7 +54,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <LandingHeader />
+      <GeneralHeader />
       <main className="flex-1 overflow-hidden">
         <div className="h-full flex flex-col lg:flex-row">
           {/* Left Column */}
