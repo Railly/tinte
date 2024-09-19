@@ -1,10 +1,17 @@
+import { Theme } from "@/lib/atoms";
 import {
   DarkLightPalette,
   Palette,
   ThemeConfig,
   TokenColorMap,
 } from "@/lib/core/types";
-import { ThemePalettes, Themes, TokenColors, Users } from "@prisma/client";
+import {
+  ShadcnThemes,
+  ThemePalettes,
+  Themes,
+  TokenColors,
+  Users,
+} from "@prisma/client";
 import { hexToRgba, rgbaToHex } from "@uiw/color-convert";
 
 export function formatPalette(palette: ThemePalettes | undefined) {
@@ -221,7 +228,7 @@ export function sortThemes(formattedThemes: ThemeConfig[]) {
 export const fetchGeneratedTheme = async (
   prompt: string,
 ): Promise<Record<string, DarkLightPalette>> => {
-  const response = await fetch("/api/generate", {
+  const response = await fetch("/api/generate/vscode", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
@@ -374,3 +381,33 @@ export function isThemeOwner(
 
   return userId === themeConfig.user.clerk_id;
 }
+
+export const convertShadcnThemeToTheme = (shadcnTheme: ShadcnThemes): Theme => {
+  const lightScheme =
+    typeof shadcnTheme.light_scheme === "string"
+      ? JSON.parse(shadcnTheme.light_scheme)
+      : shadcnTheme.light_scheme;
+  const darkScheme =
+    typeof shadcnTheme.dark_scheme === "string"
+      ? JSON.parse(shadcnTheme.dark_scheme)
+      : shadcnTheme.dark_scheme;
+  const fonts =
+    typeof shadcnTheme.fonts === "string"
+      ? JSON.parse(shadcnTheme.fonts)
+      : shadcnTheme.fonts;
+  const charts =
+    typeof shadcnTheme.charts === "string"
+      ? JSON.parse(shadcnTheme.charts)
+      : shadcnTheme.charts;
+
+  return {
+    light: lightScheme,
+    dark: darkScheme,
+    fonts: fonts,
+    radius: shadcnTheme.radius as string,
+    space: shadcnTheme.space as string,
+    shadow: shadcnTheme.shadow as string,
+    charts: charts,
+    icons: shadcnTheme.icons as string,
+  };
+};

@@ -117,13 +117,36 @@ model TokenColors {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Users {
-  xata_id        String       @unique(map: "_pgroll_new_Users_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
-  xata_version   Int          @default(0)
-  xata_createdat DateTime     @default(now()) @db.Timestamptz(6)
-  xata_updatedat DateTime     @default(now()) @db.Timestamptz(6)
-  clerk_id       String?      @unique(map: "Users__pgroll_new_clerk_id_key")
-  username       String?      @unique(map: "Users__pgroll_new_username_key")
+  xata_id        String         @unique(map: "_pgroll_new_Users_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int            @default(0)
+  xata_createdat DateTime       @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime       @default(now()) @db.Timestamptz(6)
+  clerk_id       String?        @unique(map: "Users__pgroll_new_clerk_id_key")
+  username       String?        @unique(map: "Users__pgroll_new_username_key")
   image_url      String?
+  ShadcnThemes   ShadcnThemes[]
   ThemeLikes     ThemeLikes[]
   Themes         Themes[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ShadcnThemes {
+  xata_id        String   @unique(map: "_pgroll_new_ShadcnThemes_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int      @default(0)
+  xata_createdat DateTime @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
+  name           String
+  display_name   String?
+  theme_version  Int?     @default(1)
+  light_scheme   Json?    @db.Json
+  dark_scheme    Json?    @db.Json
+  fonts          Json?    @db.Json
+  radius         String?
+  space          String?
+  shadow         String?
+  charts         Json?    @db.Json
+  icons          String?
+  User           String?
+  Users          Users?   @relation(fields: [User], references: [xata_id], onUpdate: NoAction, map: "User_link")
 }

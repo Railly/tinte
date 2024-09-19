@@ -18,7 +18,7 @@ export default async function GalleryPage() {
             Theme Gallery
           </h1>
           <div className="flex-1 flex justify-end">
-            <Link href="/generator">
+            <Link href="/vscode">
               <ShineButton>Create Your Theme</ShineButton>
             </Link>
           </div>

@@ -44,7 +44,7 @@ const ReadOnlyPreview = ({
   const handleSignInOrEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (user.isSignedIn) {
-      router.push(`/generator?theme=${themeConfig?.name}`);
+      router.push(`/vscode?theme=${themeConfig?.name}`);
     } else {
       setIsSignInDialogOpen(true);
     }
@@ -52,7 +52,7 @@ const ReadOnlyPreview = ({
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
+      <div className="flex justify-between items-center p-2 rounded-t-md bg-card text-card-foreground border-b">
         <h2 className="text-sm font-bold">Preview</h2>
         <div className="flex items-center gap-2">
           <LanguageSwitcher
@@ -87,7 +87,7 @@ const ReadOnlyPreview = ({
       <SignInDialog
         open={isSignInDialogOpen}
         setOpen={setIsSignInDialogOpen}
-        redirectUrl={`/generator?theme=${themeConfig?.name}`}
+        redirectUrl={`/vscode?theme=${themeConfig?.name}`}
       />
     </div>
   );

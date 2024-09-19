@@ -1,11 +1,15 @@
-// useDescriptionEnhancer.ts
 import { useState } from "react";
 import { toast } from "sonner";
+
+type EnhancementType = "shadcn" | "vscode";
 
 export const useDescriptionEnhancer = () => {
   const [isEnhancing, setIsEnhancing] = useState(false);
 
-  const enhanceDescription = async (themeDescription: string) => {
+  const enhanceDescription = async (
+    themeDescription: string,
+    type: EnhancementType,
+  ) => {
     if (themeDescription.trim().length < 3) {
       toast.error("Please provide a longer theme description to enhance");
       return;
@@ -13,7 +17,7 @@ export const useDescriptionEnhancer = () => {
 
     setIsEnhancing(true);
     try {
-      const response = await fetch("/api/enhance", {
+      const response = await fetch(`/api/enhance/${type}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -161,7 +161,7 @@ export function ThemeContent({ themeConfig }: { themeConfig: ThemeConfig }) {
                   Download
                 </Button>
                 <Link
-                  href={`/generator?theme=${themeConfig.name}`}
+                  href={`/vscode?theme=${themeConfig.name}`}
                   className={cn(
                     "w-full",
                     buttonVariants({ variant: "outline" }),
