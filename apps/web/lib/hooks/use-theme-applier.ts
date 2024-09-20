@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useAtom } from "jotai";
 import { themeAtom } from "@/lib/atoms";
 import { useTheme } from "next-themes";
@@ -9,12 +9,16 @@ export function useThemeApplier() {
 
   const isCurrentlyDark = resolvedTheme === "dark";
 
-  const currentColorScheme = isCurrentlyDark
-    ? shadcnTheme.dark
-    : shadcnTheme.light;
-  const currentChartTheme = isCurrentlyDark
-    ? shadcnTheme.charts.dark
-    : shadcnTheme.charts.light;
+  const currentColorScheme = useMemo(
+    () => (isCurrentlyDark ? shadcnTheme.dark : shadcnTheme.light),
+    [isCurrentlyDark, shadcnTheme.dark, shadcnTheme.light],
+  );
+
+  const currentChartTheme = useMemo(
+    () =>
+      isCurrentlyDark ? shadcnTheme.charts.dark : shadcnTheme.charts.light,
+    [isCurrentlyDark, shadcnTheme.charts.dark, shadcnTheme.charts.light],
+  );
 
   useEffect(() => {
     const applyTheme = () => {
@@ -39,21 +43,6 @@ export function useThemeApplier() {
         "--radius",
         `${shadcnTheme?.radius}rem`,
       );
-
-      //document.documentElement.style.setProperty("--space", shadcnTheme.space);
-      //document.documentElement.style.setProperty(
-      //  "--shadow",
-      //  shadcnTheme.shadow,
-      //);
-      //document.documentElement.style.setProperty(
-      //  "--font-heading",
-      //  shadcnTheme.fonts.heading,
-      //);
-      //document.documentElement.style.setProperty(
-      //  "--font-body",
-      //  shadcnTheme.fonts.body,
-      //);
-      //document.documentElement.style.setProperty("--icons", shadcnTheme.icons);
     };
 
     applyTheme();
@@ -76,7 +65,7 @@ export function useThemeApplier() {
     });
 
     return () => observer.disconnect();
-  }, [shadcnTheme, currentColorScheme, currentChartTheme, isCurrentlyDark]);
+  }, [shadcnTheme, isCurrentlyDark]); // Only depend on shadcnTheme and isCurrentlyDark
 
   return {
     currentTheme: shadcnTheme,
