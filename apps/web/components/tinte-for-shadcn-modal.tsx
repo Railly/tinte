@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -26,13 +25,13 @@ const steps = [
     image: "/tinte-2.png",
   },
   {
-    title: "Easy Installation Coming Soon!",
+    title: "Easy Installation with Shadcn CLI",
     description:
-      "You'll be able to install your own theme using the Shadcn CLI!.",
+      "Install your own theme using the Shadcn CLI with a simple command!",
     extraContent: (
       <div className="mt-4 p-4 bg-secondary rounded-md text-left">
         <pre className="text-sm font-bold text-secondary-foreground font-mono break-all">
-          npx shadcn add https://tinte.dev/t/theme.json
+          npx shadcn add https://tinte.dev/s/theme-id
         </pre>
       </div>
     ),
@@ -125,9 +124,7 @@ export function TinteForShadcnModal() {
           {currentStep < steps.length - 1 ? (
             <Button onClick={handleNextStep}>Next</Button>
           ) : (
-            <Link href="/shadcn" passHref>
-              <Button onClick={handleClose}>Let's go!</Button>
-            </Link>
+            <Button onClick={handleClose}>Got it!</Button>
           )}
         </div>
       </DialogContent>

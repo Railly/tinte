@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -13,6 +12,7 @@ import {
 import { ThemePresetSelector } from "./theme-preset-selector";
 import { Theme } from "@/lib/atoms";
 import { ShadcnThemes } from "@prisma/client";
+import { ShineButton } from "@/components/ui/shine-button";
 
 const MAX_CHARS = 200;
 
@@ -27,6 +27,11 @@ interface ThemeGeneratorInputProps {
   onSelectPreset: (preset: Theme) => void;
   currentTheme: Theme;
   allThemes: ShadcnThemes[];
+  initialPagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+  };
 }
 
 export function ThemeGeneratorInput({
@@ -40,27 +45,25 @@ export function ThemeGeneratorInput({
   onSelectPreset,
   currentTheme,
   allThemes,
+  initialPagination,
 }: ThemeGeneratorInputProps) {
+  const isLoading = isGenerating || isEnhancing;
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full flex flex-col items-center justify-center space-y-6 p-6"
-    >
-      <div className="border rounded-md w-full md:max-w-lg">
+    <div className="w-full flex flex-col items-center justify-center space-y-6 p-6">
+      <div className="border rounded-md w-full md:max-w-xl">
         <div className="flex justify-between items-center p-2 rounded-t-md bg-card text-card-foreground border-b">
           <h2 className="text-sm font-bold">Theme Generator</h2>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={onRandom}>
+            {/*<Button variant="outline" size="sm" onClick={onRandom}>
               <IconRandom className="w-4 h-4 mr-2" />
               <span>Random</span>
             </Button>
-            <Button
+            */}
+            <ShineButton
               variant="outline"
               size="sm"
               onClick={onGenerate}
-              disabled={description.trim().length < 3 || isGenerating}
+              disabled={description.trim().length < 3 || isLoading}
             >
               {isGenerating ? (
                 <IconLoading className="w-4 h-4 mr-2 animate-spin" />
@@ -68,7 +71,7 @@ export function ThemeGeneratorInput({
                 <IconGenerate className="w-4 h-4 mr-2" />
               )}
               <span>{isGenerating ? "Generating..." : "Generate"}</span>
-            </Button>
+            </ShineButton>
           </div>
         </div>
 
@@ -77,6 +80,7 @@ export function ThemeGeneratorInput({
             currentTheme={currentTheme}
             onSelectPreset={onSelectPreset}
             allThemes={allThemes}
+            initialPagination={initialPagination}
           />
           <div className="relative">
             <Textarea
@@ -86,13 +90,14 @@ export function ThemeGeneratorInput({
               className="resize-none w-full !h-32 !pb-10"
               minLength={3}
               maxLength={MAX_CHARS}
+              disabled={isLoading}
             />
             <Button
               variant="ghost"
               size="sm"
               onClick={onEnhance}
               className="absolute bottom-4 left-4 text-muted-foreground hover:text-foreground"
-              disabled={description.trim().length < 3 || isEnhancing}
+              disabled={description.trim().length < 3 || isLoading}
             >
               {isEnhancing ? (
                 <IconLoading className="w-4 h-4 mr-1 animate-spin" />
@@ -107,6 +112,6 @@ export function ThemeGeneratorInput({
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

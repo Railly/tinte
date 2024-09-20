@@ -1,3 +1,4 @@
+import { Users } from "@prisma/client";
 import { atom } from "jotai";
 
 export type HSLAColor = { h: number; s: number; l: number; a: number };
@@ -38,22 +39,23 @@ export type Theme = {
   displayName: string;
   light: ColorScheme;
   dark: ColorScheme;
-  fonts: {
-    heading: string;
-    body: string;
-  };
+  //fonts: {
+  //  heading: string;
+  //  body: string;
+  //};
   radius: string;
-  space: string;
-  shadow: string;
+  //space: string;
+  //shadow: string;
   charts: {
     light: ChartColors;
     dark: ChartColors;
   };
-  icons: string;
+  user?: string | null;
+  //icons: string;
 };
 
 export const themeAtom = atom<Theme>({
-  id: "default-theme-preset",
+  id: "crm9hfdqrj62j62r2klg",
   name: "default-theme",
   displayName: "Default Theme",
   light: {
@@ -98,13 +100,13 @@ export const themeAtom = atom<Theme>({
     input: { h: 240, s: 3, l: 20, a: 1 },
     ring: { h: 240, s: 4.9, l: 83.9, a: 1 },
   },
-  fonts: {
-    heading: "inter",
-    body: "inter",
-  },
+  //fonts: {
+  //  heading: "inter",
+  //  body: "inter",
+  //},
   radius: "0.5",
-  space: "0.25",
-  shadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+  //space: "0.25",
+  //shadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
   charts: {
     light: {
       chart1: { h: 12, s: 76, l: 61, a: 1 },
@@ -121,7 +123,7 @@ export const themeAtom = atom<Theme>({
       chart5: { h: 27, s: 87, l: 67, a: 1 },
     },
   },
-  icons: "@phosphor-icons/react",
+  //icons: "@phosphor-icons/react",
 });
 
 export const activeTabAtom = atom<"code" | "preview">("preview");

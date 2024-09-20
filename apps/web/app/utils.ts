@@ -391,10 +391,10 @@ export const convertShadcnThemeToTheme = (shadcnTheme: ShadcnThemes): Theme => {
     typeof shadcnTheme.dark_scheme === "string"
       ? JSON.parse(shadcnTheme.dark_scheme)
       : shadcnTheme.dark_scheme;
-  const fonts =
-    typeof shadcnTheme.fonts === "string"
-      ? JSON.parse(shadcnTheme.fonts)
-      : shadcnTheme.fonts;
+  //const fonts =
+  //  typeof shadcnTheme.fonts === "string"
+  //    ? JSON.parse(shadcnTheme.fonts)
+  //    : shadcnTheme.fonts;
   const charts =
     typeof shadcnTheme.charts === "string"
       ? JSON.parse(shadcnTheme.charts)
@@ -406,11 +406,12 @@ export const convertShadcnThemeToTheme = (shadcnTheme: ShadcnThemes): Theme => {
     displayName: shadcnTheme.display_name as string,
     light: lightScheme,
     dark: darkScheme,
-    fonts: fonts,
+    user: shadcnTheme.User,
+    //fonts: fonts,
     radius: shadcnTheme.radius as string,
-    space: shadcnTheme.space as string,
-    shadow: shadcnTheme.shadow as string,
+    //space: shadcnTheme.space as string,
+    //shadow: shadcnTheme.shadow as string,
     charts: charts,
-    icons: shadcnTheme.icons as string,
+    //icons: shadcnTheme.icons as string,
   };
 };

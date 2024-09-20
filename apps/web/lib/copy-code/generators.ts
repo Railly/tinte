@@ -29,8 +29,6 @@ export const generateCSSCode = (theme: Theme) => {
   ${lightChartVars}
 
     --radius: ${theme.radius}rem;
-    --space: ${theme.space}rem;
-    --shadow: ${theme.shadow};
   }
 
   .dark {

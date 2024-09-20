@@ -38,14 +38,21 @@ export function BrowserThemeSelector() {
         <Tooltip>
           <DropdownMenuTrigger asChild>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="flex items-center">
                 {theme === "light" ? (
-                  <IconSun />
+                  <IconSun className="h-4 w-4 sm:mr-0 mr-2" />
                 ) : theme === "dark" ? (
-                  <IconMoon />
+                  <IconMoon className="h-4 w-4 sm:mr-0 mr-2" />
                 ) : (
-                  <IconComputer />
+                  <IconComputer className="h-4 w-4 sm:mr-0 mr-2" />
                 )}
+                <span className="sm:hidden">
+                  {theme === "light"
+                    ? "Light"
+                    : theme === "dark"
+                      ? "Dark"
+                      : "System"}
+                </span>
               </Button>
             </TooltipTrigger>
           </DropdownMenuTrigger>
@@ -62,7 +69,7 @@ export function BrowserThemeSelector() {
               "h-8 w-full justify-start py-0",
               {
                 "bg-muted text-muted-foreground": theme === "light",
-              }
+              },
             )}
             onClick={() => {
               startTransition(() => {
@@ -79,7 +86,7 @@ export function BrowserThemeSelector() {
               "h-8 w-full justify-start py-0",
               {
                 "bg-muted text-muted-foreground": theme === "dark",
-              }
+              },
             )}
             onClick={() => {
               startTransition(() => {
@@ -96,7 +103,7 @@ export function BrowserThemeSelector() {
               "h-8 w-full justify-start py-0",
               {
                 "bg-muted text-muted-foreground": theme === "system",
-              }
+              },
             )}
             onClick={() => {
               startTransition(() => {

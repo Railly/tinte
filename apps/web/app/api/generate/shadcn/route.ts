@@ -13,76 +13,82 @@ const ratelimit = new Ratelimit({
   analytics: true,
 });
 
-const HSLAColorSchema = z.object({
-  h: z.number().min(0).max(360),
-  s: z.number().min(0).max(100),
-  l: z.number().min(0).max(100),
-  a: z.number().min(0).max(1),
-});
+const HSLAColorString = z
+  .string()
+  .regex(
+    /^hsla\(\d{1,3},\s*\d{1,3}%,\s*\d{1,3}%,\s*(?:0(?:\.\d+)?|1(?:\.0+)?)\)$/,
+  );
 
-const ColorSchemaObject = z.object({
-  background: HSLAColorSchema,
-  foreground: HSLAColorSchema,
-  card: HSLAColorSchema,
-  "card-foreground": HSLAColorSchema,
-  popover: HSLAColorSchema,
-  "popover-foreground": HSLAColorSchema,
-  primary: HSLAColorSchema,
-  "primary-foreground": HSLAColorSchema,
-  secondary: HSLAColorSchema,
-  "secondary-foreground": HSLAColorSchema,
-  muted: HSLAColorSchema,
-  "muted-foreground": HSLAColorSchema,
-  accent: HSLAColorSchema,
-  "accent-foreground": HSLAColorSchema,
-  destructive: HSLAColorSchema,
-  "destructive-foreground": HSLAColorSchema,
-  border: HSLAColorSchema.describe("subtle color"),
-  input: HSLAColorSchema,
-  ring: HSLAColorSchema,
+const ThemeSchema = z.object({
+  background: HSLAColorString,
+  foreground: HSLAColorString,
+  card: HSLAColorString,
+  "card-foreground": HSLAColorString,
+  popover: HSLAColorString,
+  "popover-foreground": HSLAColorString,
+  primary: HSLAColorString,
+  "primary-foreground": HSLAColorString,
+  secondary: HSLAColorString,
+  "secondary-foreground": HSLAColorString,
+  muted: HSLAColorString,
+  "muted-foreground": HSLAColorString,
+  accent: HSLAColorString,
+  "accent-foreground": HSLAColorString,
+  destructive: HSLAColorString,
+  "destructive-foreground": HSLAColorString,
+  border: HSLAColorString,
+  input: HSLAColorString,
+  ring: HSLAColorString,
 });
 
 const ChartColorSchema = z.object({
-  chart1: HSLAColorSchema,
-  chart2: HSLAColorSchema,
-  chart3: HSLAColorSchema,
-  chart4: HSLAColorSchema,
-  chart5: HSLAColorSchema,
+  chart1: HSLAColorString,
+  chart2: HSLAColorString,
+  chart3: HSLAColorString,
+  chart4: HSLAColorString,
+  chart5: HSLAColorString,
 });
 
 const outputSchema = z.object({
-  displayName: z.string().min(3).describe("Shorty theme name"),
-  light: ColorSchemaObject,
-  dark: ColorSchemaObject,
-  fonts: z.object({
-    heading: z.enum([
-      "inter",
-      "Inter",
-      "roboto",
-      "Roboto",
-      "opensans",
-      "Open Sans",
-      "Open sans",
-    ]),
-    body: z.enum([
-      "inter",
-      "Inter",
-      "roboto",
-      "Roboto",
-      "opensans",
-      "Open Sans",
-      "Open sans",
-    ]),
-  }),
+  displayName: z.string().min(3).describe("Short theme name"),
+  light: ThemeSchema,
+  dark: ThemeSchema,
   radius: z.number().describe("in rem units"),
-  space: z.number().describe("in rem units"),
-  shadow: z.string(),
   charts: z.object({
     light: ChartColorSchema,
     dark: ChartColorSchema,
   }),
-  icons: z.enum(["@phosphor-icons/react", "lucide-react"]).optional(),
 });
+
+function parseHSLA(hsla: string): {
+  h: number;
+  s: number;
+  l: number;
+  a: number;
+} {
+  const match = hsla.match(/hsla\((\d+),\s*(\d+)%,\s*(\d+)%,\s*([\d.]+)\)/);
+  if (!match || match.length !== 5) {
+    throw new Error(`Invalid HSLA string: ${hsla}`);
+  }
+
+  const [, h, s, l, a] = match;
+
+  if (
+    h === undefined ||
+    s === undefined ||
+    l === undefined ||
+    a === undefined
+  ) {
+    throw new Error(`Invalid HSLA string: ${hsla}`);
+  }
+
+  return {
+    h: parseInt(h, 10),
+    s: parseInt(s, 10),
+    l: parseInt(l, 10),
+    a: parseFloat(a),
+  };
+}
 
 export async function POST(req: NextRequest) {
   const ip = req.ip ?? req.headers.get("X-Forwarded-For") ?? "ip";
@@ -93,22 +99,56 @@ export async function POST(req: NextRequest) {
     return new Response("Ratelimited!", { status: 429 });
   }
 
-  const result = await generateObject({
-    model: openai("gpt-4o-mini"),
-    system: `You are an expert at generating shadcn themes. Create a visually appealing and cohesive theme based on the user's prompt. Follow these guidelines:
-  - Create both light and dark mode color schemes.
-  - Ensure high contrast between background and foreground for readability in both modes.
-  - Use appropriate colors for primary, secondary, accent, and destructive elements in both modes.
-  - Choose suitable fonts for headings and body text.
-  - Set appropriate values for radius, space, and shadow.
-  - Create sets of chart colors that work well together and with the main theme for both light and dark modes.
-  - Suggest an appropriate icon set.
-  - All color values should be in HSLA format.
-  - Radius and space should be in rem units.
-  - Shadow should be a valid CSS box-shadow value.`,
-    schema: outputSchema,
-    prompt: `Generate a shadcn theme with light and dark modes based on this description: "${prompt}"`,
-  });
+  try {
+    const result = await generateObject({
+      model: openai("gpt-4o-mini"),
+      system: `You are an expert at generating shadcn themes. Create a visually appealing and cohesive theme based on the user's prompt. Follow these guidelines:
+        - Create both light and dark mode color schemes.
+        - Ensure high contrast between background and foreground for readability in both modes.
+        - Use appropriate colors for primary, secondary, accent, and destructive elements in both modes.
+        - All color values should be in HSLA format as strings (e.g., "hsla(360, 100%, 50%, 1)").
+        - Radius should be in rem units.
+        - Create sets of chart colors that work well together and with the main theme for both light and dark modes.`,
+      schema: outputSchema,
+      prompt: `Generate a shadcn theme with light and dark modes based on this description: "${prompt}"`,
+    });
 
-  return Response.json({ theme: result.object });
+    const parsedTheme = {
+      ...result.object,
+      light: Object.fromEntries(
+        Object.entries(result.object.light).map(([key, value]) => [
+          key,
+          parseHSLA(value as string),
+        ]),
+      ),
+      dark: Object.fromEntries(
+        Object.entries(result.object.dark).map(([key, value]) => [
+          key,
+          parseHSLA(value as string),
+        ]),
+      ),
+      charts: {
+        light: Object.fromEntries(
+          Object.entries(result.object.charts.light).map(([key, value]) => [
+            key,
+            parseHSLA(value as string),
+          ]),
+        ),
+        dark: Object.fromEntries(
+          Object.entries(result.object.charts.dark).map(([key, value]) => [
+            key,
+            parseHSLA(value as string),
+          ]),
+        ),
+      },
+    };
+
+    return Response.json({ theme: parsedTheme });
+  } catch (error) {
+    console.error("Theme generation error:", error);
+    return Response.json(
+      { error: "Failed to generate theme" },
+      { status: 500 },
+    );
+  }
 }

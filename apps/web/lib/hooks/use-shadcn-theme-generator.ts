@@ -3,16 +3,16 @@ import { Theme } from "@/lib/atoms";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { getThemeName } from "@/app/utils";
+import { convertShadcnThemeToTheme, getThemeName } from "@/app/utils";
 
-const normalizeFontName = (font: string): string => {
-  const lowerFont = font.toLowerCase();
-  if (lowerFont.includes("inter")) return "inter";
-  if (lowerFont.includes("roboto")) return "roboto";
-  if (lowerFont.includes("open") && lowerFont.includes("sans"))
-    return "opensans";
-  return lowerFont;
-};
+//const normalizeFontName = (font: string): string => {
+//  const lowerFont = font.toLowerCase();
+//  if (lowerFont.includes("inter")) return "inter";
+//  if (lowerFont.includes("roboto")) return "roboto";
+//  if (lowerFont.includes("open") && lowerFont.includes("sans"))
+//    return "opensans";
+//  return lowerFont;
+//};
 
 export const fetchGeneratedShadcnTheme = async (
   prompt: string,
@@ -33,8 +33,8 @@ export const fetchGeneratedShadcnTheme = async (
   }
 
   // Normalize font names
-  theme.fonts.heading = normalizeFontName(theme.fonts.heading);
-  theme.fonts.body = normalizeFontName(theme.fonts.body);
+  //theme.fonts.heading = normalizeFontName(theme.fonts.heading);
+  //theme.fonts.body = normalizeFontName(theme.fonts.body);
 
   return theme;
 };
@@ -56,7 +56,6 @@ export const useShadcnThemeGenerator = (
     setIsGenerating(true);
     try {
       const generatedTheme = await fetchGeneratedShadcnTheme(themeDescription);
-      updateTheme(generatedTheme);
       toast.success("Theme generated successfully");
       await saveTheme(generatedTheme);
 
@@ -70,11 +69,6 @@ export const useShadcnThemeGenerator = (
   };
 
   const saveTheme = async (theme: Theme) => {
-    if (!user) {
-      toast.error("Please log in to save themes");
-      return;
-    }
-
     setIsSaving(true);
     try {
       const response = await fetch("/api/shadcn", {
@@ -83,7 +77,7 @@ export const useShadcnThemeGenerator = (
         body: JSON.stringify({
           ...theme,
           name: getThemeName(theme.displayName),
-          userId: user.id,
+          userId: user ? user.id : null,
         }),
       });
 
@@ -92,6 +86,7 @@ export const useShadcnThemeGenerator = (
       }
 
       const savedTheme = await response.json();
+      updateTheme(convertShadcnThemeToTheme(savedTheme));
       toast.success("Theme saved successfully");
       router.refresh();
       return savedTheme;

@@ -10,8 +10,8 @@ import {
   IconShadcn,
   IconNeovim,
   IconJetBrains,
+  IconGithub,
 } from "@/components/ui/icons";
-import { ShineButton } from "@/components/ui/shine-button";
 import { useThemeApplier } from "@/lib/hooks/use-theme-applier";
 import { Badge } from "@/components/ui/badge";
 import { Footer } from "./(providers)/shadcn/components/footer";
@@ -19,14 +19,13 @@ import AnimatedIconTinte from "@/components/logo-3d";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SubscriptionForm } from "@/components/subscription-form";
-import { GithubIcon } from "lucide-react";
 
 interface PlatformCardProps {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   name: string;
   comingSoon?: boolean;
   href?: string;
-  newFeature?: boolean; // New prop for the shadcn/ui badge
+  newFeature?: boolean;
 }
 
 const PlatformCard: React.FC<PlatformCardProps> = ({
@@ -34,7 +33,7 @@ const PlatformCard: React.FC<PlatformCardProps> = ({
   name,
   comingSoon = false,
   href,
-  newFeature = false, // Default to false
+  newFeature = false,
 }) => {
   const cardAnimation = {
     initial: { rotate: 0, filter: "brightness(100%)" },
@@ -90,32 +89,14 @@ const PlatformCard: React.FC<PlatformCardProps> = ({
   );
 };
 
-interface HeaderAction {
-  label: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  component: React.ReactNode;
-}
-
 const LandingPage: React.FC = () => {
   const { currentChartTheme } = useThemeApplier();
 
-  const headerActions: HeaderAction[] = [
-    {
-      label: "Get Started",
-      icon: IconVSCode,
-      component: (
-        <ShineButton variant="default" size="sm">
-          Get Started
-        </ShineButton>
-      ),
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <GeneralHeader actions={headerActions} />
+      <GeneralHeader />
 
-      <main className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-76px)] pb-48">
+      <main className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-76px)] pb-24 md:pb-48">
         <AnimatedIconTinte />
         <div className="max-w-4xl mx-auto text-center">
           <DynamicAccentTitle
@@ -172,7 +153,7 @@ const LandingPage: React.FC = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className="flex items-center gap-2"
+                className="flex w-full items-center gap-2"
                 asChild
               >
                 <Link
@@ -180,7 +161,7 @@ const LandingPage: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <GithubIcon className="w-5 h-5" />
+                  <IconGithub className="w-5 h-5" />
                   Suggest Feature
                 </Link>
               </Button>

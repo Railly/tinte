@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useAtom } from "jotai";
-import { themeAtom, Theme } from "@/lib/atoms";
+import React, { SetStateAction, useState } from "react";
+import { Theme } from "@/lib/atoms";
 import { useShadcnThemeGenerator } from "@/lib/hooks/use-shadcn-theme-generator";
 import { ThemeGeneratorInput } from "./theme-generator-input";
 import { useDescriptionEnhancer } from "@/lib/hooks/use-theme-enhancer";
@@ -11,16 +10,27 @@ import { ShadcnThemes } from "@prisma/client";
 
 interface ThemeGeneratorProps {
   allThemes: ShadcnThemes[];
+  setCurrentTheme: (update: SetStateAction<Theme>) => void;
+  currentTheme: Theme;
+  initialPagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+  };
 }
 
-export function ThemeGenerator({ allThemes }: ThemeGeneratorProps) {
-  const [shadcnTheme, setShadcnTheme] = useAtom(themeAtom);
+export function ThemeGenerator({
+  allThemes,
+  currentTheme,
+  setCurrentTheme,
+  initialPagination,
+}: ThemeGeneratorProps) {
   const [description, setDescription] = useState<string>(
     "A theme inspired by Mistborn, evoking a dark, mysterious, and magical atmosphere. Expect deep grays, silvers, and muted blues with gothic and fantasy elements.",
   );
 
   const { isGenerating, generateTheme, isSaving } =
-    useShadcnThemeGenerator(setShadcnTheme);
+    useShadcnThemeGenerator(setCurrentTheme);
 
   const { isEnhancing, enhanceDescription } = useDescriptionEnhancer();
 
@@ -49,11 +59,11 @@ export function ThemeGenerator({ allThemes }: ThemeGeneratorProps) {
     });
 
     const newColorScheme = Object.fromEntries(
-      Object.keys(shadcnTheme.light).map((key) => [key, randomColor()]),
+      Object.keys(currentTheme.light).map((key) => [key, randomColor()]),
     ) as Theme["light"];
 
     const newChartColors = Object.fromEntries(
-      Object.keys(shadcnTheme.charts.light).map((key) => [key, randomColor()]),
+      Object.keys(currentTheme.charts.light).map((key) => [key, randomColor()]),
     ) as Theme["charts"]["light"];
 
     const newTheme: Theme = {
@@ -62,29 +72,29 @@ export function ThemeGenerator({ allThemes }: ThemeGeneratorProps) {
       displayName: "Generated Theme",
       light: newColorScheme,
       dark: newColorScheme,
-      fonts: {
-        heading: ["Inter", "Roboto", "Open Sans"][
-          Math.floor(Math.random() * 3)
-        ] as string,
-        body: ["Inter", "Roboto", "Open Sans"][
-          Math.floor(Math.random() * 3)
-        ] as string,
-      },
+      //fonts: {
+      //  heading: ["Inter", "Roboto", "Open Sans"][
+      //    Math.floor(Math.random() * 3)
+      //  ] as string,
+      //  body: ["Inter", "Roboto", "Open Sans"][
+      //    Math.floor(Math.random() * 3)
+      //  ] as string,
+      //},
       radius: `${(Math.random() * 2).toFixed(2)}rem`,
-      space: `${(Math.random() * 1).toFixed(2)}rem`,
-      shadow: `0 ${Math.floor(Math.random() * 10)}px ${Math.floor(Math.random() * 20)}px 0 rgb(0 0 0 / ${Math.random().toFixed(2)})`,
+      //space: `${(Math.random() * 1).toFixed(2)}rem`,
+      //shadow: `0 ${Math.floor(Math.random() * 10)}px ${Math.floor(Math.random() * 20)}px 0 rgb(0 0 0 / ${Math.random().toFixed(2)})`,
       charts: {
         light: newChartColors,
         dark: newChartColors,
       },
-      icons: shadcnTheme.icons,
+      //icons: currentTheme.icons,
     };
 
-    setShadcnTheme(newTheme);
+    setCurrentTheme(newTheme);
   };
 
   const handleSelectPreset = (preset: Theme) => {
-    setShadcnTheme(preset);
+    setCurrentTheme(preset);
   };
 
   return (
@@ -97,8 +107,9 @@ export function ThemeGenerator({ allThemes }: ThemeGeneratorProps) {
       isGenerating={isGenerating || isSaving}
       isEnhancing={isEnhancing}
       onSelectPreset={handleSelectPreset}
-      currentTheme={shadcnTheme}
+      currentTheme={currentTheme}
       allThemes={allThemes}
+      initialPagination={initialPagination}
     />
   );
 }

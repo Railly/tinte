@@ -10,12 +10,21 @@ import { ResponsiveThemeEditor } from "./responsive-theme-editor";
 import { ThemeGenerator } from "./theme-generator";
 import { ThemePreview } from "./theme-preview";
 import { ShadcnThemes } from "@prisma/client";
+import { ThemeInstallCode } from "./theme-install-code";
 
 interface ThemeWorkspaceProps {
   allThemes: ShadcnThemes[];
+  initialPagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+  };
 }
 
-export function ThemeWorkspace({ allThemes }: ThemeWorkspaceProps) {
+export function ThemeWorkspace({
+  allThemes,
+  initialPagination,
+}: ThemeWorkspaceProps) {
   const {
     currentTheme,
     currentColorScheme,
@@ -51,7 +60,13 @@ export function ThemeWorkspace({ allThemes }: ThemeWorkspaceProps) {
           intervalDuration={2000}
           subtitle="your shadcn/ui theme"
         />
-        <ThemeGenerator allThemes={allThemes} />
+        <ThemeGenerator
+          allThemes={allThemes}
+          currentTheme={currentTheme}
+          setCurrentTheme={setCurrentTheme}
+          initialPagination={initialPagination}
+        />
+        <ThemeInstallCode themeId={currentTheme.id?.slice(4)} />
         <div className="w-full flex flex-col">
           <div className="flex-grow w-full flex justify-center">
             <ThemePreview

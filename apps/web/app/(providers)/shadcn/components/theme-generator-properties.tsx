@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from "next-themes";
+import { useUser } from "@clerk/nextjs";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import ColorPickerInput from "@/components/color-picker-input";
 import { Theme } from "@/lib/atoms";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
+import { Loader2, Copy } from "lucide-react";
+import { ThemePresetSelector } from "./theme-preset-selector";
+import { ShadcnThemes } from "@prisma/client";
+import { convertShadcnThemeToTheme, getThemeName } from "@/app/utils";
 
 interface ThemeGeneratorPropertiesProps {
   shadcnTheme: Theme;
@@ -27,6 +27,10 @@ export function ThemeGeneratorProperties({
   copyCode,
 }: ThemeGeneratorPropertiesProps) {
   const { resolvedTheme } = useTheme();
+  const { user } = useUser();
+  const isOwner = user?.id === shadcnTheme.user;
+  const [isSaving, setIsSaving] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
 
   const handleColorChange =
     (key: keyof Theme["light"] | keyof Theme["dark"]) =>
@@ -55,6 +59,79 @@ export function ThemeGeneratorProperties({
       }));
     };
 
+  const handleSaveTheme = async () => {
+    if (!user || !shadcnTheme.id) return;
+
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/shadcn/${shadcnTheme.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          name: shadcnTheme.name,
+          display_name: shadcnTheme.displayName,
+          light_scheme: shadcnTheme.light,
+          dark_scheme: shadcnTheme.dark,
+          radius: shadcnTheme.radius,
+          charts: shadcnTheme.charts,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save theme");
+      }
+
+      await response.json();
+      toast.success("Theme saved successfully!");
+    } catch (error) {
+      console.error("Error saving theme:", error);
+      toast.error("Failed to save theme");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleMakeCopy = async () => {
+    if (!user) return;
+
+    setIsCopying(true);
+    try {
+      const response = await fetch("/api/shadcn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...shadcnTheme,
+          name: getThemeName(shadcnTheme.displayName),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create theme copy");
+      }
+
+      const newTheme = await response.json();
+      setShadcnTheme(convertShadcnThemeToTheme(newTheme));
+      toast.success("Theme copy created successfully!");
+    } catch (error) {
+      console.error("Error creating theme copy:", error);
+      toast.error("Failed to create theme copy");
+    } finally {
+      setIsCopying(false);
+    }
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShadcnTheme((prev) => ({
+      ...prev,
+      displayName: e.target.value,
+    }));
+  };
+
   const currentTheme =
     resolvedTheme === "dark" ? shadcnTheme.dark : shadcnTheme.light;
   const currentChartTheme =
@@ -67,54 +144,66 @@ export function ThemeGeneratorProperties({
       <div className="space-y-2 pr-0.5">
         <div className="flex justify-between bg-muted px-4 py-1.5 items-center rounded-t-md w-full">
           <h2 className="text-sm font-bold">Properties</h2>
-          <Button variant="outline" size="sm" onClick={() => copyCode("css")}>
-            Copy Code
-          </Button>
+          <div className="flex gap-2">
+            {isOwner ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleSaveTheme}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Theme"
+                )}
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleMakeCopy}
+                disabled={isCopying}
+              >
+                {isCopying ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Copying...
+                  </>
+                ) : (
+                  <>
+                    <Copy className="mr-2 h-4 w-4" />
+                    Make a Copy
+                  </>
+                )}
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                toast.info("Copied CSS to clipboard!");
+                copyCode("css");
+              }}
+            >
+              Copy Code
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 px-4">
-          <div>
-            <Label htmlFor="heading-font">Heading</Label>
-            <Select
-              value={shadcnTheme.fonts.heading}
-              onValueChange={(value) =>
-                setShadcnTheme((prev) => ({
-                  ...prev,
-                  fonts: { ...prev.fonts, heading: value },
-                }))
-              }
-            >
-              <SelectTrigger id="heading-font" disabled>
-                <SelectValue placeholder="Select font" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="inter">Inter</SelectItem>
-                <SelectItem value="roboto">Roboto</SelectItem>
-                <SelectItem value="opensans">Open Sans</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="body-font">Body</Label>
-            <Select
-              value={shadcnTheme.fonts.body}
-              onValueChange={(value) =>
-                setShadcnTheme((prev) => ({
-                  ...prev,
-                  fonts: { ...prev.fonts, body: value },
-                }))
-              }
-            >
-              <SelectTrigger id="body-font" disabled>
-                <SelectValue placeholder="Select font" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="inter">Inter</SelectItem>
-                <SelectItem value="roboto">Roboto</SelectItem>
-                <SelectItem value="opensans">Open Sans</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="px-4 pb-3">
+          <Label htmlFor="theme-name" className="text-xs">
+            Theme Name
+          </Label>
+          <Input
+            id="theme-name"
+            value={shadcnTheme.displayName}
+            onChange={handleNameChange}
+            className="mt-1"
+          />
         </div>
 
         <div className="px-4 pb-3">

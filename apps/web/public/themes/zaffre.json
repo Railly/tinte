@@ -1,0 +1,16 @@
+{
+  "name": "theme-zaffre",
+  "type": "registry:theme",
+  "cssVars": {
+    "light": {
+      "primary": "221.2 83.2% 53.3%",
+      "muted": "60 4.8% 94.9%",
+      "accent": "60 4.8% 94.9%",
+      "border": "60 4.8% 94.9%",
+      "input": "60 4.8% 94.9%",
+      "radius": "1.2rem",
+      "space": "0.25rem",
+      "shadow": "0.4"
+    }
+  }
+}

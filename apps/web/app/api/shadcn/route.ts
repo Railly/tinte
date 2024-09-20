@@ -8,11 +8,7 @@ import { Theme } from "@/lib/atoms";
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
-  const body = (await req.json()) as Partial<Theme> & { userId: string };
-
-  if (!body.userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const body = (await req.json()) as Partial<Theme> & { userId: string | null };
 
   try {
     const newTheme = await prisma.shadcnThemes.create({
@@ -22,12 +18,12 @@ export async function POST(req: NextRequest) {
         User: body.userId,
         light_scheme: sanitizeJsonInput(body.light),
         dark_scheme: sanitizeJsonInput(body.dark),
-        fonts: sanitizeJsonInput(body.fonts),
+        //fonts: sanitizeJsonInput(body.fonts),
         radius: String(body.radius),
-        space: String(body.space),
-        shadow: body.shadow,
+        //space: String(body.space),
+        //shadow: body.shadow,
         charts: sanitizeJsonInput(body.charts),
-        icons: body.icons,
+        //icons: body.icons,
       },
     });
 

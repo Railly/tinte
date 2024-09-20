@@ -39,20 +39,21 @@ export function useThemeApplier() {
         "--radius",
         `${shadcnTheme?.radius}rem`,
       );
-      document.documentElement.style.setProperty("--space", shadcnTheme.space);
-      document.documentElement.style.setProperty(
-        "--shadow",
-        shadcnTheme.shadow,
-      );
-      document.documentElement.style.setProperty(
-        "--font-heading",
-        shadcnTheme.fonts.heading,
-      );
-      document.documentElement.style.setProperty(
-        "--font-body",
-        shadcnTheme.fonts.body,
-      );
-      document.documentElement.style.setProperty("--icons", shadcnTheme.icons);
+
+      //document.documentElement.style.setProperty("--space", shadcnTheme.space);
+      //document.documentElement.style.setProperty(
+      //  "--shadow",
+      //  shadcnTheme.shadow,
+      //);
+      //document.documentElement.style.setProperty(
+      //  "--font-heading",
+      //  shadcnTheme.fonts.heading,
+      //);
+      //document.documentElement.style.setProperty(
+      //  "--font-body",
+      //  shadcnTheme.fonts.body,
+      //);
+      //document.documentElement.style.setProperty("--icons", shadcnTheme.icons);
     };
 
     applyTheme();

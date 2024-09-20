@@ -143,15 +143,6 @@ export const Header = ({
           <TinteLinkLogo />
           <Separator orientation="vertical" className="h-4 hidden md:block" />
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="/gallery"
-              className={cn(
-                buttonVariants({ variant: "link" }),
-                "px-0 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Gallery
-            </Link>
             <a
               href="https://github.com/Railly/tinte"
               className={cn(
@@ -225,12 +216,6 @@ export const Header = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href="/gallery">
-                    <IconPalette className="w-4 h-4 mr-1" />
-                    Gallery
-                  </Link>
-                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <a
                     href="https://github.com/Railly/tinte"

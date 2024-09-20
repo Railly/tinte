@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Badge } from "./ui/badge";
 
 interface HeaderAction {
   label: string;
@@ -35,7 +36,7 @@ export const GeneralHeader: React.FC<GeneralHeaderProps> = ({
 }) => {
   const navLinks = [
     { href: "/vscode", label: "VS Code", icon: IconPalette },
-    { href: "/shadcn", label: "Shadcn UI", icon: IconPalette },
+    { href: "/shadcn", label: "Shadcn UI", icon: IconPalette, isNew: true },
     {
       href: "https://github.com/Railly/tinte",
       label: "Repository",
@@ -57,7 +58,7 @@ export const GeneralHeader: React.FC<GeneralHeaderProps> = ({
           <Separator orientation="vertical" className="h-4 hidden md:block" />
           <div className="hidden md:flex items-center gap-4">
             {navLinks.map((link) => (
-              <NavLink key={link.href} href={link.href}>
+              <NavLink key={link.href} href={link.href} isNew={link.isNew}>
                 {link.label}
               </NavLink>
             ))}
@@ -114,6 +115,7 @@ export const GeneralHeader: React.FC<GeneralHeaderProps> = ({
                       key={link.href}
                       href={link.href}
                       className="flex items-center px-2 py-1 rounded-md text-sm font-medium w-full"
+                      isNew={link.isNew}
                     >
                       <link.icon className="w-4 h-4 mr-2" />
                       {link.label}
@@ -153,24 +155,38 @@ function NavLink({
   href,
   children,
   className,
+  isNew,
 }: {
   href: string;
   children: React.ReactNode;
   className?: string;
+  isNew?: boolean;
 }) {
   return (
-    <Link href={href}>
-      <motion.span
-        className={cn(
-          buttonVariants({ variant: "link" }),
-          "px-0 text-muted-foreground hover:text-foreground",
-          className,
+    <div className="inline-flex items-center gap-2 w-full">
+      <Link className="w-full" href={href}>
+        <motion.span
+          className={cn(
+            buttonVariants({ variant: "link" }),
+            "px-0 text-muted-foreground hover:text-foreground relative w-full",
+            className,
+          )}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {children}
+        </motion.span>
+      </Link>
+      <div>
+        {isNew && (
+          <Badge
+            variant="default"
+            className="text-xs bg-emerald-500 hover:bg-emerald-600 text-white"
+          >
+            New
+          </Badge>
         )}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        {children}
-      </motion.span>
-    </Link>
+      </div>
+    </div>
   );
 }

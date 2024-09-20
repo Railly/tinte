@@ -50,13 +50,13 @@ export async function PUT(
         display_name: body.display_name,
         light_scheme: sanitizeJsonInput(body.light_scheme),
         dark_scheme: sanitizeJsonInput(body.dark_scheme),
-        fonts: sanitizeJsonInput(body.fonts),
+        //fonts: sanitizeJsonInput(body.fonts),
         radius: body.radius,
-        space: body.space,
-        shadow: body.shadow,
+        //space: body.space,
+        //shadow: body.shadow,
         charts: sanitizeJsonInput(body.charts),
-        icons: body.icons,
-        theme_version: { increment: 1 },
+        //icons: body.icons,
+        //theme_version: { increment: 1 },
       },
     });
 
