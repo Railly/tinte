@@ -44,7 +44,7 @@ const ReadOnlyPreview = ({
   const handleSignInOrEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (user.isSignedIn) {
-      router.push(`/vscode?theme=${themeConfig?.name}`);
+      router.push(`/vscode/editor?theme=${themeConfig?.name}`);
     } else {
       setIsSignInDialogOpen(true);
     }
@@ -87,7 +87,7 @@ const ReadOnlyPreview = ({
       <SignInDialog
         open={isSignInDialogOpen}
         setOpen={setIsSignInDialogOpen}
-        redirectUrl={`/vscode?theme=${themeConfig?.name}`}
+        redirectUrl={`/vscode/editor?theme=${themeConfig?.name}`}
       />
     </div>
   );

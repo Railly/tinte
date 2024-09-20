@@ -230,7 +230,7 @@ export const PreviewEditor = ({
       <SignInDialog
         open={isSignInDialogOpen}
         setOpen={setIsSignInDialogOpen}
-        redirectUrl={`/?theme=${themeConfig.name}`}
+        redirectUrl={`/editor?theme=${themeConfig.name}`}
       />
       <DeleteThemeDialog
         isOpen={isDeleteDialogOpen}

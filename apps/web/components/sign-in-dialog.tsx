@@ -13,7 +13,7 @@ interface SignInDialogProps {
   setOpen?: (open: boolean) => void;
 }
 export const SignInDialog: React.FC<SignInDialogProps> = ({
-  redirectUrl = "/vscode",
+  redirectUrl = "/",
   open,
   setOpen,
 }) => {

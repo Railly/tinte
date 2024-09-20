@@ -71,7 +71,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
   const handleSignInOrEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (user) {
-      router.push(`/vscode?theme=${themeConfig.name}`);
+      router.push(`/vscode/editor?theme=${themeConfig.name}`);
     } else {
       setIsSignInDialogOpen(true);
     }
@@ -262,7 +262,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
       <SignInDialog
         open={isSignInDialogOpen}
         setOpen={setIsSignInDialogOpen}
-        redirectUrl={`/vscode?theme=${themeConfig.name}`}
+        redirectUrl={`/vscode/editor?theme=${themeConfig.name}`}
       />
     </MotionCard>
   );
