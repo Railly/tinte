@@ -37,9 +37,9 @@ export function ResponsiveThemeEditor({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm">
+          <Button>
             <IconPalette className="mr-2 h-4 w-4" />
-            Edit Palette
+            Customize
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-96 p-0" side="right" align="start">
@@ -52,12 +52,12 @@ export function ResponsiveThemeEditor({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button>
           <IconPalette className="mr-2 h-4 w-4" />
-          Edit
+          Customize
         </Button>
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent className="mb-2">
         <div className="mx-auto w-full max-w-sm">{content}</div>
       </DrawerContent>
     </Drawer>

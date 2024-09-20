@@ -32,7 +32,7 @@ export function ThemeWorkspace({
 
   const headerActions = [
     {
-      label: "Edit Palette",
+      label: "Customize",
       icon: IconPalette,
       component: (
         <ResponsiveThemeEditor

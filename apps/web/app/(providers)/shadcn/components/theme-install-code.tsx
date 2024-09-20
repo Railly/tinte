@@ -53,7 +53,7 @@ export function ThemeInstallCode({ themeId }: ThemeInstallCodeProps) {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(installCommand);
-      toast.success("Copied to clipboard");
+      toast.success("Command copied to clipboard");
       track("Install Command Copied", { packageManager, themeId });
     } catch (err) {
       console.error("Failed to copy: ", err);

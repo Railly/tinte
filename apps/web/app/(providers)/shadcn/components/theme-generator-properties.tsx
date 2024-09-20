@@ -187,7 +187,7 @@ export function ThemeGeneratorProperties({
                 copyCode("css");
               }}
             >
-              Copy Code
+              Copy CSS
             </Button>
           </div>
         </div>

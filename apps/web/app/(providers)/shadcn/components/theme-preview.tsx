@@ -19,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 export const description = "A collection of health charts.";
 
@@ -43,6 +44,10 @@ const BlockWrapper = ({
     () => generateVSCodeTheme(defaultThemeConfig),
     [],
   );
+
+  const copyBlockCode = () => {
+    navigator.clipboard.writeText(componentCode);
+  };
 
   const { highlightedText } = useHighlighter({
     theme: vsCodeTheme,
@@ -76,11 +81,14 @@ const BlockWrapper = ({
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  onClick={() => copyCode("json")}
+                  onClick={() => {
+                    copyBlockCode();
+                    toast.success("Block copied to clipboard.");
+                  }}
                   size="sm"
                 >
                   <IconCopy className="h-4 w-4" />
-                  <span className="sr-only">Copy Theme</span>
+                  <span className="sr-only">Copy Block</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
