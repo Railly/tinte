@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useRef, useCallback } from "react";
-import { ColorChangingTitle } from "@/components/color-changing-title";
 import { LandingThemeGenerator } from "@/components/landing-theme-generator";
 import { ThemePreview } from "@/components/theme-preview";
 import { ThemeCards } from "@/components/theme-cards";
@@ -11,6 +10,7 @@ import { ScrollToTopButton } from "./scroll-to-top";
 import { useInfiniteThemes } from "@/lib/hooks/use-infinite-themes";
 import { LoadMoreSkeleton } from "./load-more-skeleton";
 import { useUser } from "@clerk/nextjs";
+import { DynamicAccentTitle } from "./dynamic-accent-title";
 
 interface ThemeManagerProps {
   initialThemes: {
@@ -109,11 +109,15 @@ export function ThemeManager({ initialThemes }: ThemeManagerProps) {
 
   return (
     <main className="flex gap-4 flex-col items-center py-4 px-4 md:px-8">
-      <ColorChangingTitle
-        themeConfig={themeConfig}
+      <DynamicAccentTitle
+        theme={themeConfig}
         isTextareaFocused={isTextareaFocused}
+        words={["Design", "Visualize", "Share"]}
+        accentColors={["accent", "accent-2", "accent-3"]}
+        intervalDuration={2000}
+        subtitle="your VS Code theme"
       />
-      <section className="w-full md:sticky md:top-4 bg-background z-20 flex flex-col md:flex-row items-center gap-4 justify-center bg-interface rounded-lg custom-shadow">
+      <section className="w-full md:sticky md:top-[4rem] bg-background z-20 flex flex-col md:flex-row items-center gap-4 justify-center bg-interface rounded-lg custom-shadow">
         <LandingThemeGenerator
           ref={focusAreaRef}
           updateThemeConfig={updateThemeConfig}

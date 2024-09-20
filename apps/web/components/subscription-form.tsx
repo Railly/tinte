@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { toast } from "sonner";
+import { IconTinte } from "./ui/icons";
 
 export function SubscriptionForm() {
   const [open, setOpen] = useState(false);
@@ -36,13 +37,15 @@ export function SubscriptionForm() {
         setOpen(false);
         const jsConfetti = new JSConfetti();
         jsConfetti.addConfetti();
-        toast.success("Thanks for subscribing! 🎉, check your email");
+        toast.success(
+          "You're in! 🎉 Check your inbox for a colorful surprise!",
+        );
       } else {
         toast.error(body.error);
       }
     } catch (error) {
       console.error("Subscription error:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error("Oops! Something went wrong. Please try again.");
     }
 
     setLoading(false);
@@ -50,15 +53,18 @@ export function SubscriptionForm() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button>Subscribe</Button>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="lg">
+          <IconTinte className="w-5 h-5 mr-2" />
+          Join the Tinte Community
+        </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>Subscribe to our newsletter</DialogTitle>
+        <DialogTitle>Join the Tinte Community</DialogTitle>
         <DialogDescription>
           <p className="text-sm text-foreground mb-4">
-            Subscribe & get the latest updates on our products, features, and
-            exclusive offers.
+            Be the first to know about new themes, features, and exclusive
+            offers. Let's add some color to your inbox!
           </p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
@@ -68,7 +74,7 @@ export function SubscriptionForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder="your.email@example.com"
                 required
               />
             </div>
@@ -79,12 +85,12 @@ export function SubscriptionForm() {
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                placeholder="Enter your first name"
+                placeholder="Your first name"
                 required
               />
             </div>
             <Button type="submit" disabled={loading}>
-              {loading ? "Subscribing..." : "Subscribe"}
+              {loading ? "Joining..." : "Join Now"}
             </Button>
           </form>
         </DialogDescription>

@@ -35,7 +35,10 @@ export const LandingThemeGenerator = forwardRef<
   };
 
   const handleEnhanceDescription = async () => {
-    const enhancedDescription = await enhanceDescription(themeDescription);
+    const enhancedDescription = await enhanceDescription(
+      themeDescription,
+      "vscode",
+    );
     if (enhancedDescription) {
       setThemeDescription(enhancedDescription);
     }
@@ -53,7 +56,7 @@ export const LandingThemeGenerator = forwardRef<
       ref={ref}
       className="flex flex-col w-full md:w-96 border rounded-md shadow-md dark:shadow-foreground/5"
     >
-      <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
+      <div className="flex justify-between items-center p-2 rounded-t-md bg-card text-card-foreground border-b">
         <h2 className="text-sm font-bold">Theme Generator</h2>
         <ShineButton
           variant="default"

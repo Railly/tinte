@@ -71,7 +71,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
   const handleSignInOrEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (user) {
-      router.push(`/generator?theme=${themeConfig.name}`);
+      router.push(`/vscode?theme=${themeConfig.name}`);
     } else {
       setIsSignInDialogOpen(true);
     }
@@ -114,10 +114,10 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
   return (
     <MotionCard
       className={cn(
-        "overflow-hidden cursor-pointer transition-all duration-300",
+        "overflow-hidden border border-transparent cursor-pointer transition-all duration-300",
         isSelected
-          ? "border-primary shadow-lg"
-          : "border-transparent hover:border-accent",
+          ? "border-primary/50 shadow-lg shadow-primary/10"
+          : "hover:border-accent",
         {
           "opacity-50 grayscale": isTextareaFocused && !isSelected,
         },
@@ -262,7 +262,7 @@ export const ThemeCard: React.FC<ThemeCardProps> = ({
       <SignInDialog
         open={isSignInDialogOpen}
         setOpen={setIsSignInDialogOpen}
-        redirectUrl={`/generator?theme=${themeConfig.name}`}
+        redirectUrl={`/vscode?theme=${themeConfig.name}`}
       />
     </MotionCard>
   );

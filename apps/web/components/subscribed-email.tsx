@@ -3,7 +3,6 @@ import * as React from "react";
 interface SubscribedEmailProps {
   firstName: string;
   productName: string;
-  featuresLink: string;
   unsubscribeLink: string;
 }
 
@@ -48,48 +47,56 @@ export const SubscribedEmail: React.FC<Readonly<SubscribedEmailProps>> = ({
                     color: "#1C3658",
                   }}
                 >
-                  Welcome, {firstName}!
+                  Welcome to the Tinte Community, {firstName}! 🎨
                 </h1>
                 <p style={{ marginBottom: "20px" }}>
-                  Thank you for subscribing to {productName}. We're thrilled to
-                  have you on board!
+                  We're thrilled to have you join the colorful world of{" "}
+                  {productName}! Get ready to transform your development
+                  environment with stunning themes.
                 </p>
                 <p style={{ marginBottom: "20px" }}>
-                  As a subscriber, you'll be the first to know about our latest
-                  features, updates, and exclusive offers.
+                  As a valued member of our community, you'll be the first to
+                  know about:
+                </p>
+                <ul style={{ marginBottom: "20px", paddingLeft: "20px" }}>
+                  <li>New VS Code and Shadcn UI themes</li>
+                  <li>Exciting features and updates</li>
+                  <li>Exclusive offers and tips for theme customization</li>
+                </ul>
+                <p style={{ marginBottom: "20px" }}>
+                  Stay tuned for a splash of inspiration in your inbox!
                 </p>
                 <p
                   style={{ marginTop: "30px", fontSize: "12px", color: "#999" }}
                 >
-                  Stay connected with us on social media: Follow us on 𝕏:
+                  Let's keep the conversation colorful! Follow us on 𝕏:
                   <br />
                   <a
                     href="https://twitter.com/@crafterstation"
-                    style={{ color: "#999", textDecoration: "underline" }}
+                    style={{ color: "#1C3658", textDecoration: "underline" }}
                   >
                     @crafterstation
                   </a>
-                  , and
+                  {" and "}
                   <a
                     href="https://twitter.com/@raillyhugo"
-                    style={{ color: "#999", textDecoration: "underline" }}
+                    style={{ color: "#1C3658", textDecoration: "underline" }}
                   >
                     @raillyhugo
                   </a>
-                  .
                 </p>
                 <p
                   style={{ marginTop: "30px", fontSize: "12px", color: "#999" }}
                 >
-                  If you wish to unsubscribe, you can do so at any time by
-                  clicking{" "}
+                  If you ever need to tone things down, you can unsubscribe{" "}
                   <a
                     href={unsubscribeLink}
-                    style={{ color: "#999", textDecoration: "underline" }}
+                    style={{ color: "#1C3658", textDecoration: "underline" }}
                   >
                     here
                   </a>
-                  .
+                  . But we hope you'll stick around for the vibrant journey
+                  ahead!
                 </p>
               </td>
             </tr>

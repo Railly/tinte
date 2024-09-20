@@ -42,7 +42,7 @@ const getPaletteSchema = (theme: "light" | "dark") =>
   });
 
 const outputSchema = z.object({
-  name: z.string().min(3).describe("Shorty Theme name"),
+  name: z.string().min(3).describe("Shorty theme name"),
   light: getPaletteSchema("light").required().describe("Light theme palette"),
   dark: getPaletteSchema("dark").required().describe("Dark theme palette"),
 });

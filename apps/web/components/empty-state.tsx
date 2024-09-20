@@ -59,7 +59,7 @@ export function EmptyState({ type }: EmptyStateProps) {
       {icon}
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground max-w-md">{message}</p>
-      <ShineButton className="mt-4" onClick={() => router.push("/generator")}>
+      <ShineButton className="mt-4" onClick={() => router.push("/vscode")}>
         Create a Theme
       </ShineButton>
     </div>

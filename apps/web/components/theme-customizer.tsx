@@ -55,7 +55,7 @@ export function ThemeCustomizer({
 
   const handleSelectTheme = async (
     themeName: string,
-    palette?: DarkLightPalette
+    palette?: DarkLightPalette,
   ) => {
     const updatedConfig: ThemeConfig = {
       ...themeConfig,
@@ -123,7 +123,7 @@ export function ThemeCustomizer({
           <SignInDialog
             open={isSignInDialogOpen}
             setOpen={setIsSignInDialogOpen}
-            redirectUrl={`/generator?theme=${themeConfig.name}`}
+            redirectUrl={`/vscode?theme=${themeConfig.name}`}
           />
         </div>
       </div>

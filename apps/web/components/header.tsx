@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { GitHubLogoIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { TinteLinkLogo } from "./atom/tinte-link-logo";
 
 export const Header = ({
   themeConfig,
@@ -139,21 +140,9 @@ export const Header = ({
     <TooltipProvider>
       <header className="flex items-center justify-between py-2 px-4 h-14 border-b">
         <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2">
-            <IconTinte />
-            <h1 className="text-md font-bold">tinte</h1>
-          </Link>
+          <TinteLinkLogo />
           <Separator orientation="vertical" className="h-4 hidden md:block" />
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="/gallery"
-              className={cn(
-                buttonVariants({ variant: "link" }),
-                "px-0 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Gallery
-            </Link>
             <a
               href="https://github.com/Railly/tinte"
               className={cn(
@@ -227,12 +216,6 @@ export const Header = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href="/gallery">
-                    <IconPalette className="w-4 h-4 mr-1" />
-                    Gallery
-                  </Link>
-                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <a
                     href="https://github.com/Railly/tinte"
@@ -318,7 +301,7 @@ export const Header = ({
       <SignInDialog
         open={isSignInDialogOpen}
         setOpen={setIsSignInDialogOpen}
-        redirectUrl={`/generator?theme=${themeConfig.name}`}
+        redirectUrl={`/vscode?theme=${themeConfig.name}`}
       />
     </TooltipProvider>
   );

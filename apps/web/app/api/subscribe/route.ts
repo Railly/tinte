@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   if (!success) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   if (isSubscribed) {
     return NextResponse.json(
       { error: "Email already subscribed" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -46,18 +46,17 @@ export async function POST(request: NextRequest) {
     react: SubscribedEmail({
       firstName,
       productName,
-      featuresLink: "https://tinte.railly.dev/features",
       unsubscribeLink: `https://tinte.railly.dev/api/unsubscribe?email=${encodeURIComponent(
-        email
+        email,
       )}`,
     }),
-    text: `Welcome, ${firstName}! Thank you for subscribing to ${productName}. We're thrilled to have you on board! As a subscriber, you'll be the first to know about our latest features, updates, and exclusive offers. If you wish to unsubscribe, click here: https://yourproduct.com/unsubscribe?email=${encodeURIComponent(
-      email
+    text: `Welcome, ${firstName}! Thank you for subscribing to ${productName}. We're thrilled to have you on board! As a subscriber, you'll be the first to know about our latest features, updates, and exclusive offers. If you wish to unsubscribe, click here: https://tinte.railly.dev/api/unsubscribe?email=${encodeURIComponent(
+      email,
     )}`,
   });
 
   return NextResponse.json(
     { message: "Email subscribed successfully" },
-    { status: 200 }
+    { status: 200 },
   );
 }

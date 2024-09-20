@@ -38,7 +38,10 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
   };
 
   const handleEnhanceDescription = async () => {
-    const enhancedDescription = await enhanceDescription(themeDescription);
+    const enhancedDescription = await enhanceDescription(
+      themeDescription,
+      "vscode",
+    );
     if (enhancedDescription) {
       setThemeDescription(enhancedDescription);
     }
@@ -66,7 +69,7 @@ export const ThemeGenerator: React.FC<ThemeGeneratorProps> = ({
 
   return (
     <div className="border rounded-md">
-      <div className="flex justify-between items-center p-2 bg-secondary/30 border-b">
+      <div className="flex justify-between items-center p-2 bg-card border-b">
         <h2 className="text-sm font-bold">Theme Generator</h2>
         <Button
           variant="outline"

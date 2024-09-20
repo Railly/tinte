@@ -3,7 +3,7 @@ import { IconTinte } from "@/components/ui/icons";
 import RHLogoIcon from "@/public/rh-logo.svg";
 import Link from "next/link";
 
-export function HeaderLogo() {
+export function RHTinteLinkLogo() {
   return (
     <div className="flex items-center gap-3.5 px-1">
       <a

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -10,7 +11,7 @@ export const entries = <O extends object>(obj: O) =>
 
 export function debounce<T extends (...args: any[]) => void>(
   callback: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout;
   return (...args: Parameters<T>): void => {
@@ -20,3 +21,10 @@ export function debounce<T extends (...args: any[]) => void>(
     }, delay);
   };
 }
+
+export const sanitizeJsonInput = (input: unknown): Prisma.InputJsonValue => {
+  if (input !== null) {
+    return JSON.parse(JSON.stringify(input));
+  }
+  return JSON.parse(JSON.stringify({}));
+};
