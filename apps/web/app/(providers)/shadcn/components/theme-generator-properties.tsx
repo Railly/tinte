@@ -9,8 +9,6 @@ import { Theme } from "@/lib/atoms";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { Loader2, Copy } from "lucide-react";
-import { ThemePresetSelector } from "./theme-preset-selector";
-import { ShadcnThemes } from "@prisma/client";
 import { convertShadcnThemeToTheme, getThemeName } from "@/app/utils";
 
 interface ThemeGeneratorPropertiesProps {

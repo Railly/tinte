@@ -25,9 +25,7 @@ export function ThemeGenerator({
   setCurrentTheme,
   initialPagination,
 }: ThemeGeneratorProps) {
-  const [description, setDescription] = useState<string>(
-    "A theme inspired by Mistborn, evoking a dark, mysterious, and magical atmosphere. Expect deep grays, silvers, and muted blues with gothic and fantasy elements.",
-  );
+  const [description, setDescription] = useState<string>("");
 
   const { isGenerating, generateTheme, isSaving } =
     useShadcnThemeGenerator(setCurrentTheme);

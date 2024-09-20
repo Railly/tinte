@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextRequest } from "next/server";
+import { track } from "@vercel/analytics/server";
 
 export const maxDuration = 30;
 
@@ -96,6 +97,7 @@ export async function POST(req: NextRequest) {
   const { prompt }: { prompt: string } = await req.json();
 
   if (!success) {
+    await track("Theme Generation Ratelimited", { ip });
     return new Response("Ratelimited!", { status: 429 });
   }
 
@@ -143,9 +145,14 @@ export async function POST(req: NextRequest) {
       },
     };
 
+    await track("Theme Generated", {
+      displayName: parsedTheme.displayName,
+    });
+
     return Response.json({ theme: parsedTheme });
   } catch (error) {
     console.error("Theme generation error:", error);
+    await track("Theme Generation Failed", { error: (error as Error).message });
     return Response.json(
       { error: "Failed to generate theme" },
       { status: 500 },

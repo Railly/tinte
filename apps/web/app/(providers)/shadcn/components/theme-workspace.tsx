@@ -25,12 +25,8 @@ export function ThemeWorkspace({
   allThemes,
   initialPagination,
 }: ThemeWorkspaceProps) {
-  const {
-    currentTheme,
-    currentColorScheme,
-    currentChartTheme,
-    setCurrentTheme,
-  } = useThemeApplier();
+  const { currentTheme, currentChartTheme, setCurrentTheme } =
+    useThemeApplier();
 
   const copyCode = createCopyCodeFunction(currentTheme);
 
@@ -53,10 +49,10 @@ export function ThemeWorkspace({
       <GeneralHeader actions={headerActions} />
       <main className="flex-grow flex flex-col">
         <DynamicAccentTitle
-          theme={currentColorScheme}
+          theme={currentChartTheme}
           isTextareaFocused={false}
           words={["Create", "Customize", "Apply"]}
-          accentColors={["primary", "secondary", "accent"]}
+          accentColors={["chart1", "chart2", "chart3"]}
           intervalDuration={2000}
           subtitle="your shadcn/ui theme"
         />

@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { track } from "@vercel/analytics";
 
 interface ThemeInstallCodeProps {
   themeId: string;
@@ -53,10 +54,16 @@ export function ThemeInstallCode({ themeId }: ThemeInstallCodeProps) {
     try {
       await navigator.clipboard.writeText(installCommand);
       toast.success("Copied to clipboard");
+      track("Install Command Copied", { packageManager, themeId });
     } catch (err) {
       console.error("Failed to copy: ", err);
       toast.error("Failed to copy command");
     }
+  };
+
+  const handlePackageManagerChange = (pm: PackageManager) => {
+    setPackageManager(pm);
+    track("Package Manager Changed", { from: packageManager, to: pm, themeId });
   };
 
   return (
@@ -71,7 +78,7 @@ export function ThemeInstallCode({ themeId }: ThemeInstallCodeProps) {
                     key={pm}
                     variant={packageManager === pm ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setPackageManager(pm)}
+                    onClick={() => handlePackageManagerChange(pm)}
                   >
                     {pm}
                   </Button>

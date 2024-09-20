@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextRequest } from "next/server";
+import { track } from "@vercel/analytics/server";
 
 export const maxDuration = 15;
 
@@ -27,19 +28,36 @@ export async function POST(req: NextRequest) {
   const { prompt }: { prompt: string } = await req.json();
 
   if (!success) {
+    await track("VSCode Theme Description Enhancement Ratelimited", { ip });
     return new Response("Ratelimited!", { status: 429 });
   }
 
-  const result = await generateObject({
-    model: openai("gpt-4o-mini"),
-    system: `You are an expert at enhancing theme descriptions for Visual Studio Code. Your task is to take a user's initial theme idea and expand it into a more detailed and creative description. Follow these guidelines:
-    - Maintain the core concept of the original prompt
-    - Add specific color suggestions or palettes
-    - Keep the enhanced prompt concise (max 150 characters)
-    - Use descriptive and evocative language`,
-    schema: outputSchema,
-    prompt: `Enhance this theme description: "${prompt}"`,
-  });
+  try {
+    const result = await generateObject({
+      model: openai("gpt-4o-mini"),
+      system: `You are an expert at enhancing theme descriptions for Visual Studio Code. Your task is to take a user's initial theme idea and expand it into a more detailed and creative description. Follow these guidelines:
+      - Maintain the core concept of the original prompt
+      - Add specific color suggestions or palettes
+      - Keep the enhanced prompt concise (max 150 characters)
+      - Use descriptive and evocative language`,
+      schema: outputSchema,
+      prompt: `Enhance this theme description: "${prompt}"`,
+    });
 
-  return Response.json({ enhancedPrompt: result.object.enhancedPrompt });
+    await track("VSCode Theme Description Enhanced", {
+      originalLength: prompt.length,
+      enhancedLength: result.object.enhancedPrompt.length,
+    });
+
+    return Response.json({ enhancedPrompt: result.object.enhancedPrompt });
+  } catch (error) {
+    console.error("VSCode theme description enhancement error:", error);
+    await track("VSCode Theme Description Enhancement Failed", {
+      error: (error as Error).message,
+    });
+    return Response.json(
+      { error: "Failed to enhance VSCode theme description" },
+      { status: 500 },
+    );
+  }
 }

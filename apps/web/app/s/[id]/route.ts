@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, ShadcnThemes } from "@prisma/client";
 import { ColorScheme, HSLAColor } from "@/lib/atoms";
+import { track } from "@vercel/analytics/server";
 
 const prisma = new PrismaClient();
 
@@ -16,13 +17,22 @@ export async function GET(
     });
 
     if (!theme) {
+      await track("Theme Fetch Failed", { themeId, reason: "Not Found" });
       return NextResponse.json({ error: "Theme not found" }, { status: 404 });
     }
 
     const formattedTheme = formatTheme(theme);
+
+    await track("Theme Fetched", {
+      themeId: theme.xata_id,
+      themeName: theme.name,
+      displayName: theme.display_name,
+    });
+
     return NextResponse.json(formattedTheme);
   } catch (error) {
     console.error("Error fetching ShadcnTheme:", error);
+    await track("Theme Fetch Failed", { themeId, reason: "Server Error" });
     return NextResponse.json(
       { error: "Failed to fetch theme" },
       { status: 500 },

@@ -84,7 +84,7 @@ export function ThemeGeneratorInput({
           />
           <div className="relative">
             <Textarea
-              placeholder="Describe your theme here..."
+              placeholder="What you wanna build?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="resize-none w-full !h-32 !pb-10"
