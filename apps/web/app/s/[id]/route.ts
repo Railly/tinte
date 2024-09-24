@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, ShadcnThemes } from "@prisma/client";
-import { ColorScheme, HSLAColor } from "@/lib/atoms";
+import { ChartColors, ColorScheme, HSLAColor } from "@/lib/atoms";
 import { track } from "@vercel/analytics/server";
 
 const prisma = new PrismaClient();
@@ -45,7 +45,7 @@ export async function GET(
 function formatTheme(theme: ShadcnThemes) {
   const lightScheme = theme.light_scheme as ColorScheme;
   const darkScheme = theme.dark_scheme as ColorScheme;
-  const charts = theme.charts as { light: ColorScheme; dark: ColorScheme };
+  const charts = theme.charts as { light: ChartColors; dark: ChartColors };
 
   function hslToString(color: HSLAColor) {
     return `${color.h} ${color.s}% ${color.l}%`;
@@ -59,10 +59,10 @@ function formatTheme(theme: ShadcnThemes) {
     return processed;
   }
 
-  function processChartColors(chartScheme: ColorScheme) {
+  function processChartColors(chartScheme: ChartColors) {
     const processed: Record<string, string> = {};
     for (const [key, value] of Object.entries(chartScheme)) {
-      processed[key] = hslToString(value);
+      processed[`chart-${key.at(-1)}`] = hslToString(value);
     }
     return processed;
   }
