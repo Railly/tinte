@@ -7,7 +7,6 @@ import { Dashboard06 } from "./blocks/dashboard-06";
 import { Dashboard07 } from "./blocks/dashboard-07";
 import { Button } from "@/components/ui/button";
 import { IconComputer, IconCode, IconCopy } from "@/components/ui/icons";
-import { createCopyCodeFunction } from "@/lib/copy-code/generators";
 import { useHighlighter } from "@/lib/hooks/use-highlighter";
 import { defaultThemeConfig } from "@/lib/core/config";
 import { generateVSCodeTheme } from "@/lib/core";
@@ -34,11 +33,10 @@ interface BlockWrapperProps {
 const BlockWrapper = ({
   children,
   title,
-  theme,
+  //theme,
   componentCode,
 }: BlockWrapperProps) => {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
-  const copyCode = createCopyCodeFunction(theme);
 
   const vsCodeTheme = useMemo(
     () => generateVSCodeTheme(defaultThemeConfig),
@@ -130,11 +128,11 @@ export function ThemePreview({
 }) {
   const chartColors = useMemo(() => {
     return {
-      chart1: `hsl(${currentChartTheme.chart1.h}, ${currentChartTheme.chart1.s}%, ${currentChartTheme.chart1.l}%)`,
-      chart2: `hsl(${currentChartTheme.chart2.h}, ${currentChartTheme.chart2.s}%, ${currentChartTheme.chart2.l}%)`,
-      chart3: `hsl(${currentChartTheme.chart3.h}, ${currentChartTheme.chart3.s}%, ${currentChartTheme.chart3.l}%)`,
-      chart4: `hsl(${currentChartTheme.chart4.h}, ${currentChartTheme.chart4.s}%, ${currentChartTheme.chart4.l}%)`,
-      chart5: `hsl(${currentChartTheme.chart5.h}, ${currentChartTheme.chart5.s}%, ${currentChartTheme.chart5.l}%)`,
+      "chart-1": `hsl(${currentChartTheme["chart-1"].h}, ${currentChartTheme["chart-1"].s}%, ${currentChartTheme["chart-1"].l}%)`,
+      "chart-2": `hsl(${currentChartTheme["chart-2"].h}, ${currentChartTheme["chart-2"].s}%, ${currentChartTheme["chart-2"].l}%)`,
+      "chart-3": `hsl(${currentChartTheme["chart-3"].h}, ${currentChartTheme["chart-3"].s}%, ${currentChartTheme["chart-3"].l}%)`,
+      "chart-4": `hsl(${currentChartTheme["chart-4"].h}, ${currentChartTheme["chart-4"].s}%, ${currentChartTheme["chart-4"].l}%)`,
+      "chart-5": `hsl(${currentChartTheme["chart-5"].h}, ${currentChartTheme["chart-5"].s}%, ${currentChartTheme["chart-5"].l}%)`,
     };
   }, [currentChartTheme]);
 

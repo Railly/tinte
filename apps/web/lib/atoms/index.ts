@@ -26,11 +26,11 @@ export type ColorScheme = {
 };
 
 export type ChartColors = {
-  chart1: HSLAColor;
-  chart2: HSLAColor;
-  chart3: HSLAColor;
-  chart4: HSLAColor;
-  chart5: HSLAColor;
+  "chart-1": HSLAColor;
+  "chart-2": HSLAColor;
+  "chart-3": HSLAColor;
+  "chart-4": HSLAColor;
+  "chart-5": HSLAColor;
 };
 
 export type Theme = {
@@ -109,18 +109,18 @@ export const themeAtom = atom<Theme>({
   //shadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
   charts: {
     light: {
-      chart1: { h: 12, s: 76, l: 61, a: 1 },
-      chart2: { h: 173, s: 58, l: 39, a: 1 },
-      chart3: { h: 197, s: 37, l: 24, a: 1 },
-      chart4: { h: 43, s: 74, l: 66, a: 1 },
-      chart5: { h: 27, s: 87, l: 67, a: 1 },
+      "chart-1": { h: 12, s: 76, l: 61, a: 1 },
+      "chart-2": { h: 173, s: 58, l: 39, a: 1 },
+      "chart-3": { h: 197, s: 37, l: 24, a: 1 },
+      "chart-4": { h: 43, s: 74, l: 66, a: 1 },
+      "chart-5": { h: 27, s: 87, l: 67, a: 1 },
     },
     dark: {
-      chart1: { h: 12, s: 76, l: 61, a: 1 },
-      chart2: { h: 173, s: 58, l: 59, a: 1 },
-      chart3: { h: 197, s: 37, l: 54, a: 1 },
-      chart4: { h: 43, s: 74, l: 66, a: 1 },
-      chart5: { h: 27, s: 87, l: 67, a: 1 },
+      "chart-1": { h: 12, s: 76, l: 61, a: 1 },
+      "chart-2": { h: 173, s: 58, l: 59, a: 1 },
+      "chart-3": { h: 197, s: 37, l: 54, a: 1 },
+      "chart-4": { h: 43, s: 74, l: 66, a: 1 },
+      "chart-5": { h: 27, s: 87, l: 67, a: 1 },
     },
   },
   //icons: "@phosphor-icons/react",

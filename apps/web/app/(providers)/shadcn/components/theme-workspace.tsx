@@ -52,7 +52,7 @@ export function ThemeWorkspace({
           theme={currentChartTheme}
           isTextareaFocused={false}
           words={["Create", "Customize", "Apply"]}
-          accentColors={["chart1", "chart2", "chart3"]}
+          accentColors={["chart-1", "chart-2", "chart-3"]}
           intervalDuration={2000}
           subtitle="your shadcn/ui theme"
         />

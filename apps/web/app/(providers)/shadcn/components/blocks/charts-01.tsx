@@ -40,41 +40,41 @@ export function Charts01({
   chartColors,
 }: {
   chartColors: {
-    chart1: string;
-    chart2: string;
-    chart3: string;
-    chart4: string;
-    chart5: string;
+    "chart-1": string;
+    "chart-2": string;
+    "chart-3": string;
+    "chart-4": string;
+    "chart-5": string;
   };
 }) {
   const chartConfig = {
     steps: {
       label: "Steps",
-      color: chartColors.chart1,
+      color: chartColors["chart-1"],
     },
     calories: {
       label: "Calories",
-      color: chartColors.chart2,
+      color: chartColors["chart-2"],
     },
     time: {
       label: "Time",
-      color: chartColors.chart3,
+      color: chartColors["chart-3"],
     },
     move: {
       label: "Move",
-      color: chartColors.chart1,
+      color: chartColors["chart-1"],
     },
     exercise: {
       label: "Exercise",
-      color: chartColors.chart2,
+      color: chartColors["chart-2"],
     },
     stand: {
       label: "Stand",
-      color: chartColors.chart3,
+      color: chartColors["chart-3"],
     },
     resting: {
       label: "Resting",
-      color: chartColors.chart1,
+      color: chartColors["chart-1"],
     },
   };
 
