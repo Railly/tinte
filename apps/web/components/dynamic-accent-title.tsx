@@ -52,10 +52,11 @@ export function DynamicAccentTitle({
         (theme.palette.light as Palette)[colorKey as keyof Palette] ||
         theme.palette.light.primary
       );
-    } else if ("chart1" in theme) {
+    } else if ("chart-1" in theme) {
       // It's a ChartColors
       return (
-        (theme as ChartColors)[colorKey as keyof ChartColors] || theme.chart1
+        (theme as ChartColors)[colorKey as keyof ChartColors] ||
+        theme["chart-1"]
       );
     } else {
       // It's a ColorScheme

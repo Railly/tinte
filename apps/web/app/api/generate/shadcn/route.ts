@@ -43,11 +43,11 @@ const ThemeSchema = z.object({
 });
 
 const ChartColorSchema = z.object({
-  chart1: HSLAColorString,
-  chart2: HSLAColorString,
-  chart3: HSLAColorString,
-  chart4: HSLAColorString,
-  chart5: HSLAColorString,
+  "chart-1": HSLAColorString,
+  "chart-2": HSLAColorString,
+  "chart-3": HSLAColorString,
+  "chart-4": HSLAColorString,
+  "chart-5": HSLAColorString,
 });
 
 const outputSchema = z.object({
