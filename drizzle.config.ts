@@ -5,9 +5,9 @@ config({ path: ".env.local" });
 
 export default defineConfig({
   out: "./drizzle",
-  schema: "./db/schema.ts",
+  schema: "./src/db/schema/index.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.NEON_DATABASE_URL ?? "",
+    url: process.env.DATABASE_URL ?? "",
   },
 });

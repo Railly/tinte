@@ -1,4 +1,4 @@
-import { ShadcnThemeSelect } from "@/db/schema";
+import type { ShadcnThemeSelect } from "@/db/schema";
 import { useQuery } from "@tanstack/react-query";
 
 export async function getShadcnThemes({
@@ -11,7 +11,7 @@ export async function getShadcnThemes({
   search?: string;
 }) {
   const response = await fetch(
-    `/api/shadcn?page=${page}&limit=${limit}&search=${search}`
+    `/api/shadcn?page=${page}&limit=${limit}&search=${search}`,
   );
 
   if (!response.ok) {

@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1742217968318,
+      "tag": "0000_wakeful_lilith",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1742784889419,
+      "tag": "0001_sticky_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742784954059,
+      "tag": "0002_even_archangel",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1742784980501,
+      "tag": "0003_wakeful_sumo",
+      "breakpoints": true
+    }
+  ]
+}

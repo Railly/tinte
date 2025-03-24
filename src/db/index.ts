@@ -3,8 +3,8 @@ import { drizzle } from "drizzle-orm/neon-http";
 
 import * as schema from "./schema";
 
-if (!process.env.NEON_DATABASE_URL) {
-  throw new Error("NEON_DATABASE_URL is not set");
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set");
 }
 
 declare global {
@@ -14,14 +14,14 @@ declare global {
 
 if (!global.db) {
   if (!global.sql) {
-    global.sql = neon(process.env.NEON_DATABASE_URL);
+    global.sql = neon(process.env.DATABASE_URL);
   }
 
   global.db = drizzle({
     client: global.sql,
     schema,
-    logger: process.env.NODE_ENV === "development",
   });
 }
 
+// biome-ignore lint/suspicious/noRedeclare: <explanation>
 export const db = global.db;

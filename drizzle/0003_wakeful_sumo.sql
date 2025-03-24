@@ -1,0 +1,1 @@
+ALTER TABLE "shadcn_themes" RENAME COLUMN "display_name" TO "name";

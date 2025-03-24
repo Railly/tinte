@@ -1,0 +1,1 @@
+ALTER TABLE "shadcn_themes" DROP COLUMN "name";
