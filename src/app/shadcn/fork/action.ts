@@ -19,7 +19,7 @@ type ForkState =
 
 export async function forkTheme(
   currentState: ForkState,
-  formData: FormData,
+  formData: FormData
 ): Promise<ForkState> {
   try {
     const { userId } = await auth();
@@ -42,7 +42,7 @@ export async function forkTheme(
 
     await db.insert(shadcnThemes).values({
       id: newThemeId,
-      name: theme.name,
+      name: `${theme.name} (forked)`,
       userId,
       forkedFromId: theme.id,
 
