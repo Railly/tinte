@@ -21,7 +21,7 @@ export function ThemeSelector() {
 
   const [search, setSearch] = useQueryState(
     "search",
-    parseAsString.withDefault(""),
+    parseAsString.withDefault("")
   );
   const {
     selectedThemeId,
@@ -40,14 +40,14 @@ export function ThemeSelector() {
     if (themes) {
       if (themes.pagination.currentPage < themes.pagination.totalPages) {
         queryClient.prefetchQuery({
-          queryKey: ["shadcn-themes", page + 1, 5, search],
-          queryFn: () => getShadcnThemes({ page: page + 1, limit: 5, search }),
+          queryKey: ["shadcn-themes", page + 1, 10, search],
+          queryFn: () => getShadcnThemes({ page: page + 1, limit: 10, search }),
         });
       }
       if (themes.pagination.currentPage > 1) {
         queryClient.prefetchQuery({
-          queryKey: ["shadcn-themes", page - 1, 5, search],
-          queryFn: () => getShadcnThemes({ page: page - 1, limit: 5, search }),
+          queryKey: ["shadcn-themes", page - 1, 10, search],
+          queryFn: () => getShadcnThemes({ page: page - 1, limit: 10, search }),
         });
       }
     }
@@ -70,7 +70,7 @@ export function ThemeSelector() {
   React.useEffect(() => {
     if (currentTheme) {
       let styleElement = document.getElementById(
-        "shadcn-theme",
+        "shadcn-theme"
       ) as HTMLStyleElement;
       if (!styleElement) {
         styleElement = document.createElement("style");
@@ -89,11 +89,11 @@ export function ThemeSelector() {
       // Add light theme rules
       const lightRule = styleSheet.insertRule(
         ":root {}",
-        styleSheet.cssRules.length,
+        styleSheet.cssRules.length
       );
       const lightStyle = (styleSheet.cssRules[lightRule] as CSSStyleRule).style;
       for (const [key, value] of Object.entries(
-        currentTheme?.lightThemeColors ?? {},
+        currentTheme?.lightThemeColors ?? {}
       )) {
         lightStyle.setProperty(`--color-${key}`, value);
       }
@@ -102,11 +102,11 @@ export function ThemeSelector() {
       // Add dark theme rules
       const darkRule = styleSheet.insertRule(
         ".dark {}",
-        styleSheet.cssRules.length,
+        styleSheet.cssRules.length
       );
       const darkStyle = (styleSheet.cssRules[darkRule] as CSSStyleRule).style;
       for (const [key, value] of Object.entries(
-        currentTheme?.darkThemeColors ?? {},
+        currentTheme?.darkThemeColors ?? {}
       )) {
         darkStyle.setProperty(`--color-${key}`, value);
       }

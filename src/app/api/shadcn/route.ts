@@ -7,8 +7,8 @@ export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
     const page = Number(searchParams.get("page")) || 1;
-    const limit = Number(searchParams.get("limit")) || 20;
-    const search = searchParams.get("search") || "";
+    const limit = Number(searchParams.get("limit")) || 10;
+    const search = searchParams.get("search") ?? "";
 
     const themes = await db
       .select()
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching ShadcnThemes:", error);
     return NextResponse.json(
       { error: "Failed to fetch themes" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

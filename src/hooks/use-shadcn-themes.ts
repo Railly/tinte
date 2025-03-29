@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export async function getShadcnThemes({
   page = 1,
-  limit = 20,
+  limit = 10,
   search = "",
 }: {
   page?: number;
@@ -11,7 +11,7 @@ export async function getShadcnThemes({
   search?: string;
 }) {
   const response = await fetch(
-    `/api/shadcn?page=${page}&limit=${limit}&search=${search}`,
+    `/api/shadcn?page=${page}&limit=${limit}&search=${search}`
   );
 
   if (!response.ok) {
@@ -35,7 +35,7 @@ export async function getShadcnThemes({
 
 export const useShadcnThemes = ({
   page = 1,
-  limit = 20,
+  limit = 10,
   search = "",
 }: {
   page?: number;
