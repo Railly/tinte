@@ -45,6 +45,55 @@
   --radius-sm: calc(var(--radius-radius) - 4px);
   --radius-md: calc(var(--radius-radius) - 2px);
   --radius-lg: var(--radius-radius);
+
+  --animate-hero-a: hero-a 3s ease-in-out infinite;
+  --animate-hero-b: hero-b 3s ease-in-out infinite;
+  --animate-hero-c: hero-c 3s ease-in-out infinite;
+
+  @keyframes hero-c {
+    0% {
+      color: var(--color-primary);
+    }
+    33% {
+      color: var(--color-secondary);
+    }
+    66% {
+      color: var(--color-accent);
+    }
+    100% {
+      color: var(--color-primary);
+    }
+  }
+
+  @keyframes hero-b {
+    0% {
+      color: var(--color-secondary);
+    }
+    33% {
+      color: var(--color-accent);
+    }
+    66% {
+      color: var(--color-primary);
+    }
+    100% {
+      color: var(--color-secondary);
+    }
+  }
+
+  @keyframes hero-a {
+    0% {
+      color: var(--color-accent);
+    }
+    33% {
+      color: var(--color-primary);
+    }
+    66% {
+      color: var(--color-secondary);
+    }
+    100% {
+      color: var(--color-accent);
+    }
+  }
 }
 
 * {
@@ -62,9 +111,10 @@ html.dark .shiki span {
 }
 
 .custom-shadow {
-  box-shadow: 0 0 10px 0 hsl(var(--background) / 0.8), 0 0 30px 10px
-    hsl(var(--background) / 0.6), 0 0 60px 20px hsl(var(--background) / 0.4), 0
-    0 100px 40px hsl(var(--background) / 0.2);
+  box-shadow: 0 0 10px 0 hsl(var(--background) / 0.8),
+    0 0 30px 10px hsl(var(--background) / 0.6),
+    0 0 60px 20px hsl(var(--background) / 0.4),
+    0 0 100px 40px hsl(var(--background) / 0.2);
 }
 
 .cl-modalBackdrop {

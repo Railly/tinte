@@ -45,7 +45,7 @@ export function ThemeEditor() {
   const [state, formAction, isPending] = React.useActionState(
     async (currentState: UpdateState, formData: FormData) => {
       const element = document.querySelector(
-        "#shadcn-theme"
+        "#shadcn-theme",
       ) as HTMLStyleElement;
       if (!element) {
         throw new Error("Element not found");
@@ -64,8 +64,8 @@ export function ThemeEditor() {
           rule.selectorText === ":root"
             ? "light"
             : rule.selectorText === ".dark"
-            ? "dark"
-            : null;
+              ? "dark"
+              : null;
 
         if (!theme) continue;
 
@@ -80,7 +80,7 @@ export function ThemeEditor() {
     {
       success: false,
       errors: [],
-    }
+    },
   );
 
   const queryClient = useQueryClient();
@@ -140,7 +140,7 @@ export function ThemeEditor() {
                     onClick={() => {
                       setRadius(value);
                       const styleSheet = document.querySelector(
-                        "#shadcn-theme"
+                        "#shadcn-theme",
                       ) as HTMLStyleElement;
                       if (!styleSheet) {
                         return;

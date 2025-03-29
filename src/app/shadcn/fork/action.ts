@@ -19,7 +19,7 @@ type ForkState =
 
 export async function forkTheme(
   currentState: ForkState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ForkState> {
   try {
     const { userId } = await auth();

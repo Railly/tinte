@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "biome:check": "biome check --fix --unsafe .",
+    "biome:format": "biome format"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.0",

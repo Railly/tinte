@@ -58,25 +58,25 @@ function IconRH({ className, ...props }: React.ComponentProps<"svg">) {
       <path
         d="M104.586 8.32431C107.627 6.55857 111.373 6.55856 114.414 8.32431L207.086 62.1319C210.127 63.8977 212 67.1609 212 70.6924V178.308C212 181.839 210.127 185.102 207.086 186.868L114.414 240.676C111.373 242.441 107.627 242.441 104.586 240.676L11.9145 186.868C8.87339 185.102 7 181.839 7 178.308V70.6924C7 67.1609 8.87339 63.8977 11.9145 62.1319L104.586 8.32431Z"
         stroke="currentColor"
-        stroke-width="13"
+        strokeWidth="13"
       />
       <path
         d="M108.5 13.5C154.5 52.3333 218.9 151.3 108.5 236.5"
         stroke="currentColor"
-        stroke-width="10"
-        stroke-linecap="round"
+        strokeWidth="10"
+        strokeLinecap="round"
       />
       <path
         d="M12.5 68L105.5 233"
         stroke="currentColor"
-        stroke-width="10"
-        stroke-linecap="round"
+        strokeWidth="10"
+        strokeLinecap="round"
       />
       <path
         d="M12 183L105 18"
         stroke="currentColor"
-        stroke-width="10"
-        stroke-linecap="round"
+        strokeWidth="10"
+        strokeLinecap="round"
       />
     </svg>
   );

@@ -10,7 +10,7 @@ export const description = "A collection of health charts.";
 
 export function ThemePreview() {
   return (
-    <div className="container relative mx-auto flex flex-col items-center gap-10 p-6">
+    <div className="relative flex flex-col items-center gap-10">
       <BlockWrapper title="Charts 01" componentCode={COMPONENTS_CODE.Chart01}>
         <Charts01 />
       </BlockWrapper>
