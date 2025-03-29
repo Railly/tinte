@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { IconRH, IconTinte } from "@/components/ui/icons";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { ModeSelector } from "./mode-selector";
-
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/utils";
 export function Header() {
   return (
     <div className="border-border border-b">
@@ -23,7 +24,6 @@ export function Header() {
           </Link>
         </div>
         <div className="flex items-center gap-2">
-          <ModeSelector />
           <SignedOut>
             <SignInButton mode="modal" forceRedirectUrl="/shadcn">
               <Button size="sm" variant="default">
@@ -34,6 +34,15 @@ export function Header() {
           <SignedIn>
             <UserButton />
           </SignedIn>
+          <a
+            href="https://github.com/Railly/tinte"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+          >
+            <GitHubLogoIcon className="size-4" />
+          </a>
+          <ModeSelector />
         </div>
       </header>
     </div>
