@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { ShadcnThemeSchema, ShadcnVariables, shadcnThemes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { ZodError, type ZodIssue } from "zod";
+
 export type UpdateState =
   | {
       success: true;
@@ -20,7 +21,7 @@ export type UpdateState =
 
 export async function updateTheme(
   currentState: UpdateState,
-  formData: FormData,
+  formData: FormData
 ): Promise<UpdateState> {
   try {
     const { userId } = await auth();
@@ -50,13 +51,13 @@ export async function updateTheme(
         ShadcnVariables.map((variable) => [
           variable,
           formData.get(`dark-${variable}`),
-        ]),
+        ])
       ),
       light: Object.fromEntries(
         ShadcnVariables.map((variable) => [
           variable,
           formData.get(`light-${variable}`),
-        ]),
+        ])
       ),
     });
 

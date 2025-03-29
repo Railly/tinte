@@ -100,40 +100,38 @@ const ColorPickerInput = ({ themeColor }: { themeColor: string }) => {
   };
 
   return (
-    <React.Fragment>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className={cn("justify-between")}>
-            <div
-              className="size-6 rounded-full"
-              style={{ backgroundColor: color }}
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className={cn("justify-between")}>
+          <div
+            className="size-6 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+          <code>{color}</code>
+          <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <div className="p-4">
+          <Colorful
+            color={convertOklchToHex(color ?? "oklch(0 0 0)")}
+            onChange={(newColor) => handleColorChange(newColor.hex)}
+            disableAlpha
+          />
+          <div className="mt-4 flex gap-2">
+            <Input
+              value={convertOklchToHex(color ?? "oklch(0 0 0)")}
+              onChange={(event) => handleColorChange(event.target.value)}
+              placeholder="#RRGGBB"
+              className="w-[16.5ch]"
             />
-            <code>{color}</code>
-            <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <div className="p-4">
-            <Colorful
-              color={convertOklchToHex(color ?? "oklch(0 0 0)")}
-              onChange={(newColor) => handleColorChange(newColor.hex)}
-              disableAlpha
-            />
-            <div className="mt-4 flex gap-2">
-              <Input
-                value={convertOklchToHex(color ?? "oklch(0 0 0)")}
-                onChange={(event) => handleColorChange(event.target.value)}
-                placeholder="#RRGGBB"
-                className="w-[16.5ch]"
-              />
-              <Button onClick={handlePipette} variant="outline" size="icon">
-                <PipetteIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button onClick={handlePipette} variant="outline" size="icon">
+              <PipetteIcon className="h-4 w-4" />
+            </Button>
           </div>
-        </PopoverContent>
-      </Popover>
-    </React.Fragment>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 

@@ -20,7 +20,13 @@ import { ThemeEditorWrapper } from "./wrapper";
 const radiusValues = ["0", "0.3", "0.5", "0.75", "1.0"];
 
 export function ThemeEditor() {
-  const [radius, setRadius] = React.useState(() => {
+  const [radius, setRadius] = React.useState<string | undefined>(undefined);
+  const { data: selectedTheme } = useShadcnSelectedTheme();
+
+  React.useEffect(() => {
+    if (!selectedTheme) {
+      return;
+    }
     if (typeof window === "undefined") {
       return undefined;
     }
@@ -28,15 +34,18 @@ export function ThemeEditor() {
     if (!element) {
       return undefined;
     }
-    return getComputedStyle(element).getPropertyValue("--radius");
-  });
+    const radius = getComputedStyle(element).getPropertyValue("--radius");
 
-  const { data: selectedTheme } = useShadcnSelectedTheme();
+    if (!radius) {
+      return undefined;
+    }
+    setRadius(radius);
+  }, [selectedTheme]);
 
   const [state, formAction, isPending] = React.useActionState(
     async (currentState: UpdateState, formData: FormData) => {
       const element = document.querySelector(
-        "#shadcn-theme",
+        "#shadcn-theme"
       ) as HTMLStyleElement;
       if (!element) {
         throw new Error("Element not found");
@@ -55,8 +64,8 @@ export function ThemeEditor() {
           rule.selectorText === ":root"
             ? "light"
             : rule.selectorText === ".dark"
-              ? "dark"
-              : null;
+            ? "dark"
+            : null;
 
         if (!theme) continue;
 
@@ -71,7 +80,7 @@ export function ThemeEditor() {
     {
       success: false,
       errors: [],
-    },
+    }
   );
 
   const queryClient = useQueryClient();
@@ -81,8 +90,11 @@ export function ThemeEditor() {
       queryClient.invalidateQueries({
         queryKey: ["shadcn-theme", selectedTheme?.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["shadcn-themes"],
+      });
     }
-  }, [state.success, queryClient, selectedTheme]);
+  }, [state, queryClient, selectedTheme]);
 
   return (
     <ThemeEditorWrapper>
@@ -107,10 +119,9 @@ export function ThemeEditor() {
               <Input
                 id="name"
                 className="mt-1"
-                defaultValue={
-                  state.success ? state.form.name : selectedTheme?.name
-                }
+                defaultValue={selectedTheme?.name}
                 name="name"
+                key={selectedTheme?.name}
               />
             </div>
 
@@ -129,7 +140,7 @@ export function ThemeEditor() {
                     onClick={() => {
                       setRadius(value);
                       const styleSheet = document.querySelector(
-                        "#shadcn-theme",
+                        "#shadcn-theme"
                       ) as HTMLStyleElement;
                       if (!styleSheet) {
                         return;
