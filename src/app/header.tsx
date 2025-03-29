@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { IconRH, IconTinte } from "@/components/ui/icons";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { ModeSelector } from "./mode-selector";
 

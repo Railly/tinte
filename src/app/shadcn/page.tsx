@@ -10,10 +10,15 @@ export default function ShadcnPage() {
     <div>
       <Hero />
       <main className="container mx-auto flex flex-grow flex-col">
-        <div className="flex flex-col gap-4">
-          <GenerateTheme />
+        <div className="my-8 flex flex-col gap-4">
+          <div className="mx-auto md:w-1/2">
+            <div className="text-center text-muted-foreground text-sm">
+              Create your own theme with AI
+            </div>
+            <GenerateTheme />
+          </div>
           <div className="text-center text-muted-foreground text-sm">Or</div>
-          <div className="flex w-full flex-col items-center justify-center space-y-6 p-6">
+          <div className="mx-auto">
             <div className="text-center text-muted-foreground text-sm">
               Try themes from the community
             </div>
