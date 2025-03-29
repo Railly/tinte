@@ -5,7 +5,7 @@ import React from "react";
 
 import { useShadcnSelectedTheme } from "@/hooks/use-shadcn-selected-theme";
 import { useAuth } from "@clerk/nextjs";
-import { Loader2Icon } from "lucide-react";
+import { GitForkIcon, Loader2Icon } from "lucide-react";
 import { forkTheme } from "./action";
 
 export function Fork() {
@@ -36,7 +36,11 @@ export function Fork() {
         type="submit"
         disabled={isPending}
       >
-        {isPending && <Loader2Icon className="mr-1 size-4 animate-spin" />}
+        {isPending ? (
+          <Loader2Icon className="mr-1 size-4 animate-spin" />
+        ) : (
+          <GitForkIcon className="mr-1 size-4" />
+        )}
         Fork
       </Button>
     </form>
