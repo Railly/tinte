@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ModeSelector } from "./mode-selector";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 export function Header() {
   return (
     <div className="border-border border-b">
@@ -22,7 +23,29 @@ export function Header() {
             <IconTinte className="size-6" />
             <span className="font-bold text-muted-foreground">tinte</span>
           </Link>
+          <div className="flex items-center gap-2 ml-2">
+            <Separator orientation="vertical" className="h-4" />
+            <Link
+              href="/shadcn"
+              className={cn(
+                buttonVariants({ variant: "link", size: "sm" }),
+                "text-muted-foreground"
+              )}
+            >
+              Shadcn UI
+            </Link>
+            <Link
+              href="/code"
+              className={cn(
+                buttonVariants({ variant: "link", size: "sm" }),
+                "text-muted-foreground"
+              )}
+            >
+              VS Code
+            </Link>
+          </div>
         </div>
+
         <div className="flex items-center gap-2">
           <SignedOut>
             <SignInButton mode="modal" forceRedirectUrl="/shadcn">

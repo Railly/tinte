@@ -7,7 +7,7 @@ import { ThemeSelector } from "./theme-selector";
 
 export default function ShadcnPage() {
   return (
-    <div>
+    <>
       <Hero />
       <main className="container mx-auto flex flex-grow flex-col">
         <div className="my-8 flex flex-col gap-4">
@@ -33,6 +33,6 @@ export default function ShadcnPage() {
         <ThemeEditor />
         <Fork />
       </div>
-    </div>
+    </>
   );
 }

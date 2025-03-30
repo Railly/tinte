@@ -94,6 +94,15 @@
       color: var(--color-accent);
     }
   }
+
+  @keyframes bg-shine-animation {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
 body {
@@ -113,4 +122,28 @@ html.dark .shiki span {
 
 .shiki-themes {
   padding: 1rem;
+}
+
+@utility bg-shine {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-background),
+    45%,
+    var(--color-secondary),
+    55%,
+    var(--color-background)
+  );
+  background-size: 200% 100%;
+  animation: bg-shine-animation 2.1s linear infinite;
+
+  @variant hover {
+    background-image: linear-gradient(
+      110deg,
+      var(--color-background),
+      30%,
+      var(--color-secondary),
+      70%,
+      var(--color-background)
+    );
+  }
 }

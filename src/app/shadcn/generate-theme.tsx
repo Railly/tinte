@@ -3,7 +3,6 @@ import { Loader2Icon, SparklesIcon, WandSparklesIcon } from "lucide-react";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
-import { ShineButton } from "@/components/ui/shine-button";
 import { Textarea } from "@/components/ui/textarea";
 import { useGenerateShadcnTheme } from "@/hooks/use-shadcn-generate-theme";
 import { useCompletion } from "@ai-sdk/react";
@@ -62,7 +61,7 @@ export const GenerateTheme = () => {
       <Button
         variant="ghost"
         size="sm"
-        className="absolute bottom-4 left-4 text-muted-foreground hover:text-foreground"
+        className="absolute bottom-4 left-4"
         onClick={() => complete(prompt)}
         type="button"
       >
@@ -73,11 +72,11 @@ export const GenerateTheme = () => {
         )}
         {isEnhancing ? "Enhancing..." : "Enhance"}
       </Button>
-      <ShineButton
+      <Button
         variant="outline"
         size="sm"
         disabled={prompt.trim().length < 3 || isGenerating}
-        className="absolute right-4 bottom-4"
+        className="absolute right-4 bottom-4 bg-shine"
         onClick={() => generateTheme(prompt)}
         type="button"
       >
@@ -87,7 +86,7 @@ export const GenerateTheme = () => {
           <WandSparklesIcon className="mr-2 h-4 w-4" />
         )}
         <span>{isGenerating ? "Generating..." : "Generate"}</span>
-      </ShineButton>
+      </Button>
     </div>
   );
 };
