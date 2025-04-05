@@ -9,7 +9,7 @@ if (!process.env.DATABASE_URL) {
 
 declare global {
   var sql: NeonQueryFunction<false, false> | undefined;
-  var db: ReturnType<typeof drizzle<typeof schema>> | undefined;
+  var db: ReturnType<typeof drizzle<typeof schema>>;
 }
 
 if (!global.db) {

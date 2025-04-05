@@ -23,7 +23,7 @@ export function Header() {
             <IconTinte className="size-6" />
             <span className="font-bold text-muted-foreground">tinte</span>
           </Link>
-          <div className="flex items-center gap-2 ml-2">
+          <div className="ml-2 flex items-center gap-2">
             <Separator orientation="vertical" className="h-4" />
             <Link
               href="/shadcn"
