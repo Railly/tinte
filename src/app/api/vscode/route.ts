@@ -12,16 +12,16 @@ export async function GET(req: NextRequest) {
 
     const themes = await db
       .select()
-      .from(schema.shadcnThemes)
-      .where(like(schema.shadcnThemes.name, `%${search}%`))
-      .orderBy(desc(schema.shadcnThemes.createdAt))
+      .from(schema.vsCodeThemes)
+      .where(like(schema.vsCodeThemes.name, `%${search}%`))
+      .orderBy(desc(schema.vsCodeThemes.createdAt))
       .limit(limit)
       .offset((page - 1) * limit);
 
     const [meta] = await db
       .select({ count: count() })
-      .from(schema.shadcnThemes)
-      .where(like(schema.shadcnThemes.name, `%${search}%`));
+      .from(schema.vsCodeThemes)
+      .where(like(schema.vsCodeThemes.name, `%${search}%`));
 
     const total = meta?.count ?? 0;
 
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching ShadcnThemes:", error);
+    console.error("Error fetching VSCodeThemes:", error);
     return NextResponse.json(
       { error: "Failed to fetch themes" },
       { status: 500 }
