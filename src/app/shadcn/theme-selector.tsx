@@ -13,15 +13,17 @@ import { useShadcnSelectedTheme } from "@/hooks/use-shadcn-selected-theme";
 import { getShadcnThemes, useShadcnThemes } from "@/hooks/use-shadcn-themes";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { useTheme } from "next-themes";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import React from "react";
 
 export function ThemeSelector() {
   const queryClient = useQueryClient();
+  const { resolvedTheme  } = useTheme();
 
   const [search, setSearch] = useQueryState(
     "search",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const {
     selectedThemeId,
@@ -70,7 +72,7 @@ export function ThemeSelector() {
   React.useEffect(() => {
     if (currentTheme) {
       let styleElement = document.getElementById(
-        "shadcn-theme"
+        "shadcn-theme",
       ) as HTMLStyleElement;
       if (!styleElement) {
         styleElement = document.createElement("style");
@@ -89,11 +91,11 @@ export function ThemeSelector() {
       // Add light theme rules
       const lightRule = styleSheet.insertRule(
         ":root {}",
-        styleSheet.cssRules.length
+        styleSheet.cssRules.length,
       );
       const lightStyle = (styleSheet.cssRules[lightRule] as CSSStyleRule).style;
       for (const [key, value] of Object.entries(
-        currentTheme?.lightThemeColors ?? {}
+        currentTheme?.lightThemeColors ?? {},
       )) {
         lightStyle.setProperty(`--color-${key}`, value);
       }
@@ -102,11 +104,11 @@ export function ThemeSelector() {
       // Add dark theme rules
       const darkRule = styleSheet.insertRule(
         ".dark {}",
-        styleSheet.cssRules.length
+        styleSheet.cssRules.length,
       );
       const darkStyle = (styleSheet.cssRules[darkRule] as CSSStyleRule).style;
       for (const [key, value] of Object.entries(
-        currentTheme?.darkThemeColors ?? {}
+        currentTheme?.darkThemeColors ?? {},
       )) {
         darkStyle.setProperty(`--color-${key}`, value);
       }
@@ -162,6 +164,34 @@ export function ThemeSelector() {
                   )}
                 </div>
                 <span>{theme.name}</span>
+                <div className="flex">
+                  <span
+                    className="size-4"
+                    style={{
+                      backgroundColor: resolvedTheme === "light" ? theme.lightThemeColors?.background : theme.darkThemeColors?.background,
+                    }}
+                  />
+                  <span
+                    className="size-4"
+                    style={{
+                      backgroundColor: resolvedTheme === "light" ? theme.lightThemeColors?.foreground : theme.darkThemeColors?.foreground,
+                    }}
+                  />
+                  <span
+                    className="size-4"
+                    style={{ backgroundColor: resolvedTheme === "light" ? theme.lightThemeColors?.card : theme.darkThemeColors?.card }}
+                  />
+                  <span
+                    className="size-4"
+                    style={{
+                      backgroundColor: resolvedTheme === "light" ? theme.lightThemeColors?.["card-foreground"] : theme.darkThemeColors?.["card-foreground"],
+                    }}
+                  />
+                  <span
+                    className="size-4"
+                    style={{ backgroundColor: resolvedTheme === "light" ? theme.lightThemeColors?.primary : theme.darkThemeColors?.primary }}
+                  />
+                </div>
               </div>
             </DropdownMenuItem>
           );
