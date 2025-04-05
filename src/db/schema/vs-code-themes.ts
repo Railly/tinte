@@ -1,8 +1,9 @@
 import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
-const PaletteSchema = z.object({
+const VSCodePaletteSchema = z.object({
   text: z.string(),
   "text-2": z.string(),
   "text-3": z.string(),
@@ -22,7 +23,7 @@ const PaletteSchema = z.object({
   "background-2": z.string(),
 });
 
-export type Palette = z.infer<typeof PaletteSchema>;
+export type VSCodePalette = z.infer<typeof VSCodePaletteSchema>;
 
 export const vsCodeThemes = pgTable("vs_code_themes", {
   id: text("id").primaryKey(),
@@ -34,8 +35,8 @@ export const vsCodeThemes = pgTable("vs_code_themes", {
   name: text("name"),
   isPublic: boolean("is_public").default(false),
   category: text("category").default("custom"),
-  light: jsonb("light").$type<Palette>(),
-  dark: jsonb("dark").$type<Palette>(),
+  light: jsonb("light").$type<VSCodePalette>(),
+  dark: jsonb("dark").$type<VSCodePalette>(),
 
   createdAt: timestamp("created_at", {
     withTimezone: true,
@@ -44,3 +45,13 @@ export const vsCodeThemes = pgTable("vs_code_themes", {
     withTimezone: true,
   }).defaultNow(),
 });
+
+export const vsCodeThemeRelations = relations(vsCodeThemes, ({ one }) => ({
+  user: one(users, {
+    fields: [vsCodeThemes.userId],
+    references: [users.id],
+  }),
+}));
+
+export type VSCodeThemeSelect = typeof vsCodeThemes.$inferSelect;
+export type VSCodeThemeInsert = typeof vsCodeThemes.$inferInsert;
