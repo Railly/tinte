@@ -98,16 +98,62 @@ import { adminDb } from "@/lib/db";
 const allThemes = await adminDb.select().from(themes); // Bypasses RLS
 ```
 
+### Infinite Scroll & Search Architecture
+
+**Hybrid Client Strategy**:
+- **Anonymous Users**: Use public Supabase client (RLS enforces public-only access)
+- **Authenticated Users**: Use Clerk-authenticated Supabase client (RLS allows own + public themes)
+- **Search Integration**: Upstash Search as default with infinite scroll pagination
+- **Graceful Fallback**: Local search when Upstash is disabled
+
+**User Experience Flow**:
+
+*Anonymous Users*:
+- ✅ Browse infinite scroll of public themes only
+- ✅ Search through public themes with Upstash AI search
+- ❌ No filter toggles (always public-only)
+
+*Authenticated Users*:
+- ✅ Browse infinite scroll with "All Themes" (own + public) or "Public Only" toggle
+- ✅ Search through own + public themes OR public-only based on toggle
+- ✅ AI Search vs Local Search toggle available
+- ✅ All CRUD operations with automatic search indexing
+
+**Search Modes**:
+```typescript
+// Default: AI-powered search with infinite scroll
+useUpstashSearch: true
+
+// Fallback: Local text filtering  
+useUpstashSearch: false
+```
+
+**Authentication-Aware Components**:
+```typescript
+// Automatic client selection based on auth status
+const supabaseClient = isSignedIn ? useClerkSupabase() : supabase;
+
+// Permission-aware infinite scroll
+const shouldFilterPublic = !isAuthenticated || showPublicOnly;
+```
+
 ### Project Structure
 
 - `lib/db/schema.ts` - Database schema with RLS policies
 - `lib/db/queries.ts` - RLS-aware database operations
-- `lib/db/rls.ts` - RLS context management utilities
 - `lib/auth-utils.ts` - Clerk authentication helpers
 - `lib/actions/theme-actions.ts` - Server actions for mutations with search integration
 - `lib/services/search.ts` - Upstash Search service for theme indexing/search
 - `lib/stores/theme-store.ts` - Zustand client state management
-- `components/` - React components (server and client)
+- `lib/hooks/use-infinite-query.ts` - Supabase infinite scroll with Clerk auth
+- `lib/hooks/use-infinite-search.ts` - Upstash search with infinite pagination
+- `lib/hooks/use-clerk-supabase.ts` - Clerk-authenticated Supabase client
+- `lib/supabase/client.ts` - Public and authenticated Supabase clients
+- `components/infinite-theme-list.tsx` - Infinite scroll component for themes
+- `components/theme-list-client.tsx` - Smart routing between search/browse modes
+- `components/theme-search.tsx` - AI-powered search with debouncing
+- `components/theme-filters.tsx` - Authentication-aware filter toggles
+- `app/api/search/route.ts` - Search API with pagination and permissions
 
 ### Security Model
 
@@ -118,33 +164,44 @@ const allThemes = await adminDb.select().from(themes); // Bypasses RLS
 
 ### Search Integration with Upstash
 
-- **Upstash Search** for real-time theme search and discovery
-- Automatic indexing when themes are created, updated, or deleted
-- Search respects RLS policies (users see only their own + public themes)
-- Search service in lib/services/search.ts handles all search operations
-- Graceful degradation: search failures don't break theme operations
+**Real-time AI Search**:
+- **Upstash Search** with semantic understanding and reranking
+- **Infinite scroll pagination** for search results  
+- **Permission-aware search** respecting RLS policies
+- **Automatic indexing** on all theme mutations
+- **Graceful degradation** with local search fallback
 
-#### Search Features
+**Search Architecture**:
+```typescript
+// Three search modes based on context
+1. No Query + No Auth → Infinite scroll public themes from DB
+2. No Query + Authenticated → Infinite scroll own+public themes from DB  
+3. With Query → Infinite scroll search results from Upstash
+```
 
-**Automatic Indexing**:
+**Search Features**:
+
+*Automatic Indexing*:
 - Theme creation → Index in Upstash Search
 - Theme updates → Re-index in Upstash Search  
 - Theme deletion → Remove from Upstash Search
 - Visibility changes → Update search metadata
 
-**Search Operations**:
+*Smart Pagination*:
+- Debounced search queries (300ms)
+- Infinite scroll with intersection observer
+- Request cancellation prevents race conditions
+- Loading states and skeleton screens
+
+*Permission Handling*:
 ```typescript
-import { searchThemes, indexTheme, deleteThemeFromIndex } from "@/lib/services/search";
+// Anonymous users - public only
+const results = await searchThemes("query", { publicOnly: true });
 
-// Search with user permissions
-const results = await searchThemes("dark theme", { 
-  userId: "user_123", 
-  limit: 10 
-});
-
-// Public-only search
-const publicResults = await searchThemes("minimal", { 
-  publicOnly: true 
+// Authenticated users - based on toggle
+const results = await searchThemes("query", { 
+  userId: "user_123",
+  publicOnly: showPublicOnly 
 });
 ```
 
@@ -153,7 +210,7 @@ const publicResults = await searchThemes("minimal", {
 {
   id: "theme-123",
   content: {
-    name: "Dark Professional",
+    name: "Dark Professional", 
     description: "A sleek dark theme...",
     content: "{ theme json... }",
     public: true,
@@ -161,7 +218,7 @@ const publicResults = await searchThemes("minimal", {
   },
   metadata: {
     themeId: 123,
-    userId: "user_123", 
+    userId: "user_123",
     public: true,
     url: "/themes/123"
   }

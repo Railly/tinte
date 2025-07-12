@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { MoreHorizontal, Eye, EyeOff, Edit, Trash2 } from 'lucide-react';
-import type { Theme } from '@/lib/stores/theme-store';
+import type { Theme } from '@/lib/db/schema';
 
 interface ThemeCardProps {
   theme: Theme;
@@ -64,7 +64,7 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant="outline-solid"
+                  variant="outline"
                   size="sm"
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                   disabled={isLoading}
@@ -115,7 +115,7 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Created {new Date(theme.created_at).toLocaleDateString()}
+          Created {new Date(theme.createdAt).toLocaleDateString()}
         </p>
       </CardContent>
 

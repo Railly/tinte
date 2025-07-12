@@ -1,16 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createPublicServerSupabaseClient } from "@/lib/supabase/public-server";
-
-export type Theme = {
-  id: number;
-  name: string;
-  description: string | null;
-  content: string;
-  user_id: string;
-  public: boolean;
-  created_at: string;
-  updated_at: string;
-};
+import { Theme } from "@/lib/db/schema";
 
 // Get all themes visible to the current user (their own + public ones)
 export async function getThemesByUser() {
@@ -18,7 +8,7 @@ export async function getThemesByUser() {
   const { data, error } = await supabase
     .from("themes")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("createdAt", { ascending: false });
 
   if (error) throw error;
   return data as Theme[];
@@ -32,7 +22,7 @@ export async function getPublicThemes() {
       .from("themes")
       .select("*")
       .eq("public", true)
-      .order("created_at", { ascending: false });
+      .order("createdAt", { ascending: false });
 
     if (error) {
       console.error("Supabase error in getPublicThemes:", error);
@@ -51,7 +41,7 @@ export async function getUserThemes() {
   const { data, error } = await supabase
     .from("themes")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("createdAt", { ascending: false });
 
   if (error) throw error;
   // RLS will automatically filter to user's own themes
@@ -76,7 +66,7 @@ export async function addTheme(
       description: data.description,
       content: data.content,
       public: data.public ?? false,
-      user_id: userId, // Explicitly set the user_id
+      userId: userId, // Explicitly set the user_id
     })
     .select()
     .single();
@@ -100,7 +90,7 @@ export async function updateTheme(
     .from("themes")
     .update({
       ...data,
-      updated_at: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     })
     .eq("id", themeId)
     .select()

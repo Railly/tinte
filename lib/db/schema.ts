@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { authenticatedRole, anonRole } from "drizzle-orm/supabase";
+import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
 
 export const themes = pgTable(
   "themes",
@@ -16,10 +17,10 @@ export const themes = pgTable(
     name: text("name").notNull(),
     description: text("description"),
     content: text("content").notNull(),
-    userId: text("user_id").notNull(),
+    userId: text("userId").notNull(),
     public: boolean("public").notNull().default(false),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt").notNull().defaultNow(),
   },
   (table) => [
     pgPolicy("Public themes are viewable by anyone", {
@@ -50,3 +51,13 @@ export const themes = pgTable(
     }),
   ]
 );
+
+export type Theme = InferSelectModel<typeof themes>;
+export type ThemeInsert = InferInsertModel<typeof themes>;
+
+export type ThemeFormData = {
+  name: string;
+  description?: string;
+  content: string;
+  public?: boolean;
+};

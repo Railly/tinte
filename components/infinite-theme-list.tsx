@@ -3,13 +3,11 @@
 import { cn } from '@/lib/utils'
 import {
   SupabaseQueryHandler,
-  SupabaseTableData,
-  SupabaseTableName,
   useInfiniteQuery,
 } from '@/lib/hooks/use-infinite-query'
 import * as React from 'react'
 import { ThemeCard } from './theme-card'
-import type { Theme } from '@/lib/stores/theme-store'
+import type { Theme } from '@/lib/db/schema'
 
 interface InfiniteThemeListProps {
   tableName: 'themes'
@@ -64,7 +62,7 @@ export function InfiniteThemeList({
   userId,
   isAuthenticated,
 }: InfiniteThemeListProps) {
-  const { data, isFetching, hasMore, fetchNextPage, isSuccess, isLoading } = useInfiniteQuery({
+  const { data, isFetching, hasMore, fetchNextPage, isSuccess, isLoading } = useInfiniteQuery<Theme, 'themes'>({
     tableName,
     columns,
     pageSize,
@@ -112,8 +110,8 @@ export function InfiniteThemeList({
         {data.map((theme) => (
           <ThemeCard
             key={theme.id}
-            theme={theme as Theme}
-            isOwner={userId === (theme as any).user_id}
+            theme={theme}
+            isOwner={userId === theme.userId}
           />
         ))}
 

@@ -7,7 +7,7 @@ import { ThemeSearch } from './theme-search';
 import { ThemeFilters } from './theme-filters';
 import { InfiniteThemeList } from './infinite-theme-list';
 import { useInfiniteSearch } from '@/lib/hooks/use-infinite-search';
-import type { Theme } from '@/lib/stores/theme-store';
+import type { Theme } from '@/lib/db/schema';
 
 interface ThemeListClientProps {
   initialPublicThemes: Theme[];
@@ -22,9 +22,9 @@ export function ThemeListClient({
   isAuthenticated,
   userId
 }: ThemeListClientProps) {
-  const { 
-    showPublicOnly, 
-    searchQuery, 
+  const {
+    showPublicOnly,
+    searchQuery,
     useUpstashSearch,
     isSearching
   } = useThemeStore();
@@ -62,10 +62,10 @@ export function ThemeListClient({
     // If authenticated and showPublicOnly is true, show only public themes
     // If authenticated and showPublicOnly is false, show all accessible themes (own + public)
     const shouldFilterPublic = !isAuthenticated || showPublicOnly;
-    
+
     return shouldFilterPublic
-      ? (query: any) => query.eq('public', true).order('created_at', { ascending: false })
-      : (query: any) => query.order('created_at', { ascending: false });
+      ? (query: any) => query.eq('public', true).order('createdAt', { ascending: false })
+      : (query: any) => query.order('createdAt', { ascending: false });
   }, [showPublicOnly, isAuthenticated]);
 
   return (
@@ -79,7 +79,7 @@ export function ThemeListClient({
       {/* Conditional rendering based on search state */}
       {useUpstashSearch && infiniteSearch.hasQuery ? (
         // Upstash search with infinite scroll
-        <InfiniteSearchResults 
+        <InfiniteSearchResults
           searchData={infiniteSearch.data}
           hasMore={infiniteSearch.hasMore}
           isLoading={infiniteSearch.isLoading}
@@ -111,7 +111,7 @@ export function ThemeListClient({
               <ThemeCard
                 key={theme.id}
                 theme={theme}
-                isOwner={userId === theme.user_id}
+                isOwner={userId === theme.userId}
               />
             ))
           )}
@@ -180,7 +180,7 @@ function InfiniteSearchResults({
             <ThemeCard
               key={theme.id}
               theme={theme}
-              isOwner={userId === theme.user_id}
+              isOwner={userId === theme.userId}
             />
           ))
         )}

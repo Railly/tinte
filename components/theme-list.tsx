@@ -1,6 +1,5 @@
 import { getCurrentUserId } from '@/lib/auth-utils';
 import { getPublicThemes, getUserThemes } from '@/lib/db/queries';
-import { ThemeCard } from './theme-card';
 import { ThemeListClient } from './theme-list-client';
 
 export async function ThemeList() {

@@ -41,7 +41,7 @@ export function ThemeForm() {
             {isUpdate ? 'Edit Theme' : 'Create New Theme'}
           </CardTitle>
           <Button
-            variant="outline-solid"
+            variant="outline"
             size="sm"
             onClick={cancelEditing}
           >
@@ -116,10 +116,12 @@ export function ThemeForm() {
           </CardContent>
 
           <CardFooter className="flex gap-2">
-            <Button type="button" variant="outline-solid" onClick={cancelEditing}>
+            <Button type="button" variant="outline" onClick={cancelEditing}>
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit"
+              disabled={!isCreating || isEditing}
+            >
               {isUpdate ? 'Update Theme' : 'Create Theme'}
             </Button>
           </CardFooter>

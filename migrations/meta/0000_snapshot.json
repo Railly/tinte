@@ -1,5 +1,5 @@
 {
-  "id": "123b1d6c-ea17-4cfa-84c2-12dd9f7704fb",
+  "id": "12226b54-aabd-4071-bfd9-a47fb9deeea3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -32,8 +32,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "userId": {
+          "name": "userId",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -45,15 +45,15 @@
           "notNull": true,
           "default": false
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
@@ -81,7 +81,7 @@
           "to": [
             "authenticated"
           ],
-          "using": "\"themes\".\"user_id\" = (auth.jwt()->>'sub') OR \"themes\".\"public\" = true"
+          "using": "\"themes\".\"userId\" = (auth.jwt()->>'sub') OR \"themes\".\"public\" = true"
         },
         "Users can insert only their own themes": {
           "name": "Users can insert only their own themes",
@@ -90,7 +90,7 @@
           "to": [
             "authenticated"
           ],
-          "withCheck": "\"themes\".\"user_id\" = (auth.jwt()->>'sub')"
+          "withCheck": "\"themes\".\"userId\" = (auth.jwt()->>'sub')"
         },
         "Users can update only their own themes": {
           "name": "Users can update only their own themes",
@@ -99,8 +99,8 @@
           "to": [
             "authenticated"
           ],
-          "using": "\"themes\".\"user_id\" = (auth.jwt()->>'sub')",
-          "withCheck": "\"themes\".\"user_id\" = (auth.jwt()->>'sub')"
+          "using": "\"themes\".\"userId\" = (auth.jwt()->>'sub')",
+          "withCheck": "\"themes\".\"userId\" = (auth.jwt()->>'sub')"
         },
         "Users can delete only their own themes": {
           "name": "Users can delete only their own themes",
@@ -109,7 +109,7 @@
           "to": [
             "authenticated"
           ],
-          "using": "\"themes\".\"user_id\" = (auth.jwt()->>'sub')"
+          "using": "\"themes\".\"userId\" = (auth.jwt()->>'sub')"
         }
       },
       "checkConstraints": {},

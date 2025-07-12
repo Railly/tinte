@@ -1,7 +1,10 @@
 import { Search } from "@upstash/search";
-import type { Theme } from "@/lib/db/queries";
+import type { Theme } from "@/lib/db/schema";
 
-if (!process.env.UPSTASH_SEARCH_REST_URL || !process.env.UPSTASH_SEARCH_REST_TOKEN) {
+if (
+  !process.env.UPSTASH_SEARCH_REST_URL ||
+  !process.env.UPSTASH_SEARCH_REST_TOKEN
+) {
   throw new Error("Missing Upstash Search environment variables");
 }
 
@@ -11,31 +14,15 @@ const client = new Search({
 });
 
 const THEMES_INDEX = "themes";
-const index = client.index<{
-  name: string;
-  description: string;
-  content: string;
-  public: boolean;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-}>(THEMES_INDEX);
+const index = client.index<Theme>(THEMES_INDEX);
 
 export interface SearchableTheme {
   id: string;
-  content: {
-    name: string;
-    description: string;
-    content: string;
-    public: boolean;
-    userId: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  content: Theme;
   metadata: {
-    themeId: number;
-    userId: string;
-    public: boolean;
+    themeId: Theme["id"];
+    userId: Theme["userId"];
+    public: Theme["public"];
     url?: string;
   };
 }
@@ -44,18 +31,10 @@ export async function indexTheme(theme: Theme): Promise<void> {
   try {
     const searchableTheme: SearchableTheme = {
       id: `theme-${theme.id}`,
-      content: {
-        name: theme.name,
-        description: theme.description || "",
-        content: theme.content,
-        public: theme.public,
-        userId: theme.user_id,
-        createdAt: theme.created_at,
-        updatedAt: theme.updated_at,
-      },
+      content: theme,
       metadata: {
         themeId: theme.id,
-        userId: theme.user_id,
+        userId: theme.userId,
         public: theme.public,
         url: `/themes/${theme.id}`,
       },
@@ -89,7 +68,7 @@ export async function searchThemes(
 ): Promise<SearchableTheme[]> {
   try {
     const { limit = 10, userId, publicOnly = false } = options;
-    
+
     let results = await index.search({
       query,
       limit,
@@ -98,18 +77,21 @@ export async function searchThemes(
 
     // Filter results based on access permissions
     if (publicOnly) {
-      results = results.filter((result) => (result.metadata as any)?.public === true);
+      results = results.filter(
+        (result) => (result.metadata as any)?.public === true
+      );
     } else if (userId) {
       results = results.filter(
         (result) =>
-          (result.metadata as any)?.public === true || (result.metadata as any)?.userId === userId
+          (result.metadata as any)?.public === true ||
+          (result.metadata as any)?.userId === userId
       );
     }
 
-    return results.map(result => ({
+    return results.map((result) => ({
       id: result.id,
       content: result.content,
-      metadata: result.metadata as SearchableTheme['metadata']
+      metadata: result.metadata as SearchableTheme["metadata"],
     }));
   } catch (error) {
     console.error("Failed to search themes:", error);
@@ -121,18 +103,10 @@ export async function reindexAllThemes(themes: Theme[]): Promise<void> {
   try {
     const searchableThemes: SearchableTheme[] = themes.map((theme) => ({
       id: `theme-${theme.id}`,
-      content: {
-        name: theme.name,
-        description: theme.description || "",
-        content: theme.content,
-        public: theme.public,
-        userId: theme.user_id,
-        createdAt: theme.created_at,
-        updatedAt: theme.updated_at,
-      },
+      content: theme,
       metadata: {
         themeId: theme.id,
-        userId: theme.user_id,
+        userId: theme.userId,
         public: theme.public,
         url: `/themes/${theme.id}`,
       },

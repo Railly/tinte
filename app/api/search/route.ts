@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     };
 
     const allResults = await searchThemes(query.trim(), searchOptions);
-    
+
     // Apply offset and limit manually for pagination
     const results = allResults.slice(offset, offset + limit);
 
@@ -41,18 +41,15 @@ export async function GET(request: NextRequest) {
       name: result.content.name,
       description: result.content.description || null,
       content: result.content.content,
-      user_id: result.content.userId,
+      userId: result.content.userId,
       public: result.content.public,
-      created_at: result.content.createdAt,
-      updated_at: result.content.updatedAt,
+      createdAt: result.content.createdAt,
+      updatedAt: result.content.updatedAt,
     }));
 
     return Response.json({ results: themes });
   } catch (error) {
     console.error("Search API error:", error);
-    return Response.json(
-      { error: "Failed to search themes" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Failed to search themes" }, { status: 500 });
   }
 }
