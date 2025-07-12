@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createPublicServerSupabaseClient } from "@/lib/supabase/public-server";
+import { getCurrentUserId } from "@/lib/auth-utils";
 import { Theme } from "@/lib/db/schema";
 
 // Get all themes visible to the current user (their own + public ones)
@@ -35,16 +36,19 @@ export async function getPublicThemes() {
   }
 }
 
-// Get only user's own themes
+// Get only user's own themes (both public and private)
 export async function getUserThemes() {
+  const userId = await getCurrentUserId();
+  if (!userId) return [];
+
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
     .from("themes")
     .select("*")
+    .eq("userId", userId)
     .order("createdAt", { ascending: false });
 
   if (error) throw error;
-  // RLS will automatically filter to user's own themes
   return data as Theme[];
 }
 

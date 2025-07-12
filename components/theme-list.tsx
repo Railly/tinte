@@ -1,20 +1,15 @@
 import { getCurrentUserId } from '@/lib/auth-utils';
-import { getPublicThemes, getUserThemes } from '@/lib/db/queries';
+import { getPublicThemes, getThemesByUser } from '@/lib/db/queries';
 import { ThemeListClient } from './theme-list-client';
 
 export async function ThemeList() {
   const userId = await getCurrentUserId();
-
-  // Get data on the server using Supabase client with RLS
-  const publicThemes = await getPublicThemes();
-  const userThemes = userId ? await getUserThemes() : [];
+  const themes = userId ? await getThemesByUser() : await getPublicThemes();
 
   return (
     <div className="space-y-6">
-      {/* Server-rendered theme cards with client-side state management */}
       <ThemeListClient
-        initialPublicThemes={publicThemes}
-        initialUserThemes={userThemes}
+        initialThemes={themes}
         isAuthenticated={!!userId}
         userId={userId}
       />

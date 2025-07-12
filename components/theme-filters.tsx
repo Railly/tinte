@@ -1,16 +1,19 @@
 'use client';
 
+import { useQueryState } from 'nuqs';
 import { useThemeStore } from '@/lib/stores/theme-store';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 
 export function ThemeFilters() {
-  const { 
-    showPublicOnly, 
-    setShowPublicOnly, 
-    useUpstashSearch, 
-    setUseUpstashSearch 
-  } = useThemeStore();
+  const [showPublicOnly, setShowPublicOnly] = useQueryState('publicOnly', {
+    defaultValue: false,
+    parse: (value) => value === 'true',
+    serialize: (value) => value ? 'true' : null,
+    shallow: false,
+  });
+  
+  const { useUpstashSearch, setUseUpstashSearch } = useThemeStore();
 
   return (
     <div className="flex items-center gap-4">

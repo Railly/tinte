@@ -1,6 +1,6 @@
 'use client';
 
-import { useThemeStore } from '@/lib/stores/theme-store';
+import { useQueryState } from 'nuqs';
 import { Button } from './ui/button';
 import { Plus } from 'lucide-react';
 
@@ -9,14 +9,18 @@ interface CreateThemeButtonProps {
 }
 
 export function CreateThemeButton({ isAuthenticated }: CreateThemeButtonProps) {
-  const { startCreating } = useThemeStore();
+  const [, setCreateDialog] = useQueryState('create');
 
   if (!isAuthenticated) {
     return null;
   }
 
+  const handleCreate = () => {
+    setCreateDialog('true');
+  };
+
   return (
-    <Button onClick={startCreating}>
+    <Button onClick={handleCreate}>
       <Plus className="h-4 w-4 mr-2" />
       Create Theme
     </Button>

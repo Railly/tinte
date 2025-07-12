@@ -1,72 +1,104 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useQueryState } from 'nuqs';
 import { useThemeStore } from '@/lib/stores/theme-store';
 import { ThemeCard } from './theme-card';
 import { ThemeSearch } from './theme-search';
 import { ThemeFilters } from './theme-filters';
-import { InfiniteThemeList } from './infinite-theme-list';
-import { useInfiniteSearch } from '@/lib/hooks/use-infinite-search';
 import type { Theme } from '@/lib/db/schema';
 
 interface ThemeListClientProps {
-  initialPublicThemes: Theme[];
-  initialUserThemes: Theme[];
+  initialThemes: Theme[];
   isAuthenticated: boolean;
   userId: string | null;
 }
 
 export function ThemeListClient({
-  initialPublicThemes,
-  initialUserThemes,
+  initialThemes,
   isAuthenticated,
   userId
 }: ThemeListClientProps) {
-  const {
-    showPublicOnly,
-    searchQuery,
-    useUpstashSearch,
-    isSearching
-  } = useThemeStore();
+  const [searchQuery] = useQueryState('q', { defaultValue: '' });
+  const [showPublicOnly] = useQueryState('publicOnly', {
+    defaultValue: false,
+    parse: (value) => value === 'true',
+  });
+  const { useUpstashSearch } = useThemeStore();
+  const [searchResults, setSearchResults] = useState<Theme[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Use infinite search hook for Upstash search
-  const infiniteSearch = useInfiniteSearch({ pageSize: 12 });
-
-  // Combine and filter themes for fallback (local search/no search)
-  const fallbackThemes = useMemo(() => {
-    let themes = showPublicOnly ? initialPublicThemes : [...initialUserThemes, ...initialPublicThemes];
-
-    // Filter by search query (fallback for when Upstash is disabled)
-    if (searchQuery.trim() && !useUpstashSearch) {
-      const query = searchQuery.toLowerCase();
-      themes = themes.filter(theme =>
-        theme.name.toLowerCase().includes(query) ||
-        theme.description?.toLowerCase().includes(query)
-      );
+  // Upstash search effect
+  useEffect(() => {
+    if (!useUpstashSearch || !searchQuery?.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
     }
 
-    // Remove duplicates
-    const uniqueThemes = themes.reduce((acc, theme) => {
-      if (!acc.find(t => t.id === theme.id)) {
-        acc.push(theme);
+    const controller = new AbortController();
+    setIsSearching(true);
+
+    const performSearch = async () => {
+      try {
+        const params = new URLSearchParams({
+          q: searchQuery,
+          limit: '50',
+          publicOnly: showPublicOnly.toString(),
+        });
+
+        const response = await fetch(`/api/search?${params}`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) throw new Error('Search failed');
+
+        const data = await response.json();
+        setSearchResults(data.results || []);
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Search error:', error);
+          setSearchResults([]);
+        }
+      } finally {
+        setIsSearching(false);
       }
-      return acc;
-    }, [] as Theme[]);
+    };
 
-    return uniqueThemes;
-  }, [initialPublicThemes, initialUserThemes, showPublicOnly, searchQuery, useUpstashSearch]);
+    const timeoutId = setTimeout(performSearch, 300); // Debounce
 
-  // Infinite scroll component for DB queries when no search
-  const infiniteScrollQuery = useMemo(() => {
-    // If not authenticated, always show only public themes
-    // If authenticated and showPublicOnly is true, show only public themes
-    // If authenticated and showPublicOnly is false, show all accessible themes (own + public)
-    const shouldFilterPublic = !isAuthenticated || showPublicOnly;
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [searchQuery, useUpstashSearch, showPublicOnly]);
 
-    return shouldFilterPublic
-      ? (query: any) => query.eq('public', true).order('createdAt', { ascending: false })
-      : (query: any) => query.order('createdAt', { ascending: false });
-  }, [showPublicOnly, isAuthenticated]);
+  // Simple client-side filtering for themes (fallback when not using Upstash)
+  const filteredThemes = useMemo(() => {
+    return initialThemes.filter(theme => {
+      // Filter by visibility
+      if (!isAuthenticated) return theme.public;
+      if (showPublicOnly) return theme.public;
+      return theme.public || theme.userId === userId;
+    }).filter(theme => {
+      // Filter by search query (only for local search)
+      if (!searchQuery?.trim() || useUpstashSearch) return true;
+      const query = searchQuery.toLowerCase();
+      return theme.name.toLowerCase().includes(query) ||
+        theme.description?.toLowerCase().includes(query);
+    });
+  }, [initialThemes, isAuthenticated, showPublicOnly, userId, searchQuery, useUpstashSearch]);
+
+  // Choose which themes to display
+  const displayedThemes = useMemo(() => {
+    if (useUpstashSearch && searchQuery?.trim()) {
+      return searchResults;
+    }
+    return filteredThemes;
+  }, [useUpstashSearch, searchQuery, searchResults, filteredThemes]);
+
+  // Show loading state for search
+  const showLoading = useUpstashSearch && searchQuery?.trim() && isSearching;
 
   return (
     <div className="space-y-6">
@@ -76,38 +108,23 @@ export function ThemeListClient({
         {isAuthenticated && <ThemeFilters />}
       </div>
 
-      {/* Conditional rendering based on search state */}
-      {useUpstashSearch && infiniteSearch.hasQuery ? (
-        // Upstash search with infinite scroll
-        <InfiniteSearchResults
-          searchData={infiniteSearch.data}
-          hasMore={infiniteSearch.hasMore}
-          isLoading={infiniteSearch.isLoading}
-          isFetching={infiniteSearch.isFetching}
-          fetchNextPage={infiniteSearch.fetchNextPage}
-          userId={userId}
-          searchQuery={searchQuery}
-        />
-      ) : !searchQuery.trim() ? (
-        // No search - use infinite scroll from DB
-        <InfiniteThemeList
-          tableName="themes"
-          pageSize={12}
-          trailingQuery={infiniteScrollQuery}
-          userId={userId}
-          isAuthenticated={isAuthenticated}
-        />
-      ) : (
-        // Fallback local search
+      {/* Theme grid */}
+      {showLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {fallbackThemes.length === 0 ? (
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-48 bg-muted animate-pulse rounded-lg" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {displayedThemes.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <p className="text-muted-foreground">
-                No themes found matching your search.
+                {searchQuery?.trim() ? 'No themes found matching your search.' : 'No themes available.'}
               </p>
             </div>
           ) : (
-            fallbackThemes.map((theme) => (
+            displayedThemes.map((theme) => (
               <ThemeCard
                 key={theme.id}
                 theme={theme}
@@ -119,97 +136,4 @@ export function ThemeListClient({
       )}
     </div>
   );
-}
-
-// Component for infinite search results
-function InfiniteSearchResults({
-  searchData,
-  hasMore,
-  isLoading,
-  isFetching,
-  fetchNextPage,
-  userId,
-  searchQuery
-}: {
-  searchData: Theme[]
-  hasMore: boolean
-  isLoading: boolean
-  isFetching: boolean
-  fetchNextPage: () => void
-  userId: string | null
-  searchQuery: string
-}) {
-  const loadMoreSentinelRef = React.useRef<HTMLDivElement>(null)
-  const observer = React.useRef<IntersectionObserver | null>(null)
-
-  React.useEffect(() => {
-    if (observer.current) observer.current.disconnect()
-
-    observer.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetching) {
-          fetchNextPage()
-        }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px 100px 0px',
-      }
-    )
-
-    if (loadMoreSentinelRef.current) {
-      observer.current.observe(loadMoreSentinelRef.current)
-    }
-
-    return () => {
-      if (observer.current) observer.current.disconnect()
-    }
-  }, [isFetching, hasMore, fetchNextPage])
-
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {searchData.length === 0 && !isLoading ? (
-          <div className="col-span-full text-center py-12">
-            <p className="text-muted-foreground">
-              No themes found matching "{searchQuery}".
-            </p>
-          </div>
-        ) : (
-          searchData.map((theme) => (
-            <ThemeCard
-              key={theme.id}
-              theme={theme}
-              isOwner={userId === theme.userId}
-            />
-          ))
-        )}
-
-        {/* Loading skeletons */}
-        {(isFetching || isLoading) && (
-          <>
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="bg-card border rounded-lg p-6 space-y-4">
-                <div className="h-4 bg-muted animate-pulse rounded" />
-                <div className="h-3 bg-muted animate-pulse rounded w-2/3" />
-                <div className="h-20 bg-muted animate-pulse rounded" />
-                <div className="flex justify-between">
-                  <div className="h-4 bg-muted animate-pulse rounded w-16" />
-                  <div className="h-4 bg-muted animate-pulse rounded w-20" />
-                </div>
-              </div>
-            ))}
-          </>
-        )}
-
-        {!hasMore && searchData.length > 0 && (
-          <div className="col-span-full text-center text-muted-foreground py-4 text-sm">
-            No more search results.
-          </div>
-        )}
-      </div>
-
-      <div ref={loadMoreSentinelRef} style={{ height: '1px' }} />
-    </div>
-  )
 }

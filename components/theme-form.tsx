@@ -1,8 +1,9 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useCallback } from 'react';
 import { useEffect } from 'react';
-import { useThemeStore, useThemeSelectors } from '@/lib/stores/theme-store';
+import { useRouter } from 'next/navigation';
+import { useQueryState } from 'nuqs';
 import { createThemeAction, updateThemeAction } from '@/lib/actions/theme-actions';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -12,24 +13,31 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { X } from 'lucide-react';
 
 export function ThemeForm() {
-  const { isCreating, isEditing, editingTheme, cancelEditing } = useThemeStore();
-  const { isFormOpen } = useThemeSelectors();
+  const router = useRouter();
+  const [createDialog, setCreateDialog] = useQueryState('create');
+  const [editThemeId, setEditThemeId] = useQueryState('edit');
 
   const [createState, createFormAction] = useActionState(createThemeAction, { success: false });
   const [updateState, updateFormAction] = useActionState(updateThemeAction, { success: false });
 
-  const isUpdate = isEditing && editingTheme;
+  const isUpdate = !!editThemeId;
+  const isFormOpen = createDialog === 'true' || isUpdate;
   const formAction = isUpdate ? updateFormAction : createFormAction;
   const formState = isUpdate ? updateState : createState;
 
-  console.log({ formState })
+  const handleClose = useCallback(() => {
+    setCreateDialog(null);
+    setEditThemeId(null);
+  }, [setCreateDialog, setEditThemeId]);
 
-  // Close form and reset store when action succeeds
+  // Close form and refresh when action succeeds
   useEffect(() => {
     if (formState.success) {
-      cancelEditing();
+      handleClose();
+      // Force a refresh to sync with server
+      router.refresh();
     }
-  }, [formState.success, cancelEditing]);
+  }, [formState.success, handleClose, router]);
 
   if (!isFormOpen) return null;
 
@@ -43,7 +51,7 @@ export function ThemeForm() {
           <Button
             variant="outline"
             size="sm"
-            onClick={cancelEditing}
+            onClick={handleClose}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -51,7 +59,7 @@ export function ThemeForm() {
 
         <form action={formAction}>
           {isUpdate && (
-            <input type="hidden" name="id" value={editingTheme?.id} />
+            <input type="hidden" name="id" value={editThemeId} />
           )}
 
           <CardContent className="space-y-4">
@@ -66,7 +74,6 @@ export function ThemeForm() {
               <Input
                 id="name"
                 name="name"
-                defaultValue={editingTheme?.name}
                 placeholder="My Awesome Theme"
                 required
               />
@@ -80,7 +87,6 @@ export function ThemeForm() {
               <Input
                 id="description"
                 name="description"
-                defaultValue={editingTheme?.description || ''}
                 placeholder="A beautiful dark theme for VS Code"
               />
               {formState.fieldErrors?.description && (
@@ -93,7 +99,6 @@ export function ThemeForm() {
               <textarea
                 id="content"
                 name="content"
-                defaultValue={editingTheme?.content}
                 placeholder='{"colors": {"primary": "#000000"}}'
                 className="w-full h-32 p-3 text-sm border rounded-md"
                 required
@@ -107,7 +112,6 @@ export function ThemeForm() {
               <Checkbox
                 id="public"
                 name="public"
-                defaultChecked={editingTheme?.public}
               />
               <Label htmlFor="public" className="text-sm">
                 Make this theme public
@@ -116,12 +120,10 @@ export function ThemeForm() {
           </CardContent>
 
           <CardFooter className="flex gap-2">
-            <Button type="button" variant="outline" onClick={cancelEditing}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit"
-              disabled={!isCreating || isEditing}
-            >
+            <Button type="submit">
               {isUpdate ? 'Update Theme' : 'Create Theme'}
             </Button>
           </CardFooter>
