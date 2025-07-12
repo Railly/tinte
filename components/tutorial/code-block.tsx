@@ -50,7 +50,7 @@ export function CodeBlock({ code }: { code: string }) {
       <Button
         size="icon"
         onClick={copy}
-        variant={"outline"}
+        variant={"outline-solid"}
         className="absolute right-2 top-2"
       >
         {icon}
