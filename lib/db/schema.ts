@@ -55,6 +55,11 @@ export const themes = pgTable(
 export type Theme = InferSelectModel<typeof themes>;
 export type ThemeInsert = InferInsertModel<typeof themes>;
 
+export type ThemeOptimistic = Theme & {
+  deleted?: boolean;
+  deleteFailed?: boolean;
+};
+
 export type ThemeFormData = {
   name: string;
   description?: string;

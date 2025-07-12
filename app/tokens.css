@@ -1,0 +1,302 @@
+:root {
+  /* Warm Neutral Colors - Light Mode (Sophisticated scale) */
+  --color-neutral-50: #fefefe;
+  --color-neutral-100: #fdfdfd;
+  --color-neutral-200: #f9f9f9;
+  --color-neutral-300: #f0f0f0;
+  --color-neutral-400: #bdbdbd;
+  --color-neutral-500: #8a8a8a;
+  --color-neutral-600: #5e5e5e;
+  --color-neutral-700: #454545;
+  --color-neutral-800: #2d2d2d;
+  --color-neutral-900: #1a1a1a;
+  --color-neutral-950: #0d0d0d;
+
+  /* Sophisticated Primary Colors - Light Mode (Rich Amber/Gold) */
+  --color-primary-base: #f59e0b; /* sophisticated golden anchor */
+  --color-primary-foreground: #fefefe; /* light text on golden primary */
+  --color-primary-inactive: #fbbf24; /* brighter golden for inactive */
+  --color-primary-subtle: #fef3c7; /* very light golden background */
+  --color-primary-darker: #d97706; /* darker golden for hover */
+  --color-primary-dark: #92400e; /* darkest golden for active/pressed */
+
+  /* Complementary Secondary Colors - Light Mode (Warm Teal) */
+  --color-secondary-base: #0d9488; /* sophisticated teal that complements golden */
+  --color-secondary-foreground: #fefefe;
+  --color-secondary-inactive: #14b8a6;
+  --color-secondary-subtle: #ccfbf1;
+  --color-secondary-darker: #0f766e;
+  --color-secondary-dark: #134e4a;
+
+  /* Warm UI Background Colors - Light Mode */
+  --color-ui-base: #fefefe;
+  --color-ui-subtle: #fdfdfd;
+  --color-ui-soft: #f9f9f9;
+  --color-ui-inactive: #f0f0f0;
+  --color-ui-strong: #bdbdbd;
+
+  /* Warm Border Colors - Light Mode */
+  --color-border-base: #f0f0f0;
+  --color-border-subtle: #f9f9f9;
+  --color-border-soft: #fdfdfd;
+  --color-border-inactive: #f0f0f0;
+  --color-border-strong: #bdbdbd;
+
+  /* Enhanced Text Colors - Light Mode */
+  --color-text-base: #1a1a1a;
+  --color-text-subtle: #5e5e5e;
+  --color-text-soft: #8a8a8a;
+  --color-text-inactive: #bdbdbd;
+  --color-text-strong: #0d0d0d;
+
+  /* Harmonized Success Colors - Light Mode */
+  --color-success-base: #059669;
+  --color-success-foreground: #fefefe;
+  --color-success-subtle: #d1fae5;
+  --color-success-soft: #a7f3d0;
+  --color-success-strong: #047857;
+
+  /* Error Colors - Light Mode */
+  --color-error-base: #dc2626;
+  --color-error-foreground: #fefefe;
+  --color-error-subtle: #fee2e2;
+  --color-error-soft: #fecaca;
+  --color-error-strong: #b91c1c;
+
+  /* Information Colors - Light Mode */
+  --color-info-base: #0369a1;
+  --color-info-foreground: #fefefe;
+  --color-info-subtle: #e0f2fe;
+  --color-info-soft: #bae6fd;
+  --color-info-strong: #0284c7;
+
+  /* Warning Colors - Light Mode */
+  --color-warning-base: #ea580c;
+  --color-warning-foreground: #fefefe;
+  --color-warning-subtle: #fed7aa;
+  --color-warning-soft: #fdba74;
+  --color-warning-strong: #c2410c;
+
+  /* Legacy mappings for backward compatibility */
+  --background: #fefefe;
+  --foreground: #1a1a1a;
+  --card: #fefefe;
+  --card-foreground: #1a1a1a;
+  --popover: #fefefe;
+  --popover-foreground: #1a1a1a;
+  --primary: #f59e0b;
+  --primary-foreground: #fefefe;
+  --secondary: #0d9488;
+  --secondary-foreground: #fefefe;
+  --muted: #f0f0f0;
+  --muted-foreground: #5e5e5e;
+  --accent: #f9f9f9;
+  --accent-foreground: #1a1a1a;
+  --destructive: #dc2626;
+  --destructive-foreground: #fefefe;
+  --border: #f0f0f0;
+  --input: #f0f0f0;
+  --ring: #f59e0b;
+
+  /* Refined chart colors with golden harmony */
+  --chart-1: #f59e0b;
+  --chart-2: #0d9488;
+  --chart-3: #dc2626;
+  --chart-4: #059669;
+  --chart-5: #0369a1;
+
+  /* Elegant sidebar colors */
+  --sidebar: #fdfdfd;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #f59e0b;
+  --sidebar-primary-foreground: #fefefe;
+  --sidebar-accent: #f9f9f9;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #f0f0f0;
+  --sidebar-ring: #f59e0b;
+
+  /* Premium Typography */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Lora, ui-serif, Georgia, serif;
+  --font-mono: JetBrains Mono, ui-monospace, monospace;
+  --letter-spacing: -0.02em;
+
+  /* Refined spacing and borders */
+  --radius: 0.25rem;
+  --spacing: 0.25rem;
+
+  /* Elegant shadows with warm tones */
+  --shadow-2xs: 0 1px 2px 0px hsl(45 46% 11% / 0.03);
+  --shadow-xs: 0 1px 3px 0px hsl(45 46% 11% / 0.05);
+  --shadow-sm: 0 1px 3px 0px hsl(45 46% 11% / 0.08),
+    0 1px 2px -1px hsl(45 46% 11% / 0.08);
+  --shadow: 0 1px 3px 0px hsl(45 46% 11% / 0.1),
+    0 1px 2px -1px hsl(45 46% 11% / 0.1);
+  --shadow-md: 0 4px 6px -1px hsl(45 46% 11% / 0.08),
+    0 2px 4px -2px hsl(45 46% 11% / 0.08);
+  --shadow-lg: 0 10px 15px -3px hsl(45 46% 11% / 0.08),
+    0 4px 6px -4px hsl(45 46% 11% / 0.08);
+  --shadow-xl: 0 20px 25px -5px hsl(45 46% 11% / 0.08),
+    0 8px 10px -6px hsl(45 46% 11% / 0.08);
+  --shadow-2xl: 0 25px 50px -12px hsl(45 46% 11% / 0.2);
+
+  /* Shiki Code Highlighting Variables - Light Mode */
+  --shiki-foreground: #1a1a1a;
+  --shiki-background: #fdfdfd;
+
+  /* Enhanced syntax colors using refined design tokens */
+  --shiki-token-constant: #dc2626; /* refined red for constants */
+  --shiki-token-string: #059669; /* refined green for strings */
+  --shiki-token-comment: #8a8a8a; /* refined neutral for comments */
+  --shiki-token-keyword: #f59e0b; /* golden primary for keywords */
+  --shiki-token-parameter: #ea580c; /* refined orange for parameters */
+  --shiki-token-function: #0d9488; /* teal secondary for functions */
+  --shiki-token-string-expression: #0369a1; /* refined blue for string expressions */
+  --shiki-token-punctuation: #5e5e5e; /* refined neutral for punctuation */
+  --shiki-token-link: #0369a1; /* info blue for links */
+}
+
+.dark {
+  /* Enhanced Primary Colors - Dark Mode */
+  --color-primary-base: #fbbf24;
+  --color-primary-foreground: #0d0d0d;
+  --color-primary-inactive: #f59e0b;
+  --color-primary-subtle: #451a03;
+  --color-primary-darker: #fcd34d;
+  --color-primary-dark: #fde68a;
+
+  /* Refined Secondary Colors - Dark Mode */
+  --color-secondary-base: #14b8a6;
+  --color-secondary-foreground: #0d0d0d;
+  --color-secondary-inactive: #0d9488;
+  --color-secondary-subtle: #042f2e;
+  --color-secondary-darker: #5eead4;
+  --color-secondary-dark: #99f6e4;
+
+  /* Rich Dark UI Backgrounds */
+  --color-ui-base: #0d0d0d;
+  --color-ui-subtle: #1a1a1a;
+  --color-ui-soft: #2d2d2d;
+  --color-ui-inactive: #454545;
+  --color-ui-strong: #5e5e5e;
+
+  /* Warm Dark Borders */
+  --color-border-base: #454545;
+  --color-border-subtle: #2d2d2d;
+  --color-border-soft: #1a1a1a;
+  --color-border-inactive: #5e5e5e;
+  --color-border-strong: #8a8a8a;
+
+  /* High Contrast Text for Dark */
+  --color-text-base: #fefefe;
+  --color-text-subtle: #bdbdbd;
+  --color-text-soft: #8a8a8a;
+  --color-text-inactive: #5e5e5e;
+  --color-text-strong: #fefefe;
+
+  /* Enhanced Status Colors for Dark */
+  --color-success-base: #10b981;
+  --color-success-foreground: #0d0d0d;
+  --color-success-subtle: #022c22;
+  --color-success-soft: #065f46;
+  --color-success-strong: #34d399;
+
+  --color-error-base: #f87171;
+  --color-error-foreground: #0d0d0d;
+  --color-error-subtle: #2d1b1b;
+  --color-error-soft: #7f1d1d;
+  --color-error-strong: #fca5a5;
+
+  --color-info-base: #0ea5e9;
+  --color-info-foreground: #0d0d0d;
+  --color-info-subtle: #0c1527;
+  --color-info-soft: #1e40af;
+  --color-info-strong: #38bdf8;
+
+  --color-warning-base: #fb7185;
+  --color-warning-foreground: #0d0d0d;
+  --color-warning-subtle: #2d1b1b;
+  --color-warning-soft: #be123c;
+  --color-warning-strong: #fda4af;
+
+  /* Dark Mode Legacy Mappings */
+  --background: #0d0d0d;
+  --foreground: #fefefe;
+  --card: #0d0d0d;
+  --card-foreground: #fefefe;
+  --popover: #0d0d0d;
+  --popover-foreground: #fefefe;
+  --primary: #fbbf24;
+  --primary-foreground: #0d0d0d;
+  --secondary: #14b8a6;
+  --secondary-foreground: #0d0d0d;
+  --muted: #454545;
+  --muted-foreground: #bdbdbd;
+  --accent: #2d2d2d;
+  --accent-foreground: #fefefe;
+  --destructive: #f87171;
+  --destructive-foreground: #0d0d0d;
+  --border: #454545;
+  --input: #454545;
+  --ring: #fbbf24;
+
+  /* Dark Mode Chart Colors */
+  --chart-1: #fbbf24;
+  --chart-2: #14b8a6;
+  --chart-3: #f87171;
+  --chart-4: #10b981;
+  --chart-5: #0ea5e9;
+
+  /* Premium Dark Sidebar */
+  --sidebar: #0d0d0d;
+  --sidebar-foreground: #fefefe;
+  --sidebar-primary: #fbbf24;
+  --sidebar-primary-foreground: #0d0d0d;
+  --sidebar-accent: #2d2d2d;
+  --sidebar-accent-foreground: #fefefe;
+  --sidebar-border: #454545;
+  --sidebar-ring: #fbbf24;
+
+  /* Sophisticated Dark Shadows */
+  --shadow-2xs: 0 1px 2px 0px hsl(0 0% 0% / 0.15);
+  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.35),
+    0 1px 2px -1px hsl(0 0% 0% / 0.35);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.4), 0 1px 2px -1px hsl(0 0% 0% / 0.4);
+  --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.35),
+    0 2px 4px -2px hsl(0 0% 0% / 0.35);
+  --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.35),
+    0 4px 6px -4px hsl(0 0% 0% / 0.35);
+  --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.35),
+    0 8px 10px -6px hsl(0 0% 0% / 0.35);
+  --shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
+
+  /* Shiki Code Highlighting - Dark Mode */
+  --shiki-foreground: #fefefe;
+  --shiki-background: #1a1a1a;
+
+  /* Enhanced Dark Mode Syntax Colors */
+  --shiki-token-constant: #f87171;
+  --shiki-token-string: #10b981;
+  --shiki-token-comment: #8a8a8a;
+  --shiki-token-keyword: #fbbf24;
+  --shiki-token-parameter: #fb7185;
+  --shiki-token-function: #14b8a6;
+  --shiki-token-string-expression: #0ea5e9;
+  --shiki-token-punctuation: #bdbdbd;
+  --shiki-token-link: #0ea5e9;
+}
+
+@theme {
+  --color-shiki-foreground: var(--shiki-foreground);
+  --color-shiki-background: var(--shiki-background);
+  --color-shiki-token-constant: var(--shiki-token-constant);
+  --color-shiki-token-string: var(--shiki-token-string);
+  --color-shiki-token-comment: var(--shiki-token-comment);
+  --color-shiki-token-keyword: var(--shiki-token-keyword);
+  --color-shiki-token-parameter: var(--shiki-token-parameter);
+  --color-shiki-token-function: var(--shiki-token-function);
+  --color-shiki-token-string-expression: var(--shiki-token-string-expression);
+  --color-shiki-token-punctuation: var(--shiki-token-punctuation);
+  --color-shiki-token-link: var(--shiki-token-link);
+}

@@ -197,6 +197,59 @@ export async function toggleThemePublicAction(
   }
 }
 
+// Search action (replaces client-side fetch)
+export async function searchThemesAction(
+  query: string,
+  options: {
+    limit?: number;
+    publicOnly?: boolean;
+  } = {}
+): Promise<ActionResult<any[]>> {
+  try {
+    const { limit = 50, publicOnly = false } = options;
+    
+    if (!query?.trim()) {
+      return { success: true, data: [] };
+    }
+
+    // Get current user for permission filtering
+    let userId: string | null = null;
+    try {
+      userId = await requireAuth();
+    } catch {
+      // User not authenticated - will search public only
+    }
+
+    // Use the existing API route logic
+    const searchParams = new URLSearchParams({
+      q: query.trim(),
+      limit: String(limit),
+      publicOnly: String(publicOnly || !userId),
+    });
+
+    // This calls the Upstash search service
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/search?${searchParams}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Search failed');
+    }
+
+    const data = await response.json();
+    return { success: true, data: data.results || [] };
+  } catch (error) {
+    console.error('Search action error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Search failed',
+    };
+  }
+}
+
 // Redirect actions (for form submissions that should redirect)
 export async function createThemeAndRedirectAction(formData: FormData) {
   const result = await createThemeAction({ success: false }, formData);

@@ -1,9 +1,11 @@
 import { getCurrentUserId } from '@/lib/auth-utils';
 import { ThemeList } from '@/components/theme-list';
 import { CreateThemeButton } from '@/components/create-theme-button';
-import { ThemeForm } from '@/components/theme-form';
+import { ThemeCreateDialog } from '@/components/dialogs/theme-create-dialog';
+import { ThemeEditDialog } from '@/components/dialogs/theme-edit-dialog';
+import { ThemeDeleteDialog } from '@/components/dialogs/theme-delete-dialog';
 import { getPublicThemes, getThemesByUser } from '@/lib/db/queries';
-import { themeFormCache, themeSearchCache } from '@/lib/search-params';
+import { themeSearchCache } from '@/lib/search-params';
 import { type SearchParams } from 'nuqs/server';
 import { type Theme } from '@/lib/db/schema';
 
@@ -14,14 +16,14 @@ type PageProps = {
 export default async function Home({ searchParams }: PageProps) {
   const userId = await getCurrentUserId();
   const isAuthenticated = !!userId;
-  
+
   // Parse all search params server-side
-  const { create, edit } = await themeFormCache.parse(searchParams);
   const { q: searchQuery, publicOnly } = await themeSearchCache.parse(searchParams);
-  
-  // Get and filter themes server-side
+
+  // Get themes for server-side search fallback and form
   const allThemes = userId ? await getThemesByUser() : await getPublicThemes();
-  
+
+  // Server-side filtered themes (fallback when Upstash search is disabled)
   const filteredThemes = allThemes.filter((theme: Theme) => {
     // Filter by visibility
     if (!isAuthenticated) return theme.public;
@@ -47,7 +49,9 @@ export default async function Home({ searchParams }: PageProps) {
         <CreateThemeButton isAuthenticated={isAuthenticated} />
       </div>
       <ThemeList filteredThemes={filteredThemes} userId={userId} />
-      <ThemeForm create={create} edit={edit} />
+      <ThemeCreateDialog />
+      <ThemeEditDialog themes={allThemes} />
+      <ThemeDeleteDialog themes={allThemes} />
     </main>
   );
 }

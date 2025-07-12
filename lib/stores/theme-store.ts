@@ -5,15 +5,15 @@ import { persist } from "zustand/middleware";
 import type { Theme } from "@/lib/db/schema";
 
 interface ThemeState {
-  // Selected theme for preview
+  // Live preview state (memory only - not shareable)
   selectedTheme: Theme | null;
-  
-  // Search preferences (only thing we persist)
-  useUpstashSearch: boolean;
+
+  // UI preferences (persisted)
+  viewMode: "grid" | "list";
 
   // Actions
   setSelectedTheme: (theme: Theme | null) => void;
-  setUseUpstashSearch: (useUpstash: boolean) => void;
+  setViewMode: (mode: "grid" | "list") => void;
 }
 
 export const useThemeStore = create<ThemeState>()(
@@ -21,27 +21,18 @@ export const useThemeStore = create<ThemeState>()(
     (set) => ({
       // Initial state
       selectedTheme: null,
-      useUpstashSearch: true,
+      viewMode: "grid",
 
       // Actions
       setSelectedTheme: (theme) => set({ selectedTheme: theme }),
-      setUseUpstashSearch: (useUpstash) => set({ useUpstashSearch: useUpstash }),
+      setViewMode: (mode) => set({ viewMode: mode }),
     }),
     {
-      name: "theme-store",
-      // Only persist search preference
+      name: "tinte-preferences-v1",
+      // Only persist user preferences, not ephemeral state
       partialize: (state) => ({
-        useUpstashSearch: state.useUpstashSearch,
+        viewMode: state.viewMode,
       }),
     }
   )
 );
-
-// Simple selectors for backward compatibility
-export const useThemeSelectors = () => {
-  return {
-    isFormOpen: false,
-    currentFormTheme: null,
-    hasUnsavedChanges: false,
-  };
-};

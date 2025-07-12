@@ -130,3 +130,48 @@ export async function getThemeById(themeId: number) {
   if (error) throw error;
   return data as Theme;
 }
+
+// Search themes with filters
+export async function searchThemes(params: {
+  query?: string;
+  publicOnly?: boolean;
+  userId?: string | null;
+  limit?: number;
+}) {
+  const { query, publicOnly, userId, limit = 50 } = params;
+  
+  const supabase = userId ? createServerSupabaseClient() : createPublicServerSupabaseClient();
+  
+  let queryBuilder = supabase
+    .from("themes")
+    .select("*");
+
+  // Apply visibility filters
+  if (!userId) {
+    // Not authenticated - only public themes
+    queryBuilder = queryBuilder.eq("public", true);
+  } else if (publicOnly) {
+    // Authenticated but requesting only public
+    queryBuilder = queryBuilder.eq("public", true);
+  } else {
+    // Authenticated - own themes + public themes
+    queryBuilder = queryBuilder.or(`public.eq.true,userId.eq.${userId}`);
+  }
+
+  // Apply search filter
+  if (query?.trim()) {
+    const searchTerm = `%${query.trim()}%`;
+    queryBuilder = queryBuilder.or(
+      `name.ilike.${searchTerm},description.ilike.${searchTerm}`
+    );
+  }
+
+  queryBuilder = queryBuilder
+    .order("createdAt", { ascending: false })
+    .limit(limit);
+
+  const { data, error } = await queryBuilder;
+
+  if (error) throw error;
+  return data as Theme[];
+}

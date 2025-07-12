@@ -1,13 +1,12 @@
 'use client';
 
-import { useOptimistic, useTransition } from 'react';
-import { useThemeStore } from '@/lib/stores/theme-store';
-import { toggleThemePublicAction, deleteThemeAction } from '@/lib/actions/theme-actions';
 import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { MoreHorizontal, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Eye, EyeOff, Trash2, Edit, AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useThemeCardActions } from '@/hooks/use-theme-card-actions';
 import type { Theme } from '@/lib/db/schema';
 
 interface ThemeCardProps {
@@ -16,49 +15,25 @@ interface ThemeCardProps {
 }
 
 export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
-  const { setSelectedTheme } = useThemeStore();
-  const [isPending, startTransition] = useTransition();
-  const [optimisticTheme, setOptimisticTheme] = useOptimistic(
-    theme,
-    (state, update: Partial<Theme>) => ({ ...state, ...update })
-  );
+  const {
+    optimisticTheme,
+    isPending,
+    handleSelect,
+    handleEdit,
+    handleTogglePublic,
+    handleDelete,
+  } = useThemeCardActions(theme);
 
-  const handleSelect = () => {
-    setSelectedTheme(optimisticTheme);
-  };
-
-  const handleTogglePublic = () => {
-    const newPublicState = !optimisticTheme.public;
-    
-    // Optimistic update
-    setOptimisticTheme({ public: newPublicState });
-    
-    // Server action
-    startTransition(async () => {
-      try {
-        await toggleThemePublicAction(optimisticTheme.id, newPublicState);
-      } catch (error) {
-        // Revert optimistic update on error
-        setOptimisticTheme({ public: !newPublicState });
-        console.error('Failed to toggle theme visibility:', error);
-      }
-    });
-  };
-
-  const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this theme?')) {
-      startTransition(async () => {
-        try {
-          await deleteThemeAction(optimisticTheme.id);
-        } catch (error) {
-          console.error('Failed to delete theme:', error);
-        }
-      });
-    }
-  };
+  if (optimisticTheme.deleted) {
+    return null;
+  }
 
   return (
-    <Card className={`group hover:shadow-md transition-all ${isPending ? 'opacity-50' : ''}`}>
+    <Card className={cn(
+      "group hover:shadow-md transition-all",
+      isPending && "opacity-50",
+      optimisticTheme.deleteFailed && "ring-2 ring-destructive/20 bg-destructive/5"
+    )}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
@@ -83,6 +58,10 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleEdit} disabled={isPending}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleTogglePublic} disabled={isPending}>
                   {optimisticTheme.public ? (
                     <>
@@ -112,6 +91,12 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
         <div className="flex gap-2">
           {optimisticTheme.public && <Badge variant="secondary">Public</Badge>}
           {isOwner && <Badge variant="outline">Your Theme</Badge>}
+          {optimisticTheme.deleteFailed && (
+            <Badge variant="destructive" className="flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" />
+              Delete failed
+            </Badge>
+          )}
         </div>
       </CardHeader>
 

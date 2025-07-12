@@ -4,6 +4,7 @@ import { parseAsString, parseAsBoolean, createSearchParamsCache } from 'nuqs/ser
 export const themeFormParsers = {
   create: parseAsString,
   edit: parseAsString,
+  delete: parseAsString,
 };
 
 // Shared parsers for theme search and filters
