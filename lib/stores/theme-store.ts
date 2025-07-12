@@ -32,6 +32,11 @@ interface ThemeState {
   showPublicOnly: boolean;
   searchQuery: string;
   
+  // Search state
+  searchResults: Theme[];
+  isSearching: boolean;
+  useUpstashSearch: boolean;
+  
   // Actions
   setSelectedTheme: (theme: Theme | null) => void;
   setIsCreating: (creating: boolean) => void;
@@ -39,6 +44,11 @@ interface ThemeState {
   setEditingTheme: (theme: Theme | null) => void;
   setShowPublicOnly: (showPublic: boolean) => void;
   setSearchQuery: (query: string) => void;
+  
+  // Search actions
+  setSearchResults: (results: Theme[]) => void;
+  setIsSearching: (searching: boolean) => void;
+  setUseUpstashSearch: (useUpstash: boolean) => void;
   
   // Form helpers
   startCreating: () => void;
@@ -58,6 +68,11 @@ export const useThemeStore = create<ThemeState>()(
       showPublicOnly: false,
       searchQuery: '',
       
+      // Search state
+      searchResults: [],
+      isSearching: false,
+      useUpstashSearch: true,
+      
       // Actions
       setSelectedTheme: (theme) => set({ selectedTheme: theme }),
       setIsCreating: (creating) => set({ isCreating: creating }),
@@ -65,6 +80,11 @@ export const useThemeStore = create<ThemeState>()(
       setEditingTheme: (theme) => set({ editingTheme: theme }),
       setShowPublicOnly: (showPublic) => set({ showPublicOnly: showPublic }),
       setSearchQuery: (query) => set({ searchQuery: query }),
+      
+      // Search actions
+      setSearchResults: (results) => set({ searchResults: results }),
+      setIsSearching: (searching) => set({ isSearching: searching }),
+      setUseUpstashSearch: (useUpstash) => set({ useUpstashSearch: useUpstash }),
       
       // Form helpers
       startCreating: () => set({ 
@@ -93,6 +113,8 @@ export const useThemeStore = create<ThemeState>()(
         isEditing: false,
         editingTheme: null,
         searchQuery: '',
+        searchResults: [],
+        isSearching: false,
       }),
     }),
     {
@@ -101,6 +123,7 @@ export const useThemeStore = create<ThemeState>()(
       partialize: (state) => ({
         showPublicOnly: state.showPublicOnly,
         searchQuery: state.searchQuery,
+        useUpstashSearch: state.useUpstashSearch,
       }),
     }
   )

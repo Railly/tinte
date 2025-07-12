@@ -17,6 +17,7 @@ export async function ThemeList() {
         initialPublicThemes={publicThemes}
         initialUserThemes={userThemes}
         isAuthenticated={!!userId}
+        userId={userId}
       />
     </div>
   );

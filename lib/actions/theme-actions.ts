@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-utils";
 import { addTheme, updateTheme, deleteTheme } from "@/lib/db/queries";
+import { indexTheme, deleteThemeFromIndex } from "@/lib/services/search";
 
 // Validation schemas
 const createThemeSchema = z.object({
@@ -59,6 +60,14 @@ export async function createThemeAction(
     // Pass userId and validated data to addTheme
     const result = await addTheme(userId, validatedFields.data);
 
+    // Index the new theme in Upstash Search
+    try {
+      await indexTheme(result);
+    } catch (searchError) {
+      console.error("Failed to index theme in search:", searchError);
+      // Don't fail the entire operation if search indexing fails
+    }
+
     revalidatePath("/themes");
     revalidatePath("/");
 
@@ -101,6 +110,14 @@ export async function updateThemeAction(
     const { id, ...updateData } = validatedFields.data;
     const result = await updateTheme(id, updateData);
 
+    // Update the theme in Upstash Search
+    try {
+      await indexTheme(result);
+    } catch (searchError) {
+      console.error("Failed to update theme in search:", searchError);
+      // Don't fail the entire operation if search indexing fails
+    }
+
     revalidatePath("/themes");
     revalidatePath("/");
 
@@ -123,6 +140,14 @@ export async function deleteThemeAction(
     await requireAuth(); // Ensure user is authenticated
 
     const result = await deleteTheme(themeId);
+
+    // Remove the theme from Upstash Search
+    try {
+      await deleteThemeFromIndex(themeId);
+    } catch (searchError) {
+      console.error("Failed to remove theme from search:", searchError);
+      // Don't fail the entire operation if search deletion fails
+    }
 
     revalidatePath("/themes");
     revalidatePath("/");
@@ -148,6 +173,14 @@ export async function toggleThemePublicAction(
     await requireAuth(); // Ensure user is authenticated
 
     const result = await updateTheme(themeId, { public: isPublic });
+
+    // Update the theme in Upstash Search (visibility change affects search results)
+    try {
+      await indexTheme(result);
+    } catch (searchError) {
+      console.error("Failed to update theme visibility in search:", searchError);
+      // Don't fail the entire operation if search indexing fails
+    }
 
     revalidatePath("/themes");
     revalidatePath("/");

@@ -17,6 +17,7 @@
     "@radix-ui/react-slot": "^1.2.2",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.5",
+    "@upstash/search": "^0.1.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.0",

@@ -1,13 +1,28 @@
 import { createClient } from "@supabase/supabase-js";
-import { useSession } from "@clerk/nextjs";
 
-export function getSupabaseClient() {
-  const { session } = useSession();
+// Create a basic Supabase client for public access
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+// Create Supabase client with Clerk session integration
+export function createClerkSupabaseClient(getToken: (() => Promise<string | null>) | null) {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      accessToken: async () => session?.getToken() ?? null,
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+        detectSessionInUrl: false,
+      },
+      global: {
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      },
+      accessToken: getToken || (() => Promise.resolve(null)),
     }
   );
 }

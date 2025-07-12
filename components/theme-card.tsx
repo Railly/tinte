@@ -59,13 +59,13 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
               </p>
             )}
           </div>
-          
+
           {isOwner && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="outline-solid"
+                  size="sm"
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                   disabled={isLoading}
                 >
@@ -90,7 +90,7 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
                     </>
                   )}
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={handleDelete}
                   className="text-destructive"
                 >
@@ -101,27 +101,27 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
             </DropdownMenu>
           )}
         </div>
-        
+
         <div className="flex gap-2">
           {theme.public && <Badge variant="secondary">Public</Badge>}
           {isOwner && <Badge variant="outline">Your Theme</Badge>}
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         {/* Theme preview - could show color swatches or preview */}
         <div className="h-20 rounded-md bg-gradient-to-r from-blue-500 to-purple-600 mb-3">
           {/* This would be replaced with actual theme preview */}
         </div>
-        
+
         <p className="text-xs text-muted-foreground">
           Created {new Date(theme.created_at).toLocaleDateString()}
         </p>
       </CardContent>
-      
+
       <CardFooter className="pt-0">
-        <Button 
-          onClick={handleSelect} 
+        <Button
+          onClick={handleSelect}
           className="w-full"
           disabled={isLoading}
         >

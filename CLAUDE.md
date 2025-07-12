@@ -104,7 +104,8 @@ const allThemes = await adminDb.select().from(themes); // Bypasses RLS
 - `lib/db/queries.ts` - RLS-aware database operations
 - `lib/db/rls.ts` - RLS context management utilities
 - `lib/auth-utils.ts` - Clerk authentication helpers
-- `lib/actions/theme-actions.ts` - Server actions for mutations
+- `lib/actions/theme-actions.ts` - Server actions for mutations with search integration
+- `lib/services/search.ts` - Upstash Search service for theme indexing/search
 - `lib/stores/theme-store.ts` - Zustand client state management
 - `components/` - React components (server and client)
 
@@ -115,10 +116,64 @@ const allThemes = await adminDb.select().from(themes); // Bypasses RLS
 3. **Data Isolation**: Users can only access their own themes + public themes
 4. **Admin Override**: `adminDb` bypasses RLS for admin operations
 
+### Search Integration with Upstash
+
+- **Upstash Search** for real-time theme search and discovery
+- Automatic indexing when themes are created, updated, or deleted
+- Search respects RLS policies (users see only their own + public themes)
+- Search service in lib/services/search.ts handles all search operations
+- Graceful degradation: search failures don't break theme operations
+
+#### Search Features
+
+**Automatic Indexing**:
+- Theme creation → Index in Upstash Search
+- Theme updates → Re-index in Upstash Search  
+- Theme deletion → Remove from Upstash Search
+- Visibility changes → Update search metadata
+
+**Search Operations**:
+```typescript
+import { searchThemes, indexTheme, deleteThemeFromIndex } from "@/lib/services/search";
+
+// Search with user permissions
+const results = await searchThemes("dark theme", { 
+  userId: "user_123", 
+  limit: 10 
+});
+
+// Public-only search
+const publicResults = await searchThemes("minimal", { 
+  publicOnly: true 
+});
+```
+
+**Search Data Structure**:
+```typescript
+{
+  id: "theme-123",
+  content: {
+    name: "Dark Professional",
+    description: "A sleek dark theme...",
+    content: "{ theme json... }",
+    public: true,
+    userId: "user_123"
+  },
+  metadata: {
+    themeId: 123,
+    userId: "user_123", 
+    public: true,
+    url: "/themes/123"
+  }
+}
+```
+
 ### Environment Setup
 
 Requires .env.local with:
 
 - `DATABASE_URL` - PostgreSQL connection string
+- `UPSTASH_SEARCH_REST_URL` - Upstash Search endpoint
+- `UPSTASH_SEARCH_REST_TOKEN` - Upstash Search authentication token
 - Clerk configuration variables
 - Supabase configured with `authenticated` role for RLS
