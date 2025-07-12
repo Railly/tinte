@@ -1,236 +1,113 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Mission
 
-## Development Commands
+Server‑first theme designer for VS Code and shadcn/ui. Published themes live in the URL (Nuqs). The live editor runs on Zustand. Tailwind 4 drives styling.
 
-- `npm run dev` - Start development server with Next.js Turbo Mode
-- `npm run build` - Build the production application
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint for code quality checks
-- `npm run db:generate` - Generate Drizzle schema files from schema definitions
-- `npm run db:migrate` - Run database migrations using Drizzle Kit
-- `npm run db:studio` - Open Drizzle Studio for database management
+## Stack
 
-## Tech Stack Architecture
+- Next 14 with React Server Components, runtime Bun.
+- Supabase for data. Row‑level security on. Drizzle supplies schema and migrations only.
+- State split: Nuqs for shareable URL params, Zustand for local/editor/global UI.
+- Tailwind 4: every `--color‑*` token usable via `bg-*`, `text-*`, `border-*`.
 
-This is a themes application (VS Code, Zed, Shadcn, JetBrains, Vim themes) built with Next.js and a modern full-stack architecture featuring Row-Level Security (RLS).
+## Architectural rules
 
-### Authentication & Authorization
+1. Default to server components. Mark a file `"use client"` only when the browser owns the logic.
+2. Keep client files ≤150 LOC and ≤10 cyclomatic complexity.
+3. Avoid `useEffect` and `useState`. Prefer server actions, URL params, or Zustand hooks.
+4. One concern per component, hook, or file.
+5. No bespoke CSS unless theming the code‑editor iframe.
 
-- **Clerk** for authentication (app/layout.tsx:19)
-- **Supabase RLS** for database-level security
-- Users see only their own themes + public themes by default
-- Clerk user IDs are mapped to Supabase auth context for RLS policies
+## State layers
 
-### Database & ORM with RLS
+| Concern                                  | Store   | Persistence            | Shareable | Strategy |
+| ---------------------------------------- | ------- | ---------------------- | --------- | -------- |
+| Published theme parameters               | Nuqs    | URL                    | Yes       | Server-parsed, client-reactive |
+| Search params (q, filters, modals)      | Nuqs    | URL                    | Yes       | Server-parsed, client-reactive |
+| Live editor buffer, undo/redo, UI panels | Zustand | localStorage (persist) | No        | Client-only |
+| Auth, user preferences                   | Zustand | memory/localStorage    | No        | Client-only |
+| Toast queue, modal toggles               | Zustand | memory                 | No        | Client-only |
 
-- **PostgreSQL** with **Drizzle ORM** and **Row-Level Security** enabled
-- RLS policies defined in lib/db/schema.ts for secure multi-tenant data access
-- Two database clients: `adminDb` (bypasses RLS) and `userDb` (RLS-aware)
-- RLS context management in lib/db/rls.ts with `withRLS()` helper function
-- Database queries in lib/db/queries.ts automatically enforce user permissions
+## Nuqs strategy
 
-### RLS Architecture
+- **Server-first approach**: Parse search params server-side using `createSearchParamsCache()`.
+- **Shared parsers**: Define parsers in `lib/search-params.ts`, used by both server cache and client `useQueryStates`.
+- **No client-side filtering**: Server components handle all search/filter logic. Client only manages URL updates.
+- Use flat, kebab‑case param names. Nest only via JSON string when unavoidable.
+- On "Share", sync Zustand → Nuqs. On load, hydrate Zustand from Nuqs.
 
-```typescript
-// Users can only see their own themes OR public themes
-pgPolicy("themes_select_policy", {
-  for: "select",
-  to: authenticatedRole,
-  using: sql`${table.userId} = auth.uid() OR ${table.public} = true`,
-});
+## Zustand pattern (sketch)
+
+```
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+export const useThemeStore = create(
+  persist((set) => ({
+    colors: {},
+    setColor: (k,v) => set(s => ({ ...s, colors: { ...s.colors, [k]: v } }))
+  }), { name: 'tinte-editor-v1' })
+)
 ```
 
-### API Layer with Authentication
+Never mutate the URL inside Zustand actions—call a helper that updates Nuqs instead.
 
-- **Server Actions** with Clerk authentication context
-- Server actions handle all mutations (create, update, delete)
-- Direct database queries for data fetching in Server Components
-- Authentication enforced via `requireAuth` helper function
-- RLS policies enforce data isolation at the database level
+## Data layer
 
-### Theme Schema
+- `createServerSupabaseClient()` for authenticated server queries (injects Clerk token).
+- `createPublicServerSupabaseClient()` for anonymous read‑only queries.
+- Edge runtime: payload ≤1 MB; avoid `select('*')` in hot paths.
 
-```sql
-themes {
-  id: serial (primary key)
-  name: text (required)
-  description: text (optional)
-  content: text (required) - JSON theme configuration
-  userId: uuid (foreign key to auth.users)
-  public: boolean (default false) - controls theme visibility
-  createdAt: timestamp
-  updatedAt: timestamp
-}
-```
+## Drizzle workflow
 
-### Key Usage Patterns
+1. Edit `lib/db/schema.ts`.
+2. Run `bun run db:generate` to update types.
+3. Run `bun run db:migrate` to push SQL. No other commands.
 
-**Server Components** (data fetching):
+## Error handling and toasts
 
-```typescript
-import { getUserThemes, getPublicThemes } from "@/lib/db/queries";
-import { getCurrentUserId } from "@/lib/auth-utils";
+Every server action returns `{ ok: true, data }` or `{ ok: false, message }`. Client utility `handleResult()` shows a shadcn toast on failure. Throw only when an invariant truly fails; otherwise `try/catch` and return an error object.
 
-const userId = await getCurrentUserId();
-const themes = userId ? await getUserThemes(userId) : await getPublicThemes();
-```
+## Tailwind color tokens
 
-**Server Actions** (mutations):
+Primary palette is injected under `:root` at build time. Use Tailwind variable syntax (`bg-[var(--color-primary)]`, etc.). No hard‑coded hex values outside the live preview.
 
-```typescript
-import { createThemeAction } from "@/lib/actions/theme-actions";
-// Used in forms with useActionState hook
-```
+## Auth rules
 
-**Client State Management**:
+Clerk supplies JWT. Supabase RLS enforces `user_id = auth.uid()` for non‑public rows. Back‑end always overwrites `userId` from Clerk on inserts.
 
-```typescript
-import { useThemeStore } from "@/lib/stores/theme-store";
-const { selectedTheme, setSelectedTheme } = useThemeStore();
-```
+## Claude usage policy
 
-**Direct Database (Admin)**:
+Allowed tools: `Edit`, `Bash(bun run db:*)`, `Bash(git *)`, `gh`, `mcp__puppeteer__*`, `mcp__supabase__*`, `Search`.
+Denied by default: destructive commands, `bun run build`, `bun run dev`.
+Workflow:
 
-```typescript
-import { adminDb } from "@/lib/db";
-const allThemes = await adminDb.select().from(themes); // Bypasses RLS
-```
+1. Claude thinks, proposes a plan.
+2. Human reviews.
+3. Claude codes, commits, opens PR.
+4. A second Claude reviews if the diff exceeds 50 LOC in any client component.
+   Use `/clear` between unrelated tasks.
 
-### Infinite Scroll & Search Architecture
+## Commit and branch convention
 
-**Hybrid Client Strategy**:
-- **Anonymous Users**: Use public Supabase client (RLS enforces public-only access)
-- **Authenticated Users**: Use Clerk-authenticated Supabase client (RLS allows own + public themes)
-- **Search Integration**: Upstash Search as default with infinite scroll pagination
-- **Graceful Fallback**: Local search when Upstash is disabled
+Branches: `feat/<slug>`, `fix/<slug>`, `chore/<slug>`.
+Commits generated by Claude use Conventional Commits. Include `#issue` when relevant.
 
-**User Experience Flow**:
+## Logging
 
-*Anonymous Users*:
-- ✅ Browse infinite scroll of public themes only
-- ✅ Search through public themes with Upstash AI search
-- ❌ No filter toggles (always public-only)
+Logging not yet integrated. Until a solution is chosen, keep logs server‑side only.
 
-*Authenticated Users*:
-- ✅ Browse infinite scroll with "All Themes" (own + public) or "Public Only" toggle
-- ✅ Search through own + public themes OR public-only based on toggle
-- ✅ AI Search vs Local Search toggle available
-- ✅ All CRUD operations with automatic search indexing
+## Slash commands
 
-**Search Modes**:
-```typescript
-// Default: AI-powered search with infinite scroll
-useUpstashSearch: true
+`.claude/commands/` holds reusable prompts. Examples: `publish-theme.md` (sync Nuqs ↔ DB, generate OG image), `fix-lint.md` (run bun run lint, commit).
 
-// Fallback: Local text filtering  
-useUpstashSearch: false
-```
+## Code hygiene checklist (Claude must confirm before PR merge)
 
-**Authentication-Aware Components**:
-```typescript
-// Automatic client selection based on auth status
-const supabaseClient = isSignedIn ? useClerkSupabase() : supabase;
+- No client component imports server utilities.
+- No `any` types introduced.
+- All colors reference CSS variables.
+- New DB fields include migration and updated Drizzle types.
+- Bundle diff ≤ +5 kB unless flagged.
 
-// Permission-aware infinite scroll
-const shouldFilterPublic = !isAuthenticated || showPublicOnly;
-```
-
-### Project Structure
-
-- `lib/db/schema.ts` - Database schema with RLS policies
-- `lib/db/queries.ts` - RLS-aware database operations
-- `lib/auth-utils.ts` - Clerk authentication helpers
-- `lib/actions/theme-actions.ts` - Server actions for mutations with search integration
-- `lib/services/search.ts` - Upstash Search service for theme indexing/search
-- `lib/stores/theme-store.ts` - Zustand client state management
-- `lib/hooks/use-infinite-query.ts` - Supabase infinite scroll with Clerk auth
-- `lib/hooks/use-infinite-search.ts` - Upstash search with infinite pagination
-- `lib/hooks/use-clerk-supabase.ts` - Clerk-authenticated Supabase client
-- `lib/supabase/client.ts` - Public and authenticated Supabase clients
-- `components/infinite-theme-list.tsx` - Infinite scroll component for themes
-- `components/theme-list-client.tsx` - Smart routing between search/browse modes
-- `components/theme-search.tsx` - AI-powered search with debouncing
-- `components/theme-filters.tsx` - Authentication-aware filter toggles
-- `app/api/search/route.ts` - Search API with pagination and permissions
-
-### Security Model
-
-1. **Authentication**: Clerk verifies user identity
-2. **Authorization**: Supabase RLS policies enforce data access rules
-3. **Data Isolation**: Users can only access their own themes + public themes
-4. **Admin Override**: `adminDb` bypasses RLS for admin operations
-
-### Search Integration with Upstash
-
-**Real-time AI Search**:
-- **Upstash Search** with semantic understanding and reranking
-- **Infinite scroll pagination** for search results  
-- **Permission-aware search** respecting RLS policies
-- **Automatic indexing** on all theme mutations
-- **Graceful degradation** with local search fallback
-
-**Search Architecture**:
-```typescript
-// Three search modes based on context
-1. No Query + No Auth → Infinite scroll public themes from DB
-2. No Query + Authenticated → Infinite scroll own+public themes from DB  
-3. With Query → Infinite scroll search results from Upstash
-```
-
-**Search Features**:
-
-*Automatic Indexing*:
-- Theme creation → Index in Upstash Search
-- Theme updates → Re-index in Upstash Search  
-- Theme deletion → Remove from Upstash Search
-- Visibility changes → Update search metadata
-
-*Smart Pagination*:
-- Debounced search queries (300ms)
-- Infinite scroll with intersection observer
-- Request cancellation prevents race conditions
-- Loading states and skeleton screens
-
-*Permission Handling*:
-```typescript
-// Anonymous users - public only
-const results = await searchThemes("query", { publicOnly: true });
-
-// Authenticated users - based on toggle
-const results = await searchThemes("query", { 
-  userId: "user_123",
-  publicOnly: showPublicOnly 
-});
-```
-
-**Search Data Structure**:
-```typescript
-{
-  id: "theme-123",
-  content: {
-    name: "Dark Professional", 
-    description: "A sleek dark theme...",
-    content: "{ theme json... }",
-    public: true,
-    userId: "user_123"
-  },
-  metadata: {
-    themeId: 123,
-    userId: "user_123",
-    public: true,
-    url: "/themes/123"
-  }
-}
-```
-
-### Environment Setup
-
-Requires .env.local with:
-
-- `DATABASE_URL` - PostgreSQL connection string
-- `UPSTASH_SEARCH_REST_URL` - Upstash Search endpoint
-- `UPSTASH_SEARCH_REST_TOKEN` - Upstash Search authentication token
-- Clerk configuration variables
-- Supabase configured with `authenticated` role for RLS
+End of file. Keep under 300 lines and update as standards evolve.

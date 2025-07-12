@@ -3,7 +3,7 @@
 import { useActionState, useCallback } from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQueryState } from 'nuqs';
+import { useQueryStates } from 'nuqs';
 import { createThemeAction, updateThemeAction } from '@/lib/actions/theme-actions';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -11,11 +11,17 @@ import { Label } from './ui/label';
 import { Checkbox } from './ui/checkbox';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { X } from 'lucide-react';
+import { themeFormParsers } from '@/lib/search-params';
 
-export function ThemeForm() {
+type ThemeFormProps = {
+  create: string | null;
+  edit: string | null;
+};
+
+export function ThemeForm({ create: initialCreate, edit: initialEdit }: ThemeFormProps) {
   const router = useRouter();
-  const [createDialog, setCreateDialog] = useQueryState('create');
-  const [editThemeId, setEditThemeId] = useQueryState('edit');
+  // Use shared parsers - nuqs recommended pattern
+  const [{ create: createDialog, edit: editThemeId }, setParams] = useQueryStates(themeFormParsers);
 
   const [createState, createFormAction] = useActionState(createThemeAction, { success: false });
   const [updateState, updateFormAction] = useActionState(updateThemeAction, { success: false });
@@ -26,9 +32,8 @@ export function ThemeForm() {
   const formState = isUpdate ? updateState : createState;
 
   const handleClose = useCallback(() => {
-    setCreateDialog(null);
-    setEditThemeId(null);
-  }, [setCreateDialog, setEditThemeId]);
+    setParams({ create: null, edit: null });
+  }, [setParams]);
 
   // Close form and refresh when action succeeds
   useEffect(() => {

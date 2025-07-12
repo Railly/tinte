@@ -1,18 +1,13 @@
 'use client';
 
-import { useQueryState } from 'nuqs';
+import { useQueryStates } from 'nuqs';
 import { useThemeStore } from '@/lib/stores/theme-store';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { themeSearchParsers } from '@/lib/search-params';
 
 export function ThemeFilters() {
-  const [showPublicOnly, setShowPublicOnly] = useQueryState('publicOnly', {
-    defaultValue: false,
-    parse: (value) => value === 'true',
-    serialize: (value) => value ? 'true' : null,
-    shallow: false,
-  });
-  
+  const [{ publicOnly: showPublicOnly }, setSearchParams] = useQueryStates(themeSearchParsers);
   const { useUpstashSearch, setUseUpstashSearch } = useThemeStore();
 
   return (
@@ -22,14 +17,14 @@ export function ThemeFilters() {
         <Button
           variant={!showPublicOnly ? "default" : "outline"}
           size="sm"
-          onClick={() => setShowPublicOnly(false)}
+          onClick={() => setSearchParams({ publicOnly: false })}
         >
           All Themes
         </Button>
         <Button
           variant={showPublicOnly ? "default" : "outline"}
           size="sm"
-          onClick={() => setShowPublicOnly(true)}
+          onClick={() => setSearchParams({ publicOnly: true })}
         >
           Public Only
         </Button>
