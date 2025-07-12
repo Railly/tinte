@@ -8,6 +8,13 @@
       "when": 1752289658625,
       "tag": "0000_clumsy_logan",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1752293742696,
+      "tag": "0001_panoramic_stardust",
+      "breakpoints": true
     }
   ]
 }

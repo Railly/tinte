@@ -12,4 +12,9 @@ export default defineConfig({
   },
   // Only migrate your own schema (usually "public")
   schemaFilter: ["public"],
+  entities: {
+    roles: {
+      provider: "supabase",
+    },
+  },
 });
