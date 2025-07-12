@@ -1,0 +1,3 @@
+[auth.third_party.clerk]
+enabled = true
+domain = "tender-haddock-42.clerk.accounts.dev"

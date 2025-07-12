@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import { useEffect } from 'react';
 import { useThemeStore, useThemeSelectors } from '@/lib/stores/theme-store';
 import { createThemeAction, updateThemeAction } from '@/lib/actions/theme-actions';
@@ -14,13 +14,15 @@ import { X } from 'lucide-react';
 export function ThemeForm() {
   const { isCreating, isEditing, editingTheme, cancelEditing } = useThemeStore();
   const { isFormOpen } = useThemeSelectors();
-  
-  const [createState, createFormAction] = useFormState(createThemeAction, { success: false });
-  const [updateState, updateFormAction] = useFormState(updateThemeAction, { success: false });
-  
+
+  const [createState, createFormAction] = useActionState(createThemeAction, { success: false });
+  const [updateState, updateFormAction] = useActionState(updateThemeAction, { success: false });
+
   const isUpdate = isEditing && editingTheme;
   const formAction = isUpdate ? updateFormAction : createFormAction;
   const formState = isUpdate ? updateState : createState;
+
+  console.log({ formState })
 
   // Close form and reset store when action succeeds
   useEffect(() => {
@@ -38,27 +40,27 @@ export function ThemeForm() {
           <CardTitle>
             {isUpdate ? 'Edit Theme' : 'Create New Theme'}
           </CardTitle>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="outline-solid"
+            size="sm"
             onClick={cancelEditing}
           >
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        
+
         <form action={formAction}>
           {isUpdate && (
             <input type="hidden" name="id" value={editingTheme?.id} />
           )}
-          
+
           <CardContent className="space-y-4">
             {formState.error && (
               <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
                 {formState.error}
               </div>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="name">Theme Name</Label>
               <Input
@@ -72,7 +74,7 @@ export function ThemeForm() {
                 <p className="text-sm text-destructive">{formState.fieldErrors.name[0]}</p>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="description">Description (Optional)</Label>
               <Input
@@ -85,7 +87,7 @@ export function ThemeForm() {
                 <p className="text-sm text-destructive">{formState.fieldErrors.description[0]}</p>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="content">Theme Content (JSON)</Label>
               <textarea
@@ -100,10 +102,10 @@ export function ThemeForm() {
                 <p className="text-sm text-destructive">{formState.fieldErrors.content[0]}</p>
               )}
             </div>
-            
+
             <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="public" 
+              <Checkbox
+                id="public"
                 name="public"
                 defaultChecked={editingTheme?.public}
               />
@@ -112,9 +114,9 @@ export function ThemeForm() {
               </Label>
             </div>
           </CardContent>
-          
+
           <CardFooter className="flex gap-2">
-            <Button type="button" variant="outline" onClick={cancelEditing}>
+            <Button type="button" variant="outline-solid" onClick={cancelEditing}>
               Cancel
             </Button>
             <Button type="submit">

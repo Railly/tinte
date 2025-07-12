@@ -10,11 +10,6 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  // Only migrate your own schema (usually "public")
   schemaFilter: ["public"],
-  entities: {
-    roles: {
-      provider: "supabase",
-    },
-  },
+  verbose: true,
 });

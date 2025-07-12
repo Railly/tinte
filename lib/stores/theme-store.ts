@@ -8,10 +8,10 @@ export type Theme = {
   name: string;
   description: string | null;
   content: string;
-  userId: string;
+  user_id: string;
   public: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: string;
+  updated_at: string;
 };
 
 export type ThemeFormData = {

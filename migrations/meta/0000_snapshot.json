@@ -1,5 +1,5 @@
 {
-  "id": "17b659f1-9f83-49bf-9207-11ac5a991b24",
+  "id": "123b1d6c-ea17-4cfa-84c2-12dd9f7704fb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -20,11 +20,30 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "public": {
+          "name": "public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -32,28 +51,67 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "themes_user_id_users_id_fk": {
-          "name": "themes_user_id_users_id_fk",
-          "tableFrom": "themes",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "Public themes are viewable by anyone": {
+          "name": "Public themes are viewable by anyone",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "anon"
+          ],
+          "using": "\"themes\".\"public\" = true"
+        },
+        "Users can view their own themes or public themes": {
+          "name": "Users can view their own themes or public themes",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"themes\".\"user_id\" = (auth.jwt()->>'sub') OR \"themes\".\"public\" = true"
+        },
+        "Users can insert only their own themes": {
+          "name": "Users can insert only their own themes",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"themes\".\"user_id\" = (auth.jwt()->>'sub')"
+        },
+        "Users can update only their own themes": {
+          "name": "Users can update only their own themes",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"themes\".\"user_id\" = (auth.jwt()->>'sub')",
+          "withCheck": "\"themes\".\"user_id\" = (auth.jwt()->>'sub')"
+        },
+        "Users can delete only their own themes": {
+          "name": "Users can delete only their own themes",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"themes\".\"user_id\" = (auth.jwt()->>'sub')"
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": false
     }

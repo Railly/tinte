@@ -1,5 +1,4 @@
 import {
-  uuid,
   pgTable,
   serial,
   text,
@@ -8,48 +7,46 @@ import {
   pgPolicy,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { authenticatedRole, authUsers } from "drizzle-orm/supabase";
+import { authenticatedRole, anonRole } from "drizzle-orm/supabase";
 
-// Themes table with RLS policies
 export const themes = pgTable(
   "themes",
   {
     id: serial("id").primaryKey(),
     name: text("name").notNull(),
     description: text("description"),
-    content: text("content").notNull(), // Theme JSON content
-    userId: uuid("user_id")
-      .references(() => authUsers.id)
-      .notNull(),
+    content: text("content").notNull(),
+    userId: text("user_id").notNull(),
     public: boolean("public").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
-    // Users can view their own themes and all public themes
-    pgPolicy("themes_select_policy", {
+    pgPolicy("Public themes are viewable by anyone", {
+      for: "select",
+      to: anonRole,
+      using: sql`${table.public} = true`,
+    }),
+    pgPolicy("Users can view their own themes or public themes", {
       for: "select",
       to: authenticatedRole,
-      using: sql`${table.userId} = auth.uid() OR ${table.public} = true`,
+      using: sql`${table.userId} = (auth.jwt()->>'sub') OR ${table.public} = true`,
     }),
-    // Users can insert their own themes
-    pgPolicy("themes_insert_policy", {
+    pgPolicy("Users can insert only their own themes", {
       for: "insert",
       to: authenticatedRole,
-      withCheck: sql`${table.userId} = auth.uid()`,
+      withCheck: sql`${table.userId} = (auth.jwt()->>'sub')`,
     }),
-    // Users can update their own themes
-    pgPolicy("themes_update_policy", {
+    pgPolicy("Users can update only their own themes", {
       for: "update",
       to: authenticatedRole,
-      using: sql`${table.userId} = auth.uid()`,
-      withCheck: sql`${table.userId} = auth.uid()`,
+      using: sql`${table.userId} = (auth.jwt()->>'sub')`,
+      withCheck: sql`${table.userId} = (auth.jwt()->>'sub')`,
     }),
-    // Users can delete their own themes
-    pgPolicy("themes_delete_policy", {
+    pgPolicy("Users can delete only their own themes", {
       for: "delete",
       to: authenticatedRole,
-      using: sql`${table.userId} = auth.uid()`,
+      using: sql`${table.userId} = (auth.jwt()->>'sub')`,
     }),
   ]
 );

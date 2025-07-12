@@ -5,17 +5,15 @@ import { ThemeListClient } from './theme-list-client';
 
 export async function ThemeList() {
   const userId = await getCurrentUserId();
-  
-  // Get data on the server using direct database queries
-  const [publicThemes, userThemes] = await Promise.all([
-    getPublicThemes(),
-    userId ? getUserThemes(userId) : [],
-  ]);
+
+  // Get data on the server using Supabase client with RLS
+  const publicThemes = await getPublicThemes();
+  const userThemes = userId ? await getUserThemes() : [];
 
   return (
     <div className="space-y-6">
       {/* Server-rendered theme cards with client-side state management */}
-      <ThemeListClient 
+      <ThemeListClient
         initialPublicThemes={publicThemes}
         initialUserThemes={userThemes}
         isAuthenticated={!!userId}

@@ -65,7 +65,7 @@ export function ThemeListClient({
             <ThemeCard 
               key={theme.id} 
               theme={theme} 
-              isOwner={theme.userId === (isAuthenticated ? 'user' : null)}
+              isOwner={isAuthenticated}
             />
           ))
         )}

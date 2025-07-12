@@ -1,25 +1,64 @@
-import { adminDb } from "./index";
-import { withRLS, admin } from "./rls";
-import { themes } from "./schema";
-import { eq, and } from "drizzle-orm";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createPublicServerSupabaseClient } from "@/lib/supabase/public-server";
 
-// RLS-aware queries (use these for user operations)
-export async function getThemesByUser(userId: string) {
-  return withRLS(userId, async ({ db }) => {
-    return db.select().from(themes);
-  });
+export type Theme = {
+  id: number;
+  name: string;
+  description: string | null;
+  content: string;
+  user_id: string;
+  public: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+// Get all themes visible to the current user (their own + public ones)
+export async function getThemesByUser() {
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("themes")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data as Theme[];
 }
 
+// Get only public themes (for unauthenticated users)
 export async function getPublicThemes() {
-  return adminDb.select().from(themes).where(eq(themes.public, true));
+  try {
+    const supabase = createPublicServerSupabaseClient();
+    const { data, error } = await supabase
+      .from("themes")
+      .select("*")
+      .eq("public", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase error in getPublicThemes:", error);
+      throw error;
+    }
+    return data as Theme[];
+  } catch (err) {
+    console.error("Error in getPublicThemes:", err);
+    throw err;
+  }
 }
 
-export async function getUserThemes(userId: string) {
-  return withRLS(userId, async ({ db }) => {
-    return db.select().from(themes).where(eq(themes.userId, userId));
-  });
+// Get only user's own themes
+export async function getUserThemes() {
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("themes")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  // RLS will automatically filter to user's own themes
+  return data as Theme[];
 }
 
+// Add a new theme
 export async function addTheme(
   userId: string,
   data: {
@@ -29,22 +68,25 @@ export async function addTheme(
     public?: boolean;
   }
 ) {
-  return withRLS(userId, async ({ db }) => {
-    return db
-      .insert(themes)
-      .values({
-        userId,
-        name: data.name,
-        description: data.description,
-        content: data.content,
-        public: data.public ?? false,
-      })
-      .returning();
-  });
+  const supabase = createServerSupabaseClient();
+  const { data: result, error } = await supabase
+    .from("themes")
+    .insert({
+      name: data.name,
+      description: data.description,
+      content: data.content,
+      public: data.public ?? false,
+      user_id: userId, // Explicitly set the user_id
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return result as Theme;
 }
 
+// Update a theme
 export async function updateTheme(
-  userId: string,
   themeId: number,
   data: Partial<{
     name: string;
@@ -53,41 +95,44 @@ export async function updateTheme(
     public: boolean;
   }>
 ) {
-  return withRLS(userId, async ({ db }) => {
-    return db
-      .update(themes)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(themes.id, themeId))
-      .returning();
-  });
+  const supabase = createServerSupabaseClient();
+  const { data: result, error } = await supabase
+    .from("themes")
+    .update({
+      ...data,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", themeId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return result as Theme;
 }
 
-export async function deleteTheme(userId: string, themeId: number) {
-  return withRLS(userId, async ({ db }) => {
-    return db.delete(themes).where(eq(themes.id, themeId)).returning();
-  });
+// Delete a theme
+export async function deleteTheme(themeId: number) {
+  const supabase = createServerSupabaseClient();
+  const { data: result, error } = await supabase
+    .from("themes")
+    .delete()
+    .eq("id", themeId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return result as Theme;
 }
 
-export async function getThemeById(themeId: number, userId?: string) {
-  if (userId) {
-    // Use RLS to ensure user can only see their own or public themes
-    return withRLS(userId, async ({ db }) => {
-      return db.select().from(themes).where(eq(themes.id, themeId));
-    });
-  } else {
-    // Admin query - only return public themes for unauthenticated users
-    return adminDb
-      .select()
-      .from(themes)
-      .where(and(eq(themes.id, themeId), eq(themes.public, true)));
-  }
-}
+// Get a specific theme by ID
+export async function getThemeById(themeId: number) {
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("themes")
+    .select("*")
+    .eq("id", themeId)
+    .single();
 
-// Admin queries (bypass RLS)
-export async function getAllThemes() {
-  return admin.db.select().from(themes);
-}
-
-export async function adminGetThemeById(themeId: number) {
-  return admin.db.select().from(themes).where(eq(themes.id, themeId));
+  if (error) throw error;
+  return data as Theme;
 }

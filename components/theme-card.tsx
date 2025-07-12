@@ -115,7 +115,7 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
         </div>
         
         <p className="text-xs text-muted-foreground">
-          Created {new Date(theme.createdAt).toLocaleDateString()}
+          Created {new Date(theme.created_at).toLocaleDateString()}
         </p>
       </CardContent>
       
