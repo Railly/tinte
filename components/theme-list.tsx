@@ -9,18 +9,18 @@ import { ThemeCard } from './theme-card';
 import { themeSearchParsers } from '@/lib/search-params';
 
 interface ThemeListProps {
-  filteredThemes: Theme[];
+  themes: Theme[];
   userId: string | null;
 }
 
-export function ThemeList({ filteredThemes, userId }: ThemeListProps) {
+export function ThemeList({ themes, userId }: ThemeListProps) {
   const isAuthenticated = !!userId;
   const [{ q: searchQuery, publicOnly: showPublicOnly }] = useQueryStates(themeSearchParsers);
 
-  const { themes, isPending, isSearchActive, error } = useThemeSearch({
+  const { themes: filteredThemes, isPending, isSearchActive, error } = useThemeSearch({
     query: searchQuery,
     publicOnly: showPublicOnly,
-    fallbackThemes: filteredThemes,
+    fallbackThemes: themes,
   });
 
   return (
@@ -44,14 +44,14 @@ export function ThemeList({ filteredThemes, userId }: ThemeListProps) {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {themes.length === 0 ? (
+          {filteredThemes.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <p className="text-muted-foreground">
                 {searchQuery?.trim() ? 'No themes found matching your search.' : 'No themes available.'}
               </p>
             </div>
           ) : (
-            themes.map((theme) => (
+            filteredThemes.map((theme) => (
               <ThemeCard
                 key={theme.id}
                 theme={theme}

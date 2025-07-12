@@ -121,8 +121,8 @@
   /* Text Shadow System */
   --text-shadow-2xs: 0px 1px 0px rgb(0 0 0 / 0.15);
   --text-shadow-xs: 0px 1px 1px rgb(0 0 0 / 0.2);
-  --text-shadow-sm: 0px 1px 0px rgb(0 0 0 / 0.075), 0px 1px 1px
-    rgb(0 0 0 / 0.075), 0px 2px 2px rgb(0 0 0 / 0.075);
+  --text-shadow-sm: 0px 1px 0px rgb(0 0 0 / 0.075),
+    0px 1px 1px rgb(0 0 0 / 0.075), 0px 2px 2px rgb(0 0 0 / 0.075);
   --text-shadow-md: 0px 1px 1px rgb(0 0 0 / 0.1), 0px 1px 2px rgb(0 0 0 / 0.1),
     0px 2px 4px rgb(0 0 0 / 0.1);
   --text-shadow-lg: 0px 1px 2px rgb(0 0 0 / 0.1), 0px 3px 2px rgb(0 0 0 / 0.1),
@@ -171,12 +171,20 @@
 .dark {
   --text-shadow-2xs: 0px 1px 0px rgb(255 255 255 / 0.15);
   --text-shadow-xs: 0px 1px 1px rgb(255 255 255 / 0.2);
-  --text-shadow-sm: 0px 1px 0px rgb(255 255 255 / 0.075), 0px 1px 1px
-    rgb(255 255 255 / 0.075), 0px 2px 2px rgb(255 255 255 / 0.075);
-  --text-shadow-md: 0px 1px 1px rgb(255 255 255 / 0.1), 0px 1px 2px
-    rgb(255 255 255 / 0.1), 0px 2px 4px rgb(255 255 255 / 0.1);
-  --text-shadow-lg: 0px 1px 2px rgb(255 255 255 / 0.1), 0px 3px 2px
-    rgb(255 255 255 / 0.1), 0px 4px 8px rgb(255 255 255 / 0.1);
+  --text-shadow-sm: 0px 1px 0px rgb(255 255 255 / 0.075),
+    0px 1px 1px rgb(255 255 255 / 0.075), 0px 2px 2px rgb(255 255 255 / 0.075);
+  --text-shadow-md: 0px 1px 1px rgb(255 255 255 / 0.1),
+    0px 1px 2px rgb(255 255 255 / 0.1), 0px 2px 4px rgb(255 255 255 / 0.1);
+  --text-shadow-lg: 0px 1px 2px rgb(255 255 255 / 0.1),
+    0px 3px 2px rgb(255 255 255 / 0.1), 0px 4px 8px rgb(255 255 255 / 0.1);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 /* Custom Skeleton Animations */
@@ -226,4 +234,13 @@
 .shiki .custom-variables {
   padding: 1rem !important;
   line-height: 1.6rem !important;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
