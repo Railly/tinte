@@ -2,17 +2,17 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Theme } from "@/lib/db/schema";
+import type { Project } from "@/lib/db/schema";
 
 interface ThemeState {
   // Live preview state (memory only - not shareable)
-  selectedTheme: Theme | null;
+  selectedTheme: Project | null;
 
   // UI preferences (persisted)
   viewMode: "grid" | "list";
 
   // Actions
-  setSelectedTheme: (theme: Theme | null) => void;
+  setSelectedTheme: (theme: Project | null) => void;
   setViewMode: (mode: "grid" | "list") => void;
 }
 

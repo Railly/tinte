@@ -2,19 +2,19 @@
 
 import { useState, useTransition, useEffect, useMemo } from "react";
 import { useDebounce } from "@/lib/hooks/use-debounce";
-import { searchThemesAction } from "@/lib/actions/theme-actions";
-import type { Theme } from "@/lib/db/schema";
+import { searchProjectsAction } from "@/lib/actions/project-actions";
+import type { Project } from "@/lib/db/schema";
 
 interface UseThemeSearchProps {
   // URL state (from Nuqs) - shareable
   query: string | null;
   publicOnly: boolean;
   // Server state - fallback themes
-  fallbackThemes: Theme[];
+  fallbackThemes: Project[];
 }
 
 interface UseThemeSearchReturn {
-  themes: Theme[];
+  themes: Project[];
   isPending: boolean;
   isSearchActive: boolean;
   error: string | null;
@@ -34,7 +34,7 @@ export function useThemeSearch({
   fallbackThemes,
 }: UseThemeSearchProps): UseThemeSearchReturn {
   // Local ephemeral state
-  const [searchResults, setSearchResults] = useState<Theme[]>([]);
+  const [searchResults, setSearchResults] = useState<Project[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -58,7 +58,7 @@ export function useThemeSearch({
     startTransition(async () => {
       try {
         setError(null);
-        const result = await searchThemesAction(debouncedQuery, {
+        const result = await searchProjectsAction(debouncedQuery, {
           limit: 50,
           publicOnly,
         });
@@ -74,7 +74,7 @@ export function useThemeSearch({
           err instanceof Error ? err.message : "Search error";
         setError(errorMessage);
         setSearchResults([]);
-        console.error("Theme search error:", err);
+        console.error("Project search error:", err);
       }
     });
   }, [debouncedQuery, publicOnly, isSearchActive]);

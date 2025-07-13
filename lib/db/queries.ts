@@ -1,138 +1,132 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createPublicServerSupabaseClient } from "@/lib/supabase/public-server";
 import { getCurrentUserId } from "@/lib/auth-utils";
-import { Theme } from "@/lib/db/schema";
+import { Project } from "@/lib/db/schema";
 
-// Get all themes visible to the current user (their own + public ones)
-export async function getThemesByUser() {
+// Get all projects visible to the current user (their own + public ones)
+export async function getProjectsByUser() {
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
-    .from("themes")
+    .from("projects")
     .select("*")
     .order("createdAt", { ascending: false });
 
   if (error) throw error;
-  return data as Theme[];
+  return data as Project[];
 }
 
-// Get only public themes (for unauthenticated users)
-export async function getPublicThemes() {
+// Get only public projects (for unauthenticated users)
+export async function getPublicProjects() {
   try {
     const supabase = createPublicServerSupabaseClient();
     const { data, error } = await supabase
-      .from("themes")
+      .from("projects")
       .select("*")
-      .eq("public", true)
+      .eq("visibility", "public")
       .order("createdAt", { ascending: false });
 
     if (error) {
-      console.error("Supabase error in getPublicThemes:", error);
+      console.error("Supabase error in getPublicProjects:", error);
       throw error;
     }
-    return data as Theme[];
+    return data as Project[];
   } catch (err) {
-    console.error("Error in getPublicThemes:", err);
+    console.error("Error in getPublicProjects:", err);
     throw err;
   }
 }
 
-// Get only user's own themes (both public and private)
-export async function getUserThemes() {
+// Get only user's own projects (both public and private)
+export async function getUserProjects() {
   const userId = await getCurrentUserId();
   if (!userId) return [];
 
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
-    .from("themes")
+    .from("projects")
     .select("*")
     .eq("userId", userId)
     .order("createdAt", { ascending: false });
 
   if (error) throw error;
-  return data as Theme[];
+  return data as Project[];
 }
 
-// Add a new theme
-export async function addTheme(
+// Add a new project
+export async function addProject(
   userId: string,
   data: {
     name: string;
     description?: string;
-    content: string;
-    public?: boolean;
+    visibility?: "public" | "private" | "unlisted";
   }
 ) {
   const supabase = createServerSupabaseClient();
   const { data: result, error } = await supabase
-    .from("themes")
+    .from("projects")
     .insert({
       name: data.name,
       description: data.description,
-      content: data.content,
-      public: data.public ?? false,
+      visibility: data.visibility ?? "private",
       userId: userId, // Explicitly set the user_id
     })
     .select()
     .single();
 
   if (error) throw error;
-  return result as Theme;
+  return result as Project;
 }
 
-// Update a theme
-export async function updateTheme(
-  themeId: number,
+// Update a project
+export async function updateProject(
+  projectId: string,
   data: Partial<{
     name: string;
     description: string;
-    content: string;
-    public: boolean;
+    visibility: "public" | "private" | "unlisted";
   }>
 ) {
   const supabase = createServerSupabaseClient();
   const { data: result, error } = await supabase
-    .from("themes")
-    .update({
-      ...data,
-      updatedAt: new Date().toISOString(),
-    })
-    .eq("id", themeId)
+    .from("projects")
+    .update(data)
+    .eq("id", projectId)
     .select()
     .single();
 
   if (error) throw error;
-  return result as Theme;
+  return result as Project;
 }
 
-// Delete a theme
-export async function deleteTheme(themeId: number) {
+// Delete a project
+export async function deleteProject(projectId: string) {
   const supabase = createServerSupabaseClient();
   const { data: result, error } = await supabase
-    .from("themes")
+    .from("projects")
     .delete()
-    .eq("id", themeId)
+    .eq("id", projectId)
     .select()
     .single();
 
   if (error) throw error;
-  return result as Theme;
+  return result as Project;
 }
 
-// Get a specific theme by ID
-export async function getThemeById(themeId: number) {
+// Get a specific project by ID
+export async function getProjectById(projectId: string) {
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase
-    .from("themes")
+    .from("projects")
     .select("*")
-    .eq("id", themeId)
+    .eq("id", projectId)
     .single();
 
   if (error) throw error;
-  return data as Theme;
+  return data as Project;
 }
 
-// Search themes with filters
-export async function searchThemes(params: {
+// Search projects with filters
+export async function searchProjects(params: {
   query?: string;
   publicOnly?: boolean;
   userId?: string | null;
@@ -143,19 +137,19 @@ export async function searchThemes(params: {
   const supabase = userId ? createServerSupabaseClient() : createPublicServerSupabaseClient();
   
   let queryBuilder = supabase
-    .from("themes")
+    .from("projects")
     .select("*");
 
   // Apply visibility filters
   if (!userId) {
-    // Not authenticated - only public themes
-    queryBuilder = queryBuilder.eq("public", true);
+    // Not authenticated - only public projects
+    queryBuilder = queryBuilder.eq("visibility", "public");
   } else if (publicOnly) {
     // Authenticated but requesting only public
-    queryBuilder = queryBuilder.eq("public", true);
+    queryBuilder = queryBuilder.eq("visibility", "public");
   } else {
-    // Authenticated - own themes + public themes
-    queryBuilder = queryBuilder.or(`public.eq.true,userId.eq.${userId}`);
+    // Authenticated - own projects + public/unlisted projects
+    queryBuilder = queryBuilder.or(`visibility.in.(public,unlisted),userId.eq.${userId}`);
   }
 
   // Apply search filter
@@ -173,5 +167,15 @@ export async function searchThemes(params: {
   const { data, error } = await queryBuilder;
 
   if (error) throw error;
-  return data as Theme[];
+  return data as Project[];
 }
+
+// Legacy aliases for backward compatibility (remove after updating all imports)
+export const getThemesByUser = getProjectsByUser;
+export const getPublicThemes = getPublicProjects;
+export const getUserThemes = getUserProjects;
+export const addTheme = addProject;
+export const updateTheme = updateProject;
+export const deleteTheme = deleteProject;
+export const getThemeById = getProjectById;
+export const searchThemes = searchProjects;

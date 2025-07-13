@@ -7,10 +7,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal, Eye, EyeOff, Trash2, Edit, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemeCardActions } from '@/hooks/use-theme-card-actions';
-import type { Theme } from '@/lib/db/schema';
+import type { Project } from '@/lib/db/schema';
 
 interface ThemeCardProps {
-  theme: Theme;
+  theme: Project;
   isOwner: boolean;
 }
 
@@ -20,7 +20,7 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
     isPending,
     handleSelect,
     handleEdit,
-    handleTogglePublic,
+    handleToggleVisibility,
     handleDelete,
   } = useThemeCardActions(theme);
 
@@ -62,8 +62,11 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleTogglePublic} disabled={isPending}>
-                  {optimisticTheme.public ? (
+                <DropdownMenuItem 
+                  onClick={() => handleToggleVisibility(optimisticTheme.visibility === "public" ? "private" : "public")} 
+                  disabled={isPending}
+                >
+                  {optimisticTheme.visibility === "public" ? (
                     <>
                       <EyeOff className="h-4 w-4 mr-2" />
                       Make Private
@@ -89,8 +92,9 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
         </div>
 
         <div className="flex gap-2">
-          {optimisticTheme.public && <Badge variant="secondary">Public</Badge>}
-          {isOwner && <Badge variant="outline">Your Theme</Badge>}
+          {optimisticTheme.visibility === "public" && <Badge variant="secondary">Public</Badge>}
+          {optimisticTheme.visibility === "unlisted" && <Badge variant="outline">Unlisted</Badge>}
+          {isOwner && <Badge variant="outline">Your Project</Badge>}
           {optimisticTheme.deleteFailed && (
             <Badge variant="destructive" className="flex items-center gap-1">
               <AlertCircle className="h-3 w-3" />
@@ -117,7 +121,7 @@ export function ThemeCard({ theme, isOwner }: ThemeCardProps) {
           className="w-full"
           disabled={isPending}
         >
-          Preview Theme
+          Open Project
         </Button>
       </CardFooter>
     </Card>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Theme } from '@/lib/db/schema';
+import { Project } from '@/lib/db/schema';
 import { useQueryStates } from 'nuqs';
 import { useThemeSearch } from '@/hooks/use-theme-search';
 import { ThemeSearch } from './theme-search';
@@ -9,7 +9,7 @@ import { ThemeCard } from './theme-card';
 import { themeSearchParsers } from '@/lib/search-params';
 
 interface ThemeListProps {
-  themes: Theme[];
+  themes: Project[];
   userId: string | null;
 }
 
@@ -46,7 +46,7 @@ export function ThemeList({ themes, userId }: ThemeListProps) {
           {filteredThemes.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <p className="text-muted-foreground">
-                {searchQuery?.trim() ? 'No themes found matching your search.' : 'No themes available.'}
+                {searchQuery?.trim() ? 'No projects found matching your search.' : 'No projects available.'}
               </p>
             </div>
           ) : (

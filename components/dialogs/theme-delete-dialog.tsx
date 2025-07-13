@@ -15,13 +15,13 @@ import {
 } from '../ui/alert-dialog';
 import { themeFormParsers } from '@/lib/search-params';
 import { useThemeCardActions } from '@/hooks/use-theme-card-actions';
-import type { Theme } from '@/lib/db/schema';
+import type { Project } from '@/lib/db/schema';
 
 interface ThemeDeleteDialogProps {
-  themes: Theme[];
+  themes: Project[];
 }
 
-function ThemeDeleteContent({ theme, onClose }: { theme: Theme; onClose: () => void }) {
+function ThemeDeleteContent({ theme, onClose }: { theme: Project; onClose: () => void }) {
   const { handleConfirmDelete } = useThemeCardActions(theme);
 
   const handleConfirm = () => {
@@ -56,7 +56,7 @@ function ThemeDeleteContent({ theme, onClose }: { theme: Theme; onClose: () => v
 export function ThemeDeleteDialog({ themes }: ThemeDeleteDialogProps) {
   const [{ delete: deleteThemeId }, setParams] = useQueryStates(themeFormParsers);
 
-  const deletingTheme = deleteThemeId ? themes.find(t => t.id === parseInt(deleteThemeId)) : null;
+  const deletingTheme = deleteThemeId ? themes.find(t => t.id === deleteThemeId) : null;
 
   const handleClose = useCallback(() => {
     setParams({ delete: null });

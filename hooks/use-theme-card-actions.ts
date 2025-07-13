@@ -2,17 +2,22 @@ import { useOptimistic, useTransition } from 'react';
 import { useQueryState } from 'nuqs';
 import { toast } from 'sonner';
 import { useThemeStore } from '@/lib/stores/theme-store';
-import { toggleThemePublicAction, deleteThemeAction } from '@/lib/actions/theme-actions';
-import type { Theme, ThemeOptimistic } from '@/lib/db/schema';
+import { toggleProjectVisibilityAction, deleteProjectAction } from '@/lib/actions/project-actions';
+import type { Project } from '@/lib/db/schema';
 
-export function useThemeCardActions(theme: Theme) {
+type ProjectOptimistic = Project & {
+  deleted?: boolean;
+  deleteFailed?: boolean;
+};
+
+export function useThemeCardActions(theme: Project) {
   const { setSelectedTheme } = useThemeStore();
   const [, setEditThemeId] = useQueryState('edit');
   const [, setDeleteThemeId] = useQueryState('delete');
   const [isPending, startTransition] = useTransition();
   const [optimisticTheme, setOptimisticTheme] = useOptimistic(
-    theme as ThemeOptimistic,
-    (state: ThemeOptimistic, update: Partial<ThemeOptimistic>) => ({ ...state, ...update })
+    theme as ProjectOptimistic,
+    (state: ProjectOptimistic, update: Partial<ProjectOptimistic>) => ({ ...state, ...update })
   );
 
   const handleSelect = () => {
@@ -20,26 +25,26 @@ export function useThemeCardActions(theme: Theme) {
   };
 
   const handleEdit = () => {
-    setEditThemeId(String(optimisticTheme.id));
+    setEditThemeId(optimisticTheme.id);
   };
 
-  const handleTogglePublic = () => {
-    const newPublicState = !optimisticTheme.public;
+  const handleToggleVisibility = (newVisibility: "public" | "private" | "unlisted") => {
+    const currentVisibility = optimisticTheme.visibility;
     
     startTransition(async () => {
-      setOptimisticTheme({ public: newPublicState });
+      setOptimisticTheme({ visibility: newVisibility });
       
       try {
-        const result = await toggleThemePublicAction(optimisticTheme.id, newPublicState);
+        const result = await toggleProjectVisibilityAction(optimisticTheme.id, newVisibility);
         if (!result.success) {
-          setOptimisticTheme({ public: !newPublicState });
-          toast.error('Failed to update theme visibility', {
+          setOptimisticTheme({ visibility: currentVisibility });
+          toast.error('Failed to update project visibility', {
             description: result.error || 'Please try again later'
           });
         }
       } catch (error) {
-        setOptimisticTheme({ public: !newPublicState });
-        toast.error('Failed to update theme visibility', {
+        setOptimisticTheme({ visibility: currentVisibility });
+        toast.error('Failed to update project visibility', {
           description: 'Network error. Please try again later'
         });
       }
@@ -47,7 +52,7 @@ export function useThemeCardActions(theme: Theme) {
   };
 
   const handleDelete = () => {
-    setDeleteThemeId(String(optimisticTheme.id));
+    setDeleteThemeId(optimisticTheme.id);
   };
 
   const handleConfirmDelete = () => {
@@ -56,18 +61,18 @@ export function useThemeCardActions(theme: Theme) {
     
     startTransition(async () => {
       try {
-        const result = await deleteThemeAction(optimisticTheme.id);
+        const result = await deleteProjectAction(optimisticTheme.id);
         if (!result.success) {
           setOptimisticTheme({ deleted: false, deleteFailed: true });
-          toast.error('Failed to delete theme', {
+          toast.error('Failed to delete project', {
             description: result.error || 'Please try again later'
           });
         } else {
-          toast.success('Theme deleted successfully');
+          toast.success('Project deleted successfully');
         }
       } catch (error) {
         setOptimisticTheme({ deleted: false, deleteFailed: true });
-        toast.error('Failed to delete theme', {
+        toast.error('Failed to delete project', {
           description: 'Network error. Please try again later'
         });
       }
@@ -79,7 +84,7 @@ export function useThemeCardActions(theme: Theme) {
     isPending,
     handleSelect,
     handleEdit,
-    handleTogglePublic,
+    handleToggleVisibility,
     handleDelete,
     handleConfirmDelete,
   };
