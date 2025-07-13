@@ -5,13 +5,13 @@ import { Button } from './ui/button';
 import { Plus } from 'lucide-react';
 
 interface CreateThemeButtonProps {
-  isAuthenticated: boolean;
+  userId: string | null;
 }
 
-export function CreateThemeButton({ isAuthenticated }: CreateThemeButtonProps) {
+export function CreateThemeButton({ userId }: CreateThemeButtonProps) {
   const [, setCreateDialog] = useQueryState('create');
 
-  if (!isAuthenticated) {
+  if (!userId) {
     return null;
   }
 

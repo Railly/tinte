@@ -14,7 +14,6 @@ interface ThemeListProps {
 }
 
 export function ThemeList({ themes, userId }: ThemeListProps) {
-  const isAuthenticated = !!userId;
   const [{ q: searchQuery, publicOnly: showPublicOnly }] = useQueryStates(themeSearchParsers);
 
   const { themes: filteredThemes, isPending, isSearchActive, error } = useThemeSearch({
@@ -27,7 +26,7 @@ export function ThemeList({ themes, userId }: ThemeListProps) {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <ThemeSearch />
-        {isAuthenticated && <ThemeFilters />}
+        {userId && <ThemeFilters />}
       </div>
 
       {error && isSearchActive && (

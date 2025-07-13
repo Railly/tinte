@@ -4,20 +4,11 @@ import { CreateThemeButton } from '@/components/create-theme-button';
 import { ThemeCreateDialog } from '@/components/dialogs/theme-create-dialog';
 import { ThemeEditDialog } from '@/components/dialogs/theme-edit-dialog';
 import { ThemeDeleteDialog } from '@/components/dialogs/theme-delete-dialog';
-import { getPublicThemes, getThemesByUser } from '@/lib/db/queries';
-import { themeSearchCache } from '@/lib/search-params';
-import { type SearchParams } from 'nuqs/server';
-import { type Theme } from '@/lib/db/schema';
+import { getThemesByUser } from '@/lib/db/queries';
 
-type PageProps = {
-  searchParams: Promise<SearchParams>;
-};
-
-export default async function CodePage({ searchParams }: PageProps) {
+export default async function CodePage() {
   const userId = await getCurrentUserId();
-  const isAuthenticated = !!userId;
-
-  const allThemes = userId ? await getThemesByUser() : await getPublicThemes();
+  const allThemes = await getThemesByUser();
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -28,7 +19,7 @@ export default async function CodePage({ searchParams }: PageProps) {
             Discover and share themes for VS Code, Zed, JetBrains, Vim and more
           </p>
         </div>
-        <CreateThemeButton isAuthenticated={isAuthenticated} />
+        <CreateThemeButton userId={userId} />
       </div>
       <ThemeList themes={allThemes} userId={userId} />
       <ThemeCreateDialog />
