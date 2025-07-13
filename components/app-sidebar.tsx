@@ -10,7 +10,7 @@ import {
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
-import { ProjectSwitcher } from "@/components/project-switcher"
+import { ContextualHeader } from "@/components/contextual-header"
 import {
   Sidebar,
   SidebarContent,
@@ -139,7 +139,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <ProjectSwitcher projects={data.projects} />
+        <ContextualHeader />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
