@@ -8,6 +8,7 @@ import { useLoop } from "@/hooks/use-loop";
 import { mergeRefs } from "@/utils/merge-refs";
 import { Button } from "@/components/ui/button";
 import { PaletteExtractor } from "@/components/palette-extractor";
+import HeroInputDock from "@/components/hero-input-dock";
 
 const providerIcons = {
   "shadcn/ui": ShadcnIcon,
@@ -122,15 +123,17 @@ export default function Home() {
           </div>
         </h1>
       </div>
-      <div className="flex flex-col items-center gap-2 md:gap-4">
-        <Button
-          variant="outline"
-          size="lg"
-        >
-          Get started
-        </Button>
+      <div className="w-full max-w-4xl mx-auto">
+        <HeroInputDock
+          onSubmit={(kind, raw) => {
+            console.log('Submitted:', kind, raw);
+          }}
+          onApplyPalette={(ramp) => {
+            console.log('Applied palette:', ramp);
+          }}
+        />
       </div>
-      
+
       <div className="w-full max-w-6xl mx-auto">
         <PaletteExtractor />
       </div>
