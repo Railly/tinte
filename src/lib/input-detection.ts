@@ -6,7 +6,8 @@ export type Kind =
   | "cssvars"
   | "tailwind"
   | "palette"
-  | "prompt";
+  | "prompt"
+  | "image";
 
 export type Swatch = { step: number; hex: string };
 
@@ -15,11 +16,13 @@ export type PastedItem = {
   content: string;
   kind: Kind;
   colors?: string[];
+  imageData?: string; // base64 data URL for images
   metadata?: {
     title: string;
     description: string;
     favicon: string;
     loading: boolean;
+    error?: boolean;
   };
 };
 

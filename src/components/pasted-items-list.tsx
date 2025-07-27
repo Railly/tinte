@@ -7,9 +7,10 @@ import { PastedItemCard } from './pasted-item-card';
 interface PastedItemsListProps {
   pastedItems: PastedItem[];
   onRemoveItem: (id: string) => void;
+  onEditItem?: (item: PastedItem) => void;
 }
 
-export function PastedItemsList({ pastedItems, onRemoveItem }: PastedItemsListProps) {
+export function PastedItemsList({ pastedItems, onRemoveItem, onEditItem }: PastedItemsListProps) {
   return (
     <AnimatePresence>
       {pastedItems.length > 0 && (
@@ -24,6 +25,7 @@ export function PastedItemsList({ pastedItems, onRemoveItem }: PastedItemsListPr
               key={item.id}
               item={item}
               onRemove={onRemoveItem}
+              onEdit={onEditItem}
             />
           ))}
         </motion.div>

@@ -131,9 +131,9 @@ export default function Home() {
         />
       </div>
 
-      <div className="w-full max-w-6xl mx-auto">
+      {/* <div className="w-full max-w-6xl mx-auto">
         <PaletteExtractor />
-      </div>
+      </div> */}
     </div>
   );
 }

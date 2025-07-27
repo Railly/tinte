@@ -31,6 +31,7 @@ export function usePastedItems() {
                   description: meta.description,
                   favicon: meta.favicon,
                   loading: false,
+                  error: false,
                 },
               }
             : item
@@ -44,10 +45,11 @@ export function usePastedItems() {
             ? {
                 ...item,
                 metadata: {
-                  title: item.metadata?.title || "Error loading",
-                  description: item.metadata?.description || "",
-                  favicon: item.metadata?.favicon || "",
+                  title: "Failed to load URL",
+                  description: "Could not fetch page metadata",
+                  favicon: "",
                   loading: false,
+                  error: true,
                 },
               }
             : item
@@ -62,15 +64,17 @@ export function usePastedItems() {
     }
   }
 
-  function addPastedItem(content: string) {
-    const detectedKind = detectKind(content);
-    if (detectedKind === "prompt") return;
+  function addPastedItem(content: string, kind?: Kind, colors?: string[], imageData?: string) {
+    const detectedKind = kind || detectKind(content);
+    // Allow prompts for longer text (called from handlePaste when > 200 chars)
+    if (detectedKind === "prompt" && !kind) return;
 
     const newItem: PastedItem = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       content,
       kind: detectedKind,
-      colors: extractColors(content),
+      colors: colors || extractColors(content),
+      imageData,
     };
 
     // If it's a URL, add loading metadata and fetch
@@ -83,6 +87,7 @@ export function usePastedItems() {
           description: "",
           favicon: "",
           loading: true,
+          error: false,
         };
 
         setPastedItems((prev) => [...prev, newItem]);
@@ -90,9 +95,10 @@ export function usePastedItems() {
       } catch {
         newItem.metadata = {
           title: "Invalid URL",
-          description: "",
+          description: "Please enter a valid URL",
           favicon: "",
           loading: false,
+          error: true,
         };
         setPastedItems((prev) => [...prev, newItem]);
       }
@@ -105,6 +111,60 @@ export function usePastedItems() {
     setPastedItems((prev) => prev.filter((item) => item.id !== id));
   }
 
+  function updatePastedItem(id: string, content: string, kind?: Kind) {
+    setPastedItems((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              content,
+              kind: kind || item.kind,
+              colors: extractColors(content),
+              // Reset metadata if it's a URL to refetch
+              ...(kind === 'url' && {
+                metadata: content.includes('://') ? (() => {
+                  try {
+                    const domain = new URL(content).hostname.replace('www.', '');
+                    return {
+                      title: domain,
+                      description: '',
+                      favicon: '',
+                      loading: true,
+                      error: false,
+                    };
+                  } catch {
+                    return {
+                      title: 'Invalid URL',
+                      description: 'Please enter a valid URL',
+                      favicon: '',
+                      loading: false,
+                      error: true,
+                    };
+                  }
+                })() : {
+                  title: 'Invalid URL',
+                  description: 'Please enter a valid URL',
+                  favicon: '',
+                  loading: false,
+                  error: true,
+                },
+              }),
+            }
+          : item
+      )
+    );
+
+    // If it's a URL, fetch new metadata
+    if (kind === 'url' && content.includes('://')) {
+      try {
+        new URL(content); // Validate URL first
+        handleUrlMetadataFetch(content, id);
+      } catch (error) {
+        console.error('Invalid URL or failed to fetch metadata:', error);
+      }
+    }
+  }
+
   function clearPastedItems() {
     setPastedItems([]);
   }
@@ -113,6 +173,7 @@ export function usePastedItems() {
     pastedItems,
     addPastedItem,
     removePastedItem,
+    updatePastedItem,
     clearPastedItems,
     fetchingIds,
   };
