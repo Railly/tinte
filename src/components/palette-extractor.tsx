@@ -6,21 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useTheme } from "next-themes";
 
 export function PaletteExtractor() {
   const [baseColor, setBaseColor] = useState("#3b82f6");
-  const [contrastShift, setContrastShift] = useState([0]);
   const [palette, setPalette] = useState<PaletteColor[]>([]);
   const [hasInitialPalette, setHasInitialPalette] = useState(false);
   const { resolvedTheme } = useTheme();
 
-  const generatePalette = (color: string, shift: number) => {
+  const generatePalette = (color: string) => {
     try {
-      const generatedPalette = generateTailwindPalette(color, undefined, shift);
+      const generatedPalette = generateTailwindPalette(color);
       setPalette(generatedPalette);
       if (!hasInitialPalette) {
         setHasInitialPalette(true);
@@ -31,15 +29,15 @@ export function PaletteExtractor() {
   };
 
   const handleGeneratePalette = () => {
-    generatePalette(baseColor, contrastShift[0]);
+    generatePalette(baseColor);
   };
 
-  // Auto-generate palette when contrast shift changes (real-time)
+  // Auto-generate palette when base color changes (real-time)
   useEffect(() => {
     if (hasInitialPalette) {
-      generatePalette(baseColor, contrastShift[0]);
+      generatePalette(baseColor);
     }
-  }, [contrastShift, baseColor, hasInitialPalette]);
+  }, [baseColor, hasInitialPalette]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -69,25 +67,6 @@ export function PaletteExtractor() {
                     className="font-mono flex-1"
                   />
                   <div className="w-12 h-10 rounded border" style={{ backgroundColor: baseColor }} />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="contrast-shift">
-                  Contrast Shift: {contrastShift[0].toFixed(2)}
-                </Label>
-                <Slider
-                  id="contrast-shift"
-                  value={contrastShift}
-                  onValueChange={setContrastShift}
-                  min={-1}
-                  max={1}
-                  step={0.01}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Less Contrast</span>
-                  <span>More Contrast</span>
                 </div>
               </div>
             </div>

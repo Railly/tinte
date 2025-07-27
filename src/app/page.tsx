@@ -23,7 +23,7 @@ export default function Home() {
     <div className="flex flex-col items-center gap-4 md:gap-8 justify-center min-h-screen px-4 py-8">
       <div className="flex flex-col items-center gap-2 md:gap-4">
         <h1 className="flex flex-col items-center gap-2 md:gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium overflow-hidden text-center">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold overflow-hidden text-center">
             <span>Design your</span>
             <motion.div
               animate={{ width: bounds.width > 0 ? bounds.width : "auto" }}
@@ -74,7 +74,7 @@ export default function Home() {
                     ))}
                   </AnimatePresence>
                 </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium whitespace-nowrap">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold whitespace-nowrap">
                   <AnimatePresence mode="popLayout" initial={false}>
                     {active?.split("").map((letter, index) => {
                       return (
@@ -127,9 +127,6 @@ export default function Home() {
         <HeroInputDock
           onSubmit={(kind, raw) => {
             console.log('Submitted:', kind, raw);
-          }}
-          onApplyPalette={(ramp) => {
-            console.log('Applied palette:', ramp);
           }}
         />
       </div>

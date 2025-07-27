@@ -142,9 +142,9 @@ export function extractColors(content: string): string[] {
   return uniqueColors;
 }
 
-export function generateRamp(baseHex: string, shift = 2): Swatch[] {
+export function generateRamp(baseHex: string): Swatch[] {
   try {
-    const palette = generateTailwindPalette(baseHex, undefined, shift);
+    const palette = generateTailwindPalette(baseHex);
     return palette.map((color: any, index: number) => ({
       step:
         [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950][index] || 500,

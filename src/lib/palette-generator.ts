@@ -83,79 +83,6 @@ function interpolate(start: number, end: number, factor: number): number {
   return start + (end - start) * factor;
 }
 
-function applyContrastShift(palette: PaletteColor[], contrastShift: number): PaletteColor[] {
-  if (contrastShift === 0) return palette;
-  
-  const shadeCount = palette.length;
-  
-  return palette.map((color, index) => {
-    const oklchColor = toOklch(color.value);
-    const positionInPalette = index / (shadeCount - 1);
-    
-    // Aplicar transformación suave basada en posición
-    const centerDistance = Math.abs(positionInPalette - 0.5);
-    const transformationStrength = Math.sin(positionInPalette * Math.PI);
-    
-    let newL = oklchColor.l;
-    let newC = oklchColor.c;
-    
-    if (contrastShift > 0) {
-      // Expansión de contraste
-      const expansionFactor = contrastShift * centerDistance * transformationStrength * 0.3;
-      
-      if (positionInPalette < 0.5) {
-        // Lado claro: aclarar
-        newL = oklchColor.l + expansionFactor;
-        newC = oklchColor.c * (1 - expansionFactor * 0.4);
-      } else {
-        // Lado oscuro: oscurecer, pero también puede aclarar para mayor contraste
-        newL = oklchColor.l + expansionFactor * 0.7;
-        newC = oklchColor.c * (1 - expansionFactor * 0.3);
-      }
-    } else {
-      // Compresión de contraste
-      const compressionFactor = Math.abs(contrastShift) * centerDistance * transformationStrength * 0.25;
-      
-      if (positionInPalette < 0.5) {
-        // Lado claro: oscurecer hacia el centro
-        newL = oklchColor.l - compressionFactor;
-        newC = oklchColor.c * (1 - compressionFactor * 0.2);
-      } else {
-        // Lado oscuro: oscurecer más para compresión
-        newL = oklchColor.l - compressionFactor * 1.3;
-        newC = oklchColor.c * (1 + compressionFactor * 0.4);
-      }
-    }
-    
-    // Asegurar que los valores estén en rango válido
-    newL = Math.max(0.01, Math.min(0.99, newL));
-    newC = Math.max(0, newC);
-    
-    const rgbColor = oklchToRgb(newL, newC, oklchColor.h);
-    const hex = rgbToHex(rgbColor);
-    const lum = getSRGBLuminance(rgbColor);
-    
-    const contrastWhite = getContrastRatio(lum, 1);
-    const contrastBlack = getContrastRatio(lum, 0);
-    
-    let level: 'AAA' | 'AA' | 'A' | 'Fail' = 'Fail';
-    if (contrastWhite >= 7 || contrastBlack >= 7) level = 'AAA';
-    else if (contrastWhite >= 4.5 || contrastBlack >= 4.5) level = 'AA';
-    else if (contrastWhite >= 3 || contrastBlack >= 3) level = 'A';
-    
-    return {
-      ...color,
-      value: hex,
-      luminance: lum,
-      contrast: { white: contrastWhite, black: contrastBlack },
-      accessibility: {
-        level,
-        textOnWhite: contrastWhite >= 4.5,
-        textOnBlack: contrastBlack >= 4.5
-      }
-    };
-  });
-}
 
 function findBestShadePosition(baseColor: string): number {
   const baseOklch = toOklch(baseColor);
@@ -175,7 +102,7 @@ function findBestShadePosition(baseColor: string): number {
   return bestIndex;
 }
 
-export function generateTailwindPalette(baseColor: string, customStops?: number[], contrastShift: number = 0): PaletteColor[] {
+export function generateTailwindPalette(baseColor: string, customStops?: number[]): PaletteColor[] {
   const stops = customStops || generateTailwindStops(11);
   const baseOklch = toOklch(baseColor);
   
@@ -235,5 +162,5 @@ export function generateTailwindPalette(baseColor: string, customStops?: number[
     });
   }
   
-  return applyContrastShift(palette, contrastShift);
+  return palette;
 }

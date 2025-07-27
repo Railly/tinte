@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Textarea } from '@/components/ui/textarea';
-import { Kind, Swatch } from '@/lib/input-detection';
+import { Kind } from '@/lib/input-detection';
 import { usePastedItems } from '@/hooks/use-pasted-items';
 import { usePalette } from '@/hooks/use-palette';
 import { PastedItemsList } from './pasted-items-list';
@@ -12,16 +12,14 @@ import { PalettePreview } from './palette-preview';
 
 interface HeroInputDockProps {
   onSubmit?: (kind: Kind, raw: string) => void;
-  onApplyPalette?: (ramp: Swatch[]) => void;
 }
 
 export default function HeroInputDock({
   onSubmit,
-  onApplyPalette,
 }: HeroInputDockProps) {
   const [prompt, setPrompt] = useState('');
   const { pastedItems, addPastedItem, removePastedItem } = usePastedItems();
-  const { base, setBase, shift, setShift, ramp } = usePalette();
+  const { base, setBase, ramp } = usePalette();
 
   function handlePaste(e: React.ClipboardEvent) {
     const pastedText = e.clipboardData.getData('text');
@@ -92,10 +90,7 @@ export default function HeroInputDock({
       <PaletteControls
         base={base}
         setBase={setBase}
-        shift={shift}
-        setShift={setShift}
         ramp={ramp}
-        onApplyPalette={onApplyPalette}
       />
 
       <PalettePreview ramp={ramp} />
