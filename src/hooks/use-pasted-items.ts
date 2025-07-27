@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { PastedItem, Kind, detectKind } from "@/lib/input-detection";
+import {
+  PastedItem,
+  Kind,
+  detectKind,
+  extractColors,
+} from "@/lib/input-detection";
 import { fetchUrlMetadata } from "@/lib/url-metadata";
 
 export function usePastedItems() {
@@ -65,6 +70,7 @@ export function usePastedItems() {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       content,
       kind: detectedKind,
+      colors: extractColors(content),
     };
 
     // If it's a URL, add loading metadata and fetch

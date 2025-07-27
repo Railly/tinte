@@ -14,6 +14,7 @@ export type PastedItem = {
   id: string;
   content: string;
   kind: Kind;
+  colors?: string[];
   metadata?: {
     title: string;
     description: string;
@@ -133,6 +134,12 @@ export function generatePreview(content: string, kind: Kind) {
         colors: [],
       };
   }
+}
+
+export function extractColors(content: string): string[] {
+  const colorMatches = content.match(/#[0-9a-f]{3,8}/gi) || [];
+  const uniqueColors = [...new Set(colorMatches)];
+  return uniqueColors;
 }
 
 export function generateRamp(baseHex: string, shift = 2): Swatch[] {

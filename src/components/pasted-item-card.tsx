@@ -3,16 +3,18 @@
 import { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { X } from 'lucide-react';
-import { Globe, Palette, Code, MessageSquare } from 'lucide-react';
+import { Globe, Palette, MessageSquare } from 'lucide-react';
 import { CSSIcon } from '@/components/shared/icons/css';
 import { JSONIcon } from '@/components/shared/icons/json';
+import { TailwindIcon } from '@/components/shared/icons/tailwind';
 import { PastedItem, Kind, generatePreview } from '@/lib/input-detection';
+import { ColorBadge } from '@/components/color-badge';
 
 const kindIcons = {
   url: Globe,
   json: JSONIcon,
   cssvars: CSSIcon,
-  tailwind: Code,
+  tailwind: TailwindIcon,
   palette: Palette,
   prompt: MessageSquare
 };
@@ -66,6 +68,28 @@ export function PastedItemCard({ item, onRemove }: PastedItemCardProps) {
                   <p className="text-[8px] text-muted-foreground break-words leading-tight">
                     {displaySubtitle}
                   </p>
+                )}
+              </div>
+            </div>
+          ) : item.colors && item.colors.length > 0 ? (
+            <div className="space-y-2">
+              <p className="text-[8px] text-muted-foreground break-words leading-tight">
+                {item.content}
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {item.colors.slice(0, 4).map((color, index) => (
+                  <ColorBadge
+                    key={color}
+                    color={color}
+                    size="sm"
+                    showHex={false}
+                    className="cursor-pointer"
+                  />
+                ))}
+                {item.colors.length > 4 && (
+                  <span className="text-[8px] text-muted-foreground">
+                    +{item.colors.length - 4}
+                  </span>
                 )}
               </div>
             </div>
