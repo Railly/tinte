@@ -1,10 +1,10 @@
 import { oklch, rgb, formatHex } from "culori";
 import { generateTailwindPalette } from "./palette-generator";
+import { TinteBlock } from "@/types/tinte";
 
 type Mode = "light" | "dark";
-type RaysoBlock = Record<string, string>;
 type ShadcnBlock = Record<string, string>;
-type RaysoTheme = { light: RaysoBlock; dark: RaysoBlock };
+type TinteTheme = { light: TinteBlock; dark: TinteBlock };
 
 const ANCHORS = {
   light: { primary: 600, border: 200, muted: 100, mutedFg: 600, accent: 300 },
@@ -47,7 +47,7 @@ const tweakL = (hex: string, dL: number) => {
   return formatHex(out);
 };
 
-function buildNeutralRamp(block: RaysoBlock): string[] {
+function buildNeutralRamp(block: TinteBlock): string[] {
   const seed =
     block.interface ||
     block.interface_2 ||
@@ -73,7 +73,7 @@ const surface = (bg: string, mode: Mode, delta = 0.02) => {
   return tweakL(bg, mode === "light" ? +delta : -delta);
 };
 
-function mapBlock(block: RaysoBlock, mode: Mode): ShadcnBlock {
+function mapBlock(block: TinteBlock, mode: Mode): ShadcnBlock {
   const bg = block.background || (mode === "light" ? "#ffffff" : "#0b0b0f");
   const fg = block.text || bestTextFor(bg);
 
@@ -97,7 +97,7 @@ function mapBlock(block: RaysoBlock, mode: Mode): ShadcnBlock {
   const card = surface(bg, mode, 0.03);
   const popover = surface(bg, mode, 0.03);
 
-  const destructiveSeed = block.accent_3 || block.destructive || "#ef4444";
+  const destructiveSeed = block.accent_3 || "#ef4444";
   const destructiveRamp = buildRamp(destructiveSeed);
   const destructive = pick(destructiveRamp, mode === "light" ? 500 : 400);
 
@@ -154,9 +154,9 @@ function mapBlock(block: RaysoBlock, mode: Mode): ShadcnBlock {
   };
 }
 
-export function raysoToShadcn(rayso: RaysoTheme) {
+export function tinteToShadcn(tinte: TinteTheme) {
   return {
-    light: mapBlock(rayso.light, "light"),
-    dark: mapBlock(rayso.dark, "dark"),
+    light: mapBlock(tinte.light, "light"),
+    dark: mapBlock(tinte.dark, "dark"),
   };
 }

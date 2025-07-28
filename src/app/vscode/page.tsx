@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { raysoPresets } from '@/utils/rayso-presets';
 import { defaultPresets } from '@/utils/tweakcn-presets';
-import { tweakcnToRayso } from '@/lib/tweakcn-to-rayso';
-import { raysoToVSCode } from '@/lib/rayso-to-vscode';
-import { RaysoTheme } from '@/types/rayso';
+import { tweakcnToTinte } from '@/lib/tweakcn-to-tinte';
+import { tinteToVSCode } from '@/lib/tinte-to-vscode';
+import { TinteTheme } from '@/types/tinte';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -181,19 +181,19 @@ export default function VSCodePage() {
   // Get current theme based on source type
   const getCurrentTheme = () => {
     if (sourceType === 'rayso') {
-      const raysoTheme: RaysoTheme = {
+      const tinteTheme: TinteTheme = {
         light: raysoPresets[selectedTheme].light,
         dark: raysoPresets[selectedTheme].dark
       };
-      return raysoToVSCode(raysoTheme, raysoPresets[selectedTheme].name);
+      return tinteToVSCode(tinteTheme, raysoPresets[selectedTheme].name);
     } else {
       const tweakcnTheme = {
         light: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.light,
         dark: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.dark
       };
-      const convertedRayso: RaysoTheme = tweakcnToRayso(tweakcnTheme);
+      const convertedRayso: TinteTheme = tweakcnToTinte(tweakcnTheme);
       const themeName = defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].label;
-      return raysoToVSCode(convertedRayso, `${themeName} (from TweakCN)`);
+      return tinteToVSCode(convertedRayso, `${themeName} (from TweakCN)`);
     }
   };
 
@@ -434,7 +434,7 @@ export default function VSCodePage() {
                   {JSON.stringify(
                     sourceType === 'rayso'
                       ? raysoPresets[selectedTheme][mode]
-                      : tweakcnToRayso({
+                      : tweakcnToTinte({
                         light: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.light,
                         dark: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.dark
                       })[mode],

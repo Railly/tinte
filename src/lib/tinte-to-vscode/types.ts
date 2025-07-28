@@ -1,11 +1,11 @@
 // Re-export types from common location
-export type { RaysoTheme, RaysoBlock } from '@/types/rayso';
-import { RaysoBlock } from '@/types/rayso';
+import { TinteBlock } from "@/types/tinte";
+export type { TinteTheme, TinteBlock } from "@/types/tinte";
 
 export type VSCodeTheme = {
   name: string;
   displayName: string;
-  type: 'light' | 'dark';
+  type: "light" | "dark";
   colors: Record<string, string>;
   tokenColors: VSCodeTokenColor[];
 };
@@ -22,7 +22,7 @@ export interface VSCodeTokenColor {
 export type SemanticToken =
   | "plain"
   | "classes"
-  | "interfaces" 
+  | "interfaces"
   | "structs"
   | "enums"
   | "keys"
@@ -61,4 +61,4 @@ export type SemanticToken =
   | "calls"
   | "punctuation";
 
-export type TokenColorMap = Record<SemanticToken, keyof RaysoBlock>;
+export type TokenColorMap = Record<SemanticToken, keyof TinteBlock>;

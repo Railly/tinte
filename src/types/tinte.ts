@@ -1,9 +1,9 @@
-export type RaysoTheme = {
-  light: RaysoBlock;
-  dark: RaysoBlock;
+export type TinteTheme = {
+  light: TinteBlock;
+  dark: TinteBlock;
 };
 
-export type RaysoBlock = {
+export type TinteBlock = {
   text: string;
   text_2: string;
   text_3: string;

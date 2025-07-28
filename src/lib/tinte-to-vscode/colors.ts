@@ -1,4 +1,4 @@
-import { RaysoBlock } from '@/types/rayso';
+import { TinteBlock } from "@/types/tinte";
 
 // Apply opacity and mode-specific customizations
 const applyCustomizations = (
@@ -74,7 +74,7 @@ const editorColorMap = {
   "editorGutter.addedBackground": "accent_2",
   "editorGutter.deletedBackground": "primary",
 
-  // Bracket Matching  
+  // Bracket Matching
   "editorBracketMatch.background": "interface",
   "editorBracketMatch.border": "interface_2",
 
@@ -187,11 +187,11 @@ const editorColorMap = {
   "activityBarBadge.foreground": "background",
 } as const;
 
-export function getVSCodeColors(palette: RaysoBlock, mode: "light" | "dark") {
+export function getVSCodeColors(palette: TinteBlock, mode: "light" | "dark") {
   const vsCodeColors: Record<string, string> = {};
 
   for (const [token, colorKey] of Object.entries(editorColorMap)) {
-    const color = palette[colorKey as keyof RaysoBlock];
+    const color = palette[colorKey as keyof TinteBlock];
     vsCodeColors[token] = applyCustomizations(color, token, mode);
   }
 

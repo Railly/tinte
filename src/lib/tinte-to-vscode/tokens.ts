@@ -1,9 +1,9 @@
-import { tokenToScopeMapping, defaultTokenColorMap } from './config';
-import { RaysoBlock } from '@/types/rayso';
-import { SemanticToken, TokenColorMap, VSCodeTokenColor } from './types';
+import { tokenToScopeMapping, defaultTokenColorMap } from "./config";
+import { TinteBlock } from "@/types/tinte";
+import { SemanticToken, TokenColorMap, VSCodeTokenColor } from "./types";
 
 export function generateTokenColors(
-  palette: RaysoBlock,
+  palette: TinteBlock,
   tokenColors: TokenColorMap = defaultTokenColorMap
 ): VSCodeTokenColor[] {
   return Object.entries(tokenColors).map(([token, colorKey]) => ({

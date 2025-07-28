@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { raysoPresets } from '@/utils/rayso-presets';
-import { raysoToShadcn } from '@/lib/rayso-to-shadcn';
+import { tinteToShadcn } from '@/lib/tinte-to-shadcn';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,7 @@ export default function ExperimentPage() {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
 
   const currentRayso = raysoPresets[selectedTheme];
-  const convertedTheme = raysoToShadcn(currentRayso);
+  const convertedTheme = tinteToShadcn(currentRayso);
   const currentTokens = convertedTheme[mode];
 
   const applyTheme = (tokens: Record<string, string>) => {
@@ -29,8 +29,8 @@ export default function ExperimentPage() {
 
   const ColorSwatch = ({ name, value }: { name: string; value: string }) => (
     <div className="flex items-center gap-2 p-2 rounded border">
-      <div 
-        className="w-6 h-6 rounded border border-gray-300" 
+      <div
+        className="w-6 h-6 rounded border border-gray-300"
         style={{ backgroundColor: value }}
       />
       <div className="flex-1 min-w-0">
@@ -52,7 +52,7 @@ export default function ExperimentPage() {
           <Button variant="outline">Outline</Button>
           <Button variant="destructive">Destructive</Button>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Nested Card</CardTitle>
