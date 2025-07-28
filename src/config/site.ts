@@ -7,6 +7,7 @@ export const siteConfig = {
   links: {
     twitter: "https://twitter.com/raillyhugo",
     github: "https://github.com/railly/tinte",
+    discord: "https://discord.gg/W5sRKxqxH8",
   },
 };
 

@@ -6,6 +6,7 @@ import TwitterIcon from '@/components/shared/icons/twitter';
 import Logo from '@/components/shared/logo';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/shared/theme-switcher';
+import { siteConfig } from '@/config/site';
 import { 
   Sheet, 
   SheetContent, 
@@ -49,11 +50,15 @@ export function Header() {
           {/* CTA + Social */}
           <div className="hidden md:flex items-center gap-3">
             <ThemeSwitcher />
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <GithubIcon className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+              <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
+                <GithubIcon className="h-4 w-4" />
+              </a>
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <TwitterIcon className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+              <a href={siteConfig.links.twitter} target="_blank" rel="noopener noreferrer">
+                <TwitterIcon className="h-4 w-4" />
+              </a>
             </Button>
             <Button size="sm" className="h-7 px-3 text-xs">
               Get Started
@@ -92,11 +97,15 @@ export function Header() {
                 <div className="mt-auto flex flex-col gap-6">
                   <div className="flex items-center justify-center gap-6">
                     <ThemeSwitcher />
-                    <Button variant="ghost" size="sm" className="h-12 w-12 p-0">
-                      <GithubIcon className="h-8 w-8" />
+                    <Button variant="ghost" size="sm" className="h-12 w-12 p-0" asChild>
+                      <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
+                        <GithubIcon className="h-8 w-8" />
+                      </a>
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-12 w-12 p-0">
-                      <TwitterIcon className="h-8 w-8" />
+                    <Button variant="ghost" size="sm" className="h-12 w-12 p-0" asChild>
+                      <a href={siteConfig.links.twitter} target="_blank" rel="noopener noreferrer">
+                        <TwitterIcon className="h-8 w-8" />
+                      </a>
                     </Button>
                   </div>
                   <Button size="lg" className="h-12 px-8 text-base w-full font-medium">
