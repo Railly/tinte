@@ -3,6 +3,8 @@
 import { motion } from 'motion/react';
 import { Heart, Download, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import TweakCNIcon from '@/components/shared/icons/tweakcn';
+import RaycastIcon from '@/components/shared/icons/raycast';
 
 interface ThemeData {
   id: string;
@@ -80,9 +82,9 @@ export function ThemeCard({ theme }: ThemeCardProps) {
           
           {/* Minimal tags */}
           <div className="flex flex-wrap gap-1.5">
-            {theme.tags.slice(0, 2).map((tag) => (
+            {theme.tags.slice(0, 2).map((tag, index) => (
               <span
-                key={tag}
+                key={`${tag}-${index}`}
                 className="px-2 py-1 text-xs bg-muted/50 text-muted-foreground rounded-full border border-border/30"
               >
                 {tag}
@@ -116,9 +118,17 @@ export function ThemeCard({ theme }: ThemeCardProps) {
               {formatNumber(theme.downloads)}
             </motion.div>
           </div>
-          <div className="text-xs text-muted-foreground/70">
-            {theme.author}
-          </div>
+          {theme.author && (
+            <div className="flex items-center text-xs text-muted-foreground/70">
+              {theme.author === 'tweakcn' ? (
+                <TweakCNIcon className="w-4 h-4" />
+              ) : theme.author === 'rayso' ? (
+                <RaycastIcon className="w-4 h-4" />
+              ) : (
+                theme.author
+              )}
+            </div>
+          )}
         </div>
 
         {/* Action on hover */}

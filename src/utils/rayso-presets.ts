@@ -1,0 +1,450 @@
+// Extract themes for theme showcase
+export function extractRaysoThemeData(isDark = false) {
+  return raysoPresets.map((preset, index) => {
+    const colorData = isDark ? preset.dark : preset.light;
+    return {
+      id: `rayso-${index + 1}`,
+      name: preset.name,
+      colors: {
+        primary: colorData.primary,
+        secondary: colorData.secondary,
+        accent: colorData.accent,
+        background: colorData.background,
+        foreground: colorData.text,
+      },
+      createdAt: '2024-01-15',
+    };
+  });
+}
+
+export const raysoPresets = [
+  {
+    name: "Bitmap",
+    light: {
+      text: "#685B5B",
+      accent: "#C90028",
+      text_2: "#948484",
+      text_3: "#b8adad",
+      primary: "#D63937",
+      accent_2: "#836250",
+      accent_3: "#D15510",
+      interface: "#e0d2d2",
+      secondary: "#C90028",
+      background: "#fff5f7",
+      interface_2: "#d5c3c3",
+      interface_3: "#cab4b4",
+      background_2: "#ffebef"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#E42C37",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#EB6F6F",
+      accent_2: "#EBB99D",
+      accent_3: "#E42C37",
+      interface: "#3c2020",
+      secondary: "#E42C37",
+      background: "#190707",
+      interface_2: "#512f2f",
+      interface_3: "#6f4444",
+      background_2: "#280b0b"
+    }
+  },
+  {
+    name: "Ice",
+    light: {
+      text: "#1C1B29",
+      accent: "#1E3C78",
+      text_2: "#25778e",
+      text_3: "#49b3d0",
+      primary: "#81909D",
+      accent_2: "#7CBCD8",
+      accent_3: "#00B0E9",
+      interface: "#d6f7ff",
+      secondary: "#00B0E9",
+      background: "#fafeff",
+      interface_2: "#c2f3ff",
+      interface_3: "#9ed7e6",
+      background_2: "#ebfbff"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#778CB7",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#BFC4C8",
+      accent_2: "#89C3DC",
+      accent_3: "#00B0E9",
+      interface: "#30353b",
+      secondary: "#92DEF6",
+      background: "#1F2427",
+      interface_2: "#394047",
+      interface_3: "#515a61",
+      background_2: "#272c30"
+    }
+  },
+  {
+    name: "Noir",
+    light: {
+      text: "#111111",
+      accent: "#111111",
+      text_2: "#666666",
+      text_3: "#999999",
+      primary: "#666",
+      accent_2: "#666",
+      accent_3: "#111111",
+      interface: "#dedede",
+      secondary: "#666",
+      background: "#F7F7F7",
+      interface_2: "#d1d1d1",
+      interface_3: "#c4c4c4",
+      background_2: "#ebebeb"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#FFFFFF",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#A7A7A7",
+      accent_2: "#A7A7A7",
+      accent_3: "#FFFFFF",
+      interface: "#2b2b2b",
+      secondary: "#A7A7A7",
+      background: "#181818",
+      interface_2: "#363636",
+      interface_3: "#454545",
+      background_2: "#1f1f1f"
+    }
+  },
+  {
+    name: "Forest",
+    light: {
+      text: "#262217",
+      accent: "#4A8042",
+      text_2: "#668f56",
+      text_3: "#aac69f",
+      primary: "#6A8458",
+      accent_2: "#9D891C",
+      accent_3: "#78876E",
+      interface: "#e2ecdf",
+      secondary: "#6A8F71",
+      background: "#f9fbf8",
+      interface_2: "#d7e4d2",
+      interface_3: "#ccddc5",
+      background_2: "#eef4ec"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#86B882",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#AAB4A2",
+      accent_2: "#CBBE6D",
+      accent_3: "#AAB4A2",
+      interface: "#2b312b",
+      secondary: "#6A8F71",
+      background: "#141815",
+      interface_2: "#3c443d",
+      interface_3: "#4b534d",
+      background_2: "#1e2420"
+    }
+  },
+  {
+    name: "Sand",
+    light: {
+      text: "#262217",
+      accent: "#DA8744",
+      text_2: "#706443",
+      text_3: "#a99a70",
+      primary: "#906937",
+      accent_2: "#C57416",
+      accent_3: "#A28C4E",
+      interface: "#e5d3bd",
+      secondary: "#A28C4E",
+      background: "#F3EAE0",
+      interface_2: "#dec8ab",
+      interface_3: "#d7bc98",
+      background_2: "#ecdfcf"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#F4A461",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#D3B48C",
+      accent_2: "#EED5B8",
+      accent_3: "#C2B181",
+      interface: "#484037",
+      secondary: "#C2B181",
+      background: "#2E2820",
+      interface_2: "#584f46",
+      interface_3: "#66594d",
+      background_2: "#393228"
+    }
+  },
+  {
+    name: "Breeze",
+    light: {
+      text: "#1D2127",
+      accent: "#BE4578",
+      text_2: "#bd3d74",
+      text_3: "#d77ea5",
+      primary: "#4D6FB2",
+      accent_2: "#666DA6",
+      accent_3: "#426B65",
+      interface: "#ffe0ed",
+      secondary: "#2C797B",
+      background: "#fffafc",
+      interface_2: "#ffd1e4",
+      interface_3: "#ffbdd8",
+      background_2: "#fff0f6"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#F8528D",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#6699FF",
+      accent_2: "#E9AEFE",
+      accent_3: "#55E7B1",
+      interface: "#3a2442",
+      secondary: "#49E8F2",
+      background: "#1e0d21",
+      interface_2: "#472f4c",
+      interface_3: "#5f4365",
+      background_2: "#2b132f"
+    }
+  },
+  {
+    name: "Meadow",
+    light: {
+      text: "#1D2127",
+      accent: "#798B53",
+      text_2: "#8caa55",
+      text_3: "#bacc99",
+      primary: "#009649",
+      accent_2: "#837E51",
+      accent_3: "#2D8801",
+      interface: "#e3ead7",
+      secondary: "#B6781B",
+      background: "#f7faf5",
+      interface_2: "#d7e1c6",
+      interface_3: "#cfdbb8",
+      background_2: "#ecf1e4"
+    },
+    dark: {
+      text: "#EDEDED",
+      accent: "#B3D767",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#6DD79F",
+      accent_2: "#E9EB9D",
+      accent_3: "#45B114",
+      interface: "#2a2b27",
+      secondary: "#E4B164",
+      background: "#11130b",
+      interface_2: "#464b3a",
+      interface_3: "#6d725f",
+      background_2: "#1a1e10"
+    }
+  },
+  {
+    name: "Falcon",
+    light: {
+      text: "#464C65",
+      accent: "#6A7C9F",
+      text_2: "#637b9c",
+      text_3: "#a2b0c3",
+      primary: "#464C65",
+      accent_2: "#47615D",
+      accent_3: "#AF6A65",
+      interface: "#e0e4eb",
+      secondary: "#839AA7",
+      background: "#f6f7f9",
+      interface_2: "#d0d7e1",
+      interface_3: "#c4cdd9",
+      background_2: "#edeff3"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#6D88BB",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#99B6B2",
+      accent_2: "#789083",
+      accent_3: "#BD9C9C",
+      interface: "#272525",
+      secondary: "#799DB1",
+      background: "#121212",
+      interface_2: "#2c2a2a",
+      interface_3: "#454545",
+      background_2: "#1c1c1c"
+    }
+  },
+  {
+    name: "Crimson",
+    light: {
+      text: "#685B5B",
+      accent: "#9E7070",
+      text_2: "#a88b8a",
+      text_3: "#b79f9f",
+      primary: "#BD3B3B",
+      accent_2: "#836250",
+      accent_3: "#C94F0A",
+      interface: "#e9dddd",
+      secondary: "#C94F0A",
+      background: "#faf4f4",
+      interface_2: "#d9cece",
+      interface_3: "#cec0c0",
+      background_2: "#f5eaea"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#C88E8E",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#EB6F6F",
+      accent_2: "#EBB99D",
+      accent_3: "#FDA97A",
+      interface: "#362626",
+      secondary: "#D15510",
+      background: "#211111",
+      interface_2: "#533c3d",
+      interface_3: "#7e6363",
+      background_2: "#2f1818"
+    }
+  },
+  {
+    name: "Candy",
+    light: {
+      text: "#1D2127",
+      accent: "#009032",
+      text_2: "#808080",
+      text_3: "#b3b3b3",
+      primary: "#DC145E",
+      accent_2: "#B2762E",
+      accent_3: "#676DFF",
+      interface: "#dedede",
+      secondary: "#2386A6",
+      background: "#F7F7F7",
+      interface_2: "#d1d1d1",
+      interface_3: "#c4c4c4",
+      background_2: "#ebebeb"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#73DFA5",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#FF659C",
+      accent_2: "#DFD473",
+      accent_3: "#7A7FFD",
+      interface: "#443856",
+      secondary: "#1CC8FF",
+      background: "#2B2536",
+      interface_2: "#4f4266",
+      interface_3: "#66597d",
+      background_2: "#352d43"
+    }
+  },
+  {
+    name: "Midnight",
+    light: {
+      text: "#434447",
+      accent: "#2F788F",
+      text_2: "#63859c",
+      text_3: "#a2b6c3",
+      primary: "#587678",
+      accent_2: "#5F758F",
+      accent_3: "#9EC2B9",
+      interface: "#dde4e9",
+      secondary: "#766599",
+      background: "#f6f8f9",
+      interface_2: "#ced8df",
+      interface_3: "#c1ced7",
+      background_2: "#eaeef1"
+    },
+    dark: {
+      text: "#FFFFFF",
+      accent: "#52D0F8",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#7DA9AB",
+      accent_2: "#6D86A4",
+      accent_3: "#75D2B1",
+      interface: "#283234",
+      secondary: "#9681C2",
+      background: "#121E20",
+      interface_2: "#364245",
+      interface_3: "#526366",
+      background_2: "#18282a"
+    }
+  },
+  {
+    name: "Sunset",
+    light: {
+      text: "#737568",
+      accent: "#807411",
+      text_2: "#a47141",
+      text_3: "#e5ac76",
+      primary: "#A1642C",
+      accent_2: "#8D703C",
+      accent_3: "#846F00",
+      interface: "#ffe5cc",
+      secondary: "#AD5A78",
+      background: "#fff7f0",
+      interface_2: "#edd7c4",
+      interface_3: "#e7cab1",
+      background_2: "#ffefe0"
+    },
+    dark: {
+      text: "#EDEDED",
+      accent: "#E2D66B",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#FFAF64",
+      accent_2: "#F9D38C",
+      accent_3: "#E7CF55",
+      interface: "#2c2721",
+      secondary: "#E978A1",
+      background: "#231c15",
+      interface_2: "#4a4036",
+      interface_3: "#7c6b5a",
+      background_2: "#2d241b"
+    }
+  },
+  {
+    name: "Raindrop",
+    light: {
+      text: "#1D2127",
+      accent: "#4F9488",
+      text_2: "#4868ad",
+      text_3: "#90abe4",
+      primary: "#008DAC",
+      accent_2: "#507683",
+      accent_3: "#7459E1",
+      interface: "#d6e0f5",
+      secondary: "#027BA1",
+      background: "#f7f9fd",
+      interface_2: "#c6d3f1",
+      interface_3: "#b5c7ed",
+      background_2: "#e7edf9"
+    },
+    dark: {
+      text: "#EDEDED",
+      accent: "#19D6B5",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#2FD9FF",
+      accent_2: "#9CD8EB",
+      accent_3: "#9984EE",
+      interface: "#232934",
+      secondary: "#008BB7",
+      background: "#070f1D",
+      interface_2: "#363f4f",
+      interface_3: "#5b6576",
+      background_2: "#0b172d"
+    }
+  }
+];

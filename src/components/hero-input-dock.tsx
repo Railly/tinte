@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Kind, PastedItem, detectKind } from '@/lib/input-detection';
 import { usePastedItems } from '@/hooks/use-pasted-items';
 import { usePalette } from '@/hooks/use-palette';
@@ -19,6 +20,14 @@ import { CSSIcon } from '@/components/shared/icons/css';
 import { generateTailwindPalette } from '@/lib/palette-generator';
 import { cn } from '@/lib';
 import { Button } from './ui/button';
+import { extractTweakcnThemeData } from '@/utils/tweakcn-presets';
+import { extractRaysoThemeData } from '@/utils/rayso-presets';
+import { extractTinteThemeData } from '@/utils/tinte-presets';
+import { Search } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import TweakCNIcon from '@/components/shared/icons/tweakcn';
+import RaycastIcon from '@/components/shared/icons/raycast';
+import Logo from '@/components/shared/logo';
 
 interface HeroInputDockProps {
   onSubmit?: (kind: Kind, raw: string) => void;
@@ -28,6 +37,19 @@ interface PalettePreset {
   name: string;
   baseColor: string;
   description: string;
+}
+
+interface ThemePreset {
+  id: string;
+  name: string;
+  provider: 'tweakcn' | 'rayso' | 'tinte';
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+    foreground: string;
+  };
 }
 
 export default function HeroInputDock({
@@ -79,12 +101,15 @@ export default function HeroInputDock({
   ];
 
   const palettePresets: PalettePreset[] = [
-    { name: "Ocean Blue", baseColor: "#0ea5e9", description: "Deep ocean vibes" },
-    { name: "Forest Green", baseColor: "#10b981", description: "Natural forest tones" },
-    { name: "Sunset Orange", baseColor: "#f97316", description: "Warm sunset colors" },
-    { name: "Purple Magic", baseColor: "#8b5cf6", description: "Mystical purple shades" },
-    { name: "Rose Pink", baseColor: "#ec4899", description: "Soft romantic pinks" },
-    { name: "Steel Gray", baseColor: "#6b7280", description: "Modern neutral grays" }
+    { name: "Blue", baseColor: "#3b82f6", description: "Classic blue" },
+    { name: "Green", baseColor: "#10b981", description: "Fresh green" },
+    { name: "Purple", baseColor: "#8b5cf6", description: "Rich purple" },
+    { name: "Orange", baseColor: "#f97316", description: "Vibrant orange" },
+    { name: "Pink", baseColor: "#ec4899", description: "Bright pink" },
+    { name: "Red", baseColor: "#ef4444", description: "Bold red" },
+    { name: "Yellow", baseColor: "#eab308", description: "Sunny yellow" },
+    { name: "Teal", baseColor: "#14b8a6", description: "Cool teal" },
+    { name: "Gray", baseColor: "#6b7280", description: "Neutral gray" }
   ];
 
   const [shadcnEnabled, setShadcnEnabled] = useState(true);
@@ -94,9 +119,18 @@ export default function HeroInputDock({
   const [editingItem, setEditingItem] = useState<PastedItem | null>(null);
   const [customColor, setCustomColor] = useState('');
   const [paletteDropdownOpen, setPaletteDropdownOpen] = useState(false);
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+  const [themeSearchQuery, setThemeSearchQuery] = useState('');
   const colorInputRef = useRef<HTMLInputElement>(null);
+  const themeSearchRef = useRef<HTMLInputElement>(null);
+  const { theme: currentTheme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const { pastedItems, addPastedItem, removePastedItem, updatePastedItem, clearPastedItems } = usePastedItems();
   const { base, setBase, ramp } = usePalette();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (paletteDropdownOpen) {
@@ -105,6 +139,30 @@ export default function HeroInputDock({
       }, 100);
     }
   }, [paletteDropdownOpen]);
+
+  useEffect(() => {
+    if (themeDropdownOpen) {
+      setTimeout(() => {
+        themeSearchRef.current?.focus();
+      }, 100);
+    }
+  }, [themeDropdownOpen]);
+
+  // Get current theme mode
+  const isDark = mounted && (currentTheme === 'system' ? systemTheme : currentTheme) === 'dark';
+
+  // Get all theme presets from different providers
+  const allThemePresets: ThemePreset[] = [
+    ...extractTweakcnThemeData(isDark).map(theme => ({ ...theme, provider: 'tweakcn' as const })),
+    ...extractRaysoThemeData(isDark).map(theme => ({ ...theme, provider: 'rayso' as const })),
+    ...extractTinteThemeData(isDark).map(theme => ({ ...theme, provider: 'tinte' as const }))
+  ];
+
+  // Filter themes based on search query
+  const filteredThemes = allThemePresets.filter(theme =>
+    theme.name.toLowerCase().includes(themeSearchQuery.toLowerCase()) ||
+    theme.provider.toLowerCase().includes(themeSearchQuery.toLowerCase())
+  );
 
   function handlePaste(e: React.ClipboardEvent) {
     const clipboardData = e.clipboardData;
@@ -231,6 +289,35 @@ export default function HeroInputDock({
     setPaletteDropdownOpen(false);
   }
 
+  function handleThemeSelect(theme: ThemePreset) {
+    // Clear existing palette items and replace with new theme colors
+    const nonPaletteItems = pastedItems.filter(item => item.kind !== 'palette');
+    clearPastedItems();
+
+    // Re-add non-palette items
+    nonPaletteItems.forEach(item => {
+      addPastedItem(item.content, item.kind, item.colors, item.imageData);
+    });
+
+    // Add each color from the theme as separate palette items
+    const colors = Object.entries(theme.colors);
+
+    colors.forEach(([colorName, colorValue]) => {
+      if (colorValue && colorValue.startsWith('#')) {
+        const paletteColors = generateTailwindPalette(colorValue);
+        const colorsString = paletteColors.map(c => c.value).join(' ');
+        addPastedItem(
+          `${theme.name} ${colorName}: ${colorsString}`,
+          'palette',
+          paletteColors.map(c => c.value)
+        );
+      }
+    });
+
+    setThemeDropdownOpen(false);
+    setThemeSearchQuery('');
+  }
+
   function handleCustomColorSubmit() {
     if (!customColor || !isValidColor(customColor)) return;
 
@@ -314,6 +401,37 @@ export default function HeroInputDock({
     );
   }
 
+  function ThemeColorPreview({ theme }: { theme: ThemePreset }) {
+    const colorEntries = Object.entries(theme.colors).filter(([_, value]) => value && value.startsWith('#'));
+    const displayColors = colorEntries.slice(0, 5); // Show up to 5 colors
+
+    return (
+      <div className="flex gap-0.5">
+        {displayColors.map(([name, color], index) => (
+          <div
+            key={index}
+            className="w-4 h-4 rounded-sm border border-border/20"
+            style={{ backgroundColor: color }}
+            title={`${name}: ${color}`}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  function getProviderIcon(provider: 'tweakcn' | 'rayso' | 'tinte') {
+    switch (provider) {
+      case 'tweakcn':
+        return <TweakCNIcon className="w-3 h-3" />;
+      case 'rayso':
+        return <RaycastIcon className="w-3 h-3" />;
+      case 'tinte':
+        return <Logo size={12} />;
+      default:
+        return null;
+    }
+  }
+
 
   return (
 
@@ -389,7 +507,7 @@ export default function HeroInputDock({
                 <DropdownMenuTrigger asChild>
                   <button className="inline-flex cursor-pointer items-center justify-center gap-1 px-2 h-8 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground transition-colors">
                     <Palette className="size-4" />
-                    <span className="text-xs font-medium">Add Palette</span>
+                    <span className="text-xs font-medium">Colors</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64">
@@ -419,23 +537,77 @@ export default function HeroInputDock({
                       </Button>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 p-1">
-                    {palettePresets.map((preset) => (
-                      <DropdownMenuItem
-                        key={preset.name}
-                        onClick={() => handlePaletteSelect(preset)}
-                        className="flex items-center gap-3 p-2 cursor-pointer"
-                      >
-                        <MiniPalettePreview preset={preset} />
-                        <div className="flex flex-col gap-0.5 min-w-0">
-                          <div className="text-xs font-medium truncate">{preset.name}</div>
-                          <div className="text-xs text-muted-foreground truncate">{preset.description}</div>
-                        </div>
-                      </DropdownMenuItem>
-                    ))}
+                  <div className="p-3">
+                    <div className="grid grid-cols-3 gap-2">
+                      {palettePresets.map((preset) => (
+                        <button
+                          key={preset.name}
+                          onClick={() => handlePaletteSelect(preset)}
+                          className="group relative rounded-lg overflow-hidden border border-border/50 hover:border-border transition-colors hover:scale-105 p-2 flex items-center justify-center"
+                          title={preset.description}
+                        >
+                          <MiniPalettePreview preset={preset} />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Popover open={themeDropdownOpen} onOpenChange={setThemeDropdownOpen}>
+                <PopoverTrigger asChild>
+                  <button className="inline-flex cursor-pointer items-center justify-center gap-1 px-2 h-8 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <Search className="size-4" />
+                    <span className="text-xs font-medium">Themes</span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-80 p-0">
+                  <div className="p-2 border-b border-border/50 sticky top-0 z-50">
+                    <Input
+                      ref={themeSearchRef}
+                      placeholder="Search themes..."
+                      value={themeSearchQuery}
+                      onChange={(e) => setThemeSearchQuery(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                  <div
+                    className="overflow-y-auto transition-all duration-200"
+                    style={{
+                      maxHeight: '320px',
+                      height: filteredThemes.length === 0 ? '64px' : `${Math.min(filteredThemes.length * 50 + (filteredThemes.length - 1) * 4 + 8, 320)}px`
+                    }}
+                  >
+                    <div className="flex flex-col gap-1 p-1">
+                      {filteredThemes.slice(0, 20).map((theme) => (
+                        <button
+                          key={`${theme.provider}-${theme.id}`}
+                          onClick={() => handleThemeSelect(theme)}
+                          className="flex items-center gap-3 p-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors w-full text-left"
+                        >
+                          <ThemeColorPreview theme={theme} />
+                          <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                            <div className="text-xs font-medium truncate">{theme.name}</div>
+                            <div className="flex items-center gap-1">
+                              {getProviderIcon(theme.provider)}
+                              <span className="text-xs text-muted-foreground capitalize">{theme.provider}</span>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                      {filteredThemes.length === 0 && (
+                        <div className="p-2 text-xs text-muted-foreground text-center">
+                          No themes found
+                        </div>
+                      )}
+                      {filteredThemes.length > 20 && (
+                        <div className="p-2 text-xs text-muted-foreground text-center">
+                          Showing first 20 of {filteredThemes.length} themes
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="inline-flex cursor-pointer items-center justify-center w-8 h-8 p-0 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground transition-colors">

@@ -7,6 +7,11 @@ import { ThemeCard } from '@/components/theme-card';
 import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
+import { extractTweakcnThemeData } from '@/utils/tweakcn-presets';
+import { extractRaysoThemeData } from '@/utils/rayso-presets';
+import { extractTinteThemeData } from '@/utils/tinte-presets';
+import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
 
 interface ThemeData {
   id: string;
@@ -27,228 +32,52 @@ interface ThemeData {
   tags: string[];
 }
 
-const INITIAL_THEMES: ThemeData[] = [
-  {
-    id: '1',
-    name: 'Ocean Depths',
-    description: 'A calming blue theme inspired by deep ocean waters with sophisticated gradients',
-    author: 'Maria Chen',
-    downloads: 12500,
-    likes: 890,
-    views: 45200,
-    createdAt: '2024-01-15',
-    colors: {
-      primary: '#0ea5e9',
-      secondary: '#0284c7',
-      accent: '#06b6d4',
-      background: '#f8fafc',
-      foreground: '#0f172a'
-    },
-    tags: ['blue', 'ocean', 'professional', 'modern']
-  },
-  {
-    id: '2',
-    name: 'Forest Canopy',
-    description: 'Natural green tones that bring the tranquility of nature to your interface',
-    author: 'Alex Rivera',
-    downloads: 8900,
-    likes: 654,
-    views: 32100,
-    createdAt: '2024-01-12',
-    colors: {
-      primary: '#10b981',
-      secondary: '#059669',
-      accent: '#34d399',
-      background: '#fefefe',
-      foreground: '#1f2937'
-    },
-    tags: ['green', 'nature', 'eco', 'calm']
-  },
-  {
-    id: '3',
-    name: 'Sunset Blaze',
-    description: 'Warm orange and red tones capturing the energy of a beautiful sunset',
-    author: 'Sam Johnson',
-    downloads: 15600,
-    likes: 1200,
-    views: 67800,
-    createdAt: '2024-01-10',
-    colors: {
-      primary: '#f97316',
-      secondary: '#ea580c',
-      accent: '#fb923c',
-      background: '#fffbeb',
-      foreground: '#1c1917'
-    },
-    tags: ['orange', 'warm', 'energetic', 'sunset']
-  },
-  {
-    id: '4',
-    name: 'Purple Magic',
-    description: 'Mystical purple shades with modern gradients for creative interfaces',
-    author: 'Jordan Park',
-    downloads: 11200,
-    likes: 780,
-    views: 41500,
-    createdAt: '2024-01-08',
-    colors: {
-      primary: '#8b5cf6',
-      secondary: '#7c3aed',
-      accent: '#a78bfa',
-      background: '#faf5ff',
-      foreground: '#1e1b4b'
-    },
-    tags: ['purple', 'magic', 'creative', 'modern']
-  },
-  {
-    id: '5',
-    name: 'Rose Garden',
-    description: 'Elegant pink tones with soft romantic touches for delicate designs',
-    author: 'Taylor Swift',
-    downloads: 9800,
-    likes: 920,
-    views: 38700,
-    createdAt: '2024-01-05',
-    colors: {
-      primary: '#ec4899',
-      secondary: '#db2777',
-      accent: '#f472b6',
-      background: '#fdf2f8',
-      foreground: '#881337'
-    },
-    tags: ['pink', 'romantic', 'elegant', 'soft']
-  },
-  {
-    id: '6',
-    name: 'Steel Framework',
-    description: 'Industrial gray palette perfect for professional and technical interfaces',
-    author: 'Casey Morgan',
-    downloads: 14300,
-    likes: 567,
-    views: 55200,
-    createdAt: '2024-01-03',
-    colors: {
-      primary: '#6b7280',
-      secondary: '#4b5563',
-      accent: '#9ca3af',
-      background: '#f9fafb',
-      foreground: '#111827'
-    },
-    tags: ['gray', 'professional', 'minimal', 'clean']
-  },
-  {
-    id: '7',
-    name: 'Midnight Blue',
-    description: 'Deep navy tones with electric accents for sophisticated dark interfaces',
-    author: 'Chris Lee',
-    downloads: 13700,
-    likes: 845,
-    views: 52300,
-    createdAt: '2024-01-20',
-    colors: {
-      primary: '#1e40af',
-      secondary: '#1e3a8a',
-      accent: '#3b82f6',
-      background: '#0f172a',
-      foreground: '#e2e8f0'
-    },
-    tags: ['dark', 'navy', 'electric', 'sophisticated']
-  },
-  {
-    id: '8',
-    name: 'Coral Reef',
-    description: 'Vibrant coral and teal combination inspired by underwater ecosystems',
-    author: 'Dana Kim',
-    downloads: 10500,
-    likes: 720,
-    views: 41200,
-    createdAt: '2024-01-18',
-    colors: {
-      primary: '#f472b6',
-      secondary: '#ec4899',
-      accent: '#06b6d4',
-      background: '#fef7f0',
-      foreground: '#1f2937'
-    },
-    tags: ['coral', 'vibrant', 'underwater', 'tropical']
-  },
-  {
-    id: '9',
-    name: 'Golden Hour',
-    description: 'Warm yellows and amber tones capturing the magic of golden hour light',
-    author: 'Riley Adams',
-    downloads: 11800,
-    likes: 890,
-    views: 46500,
-    createdAt: '2024-01-16',
-    colors: {
-      primary: '#f59e0b',
-      secondary: '#d97706',
-      accent: '#fbbf24',
-      background: '#fffbeb',
-      foreground: '#1c1917'
-    },
-    tags: ['yellow', 'golden', 'warm', 'magical']
-  },
-  {
-    id: '10',
-    name: 'Arctic Frost',
-    description: 'Cool mint and ice blue palette for clean, fresh interfaces',
-    author: 'Morgan Taylor',
-    downloads: 9200,
-    likes: 612,
-    views: 35800,
-    createdAt: '2024-01-14',
-    colors: {
-      primary: '#06b6d4',
-      secondary: '#0891b2',
-      accent: '#67e8f9',
-      background: '#f0fdfa',
-      foreground: '#134e4a'
-    },
-    tags: ['mint', 'ice', 'cool', 'fresh']
-  },
-  {
-    id: '11',
-    name: 'Ember Glow',
-    description: 'Fiery reds and oranges with subtle gradients for energetic designs',
-    author: 'Phoenix Chen',
-    downloads: 14900,
-    likes: 1050,
-    views: 58700,
-    createdAt: '2024-01-11',
-    colors: {
-      primary: '#dc2626',
-      secondary: '#b91c1c',
-      accent: '#f87171',
-      background: '#fef2f2',
-      foreground: '#1f2937'
-    },
-    tags: ['red', 'fire', 'energetic', 'bold']
-  },
-  {
-    id: '12',
-    name: 'Sage Wisdom',
-    description: 'Muted green and brown earth tones for calm, natural interfaces',
-    author: 'River Stone',
-    downloads: 8600,
-    likes: 543,
-    views: 33400,
-    createdAt: '2024-01-09',
-    colors: {
-      primary: '#65a30d',
-      secondary: '#4d7c0f',
-      accent: '#84cc16',
-      background: '#f7fee7',
-      foreground: '#365314'
-    },
-    tags: ['sage', 'earth', 'natural', 'muted']
-  }
-];
-
 export function ThemeShowcase() {
-  const displayedThemes = INITIAL_THEMES;
+  const { theme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState('tweakcn');
 
+  // Ensure hydration consistency
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Handle system theme by using the actual system preference
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const isDark = mounted && currentTheme === 'dark';
+
+  // Get real theme data from tweakcn presets with correct theme mode
+  const tweakcnThemes = extractTweakcnThemeData(isDark).map((themeData, index) => ({
+    ...themeData,
+    description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
+    author: 'tweakcn',
+    downloads: 8000 + (index * 500),
+    likes: 400 + (index * 50),
+    views: 15000 + (index * 2000),
+    tags: [themeData.name.split(' ')[0].toLowerCase(), 'modern', 'preset', 'community']
+  }));
+
+  // Get rayso themes with proper parsing
+  const raysoThemes = extractRaysoThemeData(isDark).map((themeData, index) => ({
+    ...themeData,
+    description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
+    author: 'ray.so',
+    downloads: 6000 + (index * 400),
+    likes: 300 + (index * 40),
+    views: 12000 + (index * 1500),
+    tags: [themeData.name.toLowerCase(), 'rayso', 'modern', 'community']
+  }));
+
+  // Get tinte themes with proper parsing
+  const tinteThemes = extractTinteThemeData(isDark).map((themeData, index) => ({
+    ...themeData,
+    description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
+    author: 'tinte',
+    downloads: 5000 + (index * 350),
+    likes: 250 + (index * 35),
+    views: 10000 + (index * 1200),
+    tags: [themeData.name.toLowerCase().split(' ')[0], 'tinte', 'premium', 'design']
+  }));
 
   return (
     <div className="w-full space-y-8 p-4 max-w-7xl mx-auto">
@@ -267,19 +96,28 @@ export function ThemeShowcase() {
             Explore what the community is building with themes.
           </p>
         </div>
-        <Tabs defaultValue="tweakcn" className="w-fit">
-          <TabsList className="h-9">
-            <TabsTrigger value="tweakcn" className="text-xs h-7 gap-1.5">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="items-center">
+          <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm">
+            <TabsTrigger
+              value="tweakcn"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 w-auto"
+            >
               <TweakCNIcon className="w-3 h-3" />
               tweakcn
             </TabsTrigger>
-            <TabsTrigger value="rayso" className="text-xs h-7 gap-1.5">
+            <TabsTrigger
+              value="rayso"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 w-auto"
+            >
               <RaycastIcon className="w-3 h-3" />
               ray.so
             </TabsTrigger>
-            <TabsTrigger value="community" className="text-xs h-7 gap-1.5">
+            <TabsTrigger
+              value="tinte"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 w-auto"
+            >
               <Logo size={12} />
-              community
+              tinte
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -287,40 +125,29 @@ export function ThemeShowcase() {
 
       {/* Provider Content */}
       <div>
-        <Tabs defaultValue="tweakcn" className="w-full">
-          <TabsList className="hidden">
-            <TabsTrigger value="tweakcn">tweakcn</TabsTrigger>
-            <TabsTrigger value="rayso">ray.so</TabsTrigger>
-            <TabsTrigger value="community">community</TabsTrigger>
-          </TabsList>
+        {activeTab === 'tweakcn' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {tweakcnThemes.slice(0, 8).map((theme, index) => (
+              <ThemeCard key={theme.id} theme={{ ...theme, id: `tweakcn-${theme.id}` }} index={index} />
+            ))}
+          </div>
+        )}
 
-          {/* TweakCN */}
-          <TabsContent value="tweakcn" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {displayedThemes.slice(0, 8).map((theme, index) => (
-                <ThemeCard key={theme.id} theme={{...theme, id: `tweakcn-${theme.id}`}} index={index} />
-              ))}
-            </div>
-          </TabsContent>
+        {activeTab === 'rayso' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {raysoThemes.slice(0, 8).map((theme, index) => (
+              <ThemeCard key={theme.id} theme={theme} index={index} />
+            ))}
+          </div>
+        )}
 
-          {/* Ray.so */}
-          <TabsContent value="rayso" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {displayedThemes.slice(0, 8).map((theme, index) => (
-                <ThemeCard key={theme.id} theme={{...theme, id: `rayso-${theme.id}`}} index={index} />
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Community */}
-          <TabsContent value="community" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {displayedThemes.slice(0, 8).map((theme, index) => (
-                <ThemeCard key={theme.id} theme={{...theme, id: `community-${theme.id}`}} index={index} />
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+        {activeTab === 'tinte' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {tinteThemes.slice(0, 8).map((theme, index) => (
+              <ThemeCard key={theme.id} theme={theme} index={index} />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Browse All Button */}
