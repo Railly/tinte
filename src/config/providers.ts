@@ -12,6 +12,7 @@ import { ZedIcon } from "@/components/shared/icons/zed";
 import { ReplitIcon } from "@/components/shared/icons/replit";
 import { NeovimIcon } from "@/components/shared/icons/neovim";
 import { ObsidianIcon } from "@/components/shared/icons/obsidian";
+import { GIMPIcon } from "@/components/shared/icons/gimp";
 
 export const PROVIDERS = [
   "shadcn/ui",
@@ -21,30 +22,35 @@ export const PROVIDERS = [
   "Windows Terminal",
   "Kitty",
   "Ghostty",
-  "Cursor", 
+  "Cursor",
   "JetBrains",
   "Slack",
   "Zed",
   "Replit",
   "Neovim",
-  "Obsidian"
+  "Obsidian",
+  "GIMP",
 ] as const;
 
-export type Provider = typeof PROVIDERS[number];
+export type Provider = (typeof PROVIDERS)[number];
 
-export const PROVIDER_ICONS: Record<Provider, React.ComponentType<{ className?: string }>> = {
+export const PROVIDER_ICONS: Record<
+  Provider,
+  React.ComponentType<{ className?: string }>
+> = {
   "shadcn/ui": ShadcnIcon,
   "VS Code": VSCodeIcon,
-  "Warp": WarpIcon,
-  "Alacritty": AlacrittyIcon,
+  Warp: WarpIcon,
+  Alacritty: AlacrittyIcon,
   "Windows Terminal": WindowsTerminalIcon,
-  "Kitty": KittyIcon,
-  "Ghostty": GhosttyIcon,
-  "Cursor": CursorIcon,
-  "JetBrains": JetBrainsIcon,
-  "Slack": SlackIcon,
-  "Zed": ZedIcon,
-  "Replit": ReplitIcon,
-  "Neovim": NeovimIcon,
-  "Obsidian": ObsidianIcon
+  Kitty: KittyIcon,
+  Ghostty: GhosttyIcon,
+  Cursor: CursorIcon,
+  JetBrains: JetBrainsIcon,
+  Slack: SlackIcon,
+  Zed: ZedIcon,
+  Replit: ReplitIcon,
+  Neovim: NeovimIcon,
+  Obsidian: ObsidianIcon,
+  GIMP: GIMPIcon,
 };
