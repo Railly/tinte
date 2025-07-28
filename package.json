@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.0",
+    "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
@@ -44,6 +45,7 @@
     "culori": "^4.0.2",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "hast-util-to-jsx-runtime": "^2.3.6",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.526.0",
     "motion": "^12.23.9",
@@ -56,6 +58,7 @@
     "react-resizable-panels": "^3.0.3",
     "react-use-measure": "^2.1.7",
     "recharts": "2.15.4",
+    "shiki": "^3.8.1",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
