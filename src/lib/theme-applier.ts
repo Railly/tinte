@@ -1,3 +1,6 @@
+import { raysoToShadcn } from './rayso-to-shadcn';
+import { tweakcnToRayso } from './tweakcn-to-rayso';
+
 interface Coords {
   x: number;
   y: number;
@@ -61,46 +64,80 @@ function applyThemeDirectly(themeData: ThemeData, currentMode: 'light' | 'dark')
   const root = document.documentElement;
   
   if (themeData.author === 'tweakcn' && themeData.rawTheme) {
+    // TweakCN themes: apply tokens directly
     const tokens = themeData.rawTheme[currentMode];
     Object.entries(tokens).forEach(([key, value]) => {
       if (typeof value === 'string' && !key.startsWith('font-') && !key.startsWith('shadow-') && key !== 'radius' && key !== 'spacing' && key !== 'letter-spacing') {
         root.style.setProperty(`--${key}`, value);
       }
     });
-  } else {
-    const colors = themeData.colors;
-    root.style.setProperty('--background', colors.background);
-    root.style.setProperty('--foreground', colors.foreground);
-    root.style.setProperty('--primary', colors.primary);
-    root.style.setProperty('--secondary', colors.secondary);
-    root.style.setProperty('--accent', colors.accent);
+  } else if (themeData.author === 'ray.so' && themeData.rawTheme) {
+    // Rayso themes: convert to shadcn format using transformer
+    const raysoTheme = { light: themeData.rawTheme.light, dark: themeData.rawTheme.dark };
+    const shadcnTheme = raysoToShadcn(raysoTheme);
+    const tokens = shadcnTheme[currentMode];
     
-    const isDark = currentMode === 'dark';
-    if (isDark) {
-      root.style.setProperty('--card', colors.background);
-      root.style.setProperty('--card-foreground', colors.foreground);
-      root.style.setProperty('--popover', colors.background);
-      root.style.setProperty('--popover-foreground', colors.foreground);
-      root.style.setProperty('--primary-foreground', colors.background);
-      root.style.setProperty('--secondary-foreground', colors.foreground);
-      root.style.setProperty('--muted', adjustBrightness(colors.background, 10));
-      root.style.setProperty('--muted-foreground', adjustBrightness(colors.foreground, -20));
-      root.style.setProperty('--accent-foreground', colors.foreground);
-      root.style.setProperty('--border', adjustOpacity(colors.foreground, 0.2));
-      root.style.setProperty('--input', adjustOpacity(colors.foreground, 0.15));
-    } else {
-      root.style.setProperty('--card', colors.background);
-      root.style.setProperty('--card-foreground', colors.foreground);
-      root.style.setProperty('--popover', colors.background);
-      root.style.setProperty('--popover-foreground', colors.foreground);
-      root.style.setProperty('--primary-foreground', colors.background);
-      root.style.setProperty('--secondary-foreground', colors.foreground);
-      root.style.setProperty('--muted', adjustBrightness(colors.background, -3));
-      root.style.setProperty('--muted-foreground', adjustBrightness(colors.foreground, 20));
-      root.style.setProperty('--accent-foreground', colors.foreground);
-      root.style.setProperty('--border', adjustBrightness(colors.background, -15));
-      root.style.setProperty('--input', adjustBrightness(colors.background, -15));
+    Object.entries(tokens).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        root.style.setProperty(`--${key}`, value);
+      }
+    });
+  } else if (themeData.rawTheme) {
+    // Other themes with rawTheme: try to convert TweakCN to Rayso first, then to shadcn
+    try {
+      const tweakcnTheme = { light: themeData.rawTheme.light, dark: themeData.rawTheme.dark };
+      const raysoTheme = tweakcnToRayso(tweakcnTheme);
+      const shadcnTheme = raysoToShadcn(raysoTheme);
+      const tokens = shadcnTheme[currentMode];
+      
+      Object.entries(tokens).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          root.style.setProperty(`--${key}`, value);
+        }
+      });
+    } catch (error) {
+      console.warn('Failed to transform theme, falling back to basic colors:', error);
+      applyBasicColors(themeData, currentMode, root);
     }
+  } else {
+    // Fallback for themes without rawTheme
+    applyBasicColors(themeData, currentMode, root);
+  }
+}
+
+function applyBasicColors(themeData: ThemeData, currentMode: 'light' | 'dark', root: HTMLElement) {
+  const colors = themeData.colors;
+  root.style.setProperty('--background', colors.background);
+  root.style.setProperty('--foreground', colors.foreground);
+  root.style.setProperty('--primary', colors.primary);
+  root.style.setProperty('--secondary', colors.secondary);
+  root.style.setProperty('--accent', colors.accent);
+  
+  const isDark = currentMode === 'dark';
+  if (isDark) {
+    root.style.setProperty('--card', colors.background);
+    root.style.setProperty('--card-foreground', colors.foreground);
+    root.style.setProperty('--popover', colors.background);
+    root.style.setProperty('--popover-foreground', colors.foreground);
+    root.style.setProperty('--primary-foreground', colors.background);
+    root.style.setProperty('--secondary-foreground', colors.foreground);
+    root.style.setProperty('--muted', adjustBrightness(colors.background, 10));
+    root.style.setProperty('--muted-foreground', adjustBrightness(colors.foreground, -20));
+    root.style.setProperty('--accent-foreground', colors.foreground);
+    root.style.setProperty('--border', adjustOpacity(colors.foreground, 0.2));
+    root.style.setProperty('--input', adjustOpacity(colors.foreground, 0.15));
+  } else {
+    root.style.setProperty('--card', colors.background);
+    root.style.setProperty('--card-foreground', colors.foreground);
+    root.style.setProperty('--popover', colors.background);
+    root.style.setProperty('--popover-foreground', colors.foreground);
+    root.style.setProperty('--primary-foreground', colors.background);
+    root.style.setProperty('--secondary-foreground', colors.foreground);
+    root.style.setProperty('--muted', adjustBrightness(colors.background, -3));
+    root.style.setProperty('--muted-foreground', adjustBrightness(colors.foreground, 20));
+    root.style.setProperty('--accent-foreground', colors.foreground);
+    root.style.setProperty('--border', adjustBrightness(colors.background, -15));
+    root.style.setProperty('--input', adjustBrightness(colors.background, -15));
   }
 }
 

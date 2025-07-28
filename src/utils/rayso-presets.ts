@@ -13,6 +13,10 @@ export function extractRaysoThemeData(isDark = false) {
         foreground: colorData.text,
       },
       createdAt: '2024-01-15',
+      rawTheme: {
+        light: preset.light,
+        dark: preset.dark
+      }
     };
   });
 }
