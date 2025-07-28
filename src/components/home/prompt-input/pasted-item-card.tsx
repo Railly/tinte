@@ -104,7 +104,7 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       layout
       onClick={handleClick}
       onDoubleClick={hasError ? triggerShake : undefined}
-      className={`group relative rounded-lg transition-all ${hasError
+      className={`group relative rounded-lg transition-all overflow-visible ${hasError
           ? 'border border-red-200 bg-red-50 hover:border-red-300 hover:shadow-md shadow-red-100/20'
           : 'border border-border/40 bg-background/80 hover:border-border/60 hover:shadow-md shadow-black/5'
         } ${canEdit ? 'cursor-pointer' : 'cursor-default'}`}
@@ -116,7 +116,7 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
           e.stopPropagation();
           onRemove(item.id);
         }}
-        className="transition-all hover:bg-background text-muted-foreground hover:text-foreground group-focus-within:opacity-100 group-hover:opacity-100 opacity-0 w-5 h-5 absolute -top-2 -left-2 rounded-lg border border-border bg-background shadow-sm flex items-center justify-center z-10"
+        className="transition-all hover:bg-background text-muted-foreground hover:text-foreground w-6 h-6 absolute -top-3 -left-3 rounded-full border border-border bg-background shadow-sm flex items-center justify-center z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100"
       >
         <X className="h-3 w-3" />
       </button>
