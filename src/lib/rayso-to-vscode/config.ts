@@ -1,10 +1,10 @@
-import { SemanticToken, TokenColorMap } from './types';
+import { SemanticToken, TokenColorMap } from "./types";
 
 // Default token mapping following Flexoki philosophy
 export const defaultTokenColorMap: TokenColorMap = {
   plain: "text",
   classes: "accent",
-  interfaces: "accent", 
+  interfaces: "accent",
   structs: "accent",
   enums: "accent",
   keys: "text",
@@ -19,7 +19,7 @@ export const defaultTokenColorMap: TokenColorMap = {
   strings: "accent_2",
   stringEscapeSequences: "text",
   keywords: "primary",
-  keywordsControl: "primary", 
+  keywordsControl: "primary",
   storageModifiers: "primary",
   comments: "text_3",
   docComments: "text_3",
@@ -43,6 +43,7 @@ export const defaultTokenColorMap: TokenColorMap = {
   calls: "text",
   punctuation: "text_2",
 };
+
 
 export const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
   classes: ["entity.name.type.class"],

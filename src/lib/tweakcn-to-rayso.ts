@@ -1,4 +1,4 @@
-import { oklch, rgb, formatHex } from "culori";
+// Only need generateTailwindPalette - no complex color manipulation needed
 import { generateTailwindPalette } from "./palette-generator";
 import { RaysoTheme, RaysoBlock } from "@/types/rayso";
 
@@ -6,184 +6,75 @@ type Mode = "light" | "dark";
 type TweakcnBlock = Record<string, string>;
 type TweakcnTheme = { light: TweakcnBlock; dark: TweakcnBlock };
 
-// Helper to extract chroma and lightness for better color relationships
-const toOklch = (hex: string) => {
-  const color = oklch(hex);
-  return {
-    l: color?.l || 0,
-    c: color?.c || 0,
-    h: color?.h || 0,
-  };
+// Similar to rayso-to-shadcn's buildRamp approach
+function buildNeutralRamp(block: TweakcnBlock): string[] {
+  const seed = 
+    block.border || 
+    block.input || 
+    block.background || 
+    "#808080";
+  return generateTailwindPalette(seed).map((s) => s.value);
+}
+
+function buildRamp(seed?: string): string[] {
+  const base = seed || "#64748b";
+  return generateTailwindPalette(base).map((s) => s.value);
+}
+
+// Direct mapping similar to rayso-to-shadcn's pick function
+const pick = (ramp: string[], step: number) => {
+  const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(step);
+  return ramp[Math.max(0, idx)];
 };
 
-// Create Flexoki-style continuous scale using your robust palette generator
-const createFlexokiScale = (
-  bg: string,
-  fg: string,
-  existingTokens: Record<string, string>,
-  mode: Mode
-) => {
-  // Generate a neutral ramp using your palette generator
-  // We'll use the midpoint between bg and fg as seed to get a proper neutral ramp
-  const bgOklch = toOklch(bg);
-  const fgOklch = toOklch(fg);
-
-  // Create a neutral seed color that's roughly in the middle
-  const neutralSeed =
-    formatHex(
-      rgb({
-        mode: "oklch" as const,
-        l: (bgOklch.l + fgOklch.l) / 2,
-        c: Math.min(bgOklch.c, fgOklch.c) * 0.3, // Low chroma for neutral
-        h: bgOklch.h,
-      })
-    ) || "#808080";
-
-  // Generate the full tailwind palette using your generator
-  const neutralPalette = generateTailwindPalette(neutralSeed);
-
-  // Map Flexoki positions to Tailwind stops based on mode
-  const flexokiMapping =
-    mode === "light"
-      ? {
-          // Light mode: bg (lightest) → tx (darkest)
-          background: neutralPalette[0].value, // 50 (lightest)
-          background_2: neutralPalette[1].value, // 100
-          interface: neutralPalette[2].value, // 200
-          interface_2: neutralPalette[3].value, // 300
-          interface_3: neutralPalette[4].value, // 400
-          text_3: neutralPalette[6].value, // 600
-          text_2: neutralPalette[7].value, // 700
-          text: neutralPalette[9].value, // 900 (darkest)
-        }
-      : {
-          // Dark mode: bg (darkest) → tx (lightest) - reversed
-          background: neutralPalette[10].value, // 950 (darkest)
-          background_2: neutralPalette[9].value, // 900
-          interface: neutralPalette[8].value, // 800
-          interface_2: neutralPalette[7].value, // 700
-          interface_3: neutralPalette[6].value, // 600
-          text_3: neutralPalette[4].value, // 400
-          text_2: neutralPalette[3].value, // 300
-          text: neutralPalette[1].value, // 100 (lightest)
-        };
-
-  // Override with existing tokens when available
-  return {
-    background: bg, // Always use the actual background
-    background_2:
-      existingTokens.card ||
-      existingTokens.popover ||
-      flexokiMapping.background_2,
-    interface: existingTokens.border || flexokiMapping.interface,
-    interface_2: flexokiMapping.interface_2,
-    interface_3: existingTokens.input || flexokiMapping.interface_3,
-    text_3: flexokiMapping.text_3,
-    text_2: existingTokens["muted-foreground"] || flexokiMapping.text_2,
-    text: fg, // Always use the actual foreground
-  };
-};
-
-// Extract distinct accent variations from TweakCN tokens
-const extractAccents = (block: TweakcnBlock, mode: Mode) => {
-  const primary = block.primary;
-
-  // Get distinct accent colors from different sources
-  const accentSources = {
-    secondary: block.secondary,
-    accent: block.accent,
-    destructive: block.destructive,
-    chart1: block["chart-1"],
-    chart2: block["chart-2"],
-    chart3: block["chart-3"],
-    chart4: block["chart-4"],
-    chart5: block["chart-5"],
-  };
-
-  // Find 3 distinct colors that are different from primary
-  const distinctColors = Object.values(accentSources)
-    .filter(Boolean)
-    .filter((color) => color !== primary)
-    .slice(0, 3);
-
-  // If we don't have enough distinct colors, generate variations
-  const baseAccent = distinctColors[0] || block.secondary || primary;
-  const baseOklch = toOklch(baseAccent);
-
-  const accent = baseAccent;
-
-  // accent_2: different hue rotation and lightness
-  const accent_2 =
-    distinctColors[1] ||
-    formatHex(
-      rgb({
-        mode: "oklch" as const,
-        l:
-          mode === "light"
-            ? Math.max(0.3, Math.min(0.8, baseOklch.l + 0.1))
-            : Math.max(0.2, Math.min(0.9, baseOklch.l - 0.1)),
-        c: Math.max(0.05, baseOklch.c * 1.1),
-        h: (baseOklch.h + 60) % 360, // 60° hue rotation
-      })
-    ) ||
-    accent;
-
-  // accent_3: complementary or destructive color
-  const accent_3 =
-    distinctColors[2] ||
-    block.destructive ||
-    formatHex(
-      rgb({
-        mode: "oklch" as const,
-        l:
-          mode === "light"
-            ? Math.max(0.25, Math.min(0.75, baseOklch.l - 0.05))
-            : Math.max(0.25, Math.min(0.85, baseOklch.l + 0.05)),
-        c: Math.max(0.08, baseOklch.c * 1.2),
-        h: (baseOklch.h + 180) % 360, // Complementary hue
-      })
-    ) ||
-    accent;
-
-  return { accent, accent_2, accent_3 };
-};
-
-// This function is now replaced by createFlexokiScale
-// Remove the old deriveTextColors function
+// Simple Flexoki-style mapping using the same pattern as rayso-to-shadcn
+const FLEXOKI_ANCHORS = {
+  light: { bg: 50, bg2: 100, ui: 200, ui2: 300, ui3: 400, tx3: 600, tx2: 700, tx: 900 },
+  dark: { bg: 950, bg2: 900, ui: 800, ui2: 700, ui3: 600, tx3: 400, tx2: 300, tx: 100 },
+} as const;
 
 function mapToRayso(block: TweakcnBlock, mode: Mode): RaysoBlock {
   const bg = block.background || (mode === "light" ? "#ffffff" : "#000000");
   const fg = block.foreground || (mode === "light" ? "#000000" : "#ffffff");
   const primary = block.primary || (mode === "light" ? "#3b82f6" : "#60a5fa");
-
-  // Create Flexoki-style continuous scale from bg to tx
-  const flexokiScale = createFlexokiScale(bg, fg, block, mode);
-
-  // Extract accent variations with semantic meaning
-  const { accent, accent_2, accent_3 } = extractAccents(block, mode);
-
-  // Secondary color mapping - prefer actual secondary over accent
-  const secondary = block.secondary || accent;
+  
+  // Build ramps like rayso-to-shadcn (this is the key difference!)
+  const neutralRamp = buildNeutralRamp(block);
+  const primaryRamp = buildRamp(block.primary);
+  
+  // Build accent ramp from chart colors or fallbacks (same priority as rayso-to-shadcn)
+  const accentRamp = buildRamp(
+    block["chart-2"] || block.accent || block.secondary || primary
+  );
+  
+  // Get anchors for current mode
+  const A = FLEXOKI_ANCHORS[mode];
+  
+  // Generate colors from ramps like rayso-to-shadcn does
+  const accent = pick(accentRamp, A.ui3); // Similar to accent anchor in rayso-to-shadcn
+  const accent_2 = block["chart-4"] || pick(accentRamp, mode === "light" ? 300 : 600);
+  const accent_3 = block["chart-3"] || block.destructive || pick(accentRamp, mode === "light" ? 700 : 300);
+  
+  // Secondary follows rayso-to-shadcn pattern: pick from accentRamp, NOT original token
+  const secondary = pick(accentRamp, mode === "light" ? 500 : 400);
 
   return {
-    // Flexoki continuous scale: bg → bg-2 → ui → ui-2 → ui-3 → tx-3 → tx-2 → tx
-    background: flexokiScale.background, // bg: Main background (lightest in light, darkest in dark)
-    background_2: flexokiScale.background_2, // bg-2: Secondary background (cards, modals)
-    interface: flexokiScale.interface, // ui: Borders, separators
-    interface_2: flexokiScale.interface_2, // ui-2: Hovered borders
-    interface_3: flexokiScale.interface_3, // ui-3: Active borders, input backgrounds
-    text_3: flexokiScale.text_3, // tx-3: Faint text (comments, placeholders)
-    text_2: flexokiScale.text_2, // tx-2: Muted text (punctuation, operators)
-    text: flexokiScale.text, // tx: Primary text (darkest in light, lightest in dark)
+    // Flexoki continuous scale using direct token mapping
+    background: bg,
+    background_2: block.card || block.popover || pick(neutralRamp, A.bg2),
+    interface: block.border || pick(neutralRamp, A.ui),
+    interface_2: pick(neutralRamp, A.ui2),
+    interface_3: block.input || pick(neutralRamp, A.ui3),
+    text_3: pick(neutralRamp, A.tx3),
+    text_2: block["muted-foreground"] || pick(neutralRamp, A.tx2),
+    text: fg,
 
-    // Accent system: distinct functional colors
-    primary, // Primary actions, links
-    accent, // Secondary accent, highlights
-    accent_2, // Tertiary accent, alternative actions (60° hue rotation)
-    accent_3, // Warning/destructive accent (complementary hue)
-
-    // Legacy secondary mapping
-    secondary,
+    // Accent system - now uses ramp-generated colors like rayso-to-shadcn
+    primary: pick(primaryRamp, mode === "light" ? 600 : 400), // Match rayso-to-shadcn anchors
+    accent,    // Generated from accentRamp
+    accent_2,  // chart-4 or generated
+    accent_3,  // chart-3 or generated  
+    secondary, // Generated from accentRamp (NOT original token!)
   };
 }
 

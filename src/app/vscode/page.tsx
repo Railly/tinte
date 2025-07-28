@@ -15,45 +15,39 @@ import { MonacoEditorPreview } from '@/components/monaco-editor-preview';
 
 const sampleCode = {
   typescript: `// TypeScript Example
-interface User {
-  id: number;
-  name: string;
-  email?: string;
+import { NextRequest } from "next/server";
+import { validateWebhookSignature } from "@polar-sh/sdk";
+
+export async function POST(req: NextRequest) {
+  const body = await req.text();
+  const signature = req.headers.get("polar-signature");
+
+  if (
+    !validateWebhookSignature(
+      body,
+      signature,
+      process.env.POLAR_WEBHOOK_SECRET!
+    )
+  ) {
+    return new Response("Invalid signature", { status: 401 });
+  }
+
+  const event = JSON.parse(body);
+
+  switch (event.type) {
+    case "subscription.created":
+      // Handle new subscription
+      console.log("New subscriber:", event.data);
+      break;
+    case "subscription.cancelled":
+      // Handle cancellation
+      console.log("Subscription cancelled:", event.data);
+      break;
+  }
+
+  return new Response("OK");
 }
-
-class UserService {
-  private users: User[] = [];
-
-  constructor(private apiUrl: string) {
-    this.initializeUsers();
-  }
-
-  async getUser(id: number): Promise<User | null> {
-    try {
-      const response = await fetch(\`\${this.apiUrl}/users/\${id}\`);
-      if (!response.ok) {
-        throw new Error('User not found');
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      return null;
-    }
-  }
-
-  // Add a new user
-  addUser(user: Omit<User, 'id'>): User {
-    const newUser = {
-      id: Math.max(...this.users.map(u => u.id), 0) + 1,
-      ...user
-    };
-    this.users.push(newUser);
-    return newUser;
-  }
-}
-
-const userService = new UserService('https://api.example.com');`,
-
+`,
   javascript: `// JavaScript Example
 function createCounter(initialValue = 0) {
   let count = initialValue;
@@ -413,7 +407,7 @@ export default function VSCodePage() {
           <TabsTrigger value="theme">VS Code Theme JSON</TabsTrigger>
           <TabsTrigger value="comparison">Source Comparison</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="theme">
           <Card>
             <CardHeader>
@@ -438,19 +432,19 @@ export default function VSCodePage() {
               <CardContent>
                 <pre className="text-xs overflow-auto max-h-64 bg-muted p-4 rounded">
                   {JSON.stringify(
-                    sourceType === 'rayso' 
+                    sourceType === 'rayso'
                       ? raysoPresets[selectedTheme][mode]
                       : tweakcnToRayso({
-                          light: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.light,
-                          dark: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.dark
-                        })[mode],
-                    null, 
+                        light: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.light,
+                        dark: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.dark
+                      })[mode],
+                    null,
                     2
                   )}
                 </pre>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>VS Code Theme ({mode})</CardTitle>
