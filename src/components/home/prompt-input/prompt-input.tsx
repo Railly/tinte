@@ -456,7 +456,6 @@ export default function PromptInput({
                   submit();
                 }
               }}
-              rows={4}
               className={cn(
                 "w-full resize-none pt-3 pb-14 pr-12 transition-all focus-visible:ring-0",
                 pastedItems.length > 0
