@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Plus, ArrowUp, Globe, Image, Palette } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
-import { Toggle } from '@/components/ui/toggle';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -13,8 +12,6 @@ import { usePastedItems } from '@/hooks/use-pasted-items';
 import { usePalette } from '@/hooks/use-palette';
 import { PastedItemsList } from './pasted-items-list';
 import { PasteDialog } from './paste-dialog';
-import { ShadcnIcon } from '@/components/shared/icons/shadcn';
-import { VSCodeIcon } from '@/components/shared/icons/vscode';
 import { TailwindIcon } from '@/components/shared/icons/tailwind';
 import { CSSIcon } from '@/components/shared/icons/css';
 import { generateTailwindPalette } from '@/lib/palette-generator';
@@ -112,8 +109,6 @@ export default function PromptInput({
     { name: "Gray", baseColor: "#6b7280", description: "Neutral gray" }
   ];
 
-  const [shadcnEnabled, setShadcnEnabled] = useState(true);
-  const [vscodeEnabled, setVscodeEnabled] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<'url' | 'tailwind' | 'cssvars' | 'palette'>('url');
   const [editingItem, setEditingItem] = useState<PastedItem | null>(null);
@@ -474,40 +469,12 @@ export default function PromptInput({
 
             {/* Controls positioned absolutely over the textarea only */}
             <div className="absolute bottom-3 left-3 flex items-center gap-2 z-10">
-              <Toggle
-                pressed={shadcnEnabled}
-                onPressedChange={setShadcnEnabled}
-                size="sm"
-                className={cn(
-                  "border p-0 min-w-8 w-8 h-8 cursor-pointer hover:bg-primary/10 hover:border-primary/30",
-                  !shadcnEnabled && "grayscale",
-                  shadcnEnabled && "bg-primary/10 border-primary/30",
-                  !shadcnEnabled && "bg-muted/50"
-                )}
-                aria-label="Toggle Shadcn theme generation"
-              >
-                <ShadcnIcon className="size-4" />
-              </Toggle>
-              <Toggle
-                pressed={vscodeEnabled}
-                onPressedChange={setVscodeEnabled}
-                size="sm"
-                className={cn(
-                  "border p-0 min-w-8 w-8 h-8 cursor-pointer hover:bg-primary/10 hover:border-primary/30",
-                  !vscodeEnabled && "grayscale",
-                  vscodeEnabled && "bg-primary/10 border-primary/30",
-                  !vscodeEnabled && "bg-muted/50"
-                )}
-                aria-label="Toggle VSCode theme generation"
-              >
-                <VSCodeIcon className="size-4" />
-              </Toggle>
               <DropdownMenu open={paletteDropdownOpen} onOpenChange={setPaletteDropdownOpen}>
                 <DropdownMenuTrigger asChild>
-                  <button className="inline-flex cursor-pointer items-center justify-center gap-1 px-2 h-8 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground">
+                  <Button variant="outline" size="sm">
                     <Palette className="size-4" />
                     <span className="text-xs font-medium">Colors</span>
-                  </button>
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64">
                   <div className="p-2 border-b border-border/50">
@@ -554,10 +521,10 @@ export default function PromptInput({
               </DropdownMenu>
               <Popover open={themeDropdownOpen} onOpenChange={setThemeDropdownOpen}>
                 <PopoverTrigger asChild>
-                  <button className="inline-flex cursor-pointer items-center justify-center gap-1 px-2 h-8 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground">
+                  <Button variant="outline" size="sm">
                     <Search className="size-4" />
                     <span className="text-xs font-medium">Themes</span>
-                  </button>
+                  </Button>
                 </PopoverTrigger>
                 <PopoverContent align="start" className="w-80 p-0">
                   <div className="p-2 border-b border-border/50 sticky top-0 z-50">

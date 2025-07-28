@@ -2,16 +2,11 @@
 import * as React from "react";
 import useMeasure from "react-use-measure";
 import { AnimatePresence, motion } from "motion/react";
-import { ShadcnIcon } from "@/components/shared/icons/shadcn";
-import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import { PROVIDER_ICONS } from "@/config/providers";
 import { useLoop } from "@/hooks/use-loop";
 import { mergeRefs } from "@/utils/merge-refs";
 import { PromptInput } from "@/components/home/prompt-input";
 
-const providerIcons = {
-  "shadcn/ui": ShadcnIcon,
-  "VS Code": VSCodeIcon
-};
 
 export function Hero() {
   const [ref, bounds] = useMeasure();
@@ -45,7 +40,7 @@ export function Hero() {
                 >
                   <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0">
                     <AnimatePresence mode="wait" initial={false}>
-                      {Object.entries(providerIcons).map(([name, IconComponent]) => (
+                      {Object.entries(PROVIDER_ICONS).map(([name, IconComponent]) => (
                         <motion.div
                           key={name}
                           initial={{
