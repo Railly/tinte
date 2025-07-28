@@ -1,11 +1,6 @@
 import { raysoToShadcn } from './rayso-to-shadcn';
 import { tweakcnToRayso } from './tweakcn-to-rayso';
 
-interface Coords {
-  x: number;
-  y: number;
-}
-
 export interface ThemeData {
   id: string;
   name: string;
@@ -26,18 +21,14 @@ export interface ThemeData {
   rawTheme?: any;
 }
 
+let isApplyingTheme = false;
+
 export function applyThemeWithTransition(
   themeData: ThemeData,
-  currentMode: 'light' | 'dark',
-  coords?: Coords
+  currentMode: 'light' | 'dark'
 ) {
-  const root = document.documentElement;
-  
-  // Add haptic feedback (iOS-style vibration)
-  if ('vibrate' in navigator) {
-    // Subtle haptic pattern: short-long-short (like iOS selection feedback)
-    navigator.vibrate([10, 20, 15]);
-  }
+  if (isApplyingTheme) return;
+  isApplyingTheme = true;
   
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
@@ -45,64 +36,83 @@ export function applyThemeWithTransition(
 
   if (!document.startViewTransition || prefersReducedMotion) {
     applyThemeDirectly(themeData, currentMode);
+    isApplyingTheme = false;
     return;
   }
 
-  if (coords) {
-    const xPercent = (coords.x / window.innerWidth) * 100;
-    const yPercent = (coords.y / window.innerHeight) * 100;
-    root.style.setProperty("--x", `${xPercent}%`);
-    root.style.setProperty("--y", `${yPercent}%`);
-  }
-
-  document.startViewTransition(() => {
+  const transition = document.startViewTransition(() => {
     applyThemeDirectly(themeData, currentMode);
+  });
+  
+  transition.finished.finally(() => {
+    isApplyingTheme = false;
   });
 }
 
-function applyThemeDirectly(themeData: ThemeData, currentMode: 'light' | 'dark') {
+export function applyThemeModeChange(currentMode: 'light' | 'dark') {
+  if (isApplyingTheme) return; // Prevent interference with active theme transitions
+  
   const root = document.documentElement;
   
-  if (themeData.author === 'tweakcn' && themeData.rawTheme) {
-    // TweakCN themes: apply tokens directly
-    const tokens = themeData.rawTheme[currentMode];
-    Object.entries(tokens).forEach(([key, value]) => {
-      if (typeof value === 'string' && !key.startsWith('font-') && !key.startsWith('shadow-') && key !== 'radius' && key !== 'spacing' && key !== 'letter-spacing') {
-        root.style.setProperty(`--${key}`, value);
-      }
-    });
-  } else if (themeData.author === 'ray.so' && themeData.rawTheme) {
-    // Rayso themes: convert to shadcn format using transformer
-    const raysoTheme = { light: themeData.rawTheme.light, dark: themeData.rawTheme.dark };
-    const shadcnTheme = raysoToShadcn(raysoTheme);
-    const tokens = shadcnTheme[currentMode];
-    
-    Object.entries(tokens).forEach(([key, value]) => {
-      if (typeof value === 'string') {
-        root.style.setProperty(`--${key}`, value);
-      }
-    });
-  } else if (themeData.rawTheme) {
-    // Other themes with rawTheme: try to convert TweakCN to Rayso first, then to shadcn
-    try {
-      const tweakcnTheme = { light: themeData.rawTheme.light, dark: themeData.rawTheme.dark };
-      const raysoTheme = tweakcnToRayso(tweakcnTheme);
-      const shadcnTheme = raysoToShadcn(raysoTheme);
-      const tokens = shadcnTheme[currentMode];
-      
-      Object.entries(tokens).forEach(([key, value]) => {
-        if (typeof value === 'string') {
-          root.style.setProperty(`--${key}`, value);
-        }
-      });
-    } catch (error) {
-      console.warn('Failed to transform theme, falling back to basic colors:', error);
-      applyBasicColors(themeData, currentMode, root);
+  requestAnimationFrame(() => {
+    if (currentMode === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
     }
+  });
+}
+
+// Cache for processed themes to avoid re-computation
+const themeCache = new Map<string, any>();
+
+function applyThemeDirectly(themeData: ThemeData, currentMode: 'light' | 'dark') {
+  const root = document.documentElement;
+  const cacheKey = `${themeData.id}-${currentMode}`;
+  
+  let tokens;
+  
+  if (themeCache.has(cacheKey)) {
+    tokens = themeCache.get(cacheKey);
   } else {
-    // Fallback for themes without rawTheme
-    applyBasicColors(themeData, currentMode, root);
+    if (themeData.author === 'tweakcn' && themeData.rawTheme) {
+      tokens = themeData.rawTheme[currentMode];
+    } else if (themeData.author === 'ray.so' && themeData.rawTheme) {
+      const raysoTheme = { light: themeData.rawTheme.light, dark: themeData.rawTheme.dark };
+      const shadcnTheme = raysoToShadcn(raysoTheme);
+      tokens = shadcnTheme[currentMode];
+    } else if (themeData.rawTheme) {
+      try {
+        const tweakcnTheme = { light: themeData.rawTheme.light, dark: themeData.rawTheme.dark };
+        const raysoTheme = tweakcnToRayso(tweakcnTheme);
+        const shadcnTheme = raysoToShadcn(raysoTheme);
+        tokens = shadcnTheme[currentMode];
+      } catch (error) {
+        console.warn('Failed to transform theme, falling back to basic colors:', error);
+        applyBasicColors(themeData, currentMode, root);
+        return;
+      }
+    } else {
+      applyBasicColors(themeData, currentMode, root);
+      return;
+    }
+    
+    themeCache.set(cacheKey, tokens);
   }
+  
+  // Batch DOM updates for better performance
+  requestAnimationFrame(() => {
+    Object.entries(tokens).forEach(([key, value]) => {
+      if (typeof value === 'string' && 
+          !key.startsWith('font-') && 
+          !key.startsWith('shadow-') && 
+          key !== 'radius' && 
+          key !== 'spacing' && 
+          key !== 'letter-spacing') {
+        root.style.setProperty(`--${key}`, value);
+      }
+    });
+  });
 }
 
 function applyBasicColors(themeData: ThemeData, currentMode: 'light' | 'dark', root: HTMLElement) {

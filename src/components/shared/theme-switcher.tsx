@@ -21,7 +21,19 @@ export function ThemeSwitcher() {
     );
   }
 
-  const cycleTheme = () => {
+  const cycleTheme = (event: React.MouseEvent) => {
+    // Capture click coordinates
+    const rect = event.currentTarget.getBoundingClientRect();
+    const coords = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+    
+    // Emit custom event with coordinates for theme switch
+    window.dispatchEvent(new CustomEvent('theme-switch-coords', { 
+      detail: coords 
+    }));
+    
     if (theme === "light") {
       setTheme("dark");
     } else if (theme === "dark") {

@@ -440,7 +440,7 @@ export default function PromptInput({
 
         {/* Unified container for textarea and pasted items */}
         <div className={cn(
-          "relative transition-shadow",
+          "relative",
           pastedItems.length > 0 && "rounded-lg border border-border/70 focus-within:border-border/90 focus-within:shadow-sm"
         )}>
           {/* Textarea container with controls */}
@@ -457,7 +457,7 @@ export default function PromptInput({
                 }
               }}
               className={cn(
-                "w-full resize-none pt-3 pb-14 pr-12 transition-all focus-visible:ring-0",
+                "w-full resize-none pt-3 pb-14 pr-12 focus-visible:ring-0",
                 pastedItems.length > 0
                   ? "rounded-b-none border-0 focus-visible:border-0"
                   : "border border-border/70 rounded-md focus-visible:border-border/90 focus-visible:shadow-sm"
@@ -479,7 +479,7 @@ export default function PromptInput({
                 onPressedChange={setShadcnEnabled}
                 size="sm"
                 className={cn(
-                  "transition-all border p-0 min-w-8 w-8 h-8 cursor-pointer hover:bg-primary/10 hover:border-primary/30",
+                  "border p-0 min-w-8 w-8 h-8 cursor-pointer hover:bg-primary/10 hover:border-primary/30",
                   !shadcnEnabled && "grayscale",
                   shadcnEnabled && "bg-primary/10 border-primary/30",
                   !shadcnEnabled && "bg-muted/50"
@@ -493,7 +493,7 @@ export default function PromptInput({
                 onPressedChange={setVscodeEnabled}
                 size="sm"
                 className={cn(
-                  "transition-all border p-0 min-w-8 w-8 h-8 cursor-pointer hover:bg-primary/10 hover:border-primary/30",
+                  "border p-0 min-w-8 w-8 h-8 cursor-pointer hover:bg-primary/10 hover:border-primary/30",
                   !vscodeEnabled && "grayscale",
                   vscodeEnabled && "bg-primary/10 border-primary/30",
                   !vscodeEnabled && "bg-muted/50"
@@ -504,7 +504,7 @@ export default function PromptInput({
               </Toggle>
               <DropdownMenu open={paletteDropdownOpen} onOpenChange={setPaletteDropdownOpen}>
                 <DropdownMenuTrigger asChild>
-                  <button className="inline-flex cursor-pointer items-center justify-center gap-1 px-2 h-8 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <button className="inline-flex cursor-pointer items-center justify-center gap-1 px-2 h-8 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground">
                     <Palette className="size-4" />
                     <span className="text-xs font-medium">Colors</span>
                   </button>
@@ -542,7 +542,7 @@ export default function PromptInput({
                         <button
                           key={preset.name}
                           onClick={() => handlePaletteSelect(preset)}
-                          className="group relative rounded-lg overflow-hidden border border-border/50 hover:border-border transition-colors hover:scale-105 p-2 flex items-center justify-center"
+                          className="group relative rounded-lg overflow-hidden border border-border/50 hover:border-border hover:scale-105 p-2 flex items-center justify-center"
                           title={preset.description}
                         >
                           <MiniPalettePreview preset={preset} />
@@ -554,7 +554,7 @@ export default function PromptInput({
               </DropdownMenu>
               <Popover open={themeDropdownOpen} onOpenChange={setThemeDropdownOpen}>
                 <PopoverTrigger asChild>
-                  <button className="inline-flex cursor-pointer items-center justify-center gap-1 px-2 h-8 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <button className="inline-flex cursor-pointer items-center justify-center gap-1 px-2 h-8 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground">
                     <Search className="size-4" />
                     <span className="text-xs font-medium">Themes</span>
                   </button>
@@ -570,7 +570,7 @@ export default function PromptInput({
                     />
                   </div>
                   <div
-                    className="overflow-y-auto transition-all duration-200"
+                    className="overflow-y-auto"
                     style={{
                       maxHeight: '320px',
                       height: filteredThemes.length === 0 ? '64px' : `${Math.min(filteredThemes.length * 50 + (filteredThemes.length - 1) * 4 + 8, 320)}px`
@@ -581,7 +581,7 @@ export default function PromptInput({
                         <button
                           key={`${theme.provider}-${theme.id}`}
                           onClick={() => handleThemeSelect(theme)}
-                          className="flex items-center gap-3 p-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors w-full text-left"
+                          className="flex items-center gap-3 p-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm w-full text-left"
                         >
                           <ThemeColorPreview theme={theme} />
                           <div className="flex flex-col gap-0.5 min-w-0 flex-1">
@@ -609,7 +609,7 @@ export default function PromptInput({
               </Popover>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="inline-flex cursor-pointer items-center justify-center w-8 h-8 p-0 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <button className="inline-flex cursor-pointer items-center justify-center w-8 h-8 p-0 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground">
                     <Plus className="size-4" />
                   </button>
                 </DropdownMenuTrigger>
@@ -640,7 +640,7 @@ export default function PromptInput({
               disabled
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg bg-primary/50 text-primary-foreground/50 cursor-not-allowed transition-opacity"
+              className="absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg bg-primary/50 text-primary-foreground/50 cursor-not-allowed"
             >
               <ArrowUp className="size-4" />
             </motion.button>
@@ -668,7 +668,7 @@ export default function PromptInput({
             <button
               key={index}
               onClick={() => handlePresetClick(preset)}
-              className="flex items-center gap-2 px-3 py-2 text-xs bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-xs bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-lg"
             >
               <div
                 className="w-3 h-3 rounded-full"
@@ -687,7 +687,7 @@ export default function PromptInput({
               <button
                 key={index}
                 onClick={() => handlePresetClick(preset)}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-full transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-full"
               >
                 <div
                   className="w-3 h-3 rounded-full"
@@ -704,7 +704,7 @@ export default function PromptInput({
               <button
                 key={index + 2}
                 onClick={() => handlePresetClick(preset)}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-full transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-full"
               >
                 <div
                   className="w-3 h-3 rounded-full"

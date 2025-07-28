@@ -1,43 +1,42 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Tinte: Soft Circle Reveal */
+/* View Transition Slide Effect */
 ::view-transition-old(root),
-::view-transition-new(root) {
+.dark::view-transition-old(root) {
   animation: none;
-  mix-blend-mode: normal;
 }
 
-::view-transition-old(root) {
-  /* Ensure the outgoing view (old theme) is beneath */
-  z-index: 0;
+::view-transition-group(root) {
+  animation-duration: 0.5s;
 }
 
 ::view-transition-new(root) {
-  /* Ensure the incoming view (new theme) is always on top */
-  z-index: 1;
+  animation-name: reveal-light;
 }
 
-@keyframes softReveal {
+.dark::view-transition-new(root) {
+  animation-name: reveal-dark;
+}
+
+@keyframes reveal-dark {
   from {
-    /* Use CSS variables for the origin, defaulting to center if not set */
-    clip-path: circle(0% at var(--x, 50%) var(--y, 50%));
-    filter: blur(2px);
-    opacity: 0.8;
-    transform: scale(0.98);
+    clip-path: polygon(-30% 0, -30% 0, -15% 100%, -10% 115%);
   }
+
   to {
-    /* Use CSS variables for the origin, defaulting to center if not set */
-    clip-path: circle(120% at var(--x, 50%) var(--y, 50%));
-    filter: blur(0px);
-    opacity: 1;
-    transform: scale(1);
+    clip-path: polygon(-30% 0, 130% 0, 115% 100%, -10% 115%);
   }
 }
 
-::view-transition-new(root) {
-  /* Apply the soft reveal animation */
-  animation: softReveal 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+@keyframes reveal-light {
+  from {
+    clip-path: polygon(130% 0, 130% 0, 115% 100%, 110% 115%);
+  }
+
+  to {
+    clip-path: polygon(130% 0, -30% 0, -15% 100%, 110% 115%);
+  }
 }
 
 @custom-variant dark (&:is(.dark *));

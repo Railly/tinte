@@ -26,15 +26,10 @@ interface ThemeData {
   preview?: string;
 }
 
-interface Coords {
-  x: number;
-  y: number;
-}
-
 interface ThemeCardProps {
   theme: ThemeData;
   index: number;
-  onThemeSelect?: (theme: ThemeData, coords?: Coords) => void;
+  onThemeSelect?: (theme: ThemeData) => void;
 }
 
 export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
@@ -45,28 +40,28 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
     return num.toString();
   };
 
-  const handleThemeClick = (event: React.MouseEvent) => {
+  const handleThemeClick = () => {
     if (onThemeSelect) {
-      const rect = event.currentTarget.getBoundingClientRect();
-      const coords = {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-      };
-      onThemeSelect(theme, coords);
+      onThemeSelect(theme);
     }
   };
 
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
-      className="group relative overflow-hidden rounded-lg border border-border/30 bg-background/80 backdrop-blur-sm hover:border-border/60 transition-all duration-300 hover:shadow-md cursor-pointer"
+      className="group relative overflow-hidden rounded-lg border border-border/30 bg-background/80 backdrop-blur-sm hover:border-border/60 hover:shadow-md cursor-pointer"
       onClick={handleThemeClick}
+      style={{
+        /* Disable transitions during view transitions */
+        willChange: 'auto'
+      }}
     >
       {/* Gradient background based on primary color */}
       <motion.div
-        className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300"
+        className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity"
         style={{
-          background: `linear-gradient(135deg, ${theme.colors.primary}22, ${theme.colors.accent}11)`
+          background: `linear-gradient(135deg, ${theme.colors.primary}22, ${theme.colors.accent}11)`,
+          willChange: 'auto'
         }}
       />
 
@@ -76,7 +71,10 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
           <motion.div
             key={i}
             className="w-2.5 h-2.5 rounded-full border border-white/20 shadow-sm"
-            style={{ backgroundColor: color }}
+            style={{
+              backgroundColor: color,
+              willChange: 'auto'
+            }}
             whileHover={{ scale: 1.2 }}
             transition={{ duration: 0.2, delay: i * 0.02 }}
           />
@@ -89,7 +87,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
         <div className="space-y-2">
           <div className="flex items-start justify-between">
             <div className="space-y-1 flex-1">
-              <h3 className="font-medium text-foreground group-hover:text-primary transition-colors leading-tight">
+              <h3 className="font-medium text-foreground group-hover:text-primary leading-tight">
                 {theme.name}
               </h3>
               <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
@@ -123,6 +121,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
               className="flex items-center gap-1.5"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
+              style={{ willChange: 'auto' }}
             >
               <Heart className="w-3 h-3" />
               {formatNumber(theme.likes)}
@@ -131,6 +130,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
               className="flex items-center gap-1.5"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
+              style={{ willChange: 'auto' }}
             >
               <Download className="w-3 h-3" />
               {formatNumber(theme.downloads)}
@@ -150,7 +150,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
         </div>
 
         {/* Action on hover */}
-        <div className="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{ willChange: 'auto' }}>
           <div className="flex gap-2">
             <Button size="sm" className="flex-1 h-8 text-xs">
               <Sparkles className="w-3 h-3 mr-1.5" />
