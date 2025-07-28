@@ -32,7 +32,7 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
   const displayTitle = item.metadata?.title || preview.title;
   const displaySubtitle = item.metadata?.description || preview.subtitle;
   const favicon = item.metadata?.favicon;
-  const canEdit = ['url', 'tailwind', 'cssvars'].includes(item.kind);
+  const canEdit = ['url', 'tailwind', 'cssvars', 'palette'].includes(item.kind);
   const hasError = item.metadata?.error;
   const isLoading = item.metadata?.loading;
   const controls = useAnimationControls();
@@ -104,10 +104,10 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       layout
       onClick={handleClick}
       onDoubleClick={hasError ? triggerShake : undefined}
-      className={`group relative rounded-lg border transition-all ${
+      className={`group relative rounded-lg transition-all ${
         hasError 
-          ? 'border-red-200 bg-red-50 hover:border-red-300 hover:shadow-md shadow-red-100/20' 
-          : 'border-border/25 bg-background hover:border-border hover:shadow-md shadow-black/5'
+          ? 'border border-red-200 bg-red-50 hover:border-red-300 hover:shadow-md shadow-red-100/20' 
+          : 'border border-border/40 bg-background/80 hover:border-border/60 hover:shadow-md shadow-black/5'
       } ${canEdit ? 'cursor-pointer' : 'cursor-default'}`}
       style={{ width: '120px', height: '120px', minWidth: '120px' }}
     >
@@ -123,14 +123,20 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       </button>
 
       {/* Content area with mask */}
-      <div className="relative flex flex-col gap-1 min-h-0">
-        <div className={`max-w-full overflow-hidden absolute h-[90px] ${item.kind === 'image' ? 'p-0' : 'p-2.5 mask-b-from-40% mask-b-to-100%'}`}>
+      <div className="relative flex flex-col gap-1 h-full">
+        <div className={`max-w-full overflow-hidden absolute ${
+          item.kind === 'image' 
+            ? 'inset-0 p-0' 
+            : item.kind === 'palette'
+              ? 'h-[90px] p-2.5'
+              : 'h-[90px] p-2.5 mask-b-from-40% mask-b-to-100%'
+        }`}>
           {item.kind === 'image' && item.imageData ? (
             <div className="w-full h-full">
               <img
                 src={item.imageData}
                 alt="Pasted screenshot"
-                className="w-full h-full object-cover rounded-t"
+                className="w-full h-full object-cover rounded-lg"
               />
             </div>
           ) : item.kind === 'url' && favicon ? (
@@ -156,13 +162,24 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
                 )}
               </div>
             </div>
+          ) : item.kind === 'palette' ? (
+            <div className="flex flex-wrap gap-1 p-1">
+              {item.colors && item.colors.slice(0, 11).map((color) => (
+                <div
+                  key={color}
+                  className="w-4 h-4 rounded border cursor-pointer hover:scale-110 transition-transform"
+                  style={{ backgroundColor: color }}
+                  onClick={() => navigator.clipboard.writeText(color)}
+                />
+              ))}
+            </div>
           ) : item.colors && item.colors.length > 0 ? (
             <div className="space-y-2">
               <p className="text-[8px] text-muted-foreground break-words leading-tight">
                 {item.content}
               </p>
               <div className="flex flex-wrap gap-1">
-                {item.colors.slice(0, 4).map((color, index) => (
+                {item.colors.slice(0, 4).map((color) => (
                   <ColorBadge
                     key={color}
                     color={color}
@@ -203,7 +220,7 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
               <p className={`uppercase truncate text-[11px] leading-[13px] ${
                 hasError ? 'text-red-600' : 'text-muted-foreground'
               }`}>
-                {hasError ? 'error' : 'pasted'}
+                {hasError ? 'error' : item.kind === 'palette' ? 'added' : 'pasted'}
               </p>
             </div>
           </div>

@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Kind } from '@/lib/input-detection';
-import { Globe } from 'lucide-react';
+import { Globe, Palette } from 'lucide-react';
 import { TailwindIcon } from '@/components/shared/icons/tailwind';
 import { CSSIcon } from '@/components/shared/icons/css';
 
 interface PasteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  type: 'url' | 'tailwind' | 'cssvars';
+  type: 'url' | 'tailwind' | 'cssvars' | 'palette';
   onSubmit: (content: string, kind: Kind) => void;
   editMode?: boolean;
   initialContent?: string;
@@ -56,27 +56,41 @@ const typeConfig = {
 }`,
     isTextarea: true,
     kind: 'cssvars' as Kind
+  },
+  palette: {
+    title: 'Edit Color Palette',
+    icon: Palette,
+    placeholder: '#3b82f6',
+    defaultContent: '#3b82f6',
+    isTextarea: false,
+    kind: 'palette' as Kind
   }
 };
 
 export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = false, initialContent }: PasteDialogProps) {
   const config = typeConfig[type];
-  const [content, setContent] = useState(initialContent || config.defaultContent);
+  const [content, setContent] = useState('');
   const [hasUserInput, setHasUserInput] = useState(false);
 
+  // Initialize content properly for palette editing
   useEffect(() => {
-    if (open && !editMode) {
+    if (type === 'palette' && initialContent) {
+      // Extract the first hex color from the palette content for editing
+      const colorMatch = initialContent.match(/#[0-9a-f]{6}/i);
+      setContent(colorMatch ? colorMatch[0] : config.defaultContent);
+      setHasUserInput(true);
+    } else {
+      setContent(initialContent || config.defaultContent);
+      setHasUserInput(!!initialContent);
+    }
+  }, [initialContent, type, config.defaultContent]);
+
+  useEffect(() => {
+    if (open && !editMode && type !== 'palette') {
       setContent(config.defaultContent);
       setHasUserInput(false);
     }
-  }, [open, editMode, config.defaultContent]);
-
-  useEffect(() => {
-    if (initialContent !== undefined) {
-      setContent(initialContent);
-      setHasUserInput(true);
-    }
-  }, [initialContent]);
+  }, [open, editMode, config.defaultContent, type]);
 
   function handlePaste(e: React.ClipboardEvent) {
     if (!editMode) {
@@ -104,6 +118,7 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
       onOpenChange(false);
     }
   }
+
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -142,7 +157,7 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
               onKeyDown={handleKeyDown}
               placeholder={config.placeholder}
               rows={8}
-              className="font-mono text-sm"
+              className="font-mono text-sm max-h-80 resize-none"
             />
           ) : (
             <Input
