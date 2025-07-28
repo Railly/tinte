@@ -13,6 +13,7 @@ export function extractTweakcnThemeData(isDark = false) {
         foreground: themeMode.foreground,
       },
       createdAt: (preset as any).createdAt || '2025-01-01',
+      rawTheme: preset.styles,
     };
   });
 }

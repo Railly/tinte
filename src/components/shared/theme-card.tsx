@@ -26,12 +26,18 @@ interface ThemeData {
   preview?: string;
 }
 
+interface Coords {
+  x: number;
+  y: number;
+}
+
 interface ThemeCardProps {
   theme: ThemeData;
   index: number;
+  onThemeSelect?: (theme: ThemeData, coords?: Coords) => void;
 }
 
-export function ThemeCard({ theme }: ThemeCardProps) {
+export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
   const formatNumber = (num: number) => {
     if (num >= 1000) {
       return `${(num / 1000).toFixed(1)}k`;
@@ -39,10 +45,22 @@ export function ThemeCard({ theme }: ThemeCardProps) {
     return num.toString();
   };
 
+  const handleThemeClick = (event: React.MouseEvent) => {
+    if (onThemeSelect) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const coords = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+      onThemeSelect(theme, coords);
+    }
+  };
+
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       className="group relative overflow-hidden rounded-lg border border-border/30 bg-background/80 backdrop-blur-sm hover:border-border/60 transition-all duration-300 hover:shadow-md cursor-pointer"
+      onClick={handleThemeClick}
     >
       {/* Gradient background based on primary color */}
       <motion.div

@@ -12,25 +12,8 @@ import { extractRaysoThemeData } from '@/utils/rayso-presets';
 import { extractTinteThemeData } from '@/utils/tinte-presets';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
+import { applyThemeWithTransition, ThemeData as AppThemeData } from '@/lib/theme-applier';
 
-interface ThemeData {
-  id: string;
-  name: string;
-  description: string;
-  author: string;
-  downloads: number;
-  likes: number;
-  views: number;
-  createdAt: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    background: string;
-    foreground: string;
-  };
-  tags: string[];
-}
 
 export function Showcase() {
   const { theme, systemTheme } = useTheme();
@@ -45,6 +28,10 @@ export function Showcase() {
   // Handle system theme by using the actual system preference
   const currentTheme = theme === 'system' ? systemTheme : theme;
   const isDark = mounted && currentTheme === 'dark';
+
+  const handleThemeSelect = (selectedTheme: AppThemeData, coords?: { x: number; y: number }) => {
+    applyThemeWithTransition(selectedTheme, isDark ? 'dark' : 'light', coords);
+  };
 
   // Get real theme data from tweakcn presets with correct theme mode
   const tweakcnThemes = extractTweakcnThemeData(isDark).map((themeData, index) => ({
@@ -130,7 +117,12 @@ export function Showcase() {
         {activeTab === 'tweakcn' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {tweakcnThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard key={theme.id} theme={{ ...theme, id: `tweakcn-${theme.id}` }} index={index} />
+              <ThemeCard 
+                key={theme.id} 
+                theme={{ ...theme, id: `tweakcn-${theme.id}` }} 
+                index={index} 
+                onThemeSelect={handleThemeSelect}
+              />
             ))}
           </div>
         )}
@@ -138,7 +130,7 @@ export function Showcase() {
         {activeTab === 'rayso' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {raysoThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard key={theme.id} theme={theme} index={index} />
+              <ThemeCard key={theme.id} theme={theme} index={index} onThemeSelect={handleThemeSelect} />
             ))}
           </div>
         )}
@@ -146,7 +138,7 @@ export function Showcase() {
         {activeTab === 'tinte' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {tinteThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard key={theme.id} theme={theme} index={index} />
+              <ThemeCard key={theme.id} theme={theme} index={index} onThemeSelect={handleThemeSelect} />
             ))}
           </div>
         )}
