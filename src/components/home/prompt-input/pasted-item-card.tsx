@@ -7,7 +7,7 @@ import { Globe, Palette, MessageSquare, Image, FileCode } from 'lucide-react';
 import { CSSIcon } from '@/components/shared/icons/css';
 import { TailwindIcon } from '@/components/shared/icons/tailwind';
 import { PastedItem, Kind, generatePreview } from '@/lib/input-detection';
-import { ColorBadge } from '@/components/home/prompt-input/color-badge';
+import { ColorBadge } from './color-badge';
 
 const kindIcons = {
   url: Globe,
@@ -105,8 +105,8 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       onClick={handleClick}
       onDoubleClick={hasError ? triggerShake : undefined}
       className={`group relative rounded-lg transition-all overflow-visible ${hasError
-          ? 'border border-red-200 bg-red-50 hover:border-red-300 hover:shadow-md shadow-red-100/20'
-          : 'border border-border/40 bg-background/80 hover:border-border/60 hover:shadow-md shadow-black/5'
+        ? 'border border-red-200 bg-red-50 hover:border-red-300 hover:shadow-md shadow-red-100/20'
+        : 'border border-border/40 bg-background/80 hover:border-border/60 hover:shadow-md shadow-black/5'
         } ${canEdit ? 'cursor-pointer' : 'cursor-default'}`}
       style={{ width: '120px', height: '120px', minWidth: '120px' }}
     >
@@ -124,10 +124,10 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       {/* Content area with mask */}
       <div className="relative flex flex-col gap-1 h-full">
         <div className={`max-w-full overflow-hidden absolute ${item.kind === 'image'
-            ? 'inset-0 p-0'
-            : item.kind === 'palette'
-              ? 'h-[90px] p-2.5'
-              : 'h-[90px] p-2.5 mask-b-from-40% mask-b-to-100%'
+          ? 'inset-0 p-0'
+          : item.kind === 'palette'
+            ? 'h-[90px] p-2.5'
+            : 'h-[90px] p-2.5 mask-b-from-40% mask-b-to-100%'
           }`}>
           {item.kind === 'image' && item.imageData ? (
             <div className="w-full h-full">
@@ -205,8 +205,8 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
         <div className="relative flex flex-row items-center gap-1 justify-between">
           <div className="flex flex-row gap-1 shrink min-w-0">
             <div className={`min-w-0 h-[18px] flex flex-row items-center justify-center gap-1 px-1 border shadow-sm rounded backdrop-blur-sm font-medium ${hasError
-                ? 'border-red-200 bg-red-100/80'
-                : 'border-border/25 bg-muted/80'
+              ? 'border-red-200 bg-red-100/80'
+              : 'border-border/25 bg-muted/80'
               }`}>
               <Icon className={`h-3 w-3 flex-shrink-0 ${hasError ? 'text-red-600' : 'text-muted-foreground'
                 }`} />

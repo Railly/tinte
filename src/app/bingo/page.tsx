@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RaysoBlock } from '@/types/rayso';
 
 export default function BingoPage() {
   const [selectedTheme, setSelectedTheme] = useState('modern-minimal');
@@ -19,7 +20,7 @@ export default function BingoPage() {
     light: defaultPresets[selectedTheme as keyof typeof defaultPresets].styles.light,
     dark: defaultPresets[selectedTheme as keyof typeof defaultPresets].styles.dark
   };
-  
+
   const convertedRayso = tweakcnToRayso(currentTweakcn);
   const currentTokens = convertedRayso[mode];
 
@@ -39,17 +40,17 @@ export default function BingoPage() {
 
   const ColorSwatch = ({ name, value }: { name: string; value: string }) => (
     <div className="flex items-center gap-2 p-2 rounded border">
-      <div 
-        className="w-6 h-6 rounded border border-gray-300" 
+      <div
+        className="w-6 h-6 rounded border border-gray-300"
         style={{ backgroundColor: value }}
       />
       <div className="flex-1 min-w-0">
         <div className="text-sm font-mono">{name}</div>
         <div className="text-xs text-muted-foreground font-mono">{value}</div>
-        <Input 
-          value={value} 
-          onChange={() => {}} 
-          className="mt-1 h-6 text-xs" 
+        <Input
+          value={value}
+          onChange={() => { }}
+          className="mt-1 h-6 text-xs"
           readOnly
           onClick={(e) => {
             e.currentTarget.select();
@@ -73,7 +74,7 @@ export default function BingoPage() {
           <Button variant="destructive">Destructive</Button>
           <Button variant="ghost">Ghost</Button>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Nested Card Example</CardTitle>
@@ -193,15 +194,15 @@ export default function BingoPage() {
             {/* Display tokens in Flexoki scale order */}
             {[
               // Flexoki continuous scale
-              'background', 'background_2', 'interface', 'interface_2', 'interface_3', 
+              'background', 'background_2', 'interface', 'interface_2', 'interface_3',
               'text_3', 'text_2', 'text',
               // Accent system
               'primary', 'accent', 'accent_2', 'accent_3',
               // Legacy
               'secondary'
-            ].map((key) => 
-              currentTokens[key] ? (
-                <ColorSwatch key={key} name={key} value={currentTokens[key]} />
+            ].map((key) =>
+              currentTokens[key as keyof RaysoBlock] ? (
+                <ColorSwatch key={key} name={key} value={currentTokens[key as keyof RaysoBlock]} />
               ) : null
             )}
           </CardContent>
@@ -232,7 +233,7 @@ export default function BingoPage() {
                 <div><strong>text (tx):</strong> Primary text {mode === 'light' ? '(darkest)' : '(lightest)'}</div>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <h4 className="font-medium">Mode Behavior</h4>
               <div className="ml-2 space-y-1 text-xs">
@@ -241,12 +242,12 @@ export default function BingoPage() {
                 <div className="text-muted-foreground">Uses exponential curve for natural progression</div>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <h4 className="font-medium">Distinct Accent Colors</h4>
               <div className="ml-2 space-y-1 text-xs">
                 <div><strong>primary:</strong> Primary actions, links</div>
-                <div><strong>accent:</strong> From secondary/accent tokens</div>  
+                <div><strong>accent:</strong> From secondary/accent tokens</div>
                 <div><strong>accent_2:</strong> +60° hue rotation, alternative actions</div>
                 <div><strong>accent_3:</strong> Complementary/destructive (+180° hue)</div>
                 <div className="text-muted-foreground mt-1">Uses chart colors when available for variety</div>
@@ -260,8 +261,8 @@ export default function BingoPage() {
             <CardTitle>Export Options</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button 
-              className="w-full" 
+            <Button
+              className="w-full"
               onClick={() => {
                 const data = JSON.stringify(convertedRayso, null, 2);
                 navigator.clipboard.writeText(data);
@@ -269,8 +270,8 @@ export default function BingoPage() {
             >
               📋 Copy Rayso JSON
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full"
               onClick={() => {
                 const data = JSON.stringify({
@@ -298,7 +299,7 @@ export default function BingoPage() {
           <TabsTrigger value="rayso">Rayso Raw</TabsTrigger>
           <TabsTrigger value="comparison">Side by Side</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="tweakcn">
           <Card>
             <CardHeader>
@@ -311,7 +312,7 @@ export default function BingoPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="rayso">
           <Card>
             <CardHeader>
