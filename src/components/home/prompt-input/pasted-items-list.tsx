@@ -23,7 +23,7 @@ export function PastedItemsList({ pastedItems, onRemoveItem, onEditItem }: Paste
         >
           <ScrollArea className="w-full overflow-visible">
             <div className="flex gap-2 pb-2 pt-3 px-3">
-              {pastedItems.map((item) => (
+              {pastedItems.slice().reverse().map((item) => (
                 <PastedItemCard
                   key={item.id}
                   item={item}
