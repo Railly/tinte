@@ -83,42 +83,46 @@ export function Showcase() {
     <div className="w-full space-y-8 p-4 max-w-7xl mx-auto">
       {/* Header */}
       <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-              <div className="w-2 h-2 bg-white rounded-full" />
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full" />
+                </div>
+                <h2 className="text-xl font-medium">From the Community</h2>
+              </div>
             </div>
-            <h2 className="text-xl font-medium">From the Community</h2>
+            <p className="text-muted-foreground text-sm">
+              Explore what the community is crafting with Tinte.
+            </p>
           </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
+            <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm w-full sm:w-auto">
+              <TabsTrigger
+                value="tweakcn"
+                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
+              >
+                <TweakCNIcon className="w-3 h-3" />
+                tweakcn
+              </TabsTrigger>
+              <TabsTrigger
+                value="rayso"
+                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
+              >
+                <RaycastIcon className="w-3 h-3" />
+                ray.so
+              </TabsTrigger>
+              <TabsTrigger
+                value="tinte"
+                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
+              >
+                <Logo size={12} />
+                tinte
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
-        <p className="text-muted-foreground text-sm">
-          Explore what the community is crafting with Tinte.
-        </p>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm w-full sm:w-auto">
-            <TabsTrigger
-              value="tweakcn"
-              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
-            >
-              <TweakCNIcon className="w-3 h-3" />
-              tweakcn
-            </TabsTrigger>
-            <TabsTrigger
-              value="rayso"
-              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
-            >
-              <RaycastIcon className="w-3 h-3" />
-              ray.so
-            </TabsTrigger>
-            <TabsTrigger
-              value="tinte"
-              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
-            >
-              <Logo size={12} />
-              tinte
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
 
       {/* Provider Content */}

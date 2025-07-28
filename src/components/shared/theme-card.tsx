@@ -45,13 +45,13 @@ export function ThemeCard({ theme }: ThemeCardProps) {
       className="group relative overflow-hidden rounded-lg border border-border/30 bg-background/80 backdrop-blur-sm hover:border-border/60 transition-all duration-300 hover:shadow-md cursor-pointer"
     >
       {/* Gradient background based on primary color */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300"
-        style={{ 
-          background: `linear-gradient(135deg, ${theme.colors.primary}22, ${theme.colors.accent}11)` 
+        style={{
+          background: `linear-gradient(135deg, ${theme.colors.primary}22, ${theme.colors.accent}11)`
         }}
       />
-      
+
       {/* Color preview strip */}
       <div className="absolute top-3 right-3 flex gap-1">
         {Object.values(theme.colors).map((color, i) => (
@@ -79,7 +79,7 @@ export function ThemeCard({ theme }: ThemeCardProps) {
               </p>
             </div>
           </div>
-          
+
           {/* Minimal tags */}
           <div className="flex flex-wrap gap-1.5">
             {theme.tags.slice(0, 2).map((tag, index) => (
@@ -101,7 +101,7 @@ export function ThemeCard({ theme }: ThemeCardProps) {
         {/* Stats in minimal format */}
         <div className="flex items-center justify-between pt-2 border-t border-border/20">
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <motion.div 
+            <motion.div
               className="flex items-center gap-1.5"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
@@ -109,7 +109,7 @@ export function ThemeCard({ theme }: ThemeCardProps) {
               <Heart className="w-3 h-3" />
               {formatNumber(theme.likes)}
             </motion.div>
-            <motion.div 
+            <motion.div
               className="flex items-center gap-1.5"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
@@ -134,11 +134,11 @@ export function ThemeCard({ theme }: ThemeCardProps) {
         {/* Action on hover */}
         <div className="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <div className="flex gap-2">
-            <Button size="sm" className="flex-1 h-8 text-xs bg-primary/90 hover:bg-primary">
+            <Button size="sm" className="flex-1 h-8 text-xs">
               <Sparkles className="w-3 h-3 mr-1.5" />
               Open in Tinte
             </Button>
-            <Button size="sm" variant="outline" className="h-8 px-2 text-xs">
+            <Button size="sm" variant="outline" className="h-8 px-2 text-xs !bg-secondary hover:brightness-110">
               View Details
             </Button>
           </div>
