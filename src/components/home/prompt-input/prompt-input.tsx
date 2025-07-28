@@ -640,6 +640,7 @@ export default function PromptInput({
                 pastedItems={pastedItems}
                 onRemoveItem={removePastedItem}
                 onEditItem={handleEditItem}
+                onClearAll={clearPastedItems}
               />
             </div>
           )}
