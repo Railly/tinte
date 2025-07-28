@@ -26,15 +26,15 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="px-4">
-        <div className="flex h-12 items-center justify-between">
+        <div className="relative flex h-12 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <Logo size={24} />
             <span className="font-bold text-base">Tinte</span>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
+          {/* Desktop Navigation - Centered */}
+          <nav className="hidden md:flex items-center gap-6 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {navigation.map((item) => (
               <a
                 key={item.name}
