@@ -25,6 +25,10 @@ import { useTheme } from 'next-themes';
 import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
+import { useRouter } from 'next/navigation';
+import { nanoid } from 'nanoid';
+import { writeSeed } from '@/utils/anon-seed';
+import { mapPastedToAttachments } from '@/utils/seed-mapper';
 
 interface PromptInputProps {
   onSubmit?: (kind: Kind, raw: string) => void;
@@ -53,6 +57,7 @@ export default function PromptInput({
   onSubmit,
 }: PromptInputProps) {
   const [prompt, setPrompt] = useState('');
+  const router = useRouter();
 
   const presets = [
     {
@@ -210,8 +215,18 @@ export default function PromptInput({
       prompt.trim()
     ].filter(Boolean).join('\n\n');
 
-    if (!allContent) return;
+    if (!allContent && pastedItems.length === 0) return;
 
+    const chatId = nanoid();
+    const attachments = mapPastedToAttachments(pastedItems, 300_000);
+    writeSeed(chatId, {
+      id: chatId,
+      content: allContent,
+      attachments,
+      createdAt: Date.now(),
+    });
+
+    router.push(`/chat/${chatId}`);
     onSubmit?.('prompt', allContent);
   }
 
@@ -604,10 +619,15 @@ export default function PromptInput({
             {/* Submit button positioned absolutely over the textarea only */}
             <motion.button
               onClick={submit}
-              disabled
+              disabled={!prompt.trim() && pastedItems.length === 0}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg bg-primary/50 text-primary-foreground/50 cursor-not-allowed"
+              className={cn(
+                "absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg",
+                (prompt.trim() || pastedItems.length > 0)
+                  ? "bg-primary text-primary-foreground cursor-pointer"
+                  : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed"
+              )}
             >
               <ArrowUp className="size-4" />
             </motion.button>
