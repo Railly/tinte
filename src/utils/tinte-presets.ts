@@ -23,279 +23,168 @@ export function extractTinteThemeData(isDark = false) {
 
 export const tintePresets = [
   {
-    name: "Ocean Wave",
+    name: "Vercel",
     light: {
-      text: "#0F172A",
-      primary: "#0EA5E9",
-      secondary: "#0284C7",
-      accent: "#06B6D4",
-      background: "#F8FAFC",
-      interface: "#E2E8F0",
-      interface_2: "#CBD5E1",
-      interface_3: "#94A3B8"
+      text: "#1D2127",
+      accent: "#7D00CC",
+      text_2: "#808080",
+      text_3: "#b3b3b3",
+      primary: "#C31562",
+      accent_2: "#0F7E32",
+      accent_3: "#000000",
+      interface: "#e6e6e6",
+      secondary: "#0060F1",
+      background: "#FFFFFF",
+      interface_2: "#d9d9d9",
+      interface_3: "#cccccc",
+      background_2: "#f2f2f2"
     },
     dark: {
-      text: "#F8FAFC",
-      primary: "#38BDF8",
-      secondary: "#0EA5E9",
-      accent: "#22D3EE",
-      background: "#0F172A",
-      interface: "#1E293B",
-      interface_2: "#334155",
-      interface_3: "#475569"
+      text: "#EDEDED",
+      accent: "#C372FC",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#FF4C8D",
+      accent_2: "#00CA51",
+      accent_3: "#EDEDED",
+      interface: "#171717",
+      secondary: "#47A8FF",
+      background: "#000000",
+      interface_2: "#212121",
+      interface_3: "#2B2B2B",
+      background_2: "#0D0D0D"
     }
   },
   {
-    name: "Forest Green",
+    name: "One Hunter",
     light: {
-      text: "#1F2937",
-      primary: "#10B981",
-      secondary: "#059669",
-      accent: "#34D399",
-      background: "#F9FAFB",
-      interface: "#F3F4F6",
-      interface_2: "#E5E7EB",
-      interface_3: "#D1D5DB"
+      text: "#1D2127",
+      accent: "#0483c5",
+      text_2: "#808080",
+      text_3: "#b3b3b3",
+      primary: "#bb1b3f",
+      accent_2: "#178a78",
+      accent_3: "#e26d14",
+      interface: "#dedede",
+      secondary: "#1D2128",
+      background: "#F7F7F7",
+      interface_2: "#d1d1d1",
+      interface_3: "#c4c4c4",
+      background_2: "#ebebeb"
+    },
+    dark: {
+      text: "#E3E1E1",
+      accent: "#50C2F7",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#F06293",
+      accent_2: "#66DFC4",
+      accent_3: "#F7BC62",
+      interface: "#35373A",
+      secondary: "#E3E1E2",
+      background: "#1D2127",
+      interface_2: "#3E4043",
+      interface_3: "#47494D",
+      background_2: "#2C2E31"
+    }
+  },
+  {
+    name: "Tailwind",
+    light: {
+      text: "#1D2127",
+      accent: "#0d9488",
+      text_2: "#808080",
+      text_3: "#b3b3b3",
+      primary: "#7c3aed",
+      accent_2: "#5046e5",
+      accent_3: "#d97708",
+      interface: "#e6e6e6",
+      secondary: "#0084c7",
+      background: "#FFFFFF",
+      interface_2: "#d9d9d9",
+      interface_3: "#cccccc",
+      background_2: "#f2f2f2"
     },
     dark: {
       text: "#F9FAFB",
-      primary: "#34D399",
-      secondary: "#10B981",
-      accent: "#6EE7B7",
-      background: "#111827",
-      interface: "#1F2937",
-      interface_2: "#374151",
-      interface_3: "#4B5563"
-    }
-  },
-  {
-    name: "Purple Magic",
-    light: {
-      text: "#1E1B4B",
-      primary: "#8B5CF6",
-      secondary: "#7C3AED",
-      accent: "#A78BFA",
-      background: "#FAF5FF",
-      interface: "#F3E8FF",
-      interface_2: "#E9D5FF",
-      interface_3: "#DDD6FE"
-    },
-    dark: {
-      text: "#FAF5FF",
-      primary: "#A78BFA",
-      secondary: "#8B5CF6",
-      accent: "#C4B5FD",
-      background: "#1E1B4B",
-      interface: "#312E81",
-      interface_2: "#3730A3",
-      interface_3: "#4338CA"
-    }
-  },
-  {
-    name: "Sunset Orange",
-    light: {
-      text: "#1C1917",
-      primary: "#F97316",
-      secondary: "#EA580C",
-      accent: "#FB923C",
-      background: "#FFFBEB",
-      interface: "#FEF3C7",
-      interface_2: "#FDE68A",
-      interface_3: "#FCD34D"
-    },
-    dark: {
-      text: "#FFFBEB",
-      primary: "#FB923C",
-      secondary: "#F97316",
-      accent: "#FDBA74",
-      background: "#1C1917",
-      interface: "#292524",
-      interface_2: "#44403C",
-      interface_3: "#57534E"
-    }
-  },
-  {
-    name: "Rose Pink",
-    light: {
-      text: "#881337",
-      primary: "#EC4899",
-      secondary: "#DB2777",
-      accent: "#F472B6",
-      background: "#FDF2F8",
-      interface: "#FCE7F3",
-      interface_2: "#FBCFE8",
-      interface_3: "#F9A8D4"
-    },
-    dark: {
-      text: "#FDF2F8",
-      primary: "#F472B6",
-      secondary: "#EC4899",
-      accent: "#F9A8D4",
-      background: "#881337",
-      interface: "#9F1239",
-      interface_2: "#BE185D",
-      interface_3: "#DB2777"
-    }
-  },
-  {
-    name: "Steel Gray",
-    light: {
-      text: "#111827",
-      primary: "#6B7280",
-      secondary: "#4B5563",
-      accent: "#9CA3AF",
-      background: "#F9FAFB",
-      interface: "#F3F4F6",
-      interface_2: "#E5E7EB",
-      interface_3: "#D1D5DB"
-    },
-    dark: {
-      text: "#F9FAFB",
-      primary: "#9CA3AF",
-      secondary: "#6B7280",
       accent: "#D1D5DB",
-      background: "#111827",
-      interface: "#1F2937",
-      interface_2: "#374151",
-      interface_3: "#4B5563"
+      text_2: "#98aecd",
+      text_3: "#6486b4",
+      primary: "#F471B5",
+      accent_2: "#7DD3FC",
+      accent_3: "#FDE68A",
+      interface: "#293e5b",
+      secondary: "#98F6E4",
+      background: "#1B293D",
+      interface_2: "#32496c",
+      interface_3: "#38537a",
+      background_2: "#21324a"
     }
   },
   {
-    name: "Electric Blue",
+    name: "Supabase",
     light: {
-      text: "#1E3A8A",
-      primary: "#3B82F6",
-      secondary: "#2563EB",
-      accent: "#60A5FA",
-      background: "#EFF6FF",
-      interface: "#DBEAFE",
-      interface_2: "#BFDBFE",
-      interface_3: "#93C5FD"
+      text: "#171717",
+      accent: "#019A55",
+      text_2: "#595959",
+      text_3: "#8c8c8c",
+      primary: "#A0A0A0",
+      accent_2: "#019A55",
+      accent_3: "#171717",
+      interface: "#e6e6e6",
+      secondary: "#019A55",
+      background: "#FFFFFF",
+      interface_2: "#d9d9d9",
+      interface_3: "#cccccc",
+      background_2: "#f2f2f2"
     },
     dark: {
-      text: "#EFF6FF",
-      primary: "#60A5FA",
-      secondary: "#3B82F6",
-      accent: "#93C5FD",
-      background: "#1E3A8A",
-      interface: "#1E40AF",
-      interface_2: "#2563EB",
-      interface_3: "#3B82F6"
+      text: "#FFFFFF",
+      accent: "#3ECF8E",
+      text_2: "#A3A3A3",
+      text_3: "#8F8F8F",
+      primary: "#A0A0A0",
+      accent_2: "#3ECF8E",
+      accent_3: "#EDEDED",
+      interface: "#262c29",
+      secondary: "#3ECF8E",
+      background: "#171717",
+      interface_2: "#343c38",
+      interface_3: "#4e5651",
+      background_2: "#212121"
     }
   },
   {
-    name: "Emerald Shine",
+    name: "Flexoki",
     light: {
-      text: "#064E3B",
-      primary: "#059669",
-      secondary: "#047857",
-      accent: "#10B981",
-      background: "#ECFDF5",
-      interface: "#D1FAE5",
-      interface_2: "#A7F3D0",
-      interface_3: "#6EE7B7"
+      text: "#100F0F",
+      accent: "#BC5214",
+      text_2: "#6F6E68",
+      text_3: "#B7B5AC",
+      primary: "#66800C",
+      accent_2: "#24837B",
+      accent_3: "#205EA6",
+      interface: "#E6E4D9",
+      secondary: "#A02F6F",
+      background: "#FEFCF0",
+      interface_2: "#DAD8CE",
+      interface_3: "#CECDC3",
+      background_2: "#F2F0E5"
     },
     dark: {
-      text: "#ECFDF5",
-      primary: "#10B981",
-      secondary: "#059669",
-      accent: "#34D399",
-      background: "#064E3B",
-      interface: "#065F46",
-      interface_2: "#047857",
-      interface_3: "#059669"
-    }
-  },
-  {
-    name: "Cherry Red",
-    light: {
-      text: "#7F1D1D",
-      primary: "#DC2626",
-      secondary: "#B91C1C",
-      accent: "#EF4444",
-      background: "#FEF2F2",
-      interface: "#FEE2E2",
-      interface_2: "#FECACA",
-      interface_3: "#FCA5A5"
-    },
-    dark: {
-      text: "#FEF2F2",
-      primary: "#EF4444",
-      secondary: "#DC2626",
-      accent: "#F87171",
-      background: "#7F1D1D",
-      interface: "#991B1B",
-      interface_2: "#B91C1C",
-      interface_3: "#DC2626"
-    }
-  },
-  {
-    name: "Golden Hour",
-    light: {
-      text: "#78350F",
-      primary: "#D97706",
-      secondary: "#B45309",
-      accent: "#F59E0B",
-      background: "#FFFBEB",
-      interface: "#FEF3C7",
-      interface_2: "#FDE68A",
-      interface_3: "#FCD34D"
-    },
-    dark: {
-      text: "#FFFBEB",
-      primary: "#F59E0B",
-      secondary: "#D97706",
-      accent: "#FBBF24",
-      background: "#78350F",
-      interface: "#92400E",
-      interface_2: "#B45309",
-      interface_3: "#D97706"
-    }
-  },
-  {
-    name: "Lavender Dream",
-    light: {
-      text: "#581C87",
-      primary: "#9333EA",
-      secondary: "#7C3AED",
-      accent: "#A855F7",
-      background: "#FAF5FF",
-      interface: "#F3E8FF",
-      interface_2: "#E9D5FF",
-      interface_3: "#DDD6FE"
-    },
-    dark: {
-      text: "#FAF5FF",
-      primary: "#A855F7",
-      secondary: "#9333EA",
-      accent: "#C084FC",
-      background: "#581C87",
-      interface: "#6B21A8",
-      interface_2: "#7C3AED",
-      interface_3: "#9333EA"
-    }
-  },
-  {
-    name: "Mint Fresh",
-    light: {
-      text: "#134E4A",
-      primary: "#14B8A6",
-      secondary: "#0D9488",
-      accent: "#2DD4BF",
-      background: "#F0FDFA",
-      interface: "#CCFBF1",
-      interface_2: "#99F6E4",
-      interface_3: "#5EEAD4"
-    },
-    dark: {
-      text: "#F0FDFA",
-      primary: "#2DD4BF",
-      secondary: "#14B8A6",
-      accent: "#5EEAD4",
-      background: "#134E4A",
-      interface: "#115E59",
-      interface_2: "#0D9488",
-      interface_3: "#14B8A6"
+      text: "#CECDC3",
+      accent: "#DA702C",
+      text_2: "#87857F",
+      text_3: "#575653",
+      primary: "#889A39",
+      accent_2: "#39A99F",
+      accent_3: "#4485BE",
+      interface: "#282726",
+      secondary: "#CE5D97",
+      background: "#100F0F",
+      interface_2: "#343331",
+      interface_3: "#403E3C",
+      background_2: "#1C1B1A"
     }
   }
 ];
