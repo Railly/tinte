@@ -7,7 +7,7 @@ export function usePalette() {
   const [base, setBase] = useState("#657eab");
   const [shift, setShift] = useState(0.06);
 
-  const ramp = useMemo(() => generateRamp(base, shift), [base, shift]);
+  const ramp = useMemo(() => generateRamp(base), [base]);
 
   return {
     base,
