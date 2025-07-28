@@ -6,7 +6,7 @@ import TwitterIcon from '@/components/shared/icons/twitter';
 import { useState } from 'react';
 import Logo from '@/components/shared/logo';
 import { Button } from '@/components/ui/button';
-import { SimpleThemeSwitcher } from '@/components/simple-theme-switcher';
+import { ThemeSwitcher } from '@/components/shared/theme-switcher';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,7 +46,7 @@ export function Header() {
 
           {/* CTA + Social */}
           <div className="hidden md:flex items-center gap-3">
-            <SimpleThemeSwitcher />
+            <ThemeSwitcher />
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <GithubIcon className="h-4 w-4" />
             </Button>
@@ -84,7 +84,7 @@ export function Header() {
                 </a>
               ))}
               <div className="flex items-center gap-3 pt-2 border-t border-border/40">
-                <SimpleThemeSwitcher />
+                <ThemeSwitcher />
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                   <GithubIcon className="h-4 w-4" />
                 </Button>

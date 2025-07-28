@@ -3,7 +3,7 @@
 import { ArrowRight } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ThemeCard } from '@/components/theme-card';
+import { ThemeCard } from '@/components/shared/theme-card';
 import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
@@ -32,7 +32,7 @@ interface ThemeData {
   tags: string[];
 }
 
-export function ThemeShowcase() {
+export function Showcase() {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('tweakcn');

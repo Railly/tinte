@@ -19,7 +19,7 @@ import { TailwindIcon } from '@/components/shared/icons/tailwind';
 import { CSSIcon } from '@/components/shared/icons/css';
 import { generateTailwindPalette } from '@/lib/palette-generator';
 import { cn } from '@/lib';
-import { Button } from './ui/button';
+import { Button } from '../../ui/button';
 import { extractTweakcnThemeData } from '@/utils/tweakcn-presets';
 import { extractRaysoThemeData } from '@/utils/rayso-presets';
 import { extractTinteThemeData } from '@/utils/tinte-presets';
@@ -29,7 +29,7 @@ import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
 
-interface HeroInputDockProps {
+interface PromptInputProps {
   onSubmit?: (kind: Kind, raw: string) => void;
 }
 
@@ -52,9 +52,9 @@ interface ThemePreset {
   };
 }
 
-export default function HeroInputDock({
+export default function PromptInput({
   onSubmit,
-}: HeroInputDockProps) {
+}: PromptInputProps) {
   const [prompt, setPrompt] = useState('');
 
   const presets = [
@@ -126,7 +126,7 @@ export default function HeroInputDock({
   const { theme: currentTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { pastedItems, addPastedItem, removePastedItem, updatePastedItem, clearPastedItems } = usePastedItems();
-  const { base, setBase, ramp } = usePalette();
+  const { setBase } = usePalette();
 
   useEffect(() => {
     setMounted(true);
@@ -717,16 +717,6 @@ export default function HeroInputDock({
           </div>
         </div>
       </div>
-
-
-
-      {/* <PaletteControls
-        base={base}
-        setBase={setBase}
-        ramp={ramp}
-      /> */}
-
-      {/* <PalettePreview ramp={ramp} /> */}
 
       <PasteDialog
         open={dialogOpen}

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { ThemeSwitcher } from "@/components/shared/theme-switcher";
 import { useTheme } from "next-themes";
 
 export function PaletteExtractor() {
@@ -70,7 +70,7 @@ export function PaletteExtractor() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-end">
               <Button onClick={handleGeneratePalette} className="w-full">
                 Generate Palette
@@ -134,7 +134,7 @@ export function PaletteExtractor() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-900">{color.name}</span>
-                          <Badge 
+                          <Badge
                             variant={color.accessibility.textOnWhite ? 'default' : 'destructive'}
                             className="text-xs"
                           >
@@ -172,7 +172,7 @@ export function PaletteExtractor() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-100">{color.name}</span>
-                          <Badge 
+                          <Badge
                             variant={color.accessibility.textOnBlack ? 'default' : 'destructive'}
                             className="text-xs"
                           >
