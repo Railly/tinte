@@ -318,11 +318,7 @@ export default function HeroInputDock({
   return (
 
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        className="relative">
+      <div className="relative">
 
         {/* Unified container for textarea and pasted items */}
         <div className={cn(
@@ -490,7 +486,7 @@ export default function HeroInputDock({
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
 
 
       {/* Preset buttons */}
