@@ -1,16 +1,21 @@
 'use client';
 
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import GithubIcon from '@/components/shared/icons/github';
 import TwitterIcon from '@/components/shared/icons/twitter';
-import { useState } from 'react';
 import Logo from '@/components/shared/logo';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/shared/theme-switcher';
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetHeader, 
+  SheetTitle, 
+  SheetTrigger,
+  SheetClose 
+} from '@/components/ui/sheet';
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const navigation = [
     { name: 'Features', href: '#features' },
     { name: 'Roadmap', href: '#roadmap' },
@@ -25,10 +30,7 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center gap-3">
             <Logo size={24} />
-            <div className="flex flex-col">
-              <span className="font-bold text-base">Tinte</span>
-              <span className="text-xs text-muted-foreground -mt-0.5">Theme Editor</span>
-            </div>
+            <span className="font-bold text-base">Tinte</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -58,46 +60,52 @@ export function Header() {
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="md:hidden h-8 w-8 p-0"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </Button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-border/40 py-4">
-            <nav className="flex flex-col gap-4">
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </a>
-              ))}
-              <div className="flex items-center gap-3 pt-2 border-t border-border/40">
-                <ThemeSwitcher />
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <GithubIcon className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <TwitterIcon className="h-4 w-4" />
-                </Button>
-                <Button size="sm" className="h-8 px-3 text-xs flex-1">
-                  Get Started
-                </Button>
+          {/* Mobile Menu Sheet */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden h-8 w-8 p-0"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72">
+              <SheetHeader>
+                <SheetTitle>Navigation</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-6 mt-6">
+                <nav className="flex flex-col gap-4">
+                  {navigation.map((item) => (
+                    <SheetClose key={item.name} asChild>
+                      <a
+                        href={item.href}
+                        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {item.name}
+                      </a>
+                    </SheetClose>
+                  ))}
+                </nav>
+                <div className="flex flex-col gap-4 pt-4 border-t border-border/40">
+                  <div className="flex items-center gap-3">
+                    <ThemeSwitcher />
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <GithubIcon className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <TwitterIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Button size="sm" className="h-9 px-4 text-sm w-full">
+                    Get Started
+                  </Button>
+                </div>
               </div>
-            </nav>
-          </div>
-        )}
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

@@ -86,30 +86,32 @@ export function Roadmap() {
   return (
     <section id="roadmap" className="py-24 bg-muted/20">
       <div className="px-4 max-w-7xl mx-auto">
-        <div className="flex items-start justify-between mb-16">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full" />
+        <div className="space-y-6 mb-16">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full" />
+                  </div>
+                  <h2 className="text-xl font-medium">Roadmap</h2>
                 </div>
-                <h2 className="text-xl font-medium">Roadmap</h2>
               </div>
+              <p className="text-muted-foreground text-sm">
+                Follow here what we are doing now in this project and what we will do in the future.
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Follow us on X to stay up to date with updates.
+              </p>
             </div>
-            <p className="text-muted-foreground text-sm">
-              Follow here what we are doing now in this project and what we will do in the future.
-            </p>
-            <p className="text-muted-foreground text-sm">
-              Follow us on X to stay up to date with updates.
-            </p>
+            <Button variant="outline" className="gap-2 h-9 text-sm w-full sm:w-auto" onClick={() => console.log('Suggest feature')}>
+              <Plus className="w-4 h-4" />
+              Suggest a Feature
+            </Button>
           </div>
-          <Button variant="outline" className="gap-2 h-9 text-sm" onClick={() => console.log('Suggest feature')}>
-            <Plus className="w-4 h-4" />
-            Suggest a Feature
-          </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {Object.entries(roadmapSections).map(([sectionTitle, items], sectionIndex) => (
             <motion.div
               key={sectionTitle}

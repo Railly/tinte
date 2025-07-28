@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border/40">
       <div className="px-4 py-6">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-xs text-muted-foreground">
+        <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
           <a href="#" className="hover:text-foreground transition-colors flex items-center gap-1">
             Discord <DiscordIcon className="w-3 h-3" />
           </a>
