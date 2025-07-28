@@ -71,34 +71,35 @@ export function Header() {
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
+            <SheetContent side="right" className="w-80 sm:w-96 p-8">
               <SheetHeader>
-                <SheetTitle>Navigation</SheetTitle>
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col gap-6 mt-6">
-                <nav className="flex flex-col gap-4">
+              <div className="flex flex-col h-full">
+                <nav className="flex flex-col gap-8 pt-4">
                   {navigation.map((item) => (
                     <SheetClose key={item.name} asChild>
                       <a
                         href={item.href}
-                        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        className="text-2xl font-medium text-foreground hover:text-primary transition-colors"
                       >
                         {item.name}
                       </a>
                     </SheetClose>
                   ))}
                 </nav>
-                <div className="flex flex-col gap-4 pt-4 border-t border-border/40">
-                  <div className="flex items-center gap-3">
+                
+                <div className="mt-auto flex flex-col gap-6">
+                  <div className="flex items-center justify-center gap-6">
                     <ThemeSwitcher />
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <GithubIcon className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="h-12 w-12 p-0">
+                      <GithubIcon className="h-8 w-8" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <TwitterIcon className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="h-12 w-12 p-0">
+                      <TwitterIcon className="h-8 w-8" />
                     </Button>
                   </div>
-                  <Button size="sm" className="h-9 px-4 text-sm w-full">
+                  <Button size="lg" className="h-12 px-8 text-base w-full font-medium">
                     Get Started
                   </Button>
                 </div>
