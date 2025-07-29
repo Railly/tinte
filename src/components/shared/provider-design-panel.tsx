@@ -3,27 +3,20 @@
 import * as React from 'react';
 import { useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TinteThemeSwitcher } from './tinte-theme-switcher';
 import { ThemeData } from '@/lib/theme-applier';
-
-type ThemeMode = 'light' | 'dark';
 
 export function ProviderDesignPanel({
   allThemes,
   activeThemeRef,
   onThemeSelect,
-  mode,
-  setTheme,
   currentTokens,
   onTokenEdit,
 }: {
   activeThemeRef: React.RefObject<ThemeData | null>;
   allThemes: ThemeData[];
   onThemeSelect: (theme: ThemeData) => void;
-  mode: ThemeMode;
-  setTheme: (theme: ThemeMode) => void;
   currentTokens: Record<string, string>;
   onTokenEdit: (key: string, value: string) => void;
 }) {
@@ -68,7 +61,7 @@ export function ProviderDesignPanel({
       <div className="flex-1 min-h-0">
         <ScrollArea className="h-full">
           <div className="p-3 space-y-2">
-            <div className="text-xs font-medium text-muted-foreground">Tokens ({mode})</div>
+            <div className="text-xs font-medium text-muted-foreground">Tokens</div>
             <div className="space-y-2">
               {Object.entries(currentTokens).map(([key, value]) => (
                 <div key={key} className="space-y-1">

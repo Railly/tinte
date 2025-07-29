@@ -8,11 +8,11 @@ import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
 import { useState } from 'react';
-import { useThemeSystem } from '@/hooks/use-theme-system';
+import { useTinteTheme } from '@/hooks/use-tinte-theme';
 
 
 export function Showcase() {
-  const { handleThemeSelect, tweakcnThemes, raysoThemes, tinteThemes } = useThemeSystem();
+  const { handleThemeSelect, tweakcnThemes, raysoThemes, tinteThemes } = useTinteTheme();
   const [activeTab, setActiveTab] = useState('tweakcn');
 
 
@@ -67,10 +67,10 @@ export function Showcase() {
         {activeTab === 'tweakcn' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {tweakcnThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard 
-                key={theme.id} 
-                theme={{ ...theme, id: `tweakcn-${theme.id}` }} 
-                index={index} 
+              <ThemeCard
+                key={theme.id}
+                theme={{ ...theme, id: `tweakcn-${theme.id}` }}
+                index={index}
                 onThemeSelect={handleThemeSelect}
               />
             ))}
