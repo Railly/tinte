@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { ChevronsUpDown } from 'lucide-react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState } from 'nuqs';
 
 import {
@@ -34,11 +33,6 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
 
   const activeProvider = ALL_PROVIDERS.find(p => p.id === provider) || ALL_PROVIDERS[0];
 
-  useHotkeys('meta+k', (e) => {
-    e.preventDefault();
-    setOpen(!open);
-  });
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -56,7 +50,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align='start' className="w-[300px] p-0">
+      <PopoverContent align='start' className="w-[230px] p-0">
         <Command>
           <CommandInput placeholder="Search providers..." className="h-9" />
           <CommandList>

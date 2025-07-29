@@ -1,27 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { Search } from 'lucide-react';
+import { ChevronsUpDown } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { ThemeData } from '@/lib/theme-applier';
-
-function ColorDots({ colors }: { colors: string[] }) {
-  return (
-    <div className="flex gap-0.5">
-      {colors.slice(0, 5).map((c, i) => (
-        <div
-          key={i}
-          className="h-3 w-3 rounded-sm border border-border/30"
-          style={{ backgroundColor: c }}
-        />
-      ))}
-    </div>
-  );
-}
+import { ThemeColorPreview } from '@/components/shared/theme-color-preview';
 
 export function TinteThemeSwitcher({
   themes,
@@ -37,16 +23,6 @@ export function TinteThemeSwitcher({
   label?: string;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [q, setQ] = React.useState('');
-  const list = React.useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (!s) return themes;
-    return themes.filter(t =>
-      t.name.toLowerCase().includes(s) ||
-      (t.author ?? '').toLowerCase().includes(s) ||
-      (t.tags ?? []).some(tag => tag.toLowerCase().includes(s))
-    );
-  }, [themes, q]);
 
   const active = themes.find(t => t.id === activeId);
 
@@ -55,57 +31,51 @@ export function TinteThemeSwitcher({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
+          role="combobox"
+          aria-expanded={open}
           size="sm"
-          className={cn('justify-start gap-2', triggerClassName)}
+          className={cn('justify-between gap-2', triggerClassName)}
           title={label}
         >
-          <Search className="size-4" />
-          <span className="truncate">
-            {active ? active.name : label}
-          </span>
+          <div className="flex items-center gap-2 min-w-0">
+            {active && <ThemeColorPreview colors={active.colors} maxColors={3} />}
+            <span className="truncate">
+              {active ? active.name : label}
+            </span>
+          </div>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-80 p-0">
-        <div className="p-2 border-b">
-          <Input
-            placeholder="Search themes…"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            className="h-8 text-xs"
-            autoFocus
-          />
-        </div>
-        <ScrollArea className="h-80 overflow-hidden">
-          <div className="p-1">
-            {list.length === 0 && (
-              <div className="p-3 text-xs text-muted-foreground text-center">
-                No themes found
-              </div>
-            )}
-            {list.map(t => {
-              const dotColors = Object.values(t.colors);
-              const isActive = t.id === activeId;
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => { onSelect(t); setOpen(false); }}
-                  className={cn(
-                    'w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-accent hover:text-accent-foreground',
-                    isActive && 'bg-muted'
-                  )}
+      <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
+        <Command>
+          <CommandInput placeholder="Search themes..." className="h-9" />
+          <CommandList>
+            <CommandEmpty>No theme found.</CommandEmpty>
+            <CommandGroup>
+              {themes.map((theme) => (
+                <CommandItem
+                  key={theme.id}
+                  value={`${theme.name} ${theme.author || ''} ${(theme.tags || []).join(' ')}`}
+                  onSelect={() => {
+                    onSelect(theme);
+                    setOpen(false);
+                  }}
+                  className="gap-2"
                 >
-                  <ColorDots colors={dotColors} />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs font-medium truncate">{t.name}</div>
-                    <div className="text-[10px] text-muted-foreground truncate">
-                      {t.author ?? 'unknown'}
-                    </div>
+                  <ThemeColorPreview colors={theme.colors} maxColors={3} />
+                  <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                    <span className="text-xs font-medium truncate">{theme.name}</span>
+                    {theme.author && (
+                      <span className="text-[10px] text-muted-foreground truncate">
+                        {theme.author}
+                      </span>
+                    )}
                   </div>
-                </button>
-              );
-            })}
-          </div>
-        </ScrollArea>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </PopoverContent>
     </Popover>
   );
