@@ -1,8 +1,6 @@
 'use client';
 
-import { AnimatePresence } from 'motion/react';
-import { ChatSidebar } from './chat-sidebar';
-import { ChatPreview } from './chat-preview';
+import { TinteWorkbench } from './tinte-workbench';
 import { useChatState } from '@/hooks/use-chat-state';
 
 interface ChatPageProps {
@@ -14,16 +12,11 @@ export function ChatPage({ chatId }: ChatPageProps) {
 
   return (
     <div className="flex">
-      <ChatSidebar
+      <TinteWorkbench
         split={split}
         loading={loading}
         seed={seed}
       />
-      <AnimatePresence>
-        <ChatPreview
-          split={split}
-        />
-      </AnimatePresence>
     </div>
   );
 }

@@ -43,7 +43,7 @@ export function ProviderDesignPanel({
   return (
     <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_4.5rem)]">
       {/* Fixed controls section */}
-      <div className="p-3 space-y-4 border-b flex-shrink-0">
+      <div className="px-3 space-y-4 border-b flex-shrink-0">
         {/* Theme switcher (popover + search) */}
         <div className="space-y-2">
           <div className="text-xs font-medium text-muted-foreground">Theme</div>
@@ -59,31 +59,29 @@ export function ProviderDesignPanel({
 
       {/* Scrollable token editor section */}
       <div className="flex-1 min-h-0">
-        <ScrollArea className="h-full">
-          <div className="p-3 space-y-2">
-            <div className="text-xs font-medium text-muted-foreground">Tokens</div>
-            <div className="space-y-2">
-              {Object.entries(currentTokens).map(([key, value]) => (
-                <div key={key} className="space-y-1">
-                  <div className="text-xs font-mono text-muted-foreground">{key}</div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="mt-0.5 inline-block h-4 w-4 flex-shrink-0 rounded border border-border"
-                      style={{ backgroundColor: value }}
-                    />
-                    <Input
-                      value={value}
-                      onChange={(e) => onTokenEdit(key, e.target.value)}
-                      className="h-7 text-xs font-mono"
-                      placeholder="#000000"
-                      spellCheck={false}
-                    />
-                  </div>
+        <div className="p-3 space-y-2">
+          <div className="text-xs font-medium text-muted-foreground">Tokens</div>
+          <div className="space-y-2">
+            {Object.entries(currentTokens).map(([key, value]) => (
+              <div key={key} className="space-y-1">
+                <div className="text-xs font-mono text-muted-foreground">{key}</div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="mt-0.5 inline-block h-4 w-4 flex-shrink-0 rounded border border-border"
+                    style={{ backgroundColor: value }}
+                  />
+                  <Input
+                    value={value}
+                    onChange={(e) => onTokenEdit(key, e.target.value)}
+                    className="h-7 text-xs font-mono"
+                    placeholder="#000000"
+                    spellCheck={false}
+                  />
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        </ScrollArea>
+        </div>
       </div>
     </ScrollArea>
   );

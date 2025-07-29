@@ -24,9 +24,7 @@ const ExamplesPreviewContainer = ({
 }) => {
   return (
     <div className={cn("space-y-6", className)}>
-      <div className="@container mt-0 h-full w-full space-y-6">
-        <Suspense fallback={<LoadingSkeleton />}>{children}</Suspense>
-      </div>
+      <Suspense fallback={<LoadingSkeleton />}>{children}</Suspense>
     </div>
   );
 };

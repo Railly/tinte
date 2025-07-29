@@ -16,40 +16,33 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ chatId }: ChatHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="px-4">
-        <div className="relative flex h-[var(--header-height)] items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Logo size={24} />
-            <Slash className="w-4 h-4 text-primary/40 -rotate-[15deg] brightness-125" />
-            <span className="font-medium text-sm">
-              {chatId.slice(0, 8)}
-            </span>
-            <Slash className="w-4 h-4 text-primary/40 -rotate-[15deg] brightness-125" />
-            <ProviderSwitcher />
-          </div>
+    <header className="sticky px-4 flex items-center justify-between h-[var(--header-height)] top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+      <div className="flex items-center gap-3">
+        <Logo size={24} />
+        <Slash className="w-4 h-4 text-muted-foreground" />
+        <span className="font-medium text-sm">
+          {chatId.slice(0, 8)}
+        </span>
+        <Slash className="w-4 h-4 text-muted-foreground" />
+        <ProviderSwitcher />
+      </div>
 
-
-          <div className="flex justify-center items-center flex-col gap-2">
-            <div className="flex items-center justify-center gap-2">
-              <ThemeSwitcher />
-              <Button variant="ghost" size="sm" className="size-8 p-0" asChild>
-                <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
-                  <GithubIcon className="h-6 w-6" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="sm" className="size-8 p-0" asChild>
-                <a href={siteConfig.links.twitter} target="_blank" rel="noopener noreferrer">
-                  <TwitterIcon className="h-6 w-6" />
-                </a>
-              </Button>
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="" alt="User" />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-        </div>
+      <div className="flex items-center gap-2">
+        <ThemeSwitcher />
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+          <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
+            <GithubIcon className="h-4 w-4" />
+          </a>
+        </Button>
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+          <a href={siteConfig.links.twitter} target="_blank" rel="noopener noreferrer">
+            <TwitterIcon className="h-4 w-4" />
+          </a>
+        </Button>
+        <Avatar className="h-8 w-8">
+          <AvatarImage src="" alt="User" />
+          <AvatarFallback>U</AvatarFallback>
+        </Avatar>
       </div>
     </header>
   );
