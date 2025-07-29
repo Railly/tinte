@@ -15,6 +15,7 @@ import {
   SheetTrigger,
   SheetClose
 } from '@/components/ui/sheet';
+import Link from 'next/link';
 
 export function Header() {
   const navigation = [
@@ -60,8 +61,10 @@ export function Header() {
                 <TwitterIcon className="h-4 w-4" />
               </a>
             </Button>
-            <Button size="sm" className="h-7 px-3 text-xs">
-              Get Started
+            <Button size="sm" className="h-7 px-3 text-xs" asChild>
+              <Link href="/chat">
+                Get Started
+              </Link>
             </Button>
           </div>
 

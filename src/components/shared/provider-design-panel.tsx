@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ColorPickerInput } from '@/components/ui/color-picker-input';
 import { TinteThemeSwitcher } from './tinte-theme-switcher';
 import { ThemeData } from '@/lib/theme-applier';
+import { DEFAULT_THEME_ID } from '@/utils/tinte-presets';
 
 export function ProviderDesignPanel({
   allThemes,
@@ -38,7 +39,7 @@ export function ProviderDesignPanel({
     [allThemes]
   );
 
-  const activeId = activeThemeRef.current?.id ?? null;
+  const activeId = activeThemeRef.current?.id ?? DEFAULT_THEME_ID;
 
   return (
     <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_4.5rem)]">

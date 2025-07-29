@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useQueryState } from "nuqs";
 import { useTinteTheme } from "./use-tinte-theme";
 import { useTokenEditor } from "./use-token-editor";
@@ -7,7 +7,7 @@ import { useChatState } from "./use-chat-state";
 import type { ThemeData as AppThemeData } from "@/lib/theme-applier";
 import type { TinteTheme } from "@/types/tinte";
 import { SeedPayload } from "@/utils/seed-mapper";
-
+import { DEFAULT_THEME } from "@/utils/tinte-presets";
 export type WorkbenchTab = "chat" | "design" | "mapping";
 
 export interface UseWorkbenchStateReturn {
@@ -29,6 +29,7 @@ export interface UseWorkbenchStateReturn {
   tinteTheme: TinteTheme;
   allThemes: unknown[];
   isDark: boolean;
+  activeThemeRef: React.RefObject<AppThemeData | null>;
 
   // Token editing
   currentTokens: Record<string, string>;
@@ -45,12 +46,22 @@ export interface UseWorkbenchStateReturn {
   exportTheme: (adapterId: string, theme: TinteTheme) => any;
 }
 
-export function useWorkbenchState(chatId: string): UseWorkbenchStateReturn {
+export function useWorkbenchState(
+  chatId: string,
+  defaultTab: WorkbenchTab = "chat"
+): UseWorkbenchStateReturn {
   // Chat state
   const { seed, split, loading } = useChatState(chatId);
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState<WorkbenchTab>("chat");
+  // Tab state with nuqs
+  const [activeTab, setActiveTab] = useQueryState("tab", {
+    defaultValue: defaultTab,
+    parse: (value): WorkbenchTab => {
+      if (value === "design" || value === "mapping") return value;
+      return "chat";
+    },
+    serialize: (value) => value,
+  });
 
   // Provider state
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
@@ -63,16 +74,31 @@ export function useWorkbenchState(chatId: string): UseWorkbenchStateReturn {
     allThemes,
     isDark,
   } = useTinteTheme();
+
   const { currentTokens, handleTokenEdit, resetTokens } = useTokenEditor(
-    activeThemeRef.current,
+    activeThemeRef.current || DEFAULT_THEME,
     isDark
   );
 
   // Derived state
   const currentProvider = provider || "shadcn";
   const currentAdapter = getPreviewableAdapter(currentProvider);
-  const currentTheme = (activeThemeRef.current || allThemes[0]) as AppThemeData;
-  const tinteTheme: TinteTheme = currentTheme.rawTheme as TinteTheme;
+  const currentTheme = (activeThemeRef.current ||
+    DEFAULT_THEME) as AppThemeData;
+  // Ensure we have a valid TinteTheme
+  let tinteTheme: TinteTheme;
+
+  if (
+    currentTheme?.rawTheme &&
+    typeof currentTheme.rawTheme === "object" &&
+    "light" in currentTheme.rawTheme &&
+    "dark" in currentTheme.rawTheme
+  ) {
+    tinteTheme = currentTheme.rawTheme as TinteTheme;
+  } else {
+    // Fallback to DEFAULT_THEME's rawTheme
+    tinteTheme = DEFAULT_THEME.rawTheme as TinteTheme;
+  }
 
   // Theme conversion
   const conversion = useThemeConversion(tinteTheme);
@@ -105,6 +131,7 @@ export function useWorkbenchState(chatId: string): UseWorkbenchStateReturn {
     tinteTheme,
     allThemes,
     isDark,
+    activeThemeRef, // Add this for ProviderDesignPanel
 
     // Token editing
     currentTokens,

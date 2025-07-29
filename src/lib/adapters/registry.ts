@@ -56,6 +56,7 @@ class AdapterRegistry {
       return adapter.convert(theme) as T;
     } catch (error) {
       console.error(`Error converting theme with adapter ${adapterId}:`, error);
+      console.error('Theme was:', theme);
       return null;
     }
   }

@@ -6,10 +6,9 @@ import { cn } from "@/lib/utils";
 interface UnifiedPreviewProps {
   theme: TinteTheme;
   className?: string;
-  onExport?: (adapterId: string, filename: string, content: string) => void;
 }
 
-export function UnifiedPreview({ theme, className, onExport }: UnifiedPreviewProps) {
+export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
   const currentAdapter = adapterRegistry.getPreviewable(provider || 'shadcn');
 

@@ -23,6 +23,27 @@ export function useTinteTheme() {
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = mounted && currentTheme === "dark";
 
+  // Apply default Tinte theme on mount
+  useEffect(() => {
+    if (!mounted || activeThemeRef.current) return;
+
+    const defaultTinteTheme = extractTinteThemeData(isDark)[0];
+    if (defaultTinteTheme) {
+      const themeData = {
+        ...defaultTinteTheme,
+        description: "Default Tinte theme with modern design principles",
+        author: "tinte",
+        downloads: 5000,
+        likes: 250,
+        views: 10000,
+        tags: ["default", "tinte", "premium", "design"],
+      };
+
+      activeThemeRef.current = themeData;
+      applyThemeWithTransition(themeData, isDark ? "dark" : "light");
+    }
+  }, [mounted, isDark]);
+
   const handleThemeSelect = useCallback(
     (selectedTheme: AppThemeData) => {
       const now = Date.now();

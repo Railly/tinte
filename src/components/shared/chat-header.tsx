@@ -12,6 +12,7 @@ import TwitterIcon from './icons/twitter';
 import { Separator } from '../ui/separator';
 import DiscordIcon from './icons/discord';
 import { TinteCommandMenu } from '../tinte-command-menu';
+import Link from 'next/link';
 
 interface ChatHeaderProps {
   chatId: string;
@@ -21,7 +22,9 @@ export function ChatHeader({ chatId }: ChatHeaderProps) {
   return (
     <header className="sticky px-4 flex items-center justify-between h-[var(--header-height)] top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="flex items-center gap-3">
-        <Logo size={24} />
+        <Link href="/">
+          <Logo size={24} />
+        </Link>
         <Slash className="w-4 h-4 text-border -rotate-[15deg]" />
         <span className="font-medium text-sm">
           {chatId.slice(0, 8)}

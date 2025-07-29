@@ -1,8 +1,65 @@
 import { TinteTheme } from "@/types/tinte";
+import { ThemeData } from "@/lib/theme-applier";
+
+export const DEFAULT_THEME_ID = "default-theme";
+export const DEFAULT_THEME_NAME = "text0";
+
+export const DEFAULT_THEME_PRESET: TinteTheme = {
+  light: {
+    text: "#000000",
+    accent: "#000000",
+    text_2: "#666666",
+    text_3: "#999999",
+    primary: "#000000",
+    accent_2: "#000000",
+    accent_3: "#000000",
+    interface: "#e5e5e5",
+    secondary: "#DDF2FF",
+    background: "#ffffff",
+    interface_2: "#d4d4d4",
+    interface_3: "#b5b5b5",
+    background_2: "#f5f5f5",
+  },
+  dark: {
+    text: "#ffffff",
+    accent: "#ffffff",
+    text_2: "#a3a3a3",
+    text_3: "#737373",
+    primary: "#ffffff",
+    accent_2: "#ffffff",
+    accent_3: "#ffffff",
+    interface: "#404040",
+    secondary: "#DDF2FF",
+    background: "#000000",
+    interface_2: "#525252",
+    interface_3: "#666666",
+    background_2: "#262626",
+  },
+};
+
+export const DEFAULT_THEME: ThemeData = {
+  id: DEFAULT_THEME_ID,
+  name: "text0",
+  description: "Default theme based on current design system",
+  author: "tinte",
+  downloads: 0,
+  likes: 0,
+  views: 0,
+  createdAt: "2024-01-20",
+  colors: {
+    primary: "#464646",
+    secondary: "#616161",
+    accent: "#9C9B9B",
+    background: "#FFF",
+    foreground: "#000000",
+  },
+  tags: ["default", "system"],
+  rawTheme: DEFAULT_THEME_PRESET,
+};
 
 // Extract themes for theme showcase
 export function extractTinteThemeData(isDark = false) {
-  return tintePresets.map((preset, index) => {
+  const _presets = tintePresets.map((preset, index) => {
     const colorData = isDark ? preset.dark : preset.light;
     return {
       id: `tinte-${index + 1}`,
@@ -21,6 +78,7 @@ export function extractTinteThemeData(isDark = false) {
       } as TinteTheme,
     };
   });
+  return [DEFAULT_THEME, ..._presets];
 }
 
 export const tintePresets = [

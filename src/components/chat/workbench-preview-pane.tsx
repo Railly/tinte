@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -88,7 +87,6 @@ function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
     <ScrollArea className="p-4 h-[calc(100dvh-var(--header-height)_-_4.5rem)]">
       <UnifiedPreview
         theme={theme}
-        onExport={handleExport}
       />
     </ScrollArea>
   );
@@ -100,12 +98,7 @@ export function WorkbenchPreviewPane({
   onExportTinte,
 }: WorkbenchPreviewPaneProps) {
   return (
-    <motion.main
-      key="preview"
-      initial={{ opacity: 0, x: 24 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 24 }}
-      transition={{ type: 'spring', ...CHAT_CONFIG.ANIMATION.PREVIEW_SPRING }}
+    <main
       className="flex flex-col overflow-hidden w-full"
     >
       <PreviewPaneHeader
@@ -116,6 +109,6 @@ export function WorkbenchPreviewPane({
       <Separator />
 
       <PreviewPaneContent theme={theme} />
-    </motion.main>
+    </main>
   );
 }
