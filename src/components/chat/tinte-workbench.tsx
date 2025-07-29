@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
-import { Download, Eye, RefreshCcw, Sun, Moon } from 'lucide-react';
+import { Download, RefreshCcw, Sun, Moon } from 'lucide-react';
 
 import { PROVIDERS, ThemeMode } from '@/lib/providers';
 import { ALL_PROVIDERS } from '@/config/providers';
@@ -32,7 +32,6 @@ export function TinteWorkbench({ chatId }: TinteWorkbenchProps) {
   const [tab, setTab] = useState<'chat' | 'design' | 'mapping'>('chat');
   const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
   const [mode, setMode] = useState<ThemeMode>('light');
-  const [compare, setCompare] = useState(false);
 
   const { activeThemeRef, handleThemeSelect, allThemes, isDark } = useTinteTheme();
   const { currentTokens, handleTokenEdit, resetTokens } = useTokenEditor(activeThemeRef.current, isDark);
@@ -102,8 +101,6 @@ export function TinteWorkbench({ chatId }: TinteWorkbenchProps) {
               provider={currentProviderConfig}
               mode={mode}
               setMode={setMode}
-              compare={compare}
-              setCompare={setCompare}
               onExport={() => {
                 if (currentProvider?.export) {
                   const exportData = currentProvider.export(currentTheme);
@@ -118,7 +115,6 @@ export function TinteWorkbench({ chatId }: TinteWorkbenchProps) {
               providerConfig={currentProviderConfig}
               theme={currentTheme}
               mode={mode}
-              compare={compare}
             />
           </motion.main>
         )}
@@ -132,15 +128,11 @@ function RightPaneHeader({
   provider,
   mode,
   setMode,
-  compare,
-  setCompare,
   onExport,
 }: {
   provider: { id: string; name: string; icon: React.ComponentType<{ className?: string }> };
   mode: ThemeMode;
   setMode: (m: ThemeMode) => void;
-  compare: boolean;
-  setCompare: (v: boolean) => void;
   onExport: () => void;
 }) {
   const Icon = provider.icon;
@@ -154,15 +146,6 @@ function RightPaneHeader({
 
       <div className="flex items-center gap-2">
         <ThemeSwitcher variant="dual" />
-
-        <Button
-          variant={compare ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setCompare(!compare)}
-        >
-          <Eye className="mr-2 h-4 w-4" />
-          {compare ? 'Compare: On' : 'Compare'}
-        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -195,16 +178,13 @@ function PreviewContent({
   providerConfig,
   theme,
   mode,
-  compare,
 }: {
   provider: any;
   providerConfig: { id: string; name: string; icon: React.ComponentType<{ className?: string }> };
   theme: AppThemeData;
   mode: ThemeMode;
-  compare: boolean;
 }) {
   const PreviewComponent = provider?.Preview;
-  const ShadcnProvider = PROVIDERS.shadcn;
 
   if (!PreviewComponent) {
     return (
@@ -216,31 +196,7 @@ function PreviewContent({
 
   return (
     <ScrollArea className="p-4 h-[calc(100dvh-var(--header-height)_-_4.5rem)]">
-      {!compare ? (
-        <PreviewComponent theme={theme} mode={mode} />
-      ) : (
-        <div className="grid h-full grid-cols-2 gap-4">
-          <div className="flex flex-col">
-            <div className="text-sm font-medium text-muted-foreground pb-2">
-              {providerConfig.name} ({mode})
-            </div>
-            <div className="flex-1">
-              <PreviewComponent theme={theme} mode={mode} />
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <div className="text-sm font-medium text-muted-foreground pb-2">
-              shadcn/ui ({mode})
-            </div>
-            <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_2.5rem)]">
-              {ShadcnProvider?.Preview && (
-                <ShadcnProvider.Preview theme={theme} mode={mode} />
-              )}
-            </ScrollArea>
-          </div>
-        </div>
-      )}
-    </ScrollArea >
+      <PreviewComponent theme={theme} mode={mode} />
+    </ScrollArea>
   );
 }
