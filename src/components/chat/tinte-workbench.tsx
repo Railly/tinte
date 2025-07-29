@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Separator } from '@/components/ui/separator';
 import { Download, Eye, RefreshCcw, Moon, Sun } from 'lucide-react';
 
-import { PROVIDERS } from '@/lib/providers';
+import { PROVIDERS, ThemeMode } from '@/lib/providers';
 import { ALL_PROVIDERS } from '@/config/providers';
 import { ProviderDesignPanel } from '@/components/shared/provider-design-panel';
 import { ChatContent } from './chat-content';
@@ -17,20 +17,17 @@ import { MappingPanel } from './mapping-panel';
 import { useTokenEditor } from '@/hooks/use-token-editor';
 import { useTinteTheme } from '@/hooks/use-tinte-theme';
 import { CHAT_CONFIG } from '@/lib/chat-constants';
-import type { SeedPayload } from '@/utils/seed-mapper';
 import type { ThemeData as AppThemeData } from '@/lib/theme-applier';
 import { useQueryState } from 'nuqs';
 import { ScrollArea } from '../ui/scroll-area';
-
-export type ThemeMode = 'light' | 'dark';
+import { useChatState } from '@/hooks/use-chat-state';
 
 interface TinteWorkbenchProps {
-  split: boolean;
-  loading: boolean;
-  seed: SeedPayload | null;
+  chatId: string;
 }
 
-export function TinteWorkbench({ split, loading, seed }: TinteWorkbenchProps) {
+export function TinteWorkbench({ chatId }: TinteWorkbenchProps) {
+  const { seed, split, loading } = useChatState(chatId);
   const [tab, setTab] = useState<'chat' | 'design' | 'mapping'>('chat');
   const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
   const [mode, setMode] = useState<ThemeMode>('light');

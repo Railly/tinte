@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
+import { ColorPickerInput } from '@/components/ui/color-picker-input';
 import { TinteThemeSwitcher } from './tinte-theme-switcher';
 import { ThemeData } from '@/lib/theme-applier';
 
@@ -65,19 +65,10 @@ export function ProviderDesignPanel({
             {Object.entries(currentTokens).map(([key, value]) => (
               <div key={key} className="space-y-1">
                 <div className="text-xs font-mono text-muted-foreground">{key}</div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="mt-0.5 inline-block h-4 w-4 flex-shrink-0 rounded border border-border"
-                    style={{ backgroundColor: value }}
-                  />
-                  <Input
-                    value={value}
-                    onChange={(e) => onTokenEdit(key, e.target.value)}
-                    className="h-7 text-xs font-mono"
-                    placeholder="#000000"
-                    spellCheck={false}
-                  />
-                </div>
+                <ColorPickerInput
+                  color={value}
+                  onChange={(newValue) => onTokenEdit(key, newValue)}
+                />
               </div>
             ))}
           </div>
