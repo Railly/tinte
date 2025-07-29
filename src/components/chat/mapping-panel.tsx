@@ -4,8 +4,7 @@ import * as React from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
-import { tinteToShadcn } from '@/lib/tinte-to-shadcn';
-import { tinteToVSCode } from '@/lib/tinte-to-vscode';
+import { adapterRegistry } from '@/lib/adapters';
 import type { ThemeData as AppThemeData } from '@/lib/theme-applier';
 import type { TinteTheme } from '@/types/tinte';
 import { ScrollArea } from '../ui/scroll-area';
@@ -136,7 +135,7 @@ function generateMappingData(
 
   try {
     if (provider === 'shadcn') {
-      const shadcnTheme = tinteToShadcn(tinteTheme);
+      const shadcnTheme = adapterRegistry.convert("shadcn", tinteTheme);
       const shadcnBlock = shadcnTheme[mode];
 
       Object.entries(shadcnBlock).forEach(([token, value]) => {
@@ -175,7 +174,7 @@ function generateMappingData(
         });
       });
     } else if (provider === 'vscode') {
-      const vscodeThemes = tinteToVSCode(tinteTheme, theme.name || 'Custom Theme');
+      const vscodeThemes = adapterRegistry.convert("vscode", tinteTheme);
       const vscodeTheme = vscodeThemes[mode];
       const vscodeColors = vscodeTheme?.colors || {};
 

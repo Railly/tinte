@@ -1,3 +1,4 @@
+import { adapterRegistry } from "@/lib/adapters";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import { WarpIcon } from "@/components/shared/icons/warp";
@@ -14,7 +15,19 @@ import { NeovimIcon } from "@/components/shared/icons/neovim";
 import { ObsidianIcon } from "@/components/shared/icons/obsidian";
 import { GIMPIcon } from "@/components/shared/icons/gimp";
 
-export const PROVIDERS = [
+export function getAvailableProviders() {
+  return adapterRegistry.getAll();
+}
+
+export function getPreviewableProviders() {
+  return adapterRegistry.getAllPreviewable();
+}
+
+export function getProvidersByCategory(category: string) {
+  return adapterRegistry.getByCategory(category as any);
+}
+
+export const LEGACY_PROVIDERS = [
   "shadcn/ui",
   "VS Code",
   "Warp",
@@ -32,10 +45,10 @@ export const PROVIDERS = [
   "GIMP",
 ] as const;
 
-export type Provider = (typeof PROVIDERS)[number];
+export type LegacyProvider = (typeof LEGACY_PROVIDERS)[number];
 
-export const PROVIDER_ICONS: Record<
-  Provider,
+export const LEGACY_PROVIDER_ICONS: Record<
+  LegacyProvider,
   React.ComponentType<{ className?: string }>
 > = {
   "shadcn/ui": ShadcnIcon,
@@ -55,24 +68,33 @@ export const PROVIDER_ICONS: Record<
   GIMP: GIMPIcon,
 };
 
-export const ALL_PROVIDERS = [
-  { id: "shadcn", name: "shadcn/ui", icon: ShadcnIcon },
-  { id: "vscode", name: "VS Code", icon: VSCodeIcon },
-  { id: "zed", name: "Zed", icon: ZedIcon },
-  { id: "warp", name: "Warp", icon: WarpIcon },
-  { id: "alacritty", name: "Alacritty", icon: AlacrittyIcon },
-  { id: "slack", name: "Slack", icon: SlackIcon },
-  { id: "kitty", name: "Kitty", icon: KittyIcon },
-  { id: "ghostty", name: "Ghostty", icon: GhosttyIcon },
-  { id: "obsidian", name: "Obsidian", icon: ObsidianIcon },
+export const PLANNED_PROVIDERS = [
+  { id: "zed", name: "Zed", icon: ZedIcon, category: "editor" },
+  { id: "warp", name: "Warp", icon: WarpIcon, category: "terminal" },
+  { id: "alacritty", name: "Alacritty", icon: AlacrittyIcon, category: "terminal" },
+  { id: "slack", name: "Slack", icon: SlackIcon, category: "other" },
+  { id: "kitty", name: "Kitty", icon: KittyIcon, category: "terminal" },
+  { id: "ghostty", name: "Ghostty", icon: GhosttyIcon, category: "terminal" },
+  { id: "obsidian", name: "Obsidian", icon: ObsidianIcon, category: "other" },
   {
     id: "windows-terminal",
     name: "Windows Terminal",
     icon: WindowsTerminalIcon,
+    category: "terminal",
   },
-  { id: "jetbrains", name: "JetBrains", icon: JetBrainsIcon },
-  { id: "replit", name: "Replit", icon: ReplitIcon },
-  { id: "neovim", name: "Neovim", icon: NeovimIcon },
-  { id: "cursor", name: "Cursor", icon: CursorIcon },
-  { id: "gimp", name: "GIMP", icon: GIMPIcon },
+  { id: "jetbrains", name: "JetBrains", icon: JetBrainsIcon, category: "editor" },
+  { id: "replit", name: "Replit", icon: ReplitIcon, category: "editor" },
+  { id: "neovim", name: "Neovim", icon: NeovimIcon, category: "editor" },
+  { id: "cursor", name: "Cursor", icon: CursorIcon, category: "editor" },
+  { id: "gimp", name: "GIMP", icon: GIMPIcon, category: "design" },
+];
+
+// Legacy compatibility exports
+export const PROVIDERS = LEGACY_PROVIDERS;
+export type Provider = LegacyProvider;
+export const PROVIDER_ICONS = LEGACY_PROVIDER_ICONS;
+export const ALL_PROVIDERS = [
+  { id: "shadcn", name: "shadcn/ui", icon: ShadcnIcon },
+  { id: "vscode", name: "VS Code", icon: VSCodeIcon },
+  ...PLANNED_PROVIDERS,
 ];

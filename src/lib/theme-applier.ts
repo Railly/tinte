@@ -1,5 +1,4 @@
-import { tinteToShadcn } from "./tinte-to-shadcn";
-import { shadcnToTinte } from "./shadcn-to-tinte";
+import { adapterRegistry } from "./adapters";
 
 export interface ThemeData {
   id: string;
@@ -19,6 +18,33 @@ export interface ThemeData {
   };
   tags: string[];
   rawTheme?: any;
+}
+
+// Custom event system for theme changes
+const THEME_CHANGE_EVENT = "tinte-theme-change";
+
+export interface ThemeChangeEventDetail {
+  themeData: ThemeData;
+  mode: "light" | "dark";
+  tokens: any;
+}
+
+function dispatchThemeChangeEvent(detail: ThemeChangeEventDetail) {
+  const event = new CustomEvent(THEME_CHANGE_EVENT, { detail });
+  window.dispatchEvent(event);
+}
+
+export function addThemeChangeListener(
+  callback: (detail: ThemeChangeEventDetail) => void
+) {
+  const handler = (event: CustomEvent<ThemeChangeEventDetail>) => {
+    callback(event.detail);
+  };
+  window.addEventListener(THEME_CHANGE_EVENT, handler as EventListener);
+
+  return () => {
+    window.removeEventListener(THEME_CHANGE_EVENT, handler as EventListener);
+  };
 }
 
 let isApplyingTheme = false;
@@ -82,9 +108,11 @@ function applyThemeDirectly(
       tokens = themeData.rawTheme[currentMode];
     } else if (themeData.rawTheme) {
       try {
-        // later will figure out
-        // const tinteTheme = shadcnToTinte(shadcnTheme);
-        const shadcnTheme = tinteToShadcn(themeData.rawTheme);
+        const shadcnTheme = adapterRegistry.convert(
+          "shadcn",
+          themeData.rawTheme
+        );
+        // @ts-ignore
         tokens = shadcnTheme[currentMode];
       } catch (error) {
         console.warn(
@@ -115,6 +143,13 @@ function applyThemeDirectly(
       ) {
         root.style.setProperty(`--${key}`, value);
       }
+    });
+
+    // Dispatch theme change event after DOM updates
+    dispatchThemeChangeEvent({
+      themeData,
+      mode: currentMode,
+      tokens,
     });
   });
 }
@@ -166,6 +201,13 @@ function applyBasicColors(
     );
     root.style.setProperty("--input", adjustBrightness(colors.background, -15));
   }
+
+  // Dispatch theme change event for basic colors too
+  dispatchThemeChangeEvent({
+    themeData,
+    mode: currentMode,
+    tokens: colors,
+  });
 }
 
 function adjustBrightness(color: string, percent: number): string {

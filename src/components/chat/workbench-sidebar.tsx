@@ -1,0 +1,78 @@
+import { motion } from 'motion/react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ProviderDesignPanel } from '@/components/shared/provider-design-panel';
+import { ChatContent } from './chat-content';
+import { MappingPanel } from './mapping-panel';
+import { CHAT_CONFIG } from '@/lib/chat-constants';
+import type { WorkbenchTab, UseWorkbenchStateReturn } from '@/hooks/use-workbench-state';
+
+interface WorkbenchSidebarProps {
+  split: boolean;
+  activeTab: WorkbenchTab;
+  onTabChange: (tab: WorkbenchTab) => void;
+  state: Pick<UseWorkbenchStateReturn, 
+    'seed' | 'loading' | 'currentTheme' | 'tinteTheme' | 'allThemes' | 
+    'currentTokens' | 'handleTokenEdit' | 'handleThemeSelect' | 'currentProvider' | 'isDark'
+  >;
+}
+
+const TAB_CONFIG = [
+  { id: 'chat' as const, label: 'Chat' },
+  { id: 'design' as const, label: 'Design' },
+  { id: 'mapping' as const, label: 'Mapping' },
+];
+
+export function WorkbenchSidebar({ 
+  split, 
+  activeTab, 
+  onTabChange, 
+  state 
+}: WorkbenchSidebarProps) {
+
+  return (
+    <motion.aside
+      initial={{ width: '100%' }}
+      animate={{ width: split ? CHAT_CONFIG.SIDEBAR_WIDTH : '100%' }}
+      transition={{ type: 'spring', ...CHAT_CONFIG.ANIMATION.SPRING }}
+      className="border-r bg-background flex flex-col flex-shrink-0"
+      style={{ willChange: 'width' }}
+    >
+      <Tabs 
+        value={activeTab} 
+        onValueChange={(v) => onTabChange(v as WorkbenchTab)} 
+        className="flex flex-col h-full"
+      >
+        <TabsList className="m-3">
+          {TAB_CONFIG.map(({ id, label }) => (
+            <TabsTrigger key={id} value={id}>
+              {label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        <TabsContent value="chat" className="flex-1">
+          <ChatContent loading={state.loading} seed={state.seed as any} />
+        </TabsContent>
+
+        <TabsContent value="design" className="flex-1">
+          <ProviderDesignPanel
+            activeThemeRef={{ current: state.currentTheme }}
+            allThemes={state.allThemes as any}
+            currentTokens={state.currentTokens}
+            onTokenEdit={state.handleTokenEdit}
+            onThemeSelect={state.handleThemeSelect}
+          />
+        </TabsContent>
+
+        <TabsContent value="mapping" className="flex-1">
+          <MappingPanel
+            provider={state.currentProvider}
+            mode={state.isDark ? 'dark' : 'light'}
+            theme={state.currentTheme}
+          />
+        </TabsContent>
+
+      </Tabs>
+    </motion.aside>
+  );
+}

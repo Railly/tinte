@@ -1,8 +1,11 @@
 import { oklch, rgb, formatHex } from "culori";
-import { generateTailwindPalette } from "./palette-generator";
+import { generateTailwindPalette } from "../palette-generator";
 import { TinteBlock, TinteTheme } from "@/types/tinte";
 import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
-import { ThemeMode } from "./providers";
+import { ThemeMode } from "../providers";
+import { PreviewableAdapter, AdapterMetadata } from "./types";
+import { ShadcnIcon } from "@/components/shared/icons/shadcn";
+import { CardsDemo } from "@/components/preview/shadcn/cards-demo";
 
 const ANCHORS = {
   light: { primary: 600, border: 200, muted: 100, mutedFg: 600, accent: 300 },
@@ -152,9 +155,64 @@ function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
   };
 }
 
-export function tinteToShadcn(tinte: TinteTheme): ShadcnTheme {
+function convertTinteToShadcn(tinte: TinteTheme): ShadcnTheme {
   return {
     light: mapBlock(tinte.light, "light"),
     dark: mapBlock(tinte.dark, "dark"),
   };
 }
+
+function generateCSSVariables(theme: ShadcnTheme): string {
+  const lightVars = Object.entries(theme.light)
+    .map(([key, value]) => `    --${key}: ${value};`)
+    .join('\n');
+  
+  const darkVars = Object.entries(theme.dark)
+    .map(([key, value]) => `    --${key}: ${value};`)
+    .join('\n');
+
+  return `:root {
+${lightVars}
+}
+
+.dark {
+${darkVars}
+}`;
+}
+
+export const shadcnAdapter: PreviewableAdapter<ShadcnTheme> = {
+  id: "shadcn",
+  name: "shadcn/ui",
+  description: "UI component library theme format",
+  version: "1.0.0",
+  fileExtension: "css",
+  mimeType: "text/css",
+
+  convert: convertTinteToShadcn,
+
+  export: (theme: TinteTheme, filename?: string) => ({
+    content: generateCSSVariables(convertTinteToShadcn(theme)),
+    filename: filename || "shadcn-theme.css",
+    mimeType: "text/css",
+  }),
+
+  validate: (output: ShadcnTheme) => {
+    return !!(output.light && output.dark && 
+      output.light.background && output.dark.background);
+  },
+
+  preview: {
+    component: CardsDemo,
+  },
+};
+
+export const shadcnAdapterMetadata: AdapterMetadata = {
+  id: "shadcn",
+  name: "shadcn/ui",
+  description: "Beautifully designed components built on Radix UI and Tailwind CSS",
+  category: "ui",
+  tags: ["react", "tailwind", "components", "ui"],
+  icon: ShadcnIcon,
+  website: "https://ui.shadcn.com/",
+  documentation: "https://ui.shadcn.com/docs",
+};
