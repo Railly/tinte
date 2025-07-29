@@ -140,8 +140,6 @@ function RightPaneHeader({
   return (
     <div className="flex items-center justify-between p-3">
       <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4" />
-        <span className="font-medium text-sm">{provider.name}</span>
       </div>
 
       <div className="flex items-center gap-2">
