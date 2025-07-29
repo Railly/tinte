@@ -10,12 +10,12 @@ import { DEFAULT_THEME_ID } from '@/utils/tinte-presets';
 
 export function ProviderDesignPanel({
   allThemes,
-  activeThemeRef,
+  activeTheme,
   onThemeSelect,
   currentTokens,
   onTokenEdit,
 }: {
-  activeThemeRef: React.RefObject<ThemeData | null>;
+  activeTheme: ThemeData | null;
   allThemes: ThemeData[];
   onThemeSelect: (theme: ThemeData) => void;
   currentTokens: Record<string, string>;
@@ -39,7 +39,7 @@ export function ProviderDesignPanel({
     [allThemes]
   );
 
-  const activeId = activeThemeRef.current?.id ?? DEFAULT_THEME_ID;
+  const activeId = activeTheme?.id ?? DEFAULT_THEME_ID;
 
   return (
     <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_4.5rem)]">

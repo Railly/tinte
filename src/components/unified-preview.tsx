@@ -1,6 +1,7 @@
 import { TinteTheme } from "@/types/tinte";
 import { adapterRegistry } from "@/lib/adapters";
 import { useQueryState } from "nuqs";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 interface UnifiedPreviewProps {
@@ -10,7 +11,11 @@ interface UnifiedPreviewProps {
 
 export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
+  const { theme: nextTheme, systemTheme } = useTheme();
   const currentAdapter = adapterRegistry.getPreviewable(provider || 'shadcn');
+  
+  const currentTheme = nextTheme === "system" ? systemTheme : nextTheme;
+  const isDark = currentTheme === "dark";
 
   if (!currentAdapter) {
     return (
@@ -35,6 +40,7 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
     <div className={cn("space-y-6", className)}>
       <PreviewComponent
         theme={converted}
+        isDark={isDark}
         {...(currentAdapter.preview.defaultProps || {})}
       />
     </div>

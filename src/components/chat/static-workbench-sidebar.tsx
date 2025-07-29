@@ -9,7 +9,7 @@ interface StaticWorkbenchSidebarProps {
   onTabChange: (tab: WorkbenchTab) => void;
   state: Pick<UseWorkbenchStateReturn,
     'seed' | 'loading' | 'currentTheme' | 'tinteTheme' | 'allThemes' |
-    'currentTokens' | 'handleTokenEdit' | 'handleThemeSelect' | 'currentProvider' | 'isDark' | 'activeThemeRef'
+    'currentTokens' | 'handleTokenEdit' | 'handleThemeSelect' | 'currentProvider' | 'isDark'
   >;
 }
 
@@ -48,7 +48,7 @@ export function StaticWorkbenchSidebar({
       <TabsContent value="design" className="flex-1 m-0 p-0">
         <ProviderDesignPanel
           allThemes={state.allThemes as ThemeData[]}
-          activeThemeRef={state.activeThemeRef}
+          activeTheme={state.currentTheme}
           currentTokens={state.currentTokens}
           onTokenEdit={state.handleTokenEdit}
           onThemeSelect={state.handleThemeSelect}

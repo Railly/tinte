@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQueryState } from "nuqs";
-import { useTinteTheme } from "./use-tinte-theme";
+import { useTinteTheme } from "@/stores/tinte-theme";
 import { useTokenEditor } from "./use-token-editor";
 import { useThemeAdapters, useThemeConversion } from "./use-theme-adapters";
 import { useChatState } from "./use-chat-state";
@@ -29,7 +29,6 @@ export interface UseWorkbenchStateReturn {
   tinteTheme: TinteTheme;
   allThemes: unknown[];
   isDark: boolean;
-  activeThemeRef: React.RefObject<AppThemeData | null>;
 
   // Token editing
   currentTokens: Record<string, string>;
@@ -69,22 +68,21 @@ export function useWorkbenchState(
 
   // Theme state
   const {
-    activeThemeRef,
+    activeTheme,
     handleThemeSelect: baseHandleThemeSelect,
     allThemes,
     isDark,
   } = useTinteTheme();
 
   const { currentTokens, handleTokenEdit, resetTokens } = useTokenEditor(
-    activeThemeRef.current || DEFAULT_THEME,
+    activeTheme || DEFAULT_THEME,
     isDark
   );
 
   // Derived state
   const currentProvider = provider || "shadcn";
   const currentAdapter = getPreviewableAdapter(currentProvider);
-  const currentTheme = (activeThemeRef.current ||
-    DEFAULT_THEME) as AppThemeData;
+  const currentTheme = (activeTheme || DEFAULT_THEME) as AppThemeData;
   // Ensure we have a valid TinteTheme
   let tinteTheme: TinteTheme;
 
@@ -131,7 +129,6 @@ export function useWorkbenchState(
     tinteTheme,
     allThemes,
     isDark,
-    activeThemeRef, // Add this for ProviderDesignPanel
 
     // Token editing
     currentTokens,

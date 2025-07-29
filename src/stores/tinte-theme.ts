@@ -1,31 +1,41 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { create } from 'zustand';
 import { useTheme } from "next-themes";
-import {
-  applyThemeWithTransition,
-  applyThemeModeChange,
-  ThemeData as AppThemeData,
-} from "@/lib/theme-applier";
+import { useState, useEffect, useMemo } from "react";
+import { applyThemeWithTransition, ThemeData as AppThemeData } from "@/lib/theme-applier";
 import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
 import { extractTinteThemeData } from "@/utils/tinte-presets";
 
-export function useTinteTheme() {
-  const { theme, systemTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const activeThemeRef = useRef<AppThemeData | null>(null);
-  const lastThemeChangeRef = useRef<number>(0);
-  const previousThemeStateRef = useRef<string | undefined>(undefined);
+interface TinteThemeStore {
+  // State
+  activeTheme: AppThemeData | null;
+  mounted: boolean;
+  
+  // Actions
+  setActiveTheme: (theme: AppThemeData) => void;
+  setMounted: (mounted: boolean) => void;
+  initializeTheme: (isDark: boolean) => void;
+  applyCurrentTheme: (isDark: boolean) => void;
+}
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+export const useTinteThemeStore = create<TinteThemeStore>((set, get) => ({
+  // Initial state
+  activeTheme: null,
+  mounted: false,
 
-  const currentTheme = theme === "system" ? systemTheme : theme;
-  const isDark = mounted && currentTheme === "dark";
+  // Actions
+  setActiveTheme: (theme: AppThemeData) => {
+    set({ activeTheme: theme });
+  },
 
-  // Apply default Tinte theme on mount
-  useEffect(() => {
-    if (!mounted || activeThemeRef.current) return;
+  setMounted: (mounted: boolean) => {
+    set({ mounted });
+  },
+
+  initializeTheme: (isDark: boolean) => {
+    const { activeTheme, mounted } = get();
+    
+    if (!mounted || activeTheme) return;
 
     const defaultTinteTheme = extractTinteThemeData(isDark)[0];
     if (defaultTinteTheme) {
@@ -39,45 +49,57 @@ export function useTinteTheme() {
         tags: ["default", "tinte", "premium", "design"],
       };
 
-      activeThemeRef.current = themeData;
+      set({ activeTheme: themeData });
       applyThemeWithTransition(themeData, isDark ? "dark" : "light");
     }
-  }, [mounted, isDark]);
+  },
 
-  const handleThemeSelect = useCallback(
-    (selectedTheme: AppThemeData) => {
-      const now = Date.now();
-      if (now - lastThemeChangeRef.current < 100) return;
-      lastThemeChangeRef.current = now;
+  applyCurrentTheme: (isDark: boolean) => {
+    const { activeTheme } = get();
+    if (activeTheme) {
+      applyThemeWithTransition(activeTheme, isDark ? "dark" : "light");
+    }
+  },
+}));
 
-      activeThemeRef.current = selectedTheme;
-      applyThemeWithTransition(selectedTheme, isDark ? "dark" : "light");
-    },
-    [isDark]
-  );
+// Hook for theme management with Next.js theme integration
+export function useTinteTheme() {
+  const { theme, systemTheme } = useTheme();
+  const [localMounted, setLocalMounted] = useState(false);
+  
+  const {
+    activeTheme,
+    mounted,
+    setMounted,
+    setActiveTheme,
+    initializeTheme,
+    applyCurrentTheme,
+  } = useTinteThemeStore();
 
   useEffect(() => {
-    if (!mounted) return;
+    setLocalMounted(true);
+    setMounted(true);
+  }, [setMounted]);
 
-    const currentState = `${currentTheme}-${
-      activeThemeRef.current?.id || "none"
-    }`;
-    if (currentState === previousThemeStateRef.current) return;
-    previousThemeStateRef.current = currentState;
+  const currentTheme = theme === "system" ? systemTheme : theme;
+  const isDark = localMounted && currentTheme === "dark";
 
-    const now = Date.now();
-    if (now - lastThemeChangeRef.current < 50) return;
+  // Initialize default theme
+  useEffect(() => {
+    initializeTheme(isDark);
+  }, [initializeTheme, isDark]);
 
-    if (activeThemeRef.current) {
-      lastThemeChangeRef.current = now;
-      applyThemeWithTransition(
-        activeThemeRef.current,
-        isDark ? "dark" : "light"
-      );
-    } else {
-      applyThemeModeChange(isDark ? "dark" : "light");
+  // Apply theme when mode changes
+  useEffect(() => {
+    if (mounted) {
+      applyCurrentTheme(isDark);
     }
-  }, [isDark, mounted, currentTheme]);
+  }, [mounted, isDark, applyCurrentTheme]);
+
+  const handleThemeSelect = (selectedTheme: AppThemeData) => {
+    setActiveTheme(selectedTheme);
+    applyThemeWithTransition(selectedTheme, isDark ? "dark" : "light");
+  };
 
   const tweakcnThemes = useMemo(() => {
     return extractTweakcnThemeData(isDark).map((themeData, index) => ({
@@ -131,10 +153,10 @@ export function useTinteTheme() {
   );
 
   return {
-    mounted,
+    mounted: localMounted,
     isDark,
     currentTheme,
-    activeThemeRef,
+    activeTheme,
     handleThemeSelect,
     tweakcnThemes,
     raysoThemes,

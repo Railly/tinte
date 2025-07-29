@@ -54,7 +54,7 @@ export function WorkbenchSidebar({
 
         <TabsContent value="design" className="flex-1">
           <ProviderDesignPanel
-            activeThemeRef={{ current: state.currentTheme }}
+            activeTheme={state.currentTheme}
             allThemes={state.allThemes as any}
             currentTokens={state.currentTokens}
             onTokenEdit={state.handleTokenEdit}

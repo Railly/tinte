@@ -8,7 +8,7 @@ import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
 import { useState } from 'react';
-import { useTinteTheme } from '@/hooks/use-tinte-theme';
+import { useTinteTheme } from '@/stores/tinte-theme';
 
 
 export function Showcase() {

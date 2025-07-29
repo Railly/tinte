@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/command"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { useTinteTheme } from "@/hooks/use-tinte-theme"
+import { useTinteTheme } from "@/stores/tinte-theme"
 import { ALL_PROVIDERS } from "@/config/providers"
 import { cn } from "@/lib/utils"
 
