@@ -1,6 +1,6 @@
 import { Hero } from "@/components/home/hero";
 import { Showcase } from "@/components/home/showcase";
-import { Header } from "@/components/shared/header";
+import { Header } from "@/components/home/header";
 import { Roadmap } from "@/components/home/roadmap";
 import { FAQ } from "@/components/home/faq";
 import { Footer } from "@/components/shared/footer";
