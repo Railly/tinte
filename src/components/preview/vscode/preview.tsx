@@ -8,10 +8,12 @@ import { shikiToMonaco } from '@shikijs/monaco';
 import { createHighlighter } from 'shiki';
 import { codeToHtml } from 'shiki';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useThemeApplier } from '@/hooks/use-theme-applier';
 import { adapterRegistry } from '@/lib/adapters';
+import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
 
 interface VSCodePreviewProps {
   theme: { light: VSCodeTheme; dark: VSCodeTheme };
@@ -186,19 +188,37 @@ function normalizeThemeName(name: string): string {
 export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
   const { resolvedTheme } = useTheme();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
-  const [viewMode, setViewMode] = useState<'split' | 'monaco' | 'shiki'>('split');
+  const [viewMode, setViewMode] = useState<'split' | 'monaco' | 'shiki' | 'tokens'>('split');
   const themeApplierChange = useThemeApplier();
   const [themeVersion, setThemeVersion] = useState(0);
 
   // Build complete theme object with both light and dark variants
   let currentThemeSet = theme;
   
-  // If we have a theme change from theme-applier, convert it to VSCode format
+  // If we have a theme change from theme-applier, convert using the same logic as debug page
   if (themeApplierChange?.themeData?.rawTheme) {
     try {
-      const vscodeTheme = adapterRegistry.convert('vscode', themeApplierChange.themeData.rawTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
-      if (vscodeTheme) {
-        currentThemeSet = vscodeTheme;
+      const themeData = themeApplierChange.themeData;
+      
+      // Check if theme is from TweakCN (ShadCN format)
+      if (themeData.author === "tweakcn" && themeData.rawTheme) {
+        // For TweakCN themes: ShadCN → Tinte → VSCode (same as debug page logic)
+        const shadcnTheme = {
+          light: themeData.rawTheme.light || themeData.rawTheme,
+          dark: themeData.rawTheme.dark || themeData.rawTheme
+        };
+        const tinteTheme = shadcnToTinte(shadcnTheme);
+        const vscodeTheme = adapterRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
+        if (vscodeTheme) {
+          currentThemeSet = vscodeTheme;
+        }
+      } else {
+        // For direct Tinte themes: Tinte → VSCode
+        const tinteTheme = themeData.rawTheme;
+        const vscodeTheme = adapterRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
+        if (vscodeTheme) {
+          currentThemeSet = vscodeTheme;
+        }
       }
     } catch (error) {
       console.warn('Failed to convert theme from theme-applier:', error);
@@ -240,6 +260,9 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
           <div className="w-3 h-3 rounded-full bg-green-500" />
         </div>
         <div className="text-xs ml-2">{currentTemplate.filename}</div>
+        <div className="text-xs text-muted-foreground ml-2">
+          {currentTheme.displayName || currentTheme.name}
+        </div>
 
         <div className="ml-auto flex items-center gap-2">
           {/* View Mode Selector */}
@@ -253,6 +276,9 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
               </TabsTrigger>
               <TabsTrigger value="shiki" className="text-xs px-2 py-1 h-5">
                 Shiki
+              </TabsTrigger>
+              <TabsTrigger value="tokens" className="text-xs px-2 py-1 h-5">
+                Tokens
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -276,9 +302,9 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
       {/* Content */}
       <div className="overflow-hidden">
         {viewMode === 'split' && (
-          <div className="flex flex-col h-[800px]">
+          <div className="flex h-[800px]">
             {/* Monaco Editor */}
-            <div className="flex-1 border-b border-border/50">
+            <div className="flex-1 border-r border-border/50">
               <div className="bg-muted/50 px-2 py-1 border-b border-border/50 flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">Monaco Editor</Badge>
               </div>
@@ -330,6 +356,15 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
             />
           </div>
         )}
+
+        {viewMode === 'tokens' && (
+          <div className="h-[800px] overflow-auto">
+            <TokensSection
+              theme={currentTheme}
+              mode={currentMode}
+            />
+          </div>
+        )}
       </div>
 
       {/* Status bar */}
@@ -361,7 +396,6 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
   const [isReady, setIsReady] = useState(false);
   const [themesRegistered, setThemesRegistered] = useState(false);
 
-  const currentTheme = themeSet[currentMode];
   const lightThemeName = 'tinte-light';
   const darkThemeName = 'tinte-dark';
   const currentThemeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
@@ -435,17 +469,7 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
       setThemesRegistered(true);
       
       // Apply current theme
-      await switchToTheme(monaco, currentMode);
-    } catch (error) {
-      console.error('Failed to register themes:', error);
-      applyFallbackThemes(monaco);
-    }
-  }, [themeSet, lightThemeName, darkThemeName, currentMode, themesRegistered]);
-
-  const switchToTheme = useCallback(async (monaco: any, mode: 'light' | 'dark') => {
-    const themeName = mode === 'dark' ? darkThemeName : lightThemeName;
-    
-    try {
+      const themeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
       monaco.editor.setTheme(themeName);
       
       if (editorRef.current) {
@@ -457,9 +481,11 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
         editorRef.current.layout();
       }
     } catch (error) {
-      console.warn(`Failed to switch to ${mode} theme:`, error);
+      console.error('Failed to register themes:', error);
+      applyFallbackThemes(monaco);
     }
-  }, [lightThemeName, darkThemeName]);
+  }, [themeSet, lightThemeName, darkThemeName, currentMode]);
+
 
   const applyFallbackThemes = useCallback((monaco: any) => {
     // Define fallback light theme
@@ -496,8 +522,20 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
     monaco.editor.defineTheme(darkThemeName, darkFallback);
     
     setThemesRegistered(true);
-    switchToTheme(monaco, currentMode);
-  }, [themeSet, lightThemeName, darkThemeName, currentMode, switchToTheme]);
+    
+    // Apply current theme directly without calling switchToTheme
+    const themeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
+    monaco.editor.setTheme(themeName);
+    
+    if (editorRef.current) {
+      editorRef.current.updateOptions({ theme: themeName });
+      const model = editorRef.current.getModel();
+      if (model && (model as any)._tokenization) {
+        (model as any)._tokenization.resetTokenization();
+      }
+      editorRef.current.layout();
+    }
+  }, [themeSet, lightThemeName, darkThemeName, currentMode]);
 
   const handleEditorDidMount = async (editor: any, monaco: any) => {
     editorRef.current = editor;
@@ -519,21 +557,39 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
     if (editorRef.current && isReady && themesRegistered) {
       const monaco = (window as any).monaco;
       if (monaco) {
-        switchToTheme(monaco, currentMode);
+        const themeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
+        try {
+          monaco.editor.setTheme(themeName);
+          
+          if (editorRef.current) {
+            editorRef.current.updateOptions({ theme: themeName });
+            const model = editorRef.current.getModel();
+            if (model && (model as any)._tokenization) {
+              (model as any)._tokenization.resetTokenization();
+            }
+            editorRef.current.layout();
+          }
+        } catch (error) {
+          console.warn(`Failed to switch to ${currentMode} theme:`, error);
+        }
       }
     }
-  }, [currentMode, isReady, themesRegistered, themeVersion, switchToTheme]);
+  }, [currentMode, isReady, themesRegistered, themeVersion, lightThemeName, darkThemeName]);
 
   // Re-register themes when theme set changes
   useEffect(() => {
-    if (editorRef.current && isReady) {
+    if (editorRef.current && isReady && !themesRegistered) {
       const monaco = (window as any).monaco;
       if (monaco) {
-        setThemesRegistered(false);
         registerThemes(monaco);
       }
     }
-  }, [themeSet, isReady, registerThemes]);
+  }, [themeSet, isReady, themesRegistered, registerThemes]);
+
+  // Reset theme registration when themeSet changes
+  useEffect(() => {
+    setThemesRegistered(false);
+  }, [themeSet]);
 
   // Update template when it changes
   useEffect(() => {
@@ -650,5 +706,127 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
         color: currentTheme.colors['editor.foreground'],
       }}
     />
+  );
+}
+
+// Tokens Section
+interface TokensSectionProps {
+  theme: VSCodeTheme;
+  mode: 'light' | 'dark';
+}
+
+function TokensSection({ theme, mode }: TokensSectionProps) {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
+      {/* VS Code Colors */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">VS Code Colors ({mode})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {Object.entries(theme.colors || {}).slice(0, 30).map(([key, value]) => (
+              <div key={key} className="flex items-center gap-2 p-2 rounded border text-sm">
+                <div
+                  className="w-4 h-4 rounded border border-gray-300 flex-shrink-0"
+                  style={{ backgroundColor: value }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="font-mono text-xs font-medium">{key}</div>
+                  <div className="font-mono text-xs text-muted-foreground">{value}</div>
+                </div>
+              </div>
+            ))}
+            {Object.keys(theme.colors || {}).length > 30 && (
+              <div className="text-sm text-muted-foreground text-center py-2">
+                ... and {Object.keys(theme.colors || {}).length - 30} more colors
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Token Colors */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Token Colors</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {(theme.tokenColors || []).slice(0, 20).map((token, index) => (
+              <div key={index} className="flex items-center gap-2 p-2 rounded border text-sm">
+                <div
+                  className="w-4 h-4 rounded border border-gray-300 flex-shrink-0"
+                  style={{ backgroundColor: token.settings.foreground || '#000000' }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-xs">{token.name || 'Unnamed'}</div>
+                  <div className="font-mono text-xs text-muted-foreground truncate">
+                    {Array.isArray(token.scope) ? token.scope.join(', ') : token.scope}
+                  </div>
+                  {token.settings.fontStyle && (
+                    <div className="font-mono text-xs text-blue-600">
+                      Style: {token.settings.fontStyle}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            {(theme.tokenColors || []).length > 20 && (
+              <div className="text-sm text-muted-foreground text-center py-2">
+                ... and {(theme.tokenColors || []).length - 20} more token rules
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Theme Info */}
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-base">Theme Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <div className="font-medium text-muted-foreground">Name</div>
+              <div className="font-mono">{theme.name || 'Untitled Theme'}</div>
+            </div>
+            <div>
+              <div className="font-medium text-muted-foreground">Type</div>
+              <div className="font-mono">{theme.type || 'unknown'}</div>
+            </div>
+            <div>
+              <div className="font-medium text-muted-foreground">Display Name</div>
+              <div className="font-mono">{theme.displayName || theme.name || 'N/A'}</div>
+            </div>
+            <div>
+              <div className="font-medium text-muted-foreground">Colors Count</div>
+              <div className="font-mono">{Object.keys(theme.colors || {}).length}</div>
+            </div>
+            <div>
+              <div className="font-medium text-muted-foreground">Token Rules</div>
+              <div className="font-mono">{(theme.tokenColors || []).length}</div>
+            </div>
+            <div>
+              <div className="font-medium text-muted-foreground">UI Theme</div>
+              <div className="font-mono">{theme.type === 'dark' ? 'vs-dark' : 'vs'}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Raw Theme Data */}
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-base">Raw Theme JSON</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <pre className="text-xs overflow-auto max-h-64 bg-muted p-4 rounded font-mono">
+            {JSON.stringify(theme, null, 2)}
+          </pre>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
