@@ -1,27 +1,22 @@
 import React from 'react';
 import { Palette } from 'lucide-react';
-import { ProviderAdapter, ThemeSpec, ThemeMode, ThemeDensity } from './types';
-import { KitchenSink } from '@/components/preview/shadcn/kitchen-sink';
+import { ProviderAdapter, ThemeSpec, ThemeMode } from './types';
 import ExamplesPreviewContainer from '@/components/examples-preview-container';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { ThemeData } from '../theme-applier';
+import { CardsDemo } from '@/components/preview/shadcn/cards-demo';
 
 const ShadcnIcon: React.FC<{ className?: string }> = ({ className }) => (
   <Palette className={className} />
 );
 
 const ShadcnPreview: React.FC<{
-  theme: ThemeSpec;
+  theme: ThemeData;
   mode: ThemeMode;
-  density?: ThemeDensity;
-}> = ({ mode, density = 'comfort' }) => {
+}> = ({ mode }) => {
   return (
-    <ExamplesPreviewContainer className="size-full">
-      <ScrollArea className="size-full">
-        <div className="relative w-full h-[600px] overflow-hidden">
-          <KitchenSink mode={mode} density={density} />
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+    <ExamplesPreviewContainer>
+      <CardsDemo />
     </ExamplesPreviewContainer>
   );
 };
@@ -64,7 +59,6 @@ ${Object.entries(theme.dark)
     ]
   }),
   supports: {
-    density: true,
     fonts: false,
     ansi16: false,
     semanticTokens: false

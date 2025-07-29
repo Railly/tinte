@@ -2,7 +2,6 @@ import { ShadcnTheme } from "@/types/shadcn";
 import { ThemeData } from "../theme-applier";
 
 export type ThemeMode = "light" | "dark";
-export type ThemeDensity = "comfort" | "compact";
 
 export interface ThemeSpec extends ShadcnTheme {
   meta?: {
@@ -29,7 +28,6 @@ export interface ProviderAdapter {
   Preview: React.FC<{
     theme: ThemeData;
     mode: ThemeMode;
-    density?: ThemeDensity;
   }>;
   import?: (input: string) => Partial<ThemeSpec>;
   export: (theme: ThemeSpec) => ExportBundle;
@@ -37,7 +35,6 @@ export interface ProviderAdapter {
     fonts?: boolean;
     ansi16?: boolean;
     semanticTokens?: boolean;
-    density?: boolean;
   };
 }
 

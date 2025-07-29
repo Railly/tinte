@@ -7,13 +7,13 @@ import Logo from '@/components/shared/logo';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/shared/theme-switcher';
 import { siteConfig } from '@/config/site';
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
-  SheetClose 
+  SheetClose
 } from '@/components/ui/sheet';
 
 export function Header() {
@@ -27,7 +27,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="px-4">
-        <div className="relative flex h-12 items-center justify-between">
+        <div className="relative flex h-[var(--header-height)] items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <Logo size={24} />
@@ -93,7 +93,7 @@ export function Header() {
                     </SheetClose>
                   ))}
                 </nav>
-                
+
                 <div className="mt-auto flex flex-col gap-6">
                   <div className="flex items-center justify-center gap-6">
                     <ThemeSwitcher />
