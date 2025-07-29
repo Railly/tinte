@@ -58,8 +58,6 @@ function PreviewPaneHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <ThemeSwitcher variant="dual" />
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
