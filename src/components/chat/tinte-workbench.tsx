@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
-import { Download, Eye, RefreshCcw, Moon, Sun } from 'lucide-react';
+import { Download, Eye, RefreshCcw, Sun, Moon } from 'lucide-react';
 
 import { PROVIDERS, ThemeMode } from '@/lib/providers';
 import { ALL_PROVIDERS } from '@/config/providers';
@@ -21,6 +21,7 @@ import type { ThemeData as AppThemeData } from '@/lib/theme-applier';
 import { useQueryState } from 'nuqs';
 import { ScrollArea } from '../ui/scroll-area';
 import { useChatState } from '@/hooks/use-chat-state';
+import { ThemeSwitcher } from '@/components/shared/theme-switcher';
 
 interface TinteWorkbenchProps {
   chatId: string;
@@ -34,11 +35,11 @@ export function TinteWorkbench({ chatId }: TinteWorkbenchProps) {
   const [compare, setCompare] = useState(false);
 
   const { activeThemeRef, handleThemeSelect, allThemes, isDark } = useTinteTheme();
-  const { currentTokens, handleTokenEdit, resetTokens } = useTokenEditor();
+  const { currentTokens, handleTokenEdit, resetTokens } = useTokenEditor(activeThemeRef.current, isDark);
 
   const handleThemeSelectWithReset = (selectedTheme: AppThemeData) => {
-    resetTokens();
     handleThemeSelect(selectedTheme);
+    resetTokens();
   };
 
   // Get current provider adapter
@@ -152,26 +153,7 @@ function RightPaneHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="inline-flex rounded-lg border p-1">
-          <Button
-            size="sm"
-            variant={mode === 'light' ? 'default' : 'ghost'}
-            className="px-3 h-7"
-            onClick={() => setMode('light')}
-          >
-            <Sun className="mr-1 h-3 w-3" />
-            Light
-          </Button>
-          <Button
-            size="sm"
-            variant={mode === 'dark' ? 'default' : 'ghost'}
-            className="px-3 h-7"
-            onClick={() => setMode('dark')}
-          >
-            <Moon className="mr-1 h-3 w-3" />
-            Dark
-          </Button>
-        </div>
+        <ThemeSwitcher variant="dual" />
 
         <Button
           variant={compare ? 'default' : 'outline'}

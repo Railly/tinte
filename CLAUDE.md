@@ -31,15 +31,23 @@ src/
 ├── app/                    # Next.js App Router pages
 │   ├── bingo/             # TweakCN → Rayso converter page
 │   ├── vscode/            # Rayso → VS Code converter page
-│   └── experiment/        # Rayso → shadcn converter page
+│   ├── experiment/        # Rayso → shadcn converter page
+│   └── chat/              # Main workbench with theme editor
 ├── components/            # Reusable UI components
 │   ├── ui/               # shadcn/ui base components
+│   ├── chat/             # Chat workbench components
+│   ├── shared/           # Shared theme components
 │   ├── code-preview.tsx  # Shiki syntax highlighting
 │   └── monaco-editor-preview.tsx # Monaco editor integration
+├── hooks/                 # Custom React hooks
+│   ├── use-tinte-theme.ts       # Theme management and selection
+│   ├── use-token-editor.ts      # Token editing with color conversion
+│   └── use-chat-state.ts        # Chat workbench state
 ├── lib/                   # Core conversion logic
 │   ├── palette-generator.ts      # OKLCH palette generation
 │   ├── tinte-to-shadcn.ts       # Tinte → shadcn conversion
 │   ├── tweakcn-to-tinte.ts      # TweakCN → Tinte conversion
+│   ├── theme-applier.ts         # Theme application with transitions
 │   └── tinte-to-vscode/          # Tinte → VS Code conversion
 ├── types/                 # Shared TypeScript definitions
 │   └── tinte.ts          # Common Tinte theme types
@@ -116,6 +124,7 @@ bun dev
 
 ### Key Pages
 
+- `/chat` - Main theme workbench with live editing and preview
 - `/experiment` - Rayso → shadcn conversion testing
 - `/bingo` - TweakCN → Rayso conversion testing
 - `/vscode` - Rayso → VS Code conversion and preview
@@ -185,9 +194,30 @@ When testing the conversion systems:
 
 ## Key Features
 
-- **Live preview** with multiple rendering engines
+- **Live theme workbench** with real-time editing and preview
+- **Synchronized token editor** with automatic color format conversion (OKLCH/LAB → Hex)
+- **Theme selection** with instant visual feedback and no render delays
+- **Multi-format support** for TweakCN, Rayso, Tinte, and VS Code themes
 - **Semantic color mapping** with perceptual consistency
 - **Format-agnostic** conversion between theme systems
 - **Export functionality** for generated themes
 - **OKLCH color space** for better color manipulation
 - **Responsive UI** with modern design patterns
+
+## Theme Workbench Architecture
+
+### Token Synchronization System
+
+The chat workbench (`/chat`) implements a sophisticated token synchronization system:
+
+1. **`useTinteTheme`**: Manages theme selection and application with view transitions
+2. **`useTokenEditor`**: Handles token editing with automatic color format conversion
+3. **Real-time sync**: Tokens update immediately when themes change
+4. **Color conversion**: OKLCH/LAB values automatically convert to hex for display
+5. **Initial state**: Reads actual CSS custom properties from `globals.css` on first render
+
+### Key Hooks
+
+- **`use-tinte-theme.ts`**: Theme management, selection, and mode switching
+- **`use-token-editor.ts`**: Token editing with Culori-based color format conversion
+- **`use-chat-state.ts`**: Chat workbench state management
