@@ -51,31 +51,6 @@ export function ProviderDesignPanel({
     <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_4.5rem)]">
       {/* Fixed controls section */}
       <div className="p-3 space-y-4 border-b flex-shrink-0">
-        {/* Mode switcher */}
-        <div className="space-y-2">
-          <div className="text-xs font-medium text-muted-foreground">Mode</div>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant={mode === 'light' ? 'default' : 'outline'}
-              size="sm"
-              className="justify-start"
-              onClick={() => setTheme('light')}
-            >
-              <span className="mr-2 inline-block h-3 w-3 rounded-full border border-border bg-background" />
-              Light
-            </Button>
-            <Button
-              variant={mode === 'dark' ? 'default' : 'outline'}
-              size="sm"
-              className="justify-start"
-              onClick={() => setTheme('dark')}
-            >
-              <span className="mr-2 inline-block h-3 w-3 rounded-full bg-foreground" />
-              Dark
-            </Button>
-          </div>
-        </div>
-
         {/* Theme switcher (popover + search) */}
         <div className="space-y-2">
           <div className="text-xs font-medium text-muted-foreground">Theme</div>

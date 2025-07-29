@@ -4,6 +4,11 @@ import { Slash } from 'lucide-react';
 import Logo from '@/components/shared/logo';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ProviderSwitcher } from '@/components/shared/provider-switcher';
+import { ThemeSwitcher } from './theme-switcher';
+import { siteConfig } from '@/config/site';
+import { Button } from '../ui/button';
+import GithubIcon from './icons/github';
+import TwitterIcon from './icons/twitter';
 
 interface ChatHeaderProps {
   chatId: string;
@@ -24,10 +29,26 @@ export function ChatHeader({ chatId }: ChatHeaderProps) {
             <ProviderSwitcher />
           </div>
 
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="" alt="User" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
+
+          <div className="flex justify-center items-center flex-col gap-2">
+            <div className="flex items-center justify-center gap-2">
+              <ThemeSwitcher />
+              <Button variant="ghost" size="sm" className="size-8 p-0" asChild>
+                <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
+                  <GithubIcon className="h-6 w-6" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" className="size-8 p-0" asChild>
+                <a href={siteConfig.links.twitter} target="_blank" rel="noopener noreferrer">
+                  <TwitterIcon className="h-6 w-6" />
+                </a>
+              </Button>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="" alt="User" />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
         </div>
       </div>
     </header>
