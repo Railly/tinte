@@ -64,7 +64,7 @@ export function useWorkbenchState(
 
   // Provider state
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
-  const { getPreviewableAdapter, exportTheme } = useThemeAdapters();
+  const { previewableProviders, exportTheme } = useThemeAdapters();
 
   // Theme state
   const {
@@ -81,7 +81,10 @@ export function useWorkbenchState(
 
   // Derived state
   const currentProvider = provider || "shadcn";
-  const currentAdapter = getPreviewableAdapter(currentProvider);
+  // TODO review this later
+  const currentAdapter =
+    previewableProviders.find((p) => p.metadata.name === currentProvider) ||
+    previewableProviders[0];
   const currentTheme = (activeTheme || DEFAULT_THEME) as AppThemeData;
   // Ensure we have a valid TinteTheme
   let tinteTheme: TinteTheme;
