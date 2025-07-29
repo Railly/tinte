@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import { defaultPresets } from '@/utils/tweakcn-presets';
-import { tweakcnToRayso } from '@/lib/tweakcn-to-tinte';
+import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RaysoBlock } from '@/types/tinte';
+import { TinteBlock } from '@/types/tinte';
 
 export default function BingoPage() {
   const [selectedTheme, setSelectedTheme] = useState('modern-minimal');
@@ -21,7 +21,7 @@ export default function BingoPage() {
     dark: defaultPresets[selectedTheme as keyof typeof defaultPresets].styles.dark
   };
 
-  const convertedRayso = tweakcnToRayso(currentTweakcn);
+  const convertedRayso = shadcnToTinte(currentTweakcn);
   const currentTokens = convertedRayso[mode];
 
   const applyTheme = (tokens: Record<string, string>) => {
@@ -201,8 +201,8 @@ export default function BingoPage() {
               // Legacy
               'secondary'
             ].map((key) =>
-              currentTokens[key as keyof RaysoBlock] ? (
-                <ColorSwatch key={key} name={key} value={currentTokens[key as keyof RaysoBlock]} />
+              currentTokens[key as keyof TinteBlock] ? (
+                <ColorSwatch key={key} name={key} value={currentTokens[key as keyof TinteBlock]} />
               ) : null
             )}
           </CardContent>

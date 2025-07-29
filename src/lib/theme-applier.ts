@@ -1,5 +1,5 @@
 import { tinteToShadcn } from "./tinte-to-shadcn";
-import { tweakcnToTinte } from "./tweakcn-to-tinte";
+import { shadcnToTinte } from "./shadcn-to-tinte";
 
 export interface ThemeData {
   id: string;
@@ -80,21 +80,11 @@ function applyThemeDirectly(
   } else {
     if (themeData.author === "tweakcn" && themeData.rawTheme) {
       tokens = themeData.rawTheme[currentMode];
-    } else if (themeData.author === "ray.so" && themeData.rawTheme) {
-      const tinteTheme = {
-        light: themeData.rawTheme.light,
-        dark: themeData.rawTheme.dark,
-      };
-      const shadcnTheme = tinteToShadcn(tinteTheme);
-      tokens = shadcnTheme[currentMode];
     } else if (themeData.rawTheme) {
       try {
-        const tweakcnTheme = {
-          light: themeData.rawTheme.light,
-          dark: themeData.rawTheme.dark,
-        };
-        const tinteTheme = tweakcnToTinte(tweakcnTheme);
-        const shadcnTheme = tinteToShadcn(tinteTheme);
+        // later will figure out
+        // const tinteTheme = shadcnToTinte(shadcnTheme);
+        const shadcnTheme = tinteToShadcn(themeData.rawTheme);
         tokens = shadcnTheme[currentMode];
       } catch (error) {
         console.warn(

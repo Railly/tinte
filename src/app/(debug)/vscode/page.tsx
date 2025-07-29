@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { raysoPresets } from '@/utils/rayso-presets';
 import { defaultPresets } from '@/utils/tweakcn-presets';
-import { tweakcnToTinte } from '@/lib/tweakcn-to-tinte';
+import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
 import { tinteToVSCode } from '@/lib/tinte-to-vscode';
 import { TinteTheme } from '@/types/tinte';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -187,11 +187,11 @@ export default function VSCodePage() {
       };
       return tinteToVSCode(tinteTheme, raysoPresets[selectedTheme].name);
     } else {
-      const tweakcnTheme = {
+      const shadcnTheme = {
         light: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.light,
         dark: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.dark
       };
-      const convertedRayso: TinteTheme = tweakcnToTinte(tweakcnTheme);
+      const convertedRayso: TinteTheme = shadcnToTinte(shadcnTheme);
       const themeName = defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].label;
       return tinteToVSCode(convertedRayso, `${themeName} (from TweakCN)`);
     }
@@ -434,9 +434,9 @@ export default function VSCodePage() {
                   {JSON.stringify(
                     sourceType === 'rayso'
                       ? raysoPresets[selectedTheme][mode]
-                      : tweakcnToTinte({
+                      : shadcnToTinte({
                         light: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.light,
-                        dark: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.dark
+                        dark: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.dark,
                       })[mode],
                     null,
                     2
@@ -453,7 +453,7 @@ export default function VSCodePage() {
                 <pre className="text-xs overflow-auto max-h-64 bg-muted p-4 rounded">
                   {JSON.stringify({
                     colors: currentVSCodeTheme.colors,
-                    tokenColors: currentVSCodeTheme.tokenColors.slice(0, 10)
+                    tokenColors: currentVSCodeTheme.tokenColors.slice(0, 10),
                   }, null, 2)}
                 </pre>
               </CardContent>

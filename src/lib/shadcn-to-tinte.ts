@@ -1,13 +1,10 @@
 // Only need generateTailwindPalette - no complex color manipulation needed
 import { generateTailwindPalette } from "./palette-generator";
 import { TinteTheme, TinteBlock } from "@/types/tinte";
-
-type Mode = "light" | "dark";
-type TweakcnBlock = Record<string, string>;
-type TweakcnTheme = { light: TweakcnBlock; dark: TweakcnBlock };
+import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
 
 // Similar to rayso-to-shadcn's buildRamp approach
-function buildNeutralRamp(block: TweakcnBlock): string[] {
+function buildNeutralRamp(block: ShadcnBlock): string[] {
   const seed = block.border || block.input || block.background || "#808080";
   return generateTailwindPalette(seed).map((s) => s.value);
 }
@@ -49,7 +46,7 @@ const FLEXOKI_ANCHORS = {
   },
 } as const;
 
-function mapToTinte(block: TweakcnBlock, mode: Mode): TinteBlock {
+function mapToTinte(block: ShadcnBlock, mode: "light" | "dark"): TinteBlock {
   const bg = block.background || (mode === "light" ? "#ffffff" : "#000000");
   const fg = block.foreground || (mode === "light" ? "#000000" : "#ffffff");
   const primary = block.primary || (mode === "light" ? "#3b82f6" : "#60a5fa");
@@ -98,9 +95,9 @@ function mapToTinte(block: TweakcnBlock, mode: Mode): TinteBlock {
   };
 }
 
-export function tweakcnToTinte(tweakcn: TweakcnTheme): TinteTheme {
+export function shadcnToTinte(shadcn: ShadcnTheme): TinteTheme {
   return {
-    light: mapToTinte(tweakcn.light, "light"),
-    dark: mapToTinte(tweakcn.dark, "dark"),
+    light: mapToTinte(shadcn.light, "light"),
+    dark: mapToTinte(shadcn.dark, "dark"),
   };
 }
