@@ -1,5 +1,5 @@
 import { TinteTheme } from "@/types/tinte";
-import { adapterRegistry } from "@/lib/adapters";
+import { providerRegistry } from "@/lib/providers";
 import { useQueryState } from "nuqs";
 import { cn } from "@/lib/utils";
 
@@ -10,9 +10,9 @@ interface UnifiedPreviewProps {
 
 export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
-  const currentAdapter = adapterRegistry.getPreviewable(provider || 'shadcn');
+  const currentProvider = providerRegistry.getPreviewable(provider || 'shadcn');
 
-  if (!currentAdapter) {
+  if (!currentProvider) {
     return (
       <div className="flex items-center justify-center h-64 text-muted-foreground">
         No preview available for {provider}
@@ -20,22 +20,22 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
     );
   }
 
-  const converted = adapterRegistry.convert(currentAdapter.id, theme);
+  const converted = providerRegistry.convert(currentProvider.metadata.id, theme);
   if (!converted) {
     return (
       <div className="flex items-center justify-center h-64 text-muted-foreground">
-        Failed to convert theme for {currentAdapter.metadata.name}
+        Failed to convert theme for {currentProvider.metadata.name}
       </div>
     );
   }
 
-  const PreviewComponent = currentAdapter.preview.component;
+  const PreviewComponent = currentProvider.preview.component;
 
   return (
     <div className={cn("space-y-6", className)}>
       <PreviewComponent
         theme={converted}
-        {...(currentAdapter.preview.defaultProps || {})}
+        {...(currentProvider.preview.defaultProps || {})}
       />
     </div>
   );

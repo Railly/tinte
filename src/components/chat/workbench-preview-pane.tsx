@@ -31,8 +31,8 @@ function PreviewPaneHeader({
   onExportTinte: () => void;
 }) {
   const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
-  const { getPreviewableAdapter } = useThemeAdapters();
-  const currentAdapter = getPreviewableAdapter(provider || 'shadcn');
+  const { getPreviewableProvider } = useThemeAdapters();
+  const currentAdapter = getPreviewableProvider(provider || 'shadcn');
 
   const Icon = currentAdapter?.metadata?.icon;
   const name = currentAdapter?.metadata?.name || 'Theme Preview';

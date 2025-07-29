@@ -1,69 +1,69 @@
 import { useMemo } from "react";
 import { TinteTheme } from "@/types/tinte";
-import { adapterRegistry } from "@/lib/adapters";
+import { providerRegistry } from "@/lib/providers";
 
 export function useThemeAdapters() {
   return useMemo(() => ({
-    availableAdapters: adapterRegistry.getAll(),
-    previewableAdapters: adapterRegistry.getAllPreviewable(),
+    availableProviders: providerRegistry.getAll(),
+    previewableProviders: providerRegistry.getAllPreviewable(),
     
-    convertTheme: <T>(adapterId: string, theme: TinteTheme): T | null => {
-      return adapterRegistry.convert<T>(adapterId, theme);
+    convertTheme: <T>(providerId: string, theme: TinteTheme): T | null => {
+      return providerRegistry.convert<T>(providerId, theme);
     },
     
-    exportTheme: (adapterId: string, theme: TinteTheme, filename?: string) => {
-      return adapterRegistry.export(adapterId, theme, filename);
+    exportTheme: (providerId: string, theme: TinteTheme, filename?: string) => {
+      return providerRegistry.export(providerId, theme, filename);
     },
     
     convertAllThemes: (theme: TinteTheme) => {
-      return adapterRegistry.convertAll(theme);
+      return providerRegistry.convertAll(theme);
     },
     
     exportAllThemes: (theme: TinteTheme) => {
-      return adapterRegistry.exportAll(theme);
+      return providerRegistry.exportAll(theme);
     },
     
-    getAdapter: (adapterId: string) => {
-      return adapterRegistry.get(adapterId);
+    getProvider: (providerId: string) => {
+      return providerRegistry.get(providerId);
     },
     
-    getPreviewableAdapter: (adapterId: string) => {
-      return adapterRegistry.getPreviewable(adapterId);
+    getPreviewableProvider: (providerId: string) => {
+      return providerRegistry.getPreviewable(providerId);
     },
     
-    getAdaptersByCategory: (category: string) => {
-      return adapterRegistry.getByCategory(category as any);
+    getProvidersByCategory: (category: string) => {
+      return providerRegistry.getByCategory(category as any);
     },
     
-    getAdaptersByTag: (tag: string) => {
-      return adapterRegistry.getByTag(tag);
+    getProvidersByTag: (tag: string) => {
+      return providerRegistry.getByTag(tag);
     },
     
-    validateOutput: <T>(adapterId: string, output: T): boolean => {
-      return adapterRegistry.validate(adapterId, output);
+    validateOutput: <T>(providerId: string, output: T): boolean => {
+      return providerRegistry.validate(providerId, output);
     },
   }), []);
 }
 
 export function useThemeConversion(theme: TinteTheme) {
-  const adapters = useThemeAdapters();
+  const providers = useThemeAdapters();
   
   return useMemo(() => {
     const conversions: Record<string, any> = {};
     
-    for (const adapter of adapters.availableAdapters) {
-      const converted = adapters.convertTheme(adapter.id, theme);
+    for (const provider of providers.availableProviders) {
+      const converted = providers.convertTheme(provider.metadata.id, theme);
       if (converted !== null) {
-        conversions[adapter.id] = converted;
+        conversions[provider.metadata.id] = converted;
       }
     }
     
     return {
       conversions,
-      exportAll: () => adapters.exportAllThemes(theme),
-      convertTo: <T>(adapterId: string) => adapters.convertTheme<T>(adapterId, theme),
-      exportTo: (adapterId: string, filename?: string) => 
-        adapters.exportTheme(adapterId, theme, filename),
+      exportAll: () => providers.exportAllThemes(theme),
+      convertTo: <T>(providerId: string) => providers.convertTheme<T>(providerId, theme),
+      exportTo: (providerId: string, filename?: string) => 
+        providers.exportTheme(providerId, theme, filename),
     };
-  }, [theme, adapters]);
+  }, [theme, providers]);
 }

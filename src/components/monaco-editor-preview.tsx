@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { VSCodeTheme } from '@/lib/tinte-to-vscode';
+import { VSCodeTheme } from '@/lib/providers/vscode';
 
 interface MonacoEditorPreviewProps {
   code: string;

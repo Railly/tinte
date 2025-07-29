@@ -1,4 +1,4 @@
-import { adapterRegistry } from "./adapters";
+import { providerRegistry } from "./providers";
 
 export interface ThemeData {
   id: string;
@@ -108,7 +108,7 @@ function applyThemeDirectly(
       tokens = themeData.rawTheme[currentMode];
     } else if (themeData.rawTheme) {
       try {
-        const shadcnTheme = adapterRegistry.convert(
+        const shadcnTheme = providerRegistry.convert(
           "shadcn",
           themeData.rawTheme
         );

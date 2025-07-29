@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { VSCodeTheme } from '@/lib/tinte-to-vscode/types';
+import { VSCodeTheme } from '@/lib/providers/vscode';
 import { useTheme } from 'next-themes';
 import Editor from '@monaco-editor/react';
 import { shikiToMonaco } from '@shikijs/monaco';
@@ -12,7 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useThemeApplier } from '@/hooks/use-theme-applier';
-import { adapterRegistry } from '@/lib/adapters';
+import { providerRegistry } from '@/lib/providers';
 import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
 
 interface VSCodePreviewProps {
@@ -203,14 +203,14 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
           dark: themeData.rawTheme.dark || themeData.rawTheme
         };
         const tinteTheme = shadcnToTinte(shadcnTheme);
-        const vscodeTheme = adapterRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
+        const vscodeTheme = providerRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
         if (vscodeTheme) {
           currentThemeSet = vscodeTheme;
         }
       } else {
         // For direct Tinte themes: Tinte → VSCode
         const tinteTheme = themeData.rawTheme;
-        const vscodeTheme = adapterRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
+        const vscodeTheme = providerRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
         if (vscodeTheme) {
           currentThemeSet = vscodeTheme;
         }

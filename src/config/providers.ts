@@ -1,4 +1,4 @@
-import { adapterRegistry } from "@/lib/adapters";
+import { providerRegistry } from "@/lib/providers";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import { WarpIcon } from "@/components/shared/icons/warp";
@@ -16,15 +16,15 @@ import { ObsidianIcon } from "@/components/shared/icons/obsidian";
 import { GIMPIcon } from "@/components/shared/icons/gimp";
 
 export function getAvailableProviders() {
-  return adapterRegistry.getAll();
+  return providerRegistry.getAll();
 }
 
 export function getPreviewableProviders() {
-  return adapterRegistry.getAllPreviewable();
+  return providerRegistry.getAllPreviewable();
 }
 
 export function getProvidersByCategory(category: string) {
-  return adapterRegistry.getByCategory(category as any);
+  return providerRegistry.getByCategory(category as any);
 }
 
 export const LEGACY_PROVIDERS = [

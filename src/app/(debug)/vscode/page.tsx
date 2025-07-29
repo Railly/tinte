@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { raysoPresets } from '@/utils/rayso-presets';
 import { defaultPresets } from '@/utils/tweakcn-presets';
 import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
-import { tinteToVSCode } from '@/lib/tinte-to-vscode';
+import { convertTinteToVSCode } from '@/lib/providers/vscode';
 import { TinteTheme } from '@/types/tinte';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -185,7 +185,7 @@ export default function VSCodePage() {
         light: raysoPresets[selectedTheme].light,
         dark: raysoPresets[selectedTheme].dark
       };
-      return tinteToVSCode(tinteTheme, raysoPresets[selectedTheme].name);
+      return convertTinteToVSCode(tinteTheme, raysoPresets[selectedTheme].name);
     } else {
       const shadcnTheme = {
         light: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.light,
@@ -193,7 +193,7 @@ export default function VSCodePage() {
       };
       const convertedRayso: TinteTheme = shadcnToTinte(shadcnTheme);
       const themeName = defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].label;
-      return tinteToVSCode(convertedRayso, `${themeName} (from TweakCN)`);
+      return convertTinteToVSCode(convertedRayso, `${themeName} (from TweakCN)`);
     }
   };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { adapterRegistry } from "@/lib/adapters";
+import { providerRegistry } from "@/lib/providers";
 import { ThemeData } from "@/lib/theme-applier";
 import { formatHex, parse } from "culori";
 
@@ -61,7 +61,7 @@ export function useTokenEditor(activeTheme: ThemeData | null, isDark: boolean) {
       if (activeTheme.author === "tweakcn" && activeTheme.rawTheme) {
         tokens = activeTheme.rawTheme[isDark ? "dark" : "light"] || {};
       } else if (activeTheme.rawTheme) {
-        const shadcnTheme = adapterRegistry.convert(
+        const shadcnTheme = providerRegistry.convert(
           "shadcn",
           activeTheme.rawTheme
         ) as any;

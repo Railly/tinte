@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { codeToHtml } from 'shiki';
-import { VSCodeTheme } from '@/lib/tinte-to-vscode';
+import { VSCodeTheme } from '@/lib/providers/vscode';
 
 interface CodePreviewProps {
   code: string;

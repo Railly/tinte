@@ -2,8 +2,7 @@ import { oklch, rgb, formatHex } from "culori";
 import { generateTailwindPalette } from "../palette-generator";
 import { TinteBlock, TinteTheme } from "@/types/tinte";
 import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
-import { ThemeMode } from "../providers";
-import { PreviewableAdapter, AdapterMetadata } from "./types";
+import { PreviewableProvider, ThemeMode, ProviderOutput } from "./types";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { CardsDemo } from "@/components/preview/shadcn/cards-demo";
 
@@ -23,50 +22,38 @@ const L = (hex: string) => {
 };
 
 const contrast = (a: string, b: string) => {
-  const la = L(a),
-    lb = L(b);
-  const lighter = Math.max(la, lb),
-    darker = Math.min(la, lb);
+  const la = L(a), lb = L(b);
+  const lighter = Math.max(la, lb), darker = Math.min(la, lb);
   return (lighter + 0.05) / (darker + 0.05);
 };
 
 const bestTextFor = (bg: string) => {
-  const w = "#ffffff",
-    k = "#000000";
+  const w = "#ffffff", k = "#000000";
   return contrast(w, bg) >= contrast(k, bg) ? w : k;
 };
 
 const tweakL = (hex: string, dL: number) => {
   const c = oklch(hex) as any;
   if (!c) return hex;
-  const out = {
+  return formatHex({
     mode: "oklch" as const,
     l: clamp01(c.l + dL),
     c: Math.max(0, c.c),
     h: c.h,
-  };
-  return formatHex(out);
+  });
 };
 
 function buildNeutralRamp(block: TinteBlock): string[] {
-  const seed =
-    block.interface ||
-    block.interface_2 ||
-    block.interface_3 ||
-    block.background ||
-    "#808080";
+  const seed = block.interface || block.interface_2 || block.interface_3 || block.background || "#808080";
   return generateTailwindPalette(seed).map((s) => s.value);
 }
 
 function buildRamp(seed?: string): string[] {
-  const base = seed || "#64748b";
-  return generateTailwindPalette(base).map((s) => s.value);
+  return generateTailwindPalette(seed || "#64748b").map((s) => s.value);
 }
 
 const pick = (ramp: string[], step: number) => {
-  const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(
-    step
-  );
+  const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(step);
   return ramp[Math.max(0, idx)];
 };
 
@@ -80,12 +67,9 @@ function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
 
   const neutralRamp = buildNeutralRamp(block);
   const primaryRamp = buildRamp(block.primary);
-  const accentRamp = buildRamp(
-    block.accent || block.accent_2 || block.secondary
-  );
+  const accentRamp = buildRamp(block.accent || block.accent_2 || block.secondary);
 
   const A = ANCHORS[mode];
-
   const primary = pick(primaryRamp, A.primary);
   const secondary = pick(accentRamp, mode === "light" ? 500 : 400);
   const accent = pick(accentRamp, A.accent);
@@ -94,7 +78,6 @@ function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
 
   const ensureFg = (on: string) => bestTextFor(on);
   const ring = tweakL(primary, mode === "light" ? +0.1 : -0.1);
-
   const card = surface(bg, mode, 0.03);
   const popover = surface(bg, mode, 0.03);
 
@@ -114,36 +97,28 @@ function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
   return {
     background: bg,
     foreground: fg,
-
     card,
     "card-foreground": ensureFg(card),
     popover,
     "popover-foreground": ensureFg(popover),
-
     primary,
     "primary-foreground": ensureFg(primary),
     secondary,
     "secondary-foreground": ensureFg(secondary),
-
     muted,
     "muted-foreground": pick(neutralRamp, A.mutedFg),
-
     accent,
     "accent-foreground": ensureFg(accent),
-
     destructive,
     "destructive-foreground": ensureFg(destructive),
-
     border,
     input: border,
     ring,
-
     "chart-1": chart1,
     "chart-2": chart2,
     "chart-3": chart3,
     "chart-4": chart4,
     "chart-5": chart5,
-
     sidebar,
     "sidebar-foreground": ensureFg(sidebar),
     "sidebar-primary": primary,
@@ -180,17 +155,24 @@ ${darkVars}
 }`;
 }
 
-export const shadcnAdapter: PreviewableAdapter<ShadcnTheme> = {
-  id: "shadcn",
-  name: "shadcn/ui",
-  description: "UI component library theme format",
-  version: "1.0.0",
+export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
+  metadata: {
+    id: "shadcn",
+    name: "shadcn/ui",
+    description: "Beautifully designed components built on Radix UI and Tailwind CSS",
+    category: "ui",
+    tags: ["react", "tailwind", "components", "ui"],
+    icon: ShadcnIcon,
+    website: "https://ui.shadcn.com/",
+    documentation: "https://ui.shadcn.com/docs",
+  },
+  
   fileExtension: "css",
   mimeType: "text/css",
 
   convert: convertTinteToShadcn,
 
-  export: (theme: TinteTheme, filename?: string) => ({
+  export: (theme: TinteTheme, filename?: string): ProviderOutput => ({
     content: generateCSSVariables(convertTinteToShadcn(theme)),
     filename: filename || "shadcn-theme.css",
     mimeType: "text/css",
@@ -204,15 +186,4 @@ export const shadcnAdapter: PreviewableAdapter<ShadcnTheme> = {
   preview: {
     component: CardsDemo,
   },
-};
-
-export const shadcnAdapterMetadata: AdapterMetadata = {
-  id: "shadcn",
-  name: "shadcn/ui",
-  description: "Beautifully designed components built on Radix UI and Tailwind CSS",
-  category: "ui",
-  tags: ["react", "tailwind", "components", "ui"],
-  icon: ShadcnIcon,
-  website: "https://ui.shadcn.com/",
-  documentation: "https://ui.shadcn.com/docs",
 };
