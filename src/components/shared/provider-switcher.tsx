@@ -19,7 +19,7 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { ALL_PROVIDERS } from '@/components/shared/icons';
+import { ALL_PROVIDERS } from '@/config/providers';
 
 interface ProviderSwitcherProps {
   className?: string;

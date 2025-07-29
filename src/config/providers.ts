@@ -54,3 +54,25 @@ export const PROVIDER_ICONS: Record<
   Obsidian: ObsidianIcon,
   GIMP: GIMPIcon,
 };
+
+export const ALL_PROVIDERS = [
+  { id: "shadcn", name: "shadcn/ui", icon: ShadcnIcon },
+  { id: "vscode", name: "VS Code", icon: VSCodeIcon },
+  { id: "zed", name: "Zed", icon: ZedIcon },
+  { id: "warp", name: "Warp", icon: WarpIcon },
+  { id: "alacritty", name: "Alacritty", icon: AlacrittyIcon },
+  { id: "slack", name: "Slack", icon: SlackIcon },
+  { id: "kitty", name: "Kitty", icon: KittyIcon },
+  { id: "ghostty", name: "Ghostty", icon: GhosttyIcon },
+  { id: "obsidian", name: "Obsidian", icon: ObsidianIcon },
+  {
+    id: "windows-terminal",
+    name: "Windows Terminal",
+    icon: WindowsTerminalIcon,
+  },
+  { id: "jetbrains", name: "JetBrains", icon: JetBrainsIcon },
+  { id: "replit", name: "Replit", icon: ReplitIcon },
+  { id: "neovim", name: "Neovim", icon: NeovimIcon },
+  { id: "cursor", name: "Cursor", icon: CursorIcon },
+  { id: "gimp", name: "GIMP", icon: GIMPIcon },
+];

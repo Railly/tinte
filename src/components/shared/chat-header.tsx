@@ -21,11 +21,11 @@ export function ChatHeader({ chatId }: ChatHeaderProps) {
         <div className="relative flex h-[var(--header-height)] items-center justify-between">
           <div className="flex items-center gap-3">
             <Logo size={24} />
-            <Slash className="w-4 h-4 text-muted -rotate-[15deg] brightness-125" />
+            <Slash className="w-4 h-4 text-primary/40 -rotate-[15deg] brightness-125" />
             <span className="font-medium text-sm">
               {chatId.slice(0, 8)}
             </span>
-            <Slash className="w-4 h-4 text-muted -rotate-[15deg] brightness-125" />
+            <Slash className="w-4 h-4 text-primary/40 -rotate-[15deg] brightness-125" />
             <ProviderSwitcher />
           </div>
 
