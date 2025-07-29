@@ -6,6 +6,7 @@ import { PROVIDERS } from '@/lib/providers';
 import { CHAT_CONFIG } from '@/lib/chat-constants';
 import { useTinteTheme } from '@/hooks/use-tinte-theme';
 import { useQueryState } from 'nuqs';
+import { ThemeData } from '@/lib/theme-applier';
 
 interface ChatPreviewProps {
   split: boolean;
@@ -29,7 +30,7 @@ export function ChatPreview({ split }: ChatPreviewProps) {
       className="size-full p-4 overflow-hidden"
     >
       <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_2.5rem)]">
-        <currentProvider.Preview theme={activeThemeRef.current || allThemes[0]} mode={isDark ? 'dark' : 'light'} />
+        <currentProvider.Preview theme={activeThemeRef.current || allThemes[0] as ThemeData} mode={isDark ? 'dark' : 'light'} />
       </ScrollArea>
     </motion.main>
   );

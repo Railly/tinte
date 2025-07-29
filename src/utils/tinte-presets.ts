@@ -1,3 +1,5 @@
+import { TinteTheme } from "@/types/tinte";
+
 // Extract themes for theme showcase
 export function extractTinteThemeData(isDark = false) {
   return tintePresets.map((preset, index) => {
@@ -12,11 +14,11 @@ export function extractTinteThemeData(isDark = false) {
         background: colorData.background,
         foreground: colorData.text,
       },
-      createdAt: '2024-01-20',
+      createdAt: "2024-01-20",
       rawTheme: {
         light: preset.light,
-        dark: preset.dark
-      }
+        dark: preset.dark,
+      } as TinteTheme,
     };
   });
 }
@@ -37,7 +39,7 @@ export const tintePresets = [
       background: "#FFFFFF",
       interface_2: "#d9d9d9",
       interface_3: "#cccccc",
-      background_2: "#f2f2f2"
+      background_2: "#f2f2f2",
     },
     dark: {
       text: "#EDEDED",
@@ -52,8 +54,8 @@ export const tintePresets = [
       background: "#000000",
       interface_2: "#212121",
       interface_3: "#2B2B2B",
-      background_2: "#0D0D0D"
-    }
+      background_2: "#0D0D0D",
+    },
   },
   {
     name: "One Hunter",
@@ -70,7 +72,7 @@ export const tintePresets = [
       background: "#F7F7F7",
       interface_2: "#d1d1d1",
       interface_3: "#c4c4c4",
-      background_2: "#ebebeb"
+      background_2: "#ebebeb",
     },
     dark: {
       text: "#E3E1E1",
@@ -85,8 +87,8 @@ export const tintePresets = [
       background: "#1D2127",
       interface_2: "#3E4043",
       interface_3: "#47494D",
-      background_2: "#2C2E31"
-    }
+      background_2: "#2C2E31",
+    },
   },
   {
     name: "Tailwind",
@@ -103,7 +105,7 @@ export const tintePresets = [
       background: "#FFFFFF",
       interface_2: "#d9d9d9",
       interface_3: "#cccccc",
-      background_2: "#f2f2f2"
+      background_2: "#f2f2f2",
     },
     dark: {
       text: "#F9FAFB",
@@ -118,8 +120,8 @@ export const tintePresets = [
       background: "#1B293D",
       interface_2: "#32496c",
       interface_3: "#38537a",
-      background_2: "#21324a"
-    }
+      background_2: "#21324a",
+    },
   },
   {
     name: "Supabase",
@@ -136,7 +138,7 @@ export const tintePresets = [
       background: "#FFFFFF",
       interface_2: "#d9d9d9",
       interface_3: "#cccccc",
-      background_2: "#f2f2f2"
+      background_2: "#f2f2f2",
     },
     dark: {
       text: "#FFFFFF",
@@ -151,8 +153,8 @@ export const tintePresets = [
       background: "#171717",
       interface_2: "#343c38",
       interface_3: "#4e5651",
-      background_2: "#212121"
-    }
+      background_2: "#212121",
+    },
   },
   {
     name: "Flexoki",
@@ -169,7 +171,7 @@ export const tintePresets = [
       background: "#FEFCF0",
       interface_2: "#DAD8CE",
       interface_3: "#CECDC3",
-      background_2: "#F2F0E5"
+      background_2: "#F2F0E5",
     },
     dark: {
       text: "#CECDC3",
@@ -184,7 +186,7 @@ export const tintePresets = [
       background: "#100F0F",
       interface_2: "#343331",
       interface_3: "#403E3C",
-      background_2: "#1C1B1A"
-    }
-  }
+      background_2: "#1C1B1A",
+    },
+  },
 ];

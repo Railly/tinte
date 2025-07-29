@@ -1,3 +1,5 @@
+import { ShadcnTheme } from "@/types/shadcn";
+
 // Extract themes for theme showcase
 export function extractTweakcnThemeData(isDark = false) {
   return Object.entries(defaultPresets).map(([key, preset]) => {
@@ -12,8 +14,8 @@ export function extractTweakcnThemeData(isDark = false) {
         background: themeMode.background,
         foreground: themeMode.foreground,
       },
-      createdAt: (preset as any).createdAt || '2025-01-01',
-      rawTheme: preset.styles,
+      createdAt: (preset as any).createdAt || "2025-01-01",
+      rawTheme: preset.styles as ShadcnTheme,
     };
   });
 }

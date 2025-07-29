@@ -1,15 +1,16 @@
 'use client';
 
 import React from 'react';
-import { ThemeSpec, ThemeMode } from '@/lib/providers/types';
+import { ThemeMode } from '@/lib/providers/types';
+import { ThemeData } from '@/lib/theme-applier';
 
 interface VSCodePreviewProps {
-  theme: ThemeSpec;
+  theme: ThemeData;
   mode: ThemeMode;
 }
 
 export function VSCodePreview({ theme, mode }: VSCodePreviewProps) {
-  const tokens = theme[mode];
+  const tokens = theme.rawTheme[mode]
 
   const codeExample = `import React from 'react';
 import { useState } from 'react';
@@ -36,18 +37,18 @@ export default function UserProfile({ user }: { user: User }) {
 }`;
 
   return (
-    <div 
+    <div
       className="rounded-lg border overflow-hidden font-mono text-sm"
       style={{
         backgroundColor: tokens.background || '#1e1e1e',
-        color: tokens.foreground || '#d4d4d4',
+        color: tokens.text || '#d4d4d4',
       }}
     >
       {/* Title bar */}
-      <div 
+      <div
         className="px-4 py-2 border-b flex items-center gap-2"
         style={{
-          backgroundColor: tokens['background-2'] || tokens.background || '#2d2d30',
+          backgroundColor: tokens.background || '#2d2d30',
           borderColor: tokens.border || '#404040',
         }}
       >
@@ -64,16 +65,16 @@ export default function UserProfile({ user }: { user: User }) {
         <pre className="text-sm leading-relaxed">
           {codeExample.split('\n').map((line, i) => (
             <div key={i} className="flex">
-              <div 
+              <div
                 className="w-8 text-right mr-4 select-none"
-                style={{ color: tokens['text-3'] || tokens['muted-foreground'] || '#6a6a6a' }}
+                style={{ color: tokens.text_2 || '#6a6a6a' }}
               >
                 {i + 1}
               </div>
-              <div 
-                dangerouslySetInnerHTML={{ 
-                  __html: highlightSyntax(line, tokens) 
-                }} 
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: highlightSyntax(line, tokens)
+                }}
               />
             </div>
           ))}
@@ -81,11 +82,11 @@ export default function UserProfile({ user }: { user: User }) {
       </div>
 
       {/* Status bar */}
-      <div 
+      <div
         className="px-4 py-1 text-xs flex items-center justify-between"
         style={{
           backgroundColor: tokens.primary || '#007acc',
-          color: tokens['primary-foreground'] || '#ffffff',
+          color: tokens.primary_foreground || '#ffffff',
         }}
       >
         <div>TypeScript React</div>
@@ -98,18 +99,18 @@ export default function UserProfile({ user }: { user: User }) {
 function highlightSyntax(line: string, tokens: Record<string, string>): string {
   const keywordColor = tokens.primary || '#569cd6';
   const stringColor = tokens.accent || '#ce9178';
-  const commentColor = tokens['text-3'] || tokens['muted-foreground'] || '#6a9955';
-  const typeColor = tokens['accent-2'] || tokens.secondary || '#4ec9b0';
-  
+  const commentColor = tokens.text_3 || tokens.text_2 || '#6a9955';
+  const typeColor = tokens.accent_2 || tokens.secondary || '#4ec9b0';
+
   return line
-    .replace(/\b(import|export|from|interface|function|const|let|var|return|if|else|default)\b/g, 
-             `<span style="color: ${keywordColor}">$1</span>`)
-    .replace(/(['"])(.*?)\1/g, 
-             `<span style="color: ${stringColor}">$1$2$1</span>`)
-    .replace(/(\/\/.*$)/g, 
-             `<span style="color: ${commentColor}; font-style: italic">$1</span>`)
-    .replace(/\b(User|React|useState)\b/g, 
-             `<span style="color: ${typeColor}">$1</span>`)
-    .replace(/\b(\d+)\b/g, 
-             `<span style="color: ${stringColor}">$1</span>`);
+    .replace(/\b(import|export|from|interface|function|const|let|var|return|if|else|default)\b/g,
+      `<span style="color: ${keywordColor}">$1</span>`)
+    .replace(/(['"])(.*?)\1/g,
+      `<span style="color: ${stringColor}">$1$2$1</span>`)
+    .replace(/(\/\/.*$)/g,
+      `<span style="color: ${commentColor}; font-style: italic">$1</span>`)
+    .replace(/\b(User|React|useState)\b/g,
+      `<span style="color: ${typeColor}">$1</span>`)
+    .replace(/\b(\d+)\b/g,
+      `<span style="color: ${stringColor}">$1</span>`);
 }

@@ -1,8 +1,7 @@
 import React from 'react';
 import { Palette } from 'lucide-react';
-import { ProviderAdapter, ThemeSpec, ThemeMode } from './types';
+import { ProviderAdapter, ThemeMode } from './types';
 import ExamplesPreviewContainer from '@/components/examples-preview-container';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { ThemeData } from '../theme-applier';
 import { CardsDemo } from '@/components/preview/shadcn/cards-demo';
 
@@ -26,14 +25,14 @@ export const shadcnAdapter: ProviderAdapter = {
   title: 'shadcn/ui',
   icon: ShadcnIcon,
   Preview: ShadcnPreview,
-  export: (theme: ThemeSpec) => ({
+  export: (theme: ThemeData) => ({
     files: {
       'tailwind.config.js': `module.exports = {
   theme: {
     extend: {
       colors: {
         // Light mode
-        ${Object.entries(theme.light)
+        ${Object.entries(theme.rawTheme.light)
           .map(([key, value]) => `        "${key}": "${value}",`)
           .join('\n')}
       }
@@ -41,26 +40,26 @@ export const shadcnAdapter: ProviderAdapter = {
   }
 }`,
       'globals.css': `:root {
-${Object.entries(theme.light)
+${Object.entries(theme.rawTheme.light)
           .map(([key, value]) => `  --${key}: ${value};`)
           .join('\n')}
 }
 
 .dark {
-${Object.entries(theme.dark)
+${Object.entries(theme.rawTheme.dark)
           .map(([key, value]) => `  --${key}: ${value};`)
-          .join('\n')}
-}`
+          .join("\n")}
+}`,
     },
     instructions: [
-      'Copy the CSS variables to your globals.css',
-      'Update your tailwind.config.js with the color tokens',
-      'Use the design system tokens in your components'
-    ]
+      "Copy the CSS variables to your globals.css",
+      "Update your tailwind.config.js with the color tokens",
+      "Use the design system tokens in your components",
+    ],
   }),
   supports: {
     fonts: false,
     ansi16: false,
-    semanticTokens: false
-  }
+    semanticTokens: false,
+  },
 };

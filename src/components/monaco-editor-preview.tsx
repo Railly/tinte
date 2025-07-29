@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { VSCodeTheme } from '@/lib/rayso-to-vscode';
+import { VSCodeTheme } from '@/lib/tinte-to-vscode';
 
 interface MonacoEditorPreviewProps {
   code: string;
@@ -11,17 +11,17 @@ interface MonacoEditorPreviewProps {
   height?: string;
 }
 
-export function MonacoEditorPreview({ 
-  code, 
-  language, 
-  theme, 
-  height = '400px' 
+export function MonacoEditorPreview({
+  code,
+  language,
+  theme,
+  height = '400px'
 }: MonacoEditorPreviewProps) {
   const editorRef = useRef<any>(null);
 
   const handleEditorDidMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
-    
+
     // Define the custom theme
     const customTheme = {
       base: theme.type === 'dark' ? 'vs-dark' : 'vs',

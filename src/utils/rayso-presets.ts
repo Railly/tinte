@@ -1,3 +1,5 @@
+import { TinteTheme } from "@/types/tinte";
+
 // Extract themes for theme showcase
 export function extractRaysoThemeData(isDark = false) {
   return raysoPresets.map((preset, index) => {
@@ -12,11 +14,11 @@ export function extractRaysoThemeData(isDark = false) {
         background: colorData.background,
         foreground: colorData.text,
       },
-      createdAt: '2024-01-15',
+      createdAt: "2024-01-15",
       rawTheme: {
         light: preset.light,
-        dark: preset.dark
-      }
+        dark: preset.dark,
+      } as TinteTheme,
     };
   });
 }
@@ -37,7 +39,7 @@ export const raysoPresets = [
       background: "#fff5f7",
       interface_2: "#d5c3c3",
       interface_3: "#cab4b4",
-      background_2: "#ffebef"
+      background_2: "#ffebef",
     },
     dark: {
       text: "#FFFFFF",
@@ -52,8 +54,8 @@ export const raysoPresets = [
       background: "#190707",
       interface_2: "#512f2f",
       interface_3: "#6f4444",
-      background_2: "#280b0b"
-    }
+      background_2: "#280b0b",
+    },
   },
   {
     name: "Ice",
@@ -70,7 +72,7 @@ export const raysoPresets = [
       background: "#fafeff",
       interface_2: "#c2f3ff",
       interface_3: "#9ed7e6",
-      background_2: "#ebfbff"
+      background_2: "#ebfbff",
     },
     dark: {
       text: "#FFFFFF",
@@ -85,8 +87,8 @@ export const raysoPresets = [
       background: "#1F2427",
       interface_2: "#394047",
       interface_3: "#515a61",
-      background_2: "#272c30"
-    }
+      background_2: "#272c30",
+    },
   },
   {
     name: "Noir",
@@ -103,7 +105,7 @@ export const raysoPresets = [
       background: "#F7F7F7",
       interface_2: "#d1d1d1",
       interface_3: "#c4c4c4",
-      background_2: "#ebebeb"
+      background_2: "#ebebeb",
     },
     dark: {
       text: "#FFFFFF",
@@ -118,8 +120,8 @@ export const raysoPresets = [
       background: "#181818",
       interface_2: "#363636",
       interface_3: "#454545",
-      background_2: "#1f1f1f"
-    }
+      background_2: "#1f1f1f",
+    },
   },
   {
     name: "Forest",
@@ -136,7 +138,7 @@ export const raysoPresets = [
       background: "#f9fbf8",
       interface_2: "#d7e4d2",
       interface_3: "#ccddc5",
-      background_2: "#eef4ec"
+      background_2: "#eef4ec",
     },
     dark: {
       text: "#FFFFFF",
@@ -151,8 +153,8 @@ export const raysoPresets = [
       background: "#141815",
       interface_2: "#3c443d",
       interface_3: "#4b534d",
-      background_2: "#1e2420"
-    }
+      background_2: "#1e2420",
+    },
   },
   {
     name: "Sand",
@@ -169,7 +171,7 @@ export const raysoPresets = [
       background: "#F3EAE0",
       interface_2: "#dec8ab",
       interface_3: "#d7bc98",
-      background_2: "#ecdfcf"
+      background_2: "#ecdfcf",
     },
     dark: {
       text: "#FFFFFF",
@@ -184,8 +186,8 @@ export const raysoPresets = [
       background: "#2E2820",
       interface_2: "#584f46",
       interface_3: "#66594d",
-      background_2: "#393228"
-    }
+      background_2: "#393228",
+    },
   },
   {
     name: "Breeze",
@@ -202,7 +204,7 @@ export const raysoPresets = [
       background: "#fffafc",
       interface_2: "#ffd1e4",
       interface_3: "#ffbdd8",
-      background_2: "#fff0f6"
+      background_2: "#fff0f6",
     },
     dark: {
       text: "#FFFFFF",
@@ -217,8 +219,8 @@ export const raysoPresets = [
       background: "#1e0d21",
       interface_2: "#472f4c",
       interface_3: "#5f4365",
-      background_2: "#2b132f"
-    }
+      background_2: "#2b132f",
+    },
   },
   {
     name: "Meadow",
@@ -235,7 +237,7 @@ export const raysoPresets = [
       background: "#f7faf5",
       interface_2: "#d7e1c6",
       interface_3: "#cfdbb8",
-      background_2: "#ecf1e4"
+      background_2: "#ecf1e4",
     },
     dark: {
       text: "#EDEDED",
@@ -250,8 +252,8 @@ export const raysoPresets = [
       background: "#11130b",
       interface_2: "#464b3a",
       interface_3: "#6d725f",
-      background_2: "#1a1e10"
-    }
+      background_2: "#1a1e10",
+    },
   },
   {
     name: "Falcon",
@@ -268,7 +270,7 @@ export const raysoPresets = [
       background: "#f6f7f9",
       interface_2: "#d0d7e1",
       interface_3: "#c4cdd9",
-      background_2: "#edeff3"
+      background_2: "#edeff3",
     },
     dark: {
       text: "#FFFFFF",
@@ -283,8 +285,8 @@ export const raysoPresets = [
       background: "#121212",
       interface_2: "#2c2a2a",
       interface_3: "#454545",
-      background_2: "#1c1c1c"
-    }
+      background_2: "#1c1c1c",
+    },
   },
   {
     name: "Crimson",
@@ -301,7 +303,7 @@ export const raysoPresets = [
       background: "#faf4f4",
       interface_2: "#d9cece",
       interface_3: "#cec0c0",
-      background_2: "#f5eaea"
+      background_2: "#f5eaea",
     },
     dark: {
       text: "#FFFFFF",
@@ -316,8 +318,8 @@ export const raysoPresets = [
       background: "#211111",
       interface_2: "#533c3d",
       interface_3: "#7e6363",
-      background_2: "#2f1818"
-    }
+      background_2: "#2f1818",
+    },
   },
   {
     name: "Candy",
@@ -334,7 +336,7 @@ export const raysoPresets = [
       background: "#F7F7F7",
       interface_2: "#d1d1d1",
       interface_3: "#c4c4c4",
-      background_2: "#ebebeb"
+      background_2: "#ebebeb",
     },
     dark: {
       text: "#FFFFFF",
@@ -349,8 +351,8 @@ export const raysoPresets = [
       background: "#2B2536",
       interface_2: "#4f4266",
       interface_3: "#66597d",
-      background_2: "#352d43"
-    }
+      background_2: "#352d43",
+    },
   },
   {
     name: "Midnight",
@@ -367,7 +369,7 @@ export const raysoPresets = [
       background: "#f6f8f9",
       interface_2: "#ced8df",
       interface_3: "#c1ced7",
-      background_2: "#eaeef1"
+      background_2: "#eaeef1",
     },
     dark: {
       text: "#FFFFFF",
@@ -382,8 +384,8 @@ export const raysoPresets = [
       background: "#121E20",
       interface_2: "#364245",
       interface_3: "#526366",
-      background_2: "#18282a"
-    }
+      background_2: "#18282a",
+    },
   },
   {
     name: "Sunset",
@@ -400,7 +402,7 @@ export const raysoPresets = [
       background: "#fff7f0",
       interface_2: "#edd7c4",
       interface_3: "#e7cab1",
-      background_2: "#ffefe0"
+      background_2: "#ffefe0",
     },
     dark: {
       text: "#EDEDED",
@@ -415,8 +417,8 @@ export const raysoPresets = [
       background: "#231c15",
       interface_2: "#4a4036",
       interface_3: "#7c6b5a",
-      background_2: "#2d241b"
-    }
+      background_2: "#2d241b",
+    },
   },
   {
     name: "Raindrop",
@@ -433,7 +435,7 @@ export const raysoPresets = [
       background: "#f7f9fd",
       interface_2: "#c6d3f1",
       interface_3: "#b5c7ed",
-      background_2: "#e7edf9"
+      background_2: "#e7edf9",
     },
     dark: {
       text: "#EDEDED",
@@ -448,7 +450,7 @@ export const raysoPresets = [
       background: "#070f1D",
       interface_2: "#363f4f",
       interface_3: "#5b6576",
-      background_2: "#0b172d"
-    }
-  }
+      background_2: "#0b172d",
+    },
+  },
 ];
