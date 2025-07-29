@@ -9,33 +9,20 @@ const ShadcnIcon: React.FC<{ className?: string }> = ({ className }) => (
   <Palette className={className} />
 );
 
-const ShadcnPreview: React.FC<{ 
-  theme: ThemeSpec; 
+const ShadcnPreview: React.FC<{
+  theme: ThemeSpec;
   mode: ThemeMode;
   density?: ThemeDensity;
-}> = ({ theme, mode, density = 'comfort' }) => {
-  // Convert theme tokens to CSS variables (theme is already shadcn format)
-  const tokens = theme[mode] as any;
-  
+}> = ({ mode, density = 'comfort' }) => {
   return (
-    <div
-      className={mode === 'dark' ? 'dark' : ''}
-      style={{
-        // Apply theme tokens as CSS variables
-        ...Object.fromEntries(
-          Object.entries(tokens).map(([key, value]) => [`--${key}`, value])
-        )
-      }}
-    >
-      <ExamplesPreviewContainer className="size-full">
-        <ScrollArea className="size-full">
-          <div className="relative w-full h-[600px] overflow-hidden">
-            <KitchenSink mode={mode} density={density} />
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </ExamplesPreviewContainer>
-    </div>
+    <ExamplesPreviewContainer className="size-full">
+      <ScrollArea className="size-full">
+        <div className="relative w-full h-[600px] overflow-hidden">
+          <KitchenSink mode={mode} density={density} />
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </ExamplesPreviewContainer>
   );
 };
 
@@ -60,14 +47,14 @@ export const shadcnAdapter: ProviderAdapter = {
 }`,
       'globals.css': `:root {
 ${Object.entries(theme.light)
-  .map(([key, value]) => `  --${key}: ${value};`)
-  .join('\n')}
+          .map(([key, value]) => `  --${key}: ${value};`)
+          .join('\n')}
 }
 
 .dark {
 ${Object.entries(theme.dark)
-  .map(([key, value]) => `  --${key}: ${value};`)
-  .join('\n')}
+          .map(([key, value]) => `  --${key}: ${value};`)
+          .join('\n')}
 }`
     },
     instructions: [

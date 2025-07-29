@@ -1,10 +1,8 @@
 import { oklch, rgb, formatHex } from "culori";
 import { generateTailwindPalette } from "./palette-generator";
-import { TinteBlock } from "@/types/tinte";
-
-type Mode = "light" | "dark";
-type ShadcnBlock = Record<string, string>;
-type TinteTheme = { light: TinteBlock; dark: TinteBlock };
+import { TinteBlock, TinteTheme } from "@/types/tinte";
+import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
+import { ThemeMode } from "./providers";
 
 const ANCHORS = {
   light: { primary: 600, border: 200, muted: 100, mutedFg: 600, accent: 300 },
@@ -69,11 +67,11 @@ const pick = (ramp: string[], step: number) => {
   return ramp[Math.max(0, idx)];
 };
 
-const surface = (bg: string, mode: Mode, delta = 0.02) => {
+const surface = (bg: string, mode: ThemeMode, delta = 0.02) => {
   return tweakL(bg, mode === "light" ? +delta : -delta);
 };
 
-function mapBlock(block: TinteBlock, mode: Mode): ShadcnBlock {
+function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
   const bg = block.background || (mode === "light" ? "#ffffff" : "#0b0b0f");
   const fg = block.text || bestTextFor(bg);
 
@@ -154,7 +152,7 @@ function mapBlock(block: TinteBlock, mode: Mode): ShadcnBlock {
   };
 }
 
-export function tinteToShadcn(tinte: TinteTheme) {
+export function tinteToShadcn(tinte: TinteTheme): ShadcnTheme {
   return {
     light: mapBlock(tinte.light, "light"),
     dark: mapBlock(tinte.dark, "dark"),

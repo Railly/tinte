@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Loading } from "@/components/loading";
 

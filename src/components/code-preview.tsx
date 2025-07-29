@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { codeToHtml } from 'shiki';
-import { VSCodeTheme } from '@/lib/rayso-to-vscode';
+import { VSCodeTheme } from '@/lib/tinte-to-vscode';
 
 interface CodePreviewProps {
   code: string;
@@ -19,7 +19,7 @@ export function CodePreview({ code, language, theme, className = '' }: CodePrevi
     const highlightCode = async () => {
       try {
         setLoading(true);
-        
+
         // Convert VS Code theme to Shiki-compatible format
         const shikiTheme = {
           name: theme.name,
@@ -41,7 +41,7 @@ export function CodePreview({ code, language, theme, className = '' }: CodePrevi
           lang: language as any,
           theme: shikiTheme as any,
         });
-        
+
         setHtml(result);
       } catch (error) {
         console.error('Failed to highlight code:', error);
@@ -63,7 +63,7 @@ export function CodePreview({ code, language, theme, className = '' }: CodePrevi
   }
 
   return (
-    <div 
+    <div
       className={`overflow-auto rounded border ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
       style={{

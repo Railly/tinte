@@ -1,10 +1,10 @@
-import { ReactNode } from 'react';
-import { TinteTheme, TinteBlock } from '@/types/tinte';
+import { ShadcnTheme } from "@/types/shadcn";
+import { ThemeData } from "../theme-applier";
 
-export type ThemeMode = 'light' | 'dark';
-export type ThemeDensity = 'comfort' | 'compact';
+export type ThemeMode = "light" | "dark";
+export type ThemeDensity = "comfort" | "compact";
 
-export interface ThemeSpec extends TinteTheme {
+export interface ThemeSpec extends ShadcnTheme {
   meta?: {
     name?: string;
     author?: string;
@@ -21,13 +21,13 @@ export interface ProviderAdapter {
   id: string;
   title: string;
   icon: React.FC<{ className?: string }>;
-  Panel?: React.FC<{ 
-    theme: ThemeSpec; 
+  Panel?: React.FC<{
+    theme: ThemeData;
     onChange: (partial: Partial<ThemeSpec>) => void;
     mode: ThemeMode;
   }>;
-  Preview: React.FC<{ 
-    theme: ThemeSpec; 
+  Preview: React.FC<{
+    theme: ThemeData;
     mode: ThemeMode;
     density?: ThemeDensity;
   }>;

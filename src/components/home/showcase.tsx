@@ -7,95 +7,14 @@ import { ThemeCard } from '@/components/shared/theme-card';
 import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
-import { extractTweakcnThemeData } from '@/utils/tweakcn-presets';
-import { extractRaysoThemeData } from '@/utils/rayso-presets';
-import { extractTinteThemeData } from '@/utils/tinte-presets';
-import { useTheme } from 'next-themes';
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { applyThemeWithTransition, applyThemeModeChange, ThemeData as AppThemeData } from '@/lib/theme-applier';
+import { useState } from 'react';
+import { useThemeSystem } from '@/hooks/use-theme-system';
 
 
 export function Showcase() {
-  const { theme, systemTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { handleThemeSelect, tweakcnThemes, raysoThemes, tinteThemes } = useThemeSystem();
   const [activeTab, setActiveTab] = useState('tweakcn');
-  const activeThemeRef = useRef<AppThemeData | null>(null);
-  const lastThemeChangeRef = useRef<number>(0);
-  const previousThemeStateRef = useRef<string | undefined>(undefined);
 
-  // Ensure hydration consistency
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Handle system theme by using the actual system preference
-  const currentTheme = theme === 'system' ? systemTheme : theme;
-  const isDark = mounted && currentTheme === 'dark';
-
-  const handleThemeSelect = useCallback((selectedTheme: AppThemeData) => {
-    const now = Date.now();
-    if (now - lastThemeChangeRef.current < 100) return;
-    lastThemeChangeRef.current = now;
-    
-    activeThemeRef.current = selectedTheme;
-    applyThemeWithTransition(selectedTheme, isDark ? 'dark' : 'light');
-  }, [isDark]);
-
-  // Re-apply active theme when theme mode changes - only if actually different
-  useEffect(() => {
-    if (!mounted) return;
-    
-    const currentState = `${currentTheme}-${activeThemeRef.current?.id || 'none'}`;
-    if (currentState === previousThemeStateRef.current) return; // Skip if no actual change
-    previousThemeStateRef.current = currentState;
-    
-    const now = Date.now();
-    if (now - lastThemeChangeRef.current < 50) return;
-    
-    if (activeThemeRef.current) {
-      lastThemeChangeRef.current = now;
-      applyThemeWithTransition(activeThemeRef.current, isDark ? 'dark' : 'light');
-    } else {
-      applyThemeModeChange(isDark ? 'dark' : 'light');
-    }
-  }, [isDark, mounted, currentTheme]);
-
-  // Memoize theme data to prevent unnecessary recalculations
-  const tweakcnThemes = useMemo(() => {
-    return extractTweakcnThemeData(isDark).map((themeData, index) => ({
-      ...themeData,
-      description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
-      author: 'tweakcn',
-      downloads: 8000 + (index * 500),
-      likes: 400 + (index * 50),
-      views: 15000 + (index * 2000),
-      tags: [themeData.name.split(' ')[0].toLowerCase(), 'modern', 'preset', 'community']
-    }));
-  }, [isDark]);
-
-  const raysoThemes = useMemo(() => {
-    return extractRaysoThemeData(isDark).map((themeData, index) => ({
-      ...themeData,
-      description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
-      author: 'ray.so',
-      downloads: 6000 + (index * 400),
-      likes: 300 + (index * 40),
-      views: 12000 + (index * 1500),
-      tags: [themeData.name.toLowerCase(), 'rayso', 'modern', 'community']
-    }));
-  }, [isDark]);
-
-  const tinteThemes = useMemo(() => {
-    return extractTinteThemeData(isDark).map((themeData, index) => ({
-      ...themeData,
-      description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
-      author: 'tinte',
-      downloads: 5000 + (index * 350),
-      likes: 250 + (index * 35),
-      views: 10000 + (index * 1200),
-      tags: [themeData.name.toLowerCase().split(' ')[0], 'tinte', 'premium', 'design']
-    }));
-  }, [isDark]);
 
   return (
     <div className="w-full space-y-8 p-4 max-w-7xl mx-auto">

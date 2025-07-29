@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider as NextThemeProvider } from "next-themes";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { siteConfig, META_THEME_COLORS } from "@/config/site";
 import "./globals.css";
 
@@ -84,7 +85,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
         <NextThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <NuqsAdapter>
+            {children}
+          </NuqsAdapter>
         </NextThemeProvider>
       </body>
     </html>
