@@ -180,11 +180,6 @@ func main() {
   }
 ];
 
-// Normalize theme name for Monaco (alphanumeric and dashes only)
-function normalizeThemeName(name: string): string {
-  return name.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase();
-}
-
 export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
   const { resolvedTheme } = useTheme();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
@@ -194,12 +189,12 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
 
   // Build complete theme object with both light and dark variants
   let currentThemeSet = theme;
-  
+
   // If we have a theme change from theme-applier, convert using the same logic as debug page
   if (themeApplierChange?.themeData?.rawTheme) {
     try {
       const themeData = themeApplierChange.themeData;
-      
+
       // Check if theme is from TweakCN (ShadCN format)
       if (themeData.author === "tweakcn" && themeData.rawTheme) {
         // For TweakCN themes: ShadCN → Tinte → VSCode (same as debug page logic)
@@ -467,11 +462,11 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
 
       shikiToMonaco(highlighterRef.current, monaco);
       setThemesRegistered(true);
-      
+
       // Apply current theme
       const themeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
       monaco.editor.setTheme(themeName);
-      
+
       if (editorRef.current) {
         editorRef.current.updateOptions({ theme: themeName });
         const model = editorRef.current.getModel();
@@ -520,13 +515,13 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
 
     monaco.editor.defineTheme(lightThemeName, lightFallback);
     monaco.editor.defineTheme(darkThemeName, darkFallback);
-    
+
     setThemesRegistered(true);
-    
+
     // Apply current theme directly without calling switchToTheme
     const themeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
     monaco.editor.setTheme(themeName);
-    
+
     if (editorRef.current) {
       editorRef.current.updateOptions({ theme: themeName });
       const model = editorRef.current.getModel();
@@ -560,7 +555,7 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
         const themeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
         try {
           monaco.editor.setTheme(themeName);
-          
+
           if (editorRef.current) {
             editorRef.current.updateOptions({ theme: themeName });
             const model = editorRef.current.getModel();
@@ -696,7 +691,7 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
   }
 
   const currentTheme = themeSet[currentMode];
-  
+
   return (
     <div
       className="h-full overflow-auto text-sm leading-relaxed"
