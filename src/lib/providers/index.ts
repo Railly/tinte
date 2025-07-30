@@ -6,6 +6,15 @@ export { providerRegistry } from './instance';
 export * from './shadcn';
 export * from './vscode';
 
+// Export new Poline-based providers
+export * from './poline-base';
+export { AlacrittyProvider } from './alacritty';
+export { KittyProvider } from './kitty';
+export { WarpProvider } from './warp';
+export { WindowsTerminalProvider } from './windows-terminal';
+export { GIMPProvider } from './gimp';
+export { SlackProvider } from './slack';
+
 import { providerRegistry } from './instance';
 
 export function getAvailableProviders() {

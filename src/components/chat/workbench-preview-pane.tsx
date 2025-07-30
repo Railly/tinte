@@ -9,13 +9,10 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Download } from 'lucide-react';
-import { ThemeSwitcher } from '@/components/shared/theme-switcher';
 import { UnifiedPreview } from '@/components/unified-preview';
-import { CHAT_CONFIG } from '@/lib/chat-constants';
 import { useThemeAdapters } from '@/hooks/use-theme-adapters';
 import { useQueryState } from 'nuqs';
 import type { TinteTheme } from '@/types/tinte';
-import { downloadFile } from '@/lib/file-download';
 
 interface WorkbenchPreviewPaneProps {
   theme: TinteTheme;
@@ -40,20 +37,8 @@ function PreviewPaneHeader({
   const category = currentAdapter?.metadata?.category;
 
   return (
-    <div className="flex items-center justify-between p-3">
-      <div className="flex items-center gap-3">
-        {Icon && <Icon className="w-5 h-5" />}
-        <div className="flex flex-col">
-          <span className="font-medium">{name}</span>
-          {description && (
-            <span className="text-sm text-muted-foreground">{description}</span>
-          )}
-        </div>
-        {category && (
-          <Badge variant="secondary" className="capitalize">
-            {category}
-          </Badge>
-        )}
+    <div className="flex items-center justify-between p-2">
+      <div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -79,12 +64,8 @@ function PreviewPaneHeader({
 }
 
 function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
-  const handleExport = (_: string, filename: string, content: string) => {
-    downloadFile({ content, filename, mimeType: 'text/plain' });
-  };
-
   return (
-    <ScrollArea className="p-4 h-[calc(100dvh-var(--header-height)_-_4.5rem)]">
+    <ScrollArea className="p-4 h-[calc(100dvh-var(--header-height)_-_2.5rem)]">
       <UnifiedPreview
         theme={theme}
       />
