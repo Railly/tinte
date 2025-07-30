@@ -37,7 +37,67 @@ export const DEFAULT_THEME_PRESET: TinteTheme = {
   },
 };
 
-export const DEFAULT_THEME: ThemeData = {
+// Pre-compute tokens for default theme
+const DEFAULT_COMPUTED_TOKENS = {
+  light: {
+    background: "#FFFFFF",
+    foreground: "#000000",
+    primary: "#464646",
+    secondary: "#616161",
+    accent: "#9C9B9B",
+    card: "#FFFFFF",
+    "card-foreground": "#000000",
+    popover: "#FFFFFF",
+    "popover-foreground": "#000000",
+    "primary-foreground": "#FFFFFF",
+    "secondary-foreground": "#000000",
+    "accent-foreground": "#000000",
+    muted: "#f2f2f2",
+    "muted-foreground": "#333333",
+    border: "#e6e6e6",
+    input: "#e6e6e6",
+    text: "#000000",
+    text_2: "#666666",
+    text_3: "#999999",
+    accent_2: "#000000",
+    accent_3: "#000000",
+    interface: "#e5e5e5",
+    interface_2: "#d4d4d4",
+    interface_3: "#b5b5b5",
+    background_2: "#f5f5f5",
+  },
+  dark: {
+    background: "#000000",
+    foreground: "#ffffff",
+    primary: "#464646",
+    secondary: "#616161",
+    accent: "#9C9B9B",
+    card: "#000000",
+    "card-foreground": "#ffffff",
+    popover: "#000000",
+    "popover-foreground": "#ffffff",
+    "primary-foreground": "#000000",
+    "secondary-foreground": "#ffffff",
+    "accent-foreground": "#ffffff",
+    muted: "#262626",
+    "muted-foreground": "#cccccc",
+    border: "#404040",
+    input: "#404040",
+    text: "#ffffff",
+    text_2: "#a3a3a3",
+    text_3: "#737373",
+    accent_2: "#ffffff",
+    accent_3: "#ffffff",
+    interface: "#404040",
+    interface_2: "#525252",
+    interface_3: "#666666",
+    background_2: "#262626",
+  },
+};
+
+export const DEFAULT_THEME: ThemeData & {
+  computedTokens: typeof DEFAULT_COMPUTED_TOKENS;
+} = {
   id: DEFAULT_THEME_ID,
   name: "text0",
   description: "Default theme based on current design system",
@@ -55,6 +115,7 @@ export const DEFAULT_THEME: ThemeData = {
   },
   tags: ["default", "system"],
   rawTheme: DEFAULT_THEME_PRESET,
+  computedTokens: DEFAULT_COMPUTED_TOKENS,
 };
 
 // Extract themes for theme showcase

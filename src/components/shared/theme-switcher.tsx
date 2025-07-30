@@ -1,11 +1,11 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { useEffect, useState, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
 interface ThemeSwitcherProps {
   variant?: "button" | "dual";
@@ -13,6 +13,7 @@ interface ThemeSwitcherProps {
 
 export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
   const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
   const [mounted, setMounted] = useState(false);
   const id = useId();
 
@@ -42,10 +43,9 @@ export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
   }
 
   if (variant === "dual") {
-    const isDark = theme === "dark";
-
-    const toggleTheme = (checked: boolean) => {
-      setTheme(checked ? "dark" : "light");
+    const handleToggle = (checked: boolean) => {
+      const newTheme = checked ? "dark" : "light";
+      setTheme(newTheme);
     };
 
     return (
@@ -54,7 +54,7 @@ export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
           <Switch
             id={id}
             checked={isDark}
-            onCheckedChange={toggleTheme}
+            onCheckedChange={handleToggle}
             className="absolute border border-muted inset-0 h-[inherit] w-auto [&_span]:h-full [&_span]:w-1/2 [&_span]:transition-transform [&_span]:duration-300 [&_span]:ease-[cubic-bezier(0.16,1,0.3,1)] [&_span]:data-[state=checked]:translate-x-full [&_span]:data-[state=checked]:rtl:-translate-x-full"
           />
           <span className="pointer-events-none relative ms-0.5 flex min-w-8 items-center justify-center text-center">
@@ -72,36 +72,13 @@ export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
   }
 
   const cycleTheme = (event: React.MouseEvent) => {
-    // Capture click coordinates
-    const rect = event.currentTarget.getBoundingClientRect();
-    const coords = {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
-    };
-
-    // Emit custom event with coordinates for theme switch
-    window.dispatchEvent(new CustomEvent('theme-switch-coords', {
-      detail: coords
-    }));
-
-    if (theme === "light") {
-      setTheme("dark");
-    } else if (theme === "dark") {
-      setTheme("system");
-    } else {
-      setTheme("light");
-    }
+    // Simple dual toggle: light <-> dark
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
   };
 
   const getIcon = () => {
-    switch (theme) {
-      case "light":
-        return <Sun className="h-4 w-4" />;
-      case "dark":
-        return <Moon className="h-4 w-4" />;
-      default:
-        return <Monitor className="h-4 w-4" />;
-    }
+    return theme === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />;
   };
 
   return (

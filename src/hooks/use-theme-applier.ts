@@ -1,18 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { addThemeChangeListener, ThemeChangeEventDetail } from '@/lib/theme-applier';
+import { useTheme } from 'next-themes';
+import { useTinteTheme } from '@/stores/tinte-theme';
 
 export function useThemeApplier() {
-  const [currentTheme, setCurrentTheme] = useState<ThemeChangeEventDetail | null>(null);
+  const { theme } = useTheme();
+  const { activeTheme } = useTinteTheme();
 
-  useEffect(() => {
-    const unsubscribe = addThemeChangeListener((detail) => {
-      setCurrentTheme(detail);
-    });
-
-    return unsubscribe;
-  }, []);
-
-  return currentTheme;
+  return {
+    currentMode: theme as 'light' | 'dark',
+    activeTheme,
+    isDark: theme === 'dark'
+  };
 }

@@ -20,41 +20,23 @@ export interface ThemeData {
   rawTheme?: any;
 }
 
-// Custom event system for theme changes
-const THEME_CHANGE_EVENT = "tinte-theme-change";
-
-export interface ThemeChangeEventDetail {
-  themeData: ThemeData;
-  mode: "light" | "dark";
-  tokens: any;
-}
-
-function dispatchThemeChangeEvent(detail: ThemeChangeEventDetail) {
-  const event = new CustomEvent(THEME_CHANGE_EVENT, { detail });
-  window.dispatchEvent(event);
-}
-
-export function addThemeChangeListener(
-  callback: (detail: ThemeChangeEventDetail) => void
-) {
-  const handler = (event: CustomEvent<ThemeChangeEventDetail>) => {
-    callback(event.detail);
-  };
-  window.addEventListener(THEME_CHANGE_EVENT, handler as EventListener);
-
-  return () => {
-    window.removeEventListener(THEME_CHANGE_EVENT, handler as EventListener);
-  };
-}
-
-let isApplyingTheme = false;
+// Simple theme tracking
+const currentAppliedTheme = { id: '', mode: '' };
 
 export function applyThemeWithTransition(
   themeData: ThemeData,
   currentMode: "light" | "dark"
 ) {
-  if (isApplyingTheme) return;
-  isApplyingTheme = true;
+  const themeKey = `${themeData.id}-${currentMode}`;
+  
+  // Skip if same theme is already applied
+  if (currentAppliedTheme.id === themeKey) return;
+  currentAppliedTheme.id = themeKey;
+  
+  if (typeof window === 'undefined') {
+    applyThemeDirectly(themeData, currentMode);
+    return;
+  }
 
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
@@ -62,63 +44,60 @@ export function applyThemeWithTransition(
 
   if (!document.startViewTransition || prefersReducedMotion) {
     applyThemeDirectly(themeData, currentMode);
-    isApplyingTheme = false;
     return;
   }
 
-  const transition = document.startViewTransition(() => {
+  document.startViewTransition(() => {
     applyThemeDirectly(themeData, currentMode);
-  });
-
-  transition.finished.finally(() => {
-    isApplyingTheme = false;
   });
 }
 
 export function applyThemeModeChange(currentMode: "light" | "dark") {
-  if (isApplyingTheme) return; // Prevent interference with active theme transitions
-
+  if (typeof window === 'undefined') return;
+  
   const root = document.documentElement;
+  
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
 
-  requestAnimationFrame(() => {
+  const applyMode = () => {
     if (currentMode === "dark") {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
     }
-  });
+  };
+
+  if (!document.startViewTransition || prefersReducedMotion) {
+    applyMode();
+    return;
+  }
+
+  document.startViewTransition(applyMode);
 }
 
-// Cache for processed themes to avoid re-computation
+// Simple cache for processed themes
 const themeCache = new Map<string, any>();
 
-function applyThemeDirectly(
+export function applyThemeDirectly(
   themeData: ThemeData,
   currentMode: "light" | "dark"
 ) {
   const root = document.documentElement;
   const cacheKey = `${themeData.id}-${currentMode}`;
 
-  let tokens;
-
-  if (themeCache.has(cacheKey)) {
-    tokens = themeCache.get(cacheKey);
-  } else {
+  let tokens = themeCache.get(cacheKey);
+  
+  if (!tokens) {
     if (themeData.author === "tweakcn" && themeData.rawTheme) {
       tokens = themeData.rawTheme[currentMode];
     } else if (themeData.rawTheme) {
       try {
-        const shadcnTheme = providerRegistry.convert(
-          "shadcn",
-          themeData.rawTheme
-        );
-        // @ts-ignore
+        const shadcnTheme = providerRegistry.convert("shadcn", themeData.rawTheme) as any;
         tokens = shadcnTheme[currentMode];
       } catch (error) {
-        console.warn(
-          "Failed to transform theme, falling back to basic colors:",
-          error
-        );
+        console.warn("Failed to transform theme:", error);
         applyBasicColors(themeData, currentMode, root);
         return;
       }
@@ -126,32 +105,23 @@ function applyThemeDirectly(
       applyBasicColors(themeData, currentMode, root);
       return;
     }
-
     themeCache.set(cacheKey, tokens);
   }
 
-  // Batch DOM updates for better performance
-  requestAnimationFrame(() => {
-    Object.entries(tokens).forEach(([key, value]) => {
-      if (
-        typeof value === "string" &&
-        !key.startsWith("font-") &&
-        !key.startsWith("shadow-") &&
-        key !== "radius" &&
-        key !== "spacing" &&
-        key !== "letter-spacing"
-      ) {
-        root.style.setProperty(`--${key}`, value);
-      }
-    });
-
-    // Dispatch theme change event after DOM updates
-    dispatchThemeChangeEvent({
-      themeData,
-      mode: currentMode,
-      tokens,
-    });
+  // Apply CSS custom properties directly
+  Object.entries(tokens).forEach(([key, value]) => {
+    if (
+      typeof value === "string" &&
+      !key.startsWith("font-") &&
+      !key.startsWith("shadow-") &&
+      key !== "radius" &&
+      key !== "spacing" &&
+      key !== "letter-spacing"
+    ) {
+      root.style.setProperty(`--${key}`, value);
+    }
   });
+
 }
 
 function applyBasicColors(
@@ -159,55 +129,34 @@ function applyBasicColors(
   currentMode: "light" | "dark",
   root: HTMLElement
 ) {
-  const colors = themeData.colors;
-  root.style.setProperty("--background", colors.background);
-  root.style.setProperty("--foreground", colors.foreground);
-  root.style.setProperty("--primary", colors.primary);
-  root.style.setProperty("--secondary", colors.secondary);
-  root.style.setProperty("--accent", colors.accent);
-
+  const { colors } = themeData;
   const isDark = currentMode === "dark";
-  if (isDark) {
-    root.style.setProperty("--card", colors.background);
-    root.style.setProperty("--card-foreground", colors.foreground);
-    root.style.setProperty("--popover", colors.background);
-    root.style.setProperty("--popover-foreground", colors.foreground);
-    root.style.setProperty("--primary-foreground", colors.background);
-    root.style.setProperty("--secondary-foreground", colors.foreground);
-    root.style.setProperty("--muted", adjustBrightness(colors.background, 10));
-    root.style.setProperty(
-      "--muted-foreground",
-      adjustBrightness(colors.foreground, -20)
-    );
-    root.style.setProperty("--accent-foreground", colors.foreground);
-    root.style.setProperty("--border", adjustOpacity(colors.foreground, 0.2));
-    root.style.setProperty("--input", adjustOpacity(colors.foreground, 0.15));
-  } else {
-    root.style.setProperty("--card", colors.background);
-    root.style.setProperty("--card-foreground", colors.foreground);
-    root.style.setProperty("--popover", colors.background);
-    root.style.setProperty("--popover-foreground", colors.foreground);
-    root.style.setProperty("--primary-foreground", colors.background);
-    root.style.setProperty("--secondary-foreground", colors.foreground);
-    root.style.setProperty("--muted", adjustBrightness(colors.background, -3));
-    root.style.setProperty(
-      "--muted-foreground",
-      adjustBrightness(colors.foreground, 20)
-    );
-    root.style.setProperty("--accent-foreground", colors.foreground);
-    root.style.setProperty(
-      "--border",
-      adjustBrightness(colors.background, -15)
-    );
-    root.style.setProperty("--input", adjustBrightness(colors.background, -15));
-  }
+  
+  // Core colors
+  const properties = {
+    '--background': colors.background,
+    '--foreground': colors.foreground,
+    '--primary': colors.primary,
+    '--secondary': colors.secondary,
+    '--accent': colors.accent,
+    '--card': colors.background,
+    '--card-foreground': colors.foreground,
+    '--popover': colors.background,
+    '--popover-foreground': colors.foreground,
+    '--primary-foreground': colors.background,
+    '--secondary-foreground': colors.foreground,
+    '--accent-foreground': colors.foreground,
+    '--muted': isDark ? adjustBrightness(colors.background, 10) : adjustBrightness(colors.background, -3),
+    '--muted-foreground': isDark ? adjustBrightness(colors.foreground, -20) : adjustBrightness(colors.foreground, 20),
+    '--border': isDark ? adjustOpacity(colors.foreground, 0.2) : adjustBrightness(colors.background, -15),
+    '--input': isDark ? adjustOpacity(colors.foreground, 0.15) : adjustBrightness(colors.background, -15)
+  };
 
-  // Dispatch theme change event for basic colors too
-  dispatchThemeChangeEvent({
-    themeData,
-    mode: currentMode,
-    tokens: colors,
+  // Apply all properties
+  Object.entries(properties).forEach(([property, value]) => {
+    root.style.setProperty(property, value);
   });
+
 }
 
 function adjustBrightness(color: string, percent: number): string {

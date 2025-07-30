@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider as NextThemeProvider } from "next-themes";
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { siteConfig, META_THEME_COLORS } from "@/config/site";
+import { TinteThemeScript } from "@/components/theme-script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -80,11 +81,13 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content={META_THEME_COLORS.light} media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content={META_THEME_COLORS.dark} media="(prefers-color-scheme: dark)" />
+        {/* Tinte theme injection - executes before React hydration */}
+        <TinteThemeScript />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        <NextThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <NextThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <NuqsAdapter>
             {children}
           </NuqsAdapter>

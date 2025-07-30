@@ -8,12 +8,90 @@ import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
 import { useState } from 'react';
-import { useTinteTheme } from '@/stores/tinte-theme';
-
+import { extractTweakcnThemeData } from '@/utils/tweakcn-presets';
+import { extractRaysoThemeData } from '@/utils/rayso-presets';
+import { extractTinteThemeData } from '@/utils/tinte-presets';
+import { applyThemeWithTransition } from '@/lib/theme-applier';
+import { useTheme } from 'next-themes';
 
 export function Showcase() {
-  const { handleThemeSelect, tweakcnThemes, raysoThemes, tinteThemes } = useTinteTheme();
   const [activeTab, setActiveTab] = useState('tweakcn');
+  const { theme } = useTheme();
+  
+  // Static theme data for showcase (no SSR issues)
+  const tweakcnThemes = extractTweakcnThemeData(false).map((themeData, index) => ({
+    ...themeData,
+    description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
+    author: "tweakcn",
+    downloads: 8000 + index * 500,
+    likes: 400 + index * 50,
+    views: 15000 + index * 2000,
+    tags: [
+      themeData.name.split(" ")[0].toLowerCase(),
+      "modern",
+      "preset", 
+      "community",
+    ],
+  }));
+
+  const raysoThemes = extractRaysoThemeData(false).map((themeData, index) => ({
+    ...themeData,
+    description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
+    author: "ray.so",
+    downloads: 6000 + index * 400,
+    likes: 300 + index * 40,
+    views: 12000 + index * 1500,
+    tags: [themeData.name.toLowerCase(), "rayso", "modern", "community"],
+  }));
+
+  const tinteThemes = extractTinteThemeData(false).map((themeData, index) => ({
+    ...themeData,
+    description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
+    author: "tinte",
+    downloads: 5000 + index * 350,
+    likes: 250 + index * 35,
+    views: 10000 + index * 1200,
+    tags: [
+      themeData.name.toLowerCase().split(" ")[0],
+      "tinte",
+      "premium",
+      "design",
+    ],
+  }));
+
+  const handleThemeSelect = (selectedTheme: any) => {
+    // Save to localStorage with computed tokens
+    if (typeof window !== 'undefined') {
+      try {
+        // Add computedTokens if missing
+        if (!selectedTheme.computedTokens) {
+          const { providerRegistry } = require('@/lib/providers');
+          try {
+            if (selectedTheme.author === "tweakcn" && selectedTheme.rawTheme) {
+              selectedTheme.computedTokens = {
+                light: selectedTheme.rawTheme.light,
+                dark: selectedTheme.rawTheme.dark
+              };
+            } else if (selectedTheme.rawTheme) {
+              const shadcnTheme = providerRegistry.convert("shadcn", selectedTheme.rawTheme);
+              selectedTheme.computedTokens = {
+                light: shadcnTheme.light,
+                dark: shadcnTheme.dark
+              };
+            }
+          } catch (e) {
+            console.warn('Failed to compute tokens:', e);
+          }
+        }
+        
+        localStorage.setItem('tinte-selected-theme', JSON.stringify(selectedTheme));
+      } catch (e) {}
+    }
+    
+    // Apply theme with view transition
+    const currentMode = theme === 'dark' ? 'dark' : 'light';
+    applyThemeWithTransition(selectedTheme, currentMode);
+  };
 
 
   return (
