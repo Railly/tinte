@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { VSCodeTheme } from '@/lib/providers/vscode';
 import { useTheme } from 'next-themes';
 import Editor from '@monaco-editor/react';
@@ -235,7 +235,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
 
   return (
     <div
-      className={`rounded-lg border overflow-hidden font-mono text-sm ${className || ''}`}
+      className={`rounded-lg border overflow-hidden font-mono text-sm flex flex-col h-[85vh] ${className || ''}`}
       style={{
         backgroundColor: tokens['editor.background'] || '#1e1e1e',
         color: tokens['editor.foreground'] || '#d4d4d4',
@@ -295,15 +295,15 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
       </div>
 
       {/* Content */}
-      <div className="overflow-hidden">
+      <div className="flex-1 overflow-hidden flex flex-col">
         {viewMode === 'split' && (
-          <div className="flex h-[800px]">
+          <div className="flex flex-1 overflow-hidden">
             {/* Monaco Editor */}
-            <div className="flex-1 border-r border-border/50">
-              <div className="bg-muted/50 px-2 py-1 border-b border-border/50 flex items-center gap-2">
+            <div className="w-1/2 border-r border-border/50 flex flex-col overflow-hidden">
+              <div className="bg-muted/50 px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0">
                 <Badge variant="secondary" className="text-xs">Monaco Editor</Badge>
               </div>
-              <div className="h-[calc(100%-2rem)]">
+              <div className="flex-1 overflow-hidden">
                 <MonacoSection
                   themeSet={currentThemeSet}
                   currentMode={currentMode}
@@ -314,11 +314,11 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
             </div>
 
             {/* Shiki */}
-            <div className="flex-1">
-              <div className="bg-muted/50 px-2 py-1 border-b border-border/50 flex items-center gap-2">
+            <div className="w-1/2 flex flex-col overflow-hidden">
+              <div className="bg-muted/50 px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0">
                 <Badge variant="secondary" className="text-xs">Shiki</Badge>
               </div>
-              <div className="h-[calc(100%-2rem)]">
+              <div className="flex-1 overflow-hidden">
                 <ShikiSection
                   themeSet={currentThemeSet}
                   currentMode={currentMode}
@@ -331,7 +331,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
         )}
 
         {viewMode === 'monaco' && (
-          <div className="h-[400px]">
+          <div className="flex-1 overflow-hidden">
             <MonacoSection
               themeSet={currentThemeSet}
               currentMode={currentMode}
@@ -342,7 +342,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
         )}
 
         {viewMode === 'shiki' && (
-          <div className="h-[400px]">
+          <div className="flex-1 overflow-hidden">
             <ShikiSection
               themeSet={currentThemeSet}
               currentMode={currentMode}
@@ -353,7 +353,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
         )}
 
         {viewMode === 'tokens' && (
-          <div className="h-[800px] overflow-auto">
+          <div className="flex-1 overflow-auto">
             <TokensSection
               theme={currentTheme}
               mode={currentMode}
@@ -364,7 +364,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
 
       {/* Status bar */}
       <div
-        className="px-4 py-1 text-xs flex items-center justify-between"
+        className="px-4 py-1 text-xs flex items-center justify-between flex-shrink-0"
         style={{
           backgroundColor: tokens['statusBar.background'] || '#007acc',
           color: tokens['statusBar.foreground'] || '#ffffff',
@@ -395,69 +395,62 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
   const darkThemeName = 'tinte-dark';
   const currentThemeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
 
-  // Initialize Shiki highlighter
-  useEffect(() => {
-    let isMounted = true;
+  // Initialize Shiki highlighter with memoization
+  const initializeShiki = useCallback(async () => {
+    if (highlighterRef.current) return;
 
-    async function initializeShiki() {
-      try {
-        if (!highlighterRef.current) {
-          const highlighter = await createHighlighter({
-            themes: [],
-            langs: ['typescript', 'python', 'rust', 'go', 'javascript']
-          });
-          highlighterRef.current = highlighter;
-        }
-
-        if (isMounted) {
-          setIsReady(true);
-        }
-      } catch (error) {
-        console.error('Failed to initialize Shiki:', error);
-        if (isMounted) {
-          setIsReady(true);
-        }
-      }
+    try {
+      const highlighter = await createHighlighter({
+        themes: [],
+        langs: ['typescript', 'python', 'rust', 'go', 'javascript']
+      });
+      highlighterRef.current = highlighter;
+      setIsReady(true);
+    } catch (error) {
+      console.error('Failed to initialize Shiki:', error);
+      setIsReady(true);
     }
-
-    initializeShiki();
-    return () => { isMounted = false; };
   }, []);
+
+  useEffect(() => {
+    initializeShiki();
+  }, [initializeShiki]);
+
+  // Memoize theme data to prevent unnecessary re-calculations
+  const themeData = useMemo(() => ({
+    lightShikiTheme: {
+      name: lightThemeName,
+      type: themeSet.light.type,
+      colors: themeSet.light.colors,
+      tokenColors: themeSet.light.tokenColors.map(token => ({
+        scope: token.scope,
+        settings: {
+          foreground: token.settings.foreground,
+          fontStyle: token.settings.fontStyle,
+        }
+      }))
+    },
+    darkShikiTheme: {
+      name: darkThemeName,
+      type: themeSet.dark.type,
+      colors: themeSet.dark.colors,
+      tokenColors: themeSet.dark.tokenColors.map(token => ({
+        scope: token.scope,
+        settings: {
+          foreground: token.settings.foreground,
+          fontStyle: token.settings.fontStyle,
+        }
+      }))
+    }
+  }), [themeSet, lightThemeName, darkThemeName]);
 
   const registerThemes = useCallback(async (monaco: any) => {
     if (!highlighterRef.current || themesRegistered) return;
 
     try {
-      // Register both light and dark themes
-      const lightShikiTheme = {
-        name: lightThemeName,
-        type: themeSet.light.type,
-        colors: themeSet.light.colors,
-        tokenColors: themeSet.light.tokenColors.map(token => ({
-          scope: token.scope,
-          settings: {
-            foreground: token.settings.foreground,
-            fontStyle: token.settings.fontStyle,
-          }
-        }))
-      };
-
-      const darkShikiTheme = {
-        name: darkThemeName,
-        type: themeSet.dark.type,
-        colors: themeSet.dark.colors,
-        tokenColors: themeSet.dark.tokenColors.map(token => ({
-          scope: token.scope,
-          settings: {
-            foreground: token.settings.foreground,
-            fontStyle: token.settings.fontStyle,
-          }
-        }))
-      };
-
       await Promise.all([
-        highlighterRef.current.loadTheme(lightShikiTheme),
-        highlighterRef.current.loadTheme(darkShikiTheme)
+        highlighterRef.current.loadTheme(themeData.lightShikiTheme),
+        highlighterRef.current.loadTheme(themeData.darkShikiTheme)
       ]);
 
       shikiToMonaco(highlighterRef.current, monaco);
@@ -479,7 +472,7 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
       console.error('Failed to register themes:', error);
       applyFallbackThemes(monaco);
     }
-  }, [themeSet, lightThemeName, darkThemeName, currentMode]);
+  }, [themeData, lightThemeName, darkThemeName, currentMode, themesRegistered]);
 
 
   const applyFallbackThemes = useCallback((monaco: any) => {
@@ -545,6 +538,13 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
 
     // Register themes
     await registerThemes(monaco);
+
+    // Force layout after mount
+    setTimeout(() => {
+      if (editorRef.current) {
+        editorRef.current.layout();
+      }
+    }, 100);
   };
 
   // Update theme when mode or version changes
@@ -602,7 +602,7 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
 
   if (!isReady) {
     return (
-      <div className="h-full flex items-center justify-center text-muted-foreground">
+      <div className="h-full w-full flex items-center justify-center text-muted-foreground">
         Loading Monaco...
       </div>
     );
@@ -611,6 +611,7 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
   return (
     <Editor
       height="100%"
+      width="100%"
       language={template.language}
       value={template.code}
       onMount={handleEditorDidMount}
@@ -626,10 +627,19 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
         lineNumbersMinChars: 3,
         renderLineHighlight: 'none',
         automaticLayout: true,
-        wordWrap: 'off',
+        wordWrap: 'on',
+        wordWrapColumn: 50,
+        overviewRulerLanes: 0,
+        hideCursorInOverviewRuler: true,
+        overviewRulerBorder: false,
         scrollbar: {
           vertical: 'auto',
           horizontal: 'auto',
+          useShadows: false,
+          verticalHasArrows: false,
+          horizontalHasArrows: false,
+          verticalScrollbarSize: 10,
+          horizontalScrollbarSize: 10,
         },
       }}
       theme={currentThemeName}
@@ -642,32 +652,38 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
   const [html, setHtml] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
+  // Memoize Shiki theme data
+  const shikiThemeData = useMemo(() => {
+    const currentTheme = themeSet[currentMode];
+    return {
+      name: `tinte-${currentMode}`,
+      type: currentTheme.type,
+      colors: {
+        'editor.background': currentTheme.colors['editor.background'] || (currentMode === 'dark' ? '#1e1e1e' : '#ffffff'),
+        'editor.foreground': currentTheme.colors['editor.foreground'] || (currentMode === 'dark' ? '#d4d4d4' : '#000000'),
+        'editorLineNumber.foreground': currentTheme.colors['editorLineNumber.foreground'] || '#6a6a6a',
+      },
+      tokenColors: currentTheme.tokenColors.map(token => ({
+        scope: token.scope,
+        settings: {
+          foreground: token.settings.foreground,
+          fontStyle: token.settings.fontStyle,
+        }
+      }))
+    };
+  }, [themeSet, currentMode]);
+
+  // Debounced highlighting to improve performance
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     const highlightCode = async () => {
       try {
         setLoading(true);
 
-        const currentTheme = themeSet[currentMode];
-        const shikiTheme = {
-          name: `tinte-${currentMode}`,
-          type: currentTheme.type,
-          colors: {
-            'editor.background': currentTheme.colors['editor.background'] || (currentMode === 'dark' ? '#1e1e1e' : '#ffffff'),
-            'editor.foreground': currentTheme.colors['editor.foreground'] || (currentMode === 'dark' ? '#d4d4d4' : '#000000'),
-            'editorLineNumber.foreground': currentTheme.colors['editorLineNumber.foreground'] || '#6a6a6a',
-          },
-          tokenColors: currentTheme.tokenColors.map(token => ({
-            scope: token.scope,
-            settings: {
-              foreground: token.settings.foreground,
-              fontStyle: token.settings.fontStyle,
-            }
-          }))
-        };
-
         const result = await codeToHtml(template.code, {
           lang: template.language as any,
-          theme: shikiTheme as any,
+          theme: shikiThemeData as any,
         });
 
         setHtml(result);
@@ -679,12 +695,15 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
       }
     };
 
-    highlightCode();
-  }, [template.code, template.language, themeSet, currentMode, themeVersion]);
+    // Debounce the highlighting to prevent excessive re-renders
+    timeoutId = setTimeout(highlightCode, 150);
+
+    return () => clearTimeout(timeoutId);
+  }, [template.code, template.language, shikiThemeData, themeVersion]);
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center text-muted-foreground">
+      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
         Loading Shiki...
       </div>
     );
@@ -694,7 +713,7 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
 
   return (
     <div
-      className="h-full overflow-auto text-sm leading-relaxed"
+      className="h-full overflow-auto text-sm leading-relaxed scrollbar-thin"
       dangerouslySetInnerHTML={{ __html: html }}
       style={{
         backgroundColor: currentTheme.colors['editor.background'],
@@ -711,8 +730,19 @@ interface TokensSectionProps {
 }
 
 function TokensSection({ theme, mode }: TokensSectionProps) {
+  // Memoize expensive calculations
+  const colorEntries = useMemo(() =>
+    Object.entries(theme.colors || {}).slice(0, 30),
+    [theme.colors]
+  );
+
+  const tokenColorEntries = useMemo(() =>
+    (theme.tokenColors || []).slice(0, 20),
+    [theme.tokenColors]
+  );
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 h-full overflow-auto">
       {/* VS Code Colors */}
       <Card>
         <CardHeader>
@@ -720,7 +750,7 @@ function TokensSection({ theme, mode }: TokensSectionProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {Object.entries(theme.colors || {}).slice(0, 30).map(([key, value]) => (
+            {colorEntries.map(([key, value]) => (
               <div key={key} className="flex items-center gap-2 p-2 rounded border text-sm">
                 <div
                   className="w-4 h-4 rounded border border-gray-300 flex-shrink-0"
@@ -748,7 +778,7 @@ function TokensSection({ theme, mode }: TokensSectionProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {(theme.tokenColors || []).slice(0, 20).map((token, index) => (
+            {tokenColorEntries.map((token, index) => (
               <div key={index} className="flex items-center gap-2 p-2 rounded border text-sm">
                 <div
                   className="w-4 h-4 rounded border border-gray-300 flex-shrink-0"
