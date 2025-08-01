@@ -52,6 +52,7 @@ export function StaticWorkbenchSidebar({
           currentTokens={state.currentTokens}
           onTokenEdit={state.handleTokenEdit}
           onThemeSelect={state.handleThemeSelect}
+          tokensLoading={state.tokensLoading}
         />
       </TabsContent>
     </Tabs>

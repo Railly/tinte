@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { useTheme } from "next-themes";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { ThemeData as AppThemeData, applyThemeWithTransition, applyThemeModeChange } from "@/lib/theme-applier";
 import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
@@ -209,6 +209,7 @@ function applyThemeDirectly(themeData: StoredThemeData, mode: "light" | "dark") 
 export function useTinteTheme() {
   const { theme } = useTheme();
   const [localMounted, setLocalMounted] = useState(false);
+  const [themesReady, setThemesReady] = useState(false);
 
   const {
     activeTheme,
@@ -227,6 +228,11 @@ export function useTinteTheme() {
       if (storedTheme) {
         setActiveTheme(storedTheme);
       }
+
+      // Delay theme generation to not block initial render
+      setTimeout(() => {
+        setThemesReady(true);
+      }, 100);
     }
   }, [localMounted, setMounted, setActiveTheme]);
 
@@ -247,7 +253,7 @@ export function useTinteTheme() {
 
   // Generate themes only once and cache them (don't regenerate on every isDark change)
   const tweakcnThemes = useMemo(() => {
-    if (!localMounted) return [];
+    if (!localMounted || !themesReady) return [];
     return extractTweakcnThemeData(isDark).map((themeData, index) => ({
       ...themeData,
       description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
@@ -262,10 +268,10 @@ export function useTinteTheme() {
         "community",
       ],
     }));
-  }, [localMounted, isDark]);
+  }, [localMounted, themesReady, isDark]);
 
   const raysoThemes = useMemo(() => {
-    if (!localMounted) return [];
+    if (!localMounted || !themesReady) return [];
     return extractRaysoThemeData(isDark).map((themeData, index) => ({
       ...themeData,
       description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
@@ -275,10 +281,10 @@ export function useTinteTheme() {
       views: 12000 + index * 1500,
       tags: [themeData.name.toLowerCase(), "rayso", "modern", "community"],
     }));
-  }, [localMounted, isDark]);
+  }, [localMounted, themesReady, isDark]);
 
   const tinteThemes = useMemo(() => {
-    if (!localMounted) return [];
+    if (!localMounted || !themesReady) return [];
     return extractTinteThemeData(isDark).map((themeData, index) => ({
       ...themeData,
       description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
@@ -293,12 +299,42 @@ export function useTinteTheme() {
         "design",
       ],
     }));
-  }, [localMounted, isDark]);
+  }, [localMounted, themesReady, isDark]);
 
   const allThemes = useMemo(() => {
-    if (!localMounted) return [];
-    return [...tinteThemes, ...raysoThemes, ...tweakcnThemes];
-  }, [localMounted, tinteThemes, raysoThemes, tweakcnThemes]);
+    if (!localMounted) return [DEFAULT_THEME];
+    
+    // Combine all themes and remove duplicates by id
+    const combinedThemes = [DEFAULT_THEME, ...tinteThemes, ...raysoThemes, ...tweakcnThemes];
+    const uniqueThemes = combinedThemes.filter((theme, index, arr) => 
+      arr.findIndex(t => t.id === theme.id) === index
+    );
+    
+    return uniqueThemes;
+  }, [localMounted, themesReady, tinteThemes, raysoThemes, tweakcnThemes]);
+
+  // Debug logs
+  console.log('🔍 useTinteTheme Debug:', {
+    localMounted,
+    activeTheme: activeTheme ? { id: activeTheme.id, name: activeTheme.name } : null,
+    allThemesCount: allThemes.length,
+    allThemeIds: allThemes.map(t => `${t.id}:${t.name}`).slice(0, 10), // First 10 for brevity
+    isDark,
+    theme,
+    // Check localStorage directly
+    storedTheme: (() => {
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = localStorage.getItem('tinte-selected-theme');
+          const parsed = stored ? JSON.parse(stored) : null;
+          return parsed ? { id: parsed.id, name: parsed.name } : null;
+        } catch (e) {
+          return 'error';
+        }
+      }
+      return 'ssr';
+    })()
+  });
 
   return {
     mounted: localMounted,

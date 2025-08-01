@@ -6,7 +6,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ThemeData } from '@/lib/theme-applier';
+import { ThemeData } from '@/lib/theme-tokens';
 import { ThemeColorPreview } from '@/components/shared/theme-color-preview';
 
 export function TinteThemeSwitcher({
@@ -25,6 +25,15 @@ export function TinteThemeSwitcher({
   const [open, setOpen] = React.useState(false);
 
   const active = themes.find(t => t.id === activeId);
+
+  // Debug logs
+  console.log('🔍 TinteThemeSwitcher Debug:', {
+    activeId,
+    themesCount: themes.length,
+    themeIds: themes.map(t => t.id),
+    active: active ? { id: active.id, name: active.name } : null,
+    label
+  });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

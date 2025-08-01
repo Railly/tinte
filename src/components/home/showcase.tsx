@@ -60,35 +60,6 @@ export function Showcase() {
   }));
 
   const handleThemeSelect = (selectedTheme: any) => {
-    // Save to localStorage with computed tokens
-    if (typeof window !== 'undefined') {
-      try {
-        // Add computedTokens if missing
-        if (!selectedTheme.computedTokens) {
-          const { providerRegistry } = require('@/lib/providers');
-          try {
-            if (selectedTheme.author === "tweakcn" && selectedTheme.rawTheme) {
-              selectedTheme.computedTokens = {
-                light: selectedTheme.rawTheme.light,
-                dark: selectedTheme.rawTheme.dark
-              };
-            } else if (selectedTheme.rawTheme) {
-              const shadcnTheme = providerRegistry.convert("shadcn", selectedTheme.rawTheme);
-              selectedTheme.computedTokens = {
-                light: shadcnTheme.light,
-                dark: shadcnTheme.dark
-              };
-            }
-          } catch (e) {
-            console.warn('Failed to compute tokens:', e);
-          }
-        }
-        
-        localStorage.setItem('tinte-selected-theme', JSON.stringify(selectedTheme));
-      } catch (e) {}
-    }
-    
-    // Apply theme with view transition
     const currentMode = theme === 'dark' ? 'dark' : 'light';
     applyThemeWithTransition(selectedTheme, currentMode);
   };

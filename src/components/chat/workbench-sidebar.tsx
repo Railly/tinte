@@ -11,7 +11,7 @@ interface WorkbenchSidebarProps {
   onTabChange: (tab: WorkbenchTab) => void;
   state: Pick<UseWorkbenchStateReturn,
     'seed' | 'loading' | 'currentTheme' | 'tinteTheme' | 'allThemes' |
-    'currentTokens' | 'handleTokenEdit' | 'handleThemeSelect' | 'currentProvider' | 'isDark'
+    'currentTokens' | 'handleTokenEdit' | 'handleThemeSelect' | 'currentProvider' | 'isDark' | 'tokensLoading'
   >;
 }
 
@@ -59,6 +59,7 @@ export function WorkbenchSidebar({
             currentTokens={state.currentTokens}
             onTokenEdit={state.handleTokenEdit}
             onThemeSelect={state.handleThemeSelect}
+            tokensLoading={state.tokensLoading}
           />
         </TabsContent>
       </Tabs>

@@ -4,27 +4,13 @@ import { DEFAULT_THEME } from "@/utils/tinte-presets";
 
 export function TinteThemeScript() {
   const scriptContent = `
-    // ----- CLEAN THEME INITIALIZATION -----
     (function() {
       const STORAGE_KEY = "tinte-selected-theme";
-      const root = document.documentElement;
       const DEFAULT_THEME = ${JSON.stringify(DEFAULT_THEME)};
+      const root = document.documentElement;
 
-      // Load theme from storage
-      let storedTheme = null;
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        storedTheme = stored ? JSON.parse(stored) : null;
-      } catch (e) {}
-
-      // Get current mode
-      const mode = root.classList.contains('dark') ? "dark" : "light";
-      
-      // Get tokens and apply immediately
-      const theme = storedTheme || DEFAULT_THEME;
-      const tokens = theme.computedTokens ? theme.computedTokens[mode] : DEFAULT_THEME.computedTokens[mode];
-      
-      if (tokens) {
+      function applyTokens(tokens) {
+        if (!tokens) return;
         Object.entries(tokens).forEach(function([key, value]) {
           if (typeof value === "string" && 
               !key.startsWith("font-") && 
@@ -37,13 +23,45 @@ export function TinteThemeScript() {
         });
       }
 
-      // Initialize global state
-      window.__TINTE_THEME__ = {
-        theme: theme,
-        mode: mode,
-        tokens: tokens,
-        allowTransitions: false
-      };
+      function loadAndApplyTheme() {
+        console.log('🚀 TinteThemeScript: Starting theme load...');
+        
+        let theme = DEFAULT_THEME;
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (stored) {
+            theme = JSON.parse(stored);
+            console.log('✅ TinteThemeScript: Loaded theme from storage:', theme.name || theme.id);
+          } else {
+            console.log('ℹ️ TinteThemeScript: No stored theme, using default');
+          }
+        } catch (e) {
+          console.log('❌ TinteThemeScript: Error loading from storage:', e);
+        }
+
+        const mode = root.classList.contains('dark') ? "dark" : "light";
+        const tokens = theme.computedTokens ? theme.computedTokens[mode] : DEFAULT_THEME.computedTokens[mode];
+        
+        console.log('🔧 TinteThemeScript: Applying tokens...', {
+          mode,
+          tokensCount: tokens ? Object.keys(tokens).length : 0,
+          themeName: theme.name || theme.id
+        });
+        
+        applyTokens(tokens);
+        
+        window.__TINTE_THEME__ = {
+          theme: theme,
+          mode: mode,
+          tokens: tokens,
+          allowTransitions: false
+        };
+        
+        console.log('✅ TinteThemeScript: Theme applied successfully!');
+      }
+
+      // Initial load
+      loadAndApplyTheme();
 
       // Enable transitions after load
       setTimeout(function() {
@@ -63,18 +81,7 @@ export function TinteThemeScript() {
               const newTokens = state.theme.computedTokens[newMode];
               
               const apply = function() {
-                if (newTokens) {
-                  Object.entries(newTokens).forEach(function([key, value]) {
-                    if (typeof value === "string" && 
-                        !key.startsWith("font-") && 
-                        !key.startsWith("shadow-") &&
-                        key !== "radius" && 
-                        key !== "spacing" && 
-                        key !== "letter-spacing") {
-                      root.style.setProperty("--" + key, value);
-                    }
-                  });
-                }
+                applyTokens(newTokens);
                 state.mode = newMode;
                 state.tokens = newTokens;
               };
@@ -102,17 +109,7 @@ export function TinteThemeScript() {
             const newTokens = newTheme.computedTokens ? newTheme.computedTokens[currentMode] : null;
             
             if (newTokens && window.__TINTE_THEME__) {
-              Object.entries(newTokens).forEach(function([key, value]) {
-                if (typeof value === "string" && 
-                    !key.startsWith("font-") && 
-                    !key.startsWith("shadow-") &&
-                    key !== "radius" && 
-                    key !== "spacing" && 
-                    key !== "letter-spacing") {
-                  root.style.setProperty("--" + key, value);
-                }
-              });
-              
+              applyTokens(newTokens);
               window.__TINTE_THEME__.theme = newTheme;
               window.__TINTE_THEME__.tokens = newTokens;
             }

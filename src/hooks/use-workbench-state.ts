@@ -4,7 +4,9 @@ import { useTinteTheme } from "@/stores/tinte-theme";
 import { useTokenEditor } from "./use-token-editor";
 import { useThemeAdapters, useThemeConversion } from "./use-theme-adapters";
 import { useChatState } from "./use-chat-state";
-import type { ThemeData as AppThemeData } from "@/lib/theme-applier";
+import { applyThemeWithTransition } from "@/lib/theme-applier";
+import { useTheme } from "next-themes";
+import type { ThemeData as AppThemeData } from "@/lib/theme-tokens";
 import type { TinteTheme } from "@/types/tinte";
 import { SeedPayload } from "@/utils/seed-mapper";
 import { DEFAULT_THEME } from "@/utils/tinte-presets";
@@ -34,6 +36,7 @@ export interface UseWorkbenchStateReturn {
   currentTokens: Record<string, string>;
   handleTokenEdit: (token: string, value: string) => void;
   resetTokens: () => void;
+  tokensLoading: boolean;
 
   // Theme selection
   handleThemeSelect: (theme: AppThemeData) => void;
@@ -66,51 +69,57 @@ export function useWorkbenchState(
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const { previewableProviders, exportTheme } = useThemeAdapters();
 
-  // Theme state
-  const {
-    activeTheme,
-    handleThemeSelect: baseHandleThemeSelect,
-    allThemes,
-    isDark,
-  } = useTinteTheme();
+  // Theme state - simplified
+  const { activeTheme, allThemes } = useTinteTheme();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
-  const { currentTokens, handleTokenEdit, resetTokens } = useTokenEditor(
-    activeTheme || DEFAULT_THEME,
+  // Use current theme or fallback to default
+  const currentTheme = useMemo(() => 
+    (activeTheme || DEFAULT_THEME) as AppThemeData, 
+    [activeTheme]
+  );
+
+  const { currentTokens, handleTokenEdit, resetTokens, isLoading } = useTokenEditor(
+    currentTheme,
     isDark
   );
 
   // Derived state
   const currentProvider = provider || "shadcn";
-  // TODO review this later
-  const currentAdapter =
+  const currentAdapter = useMemo(() =>
     previewableProviders.find((p) => p.metadata.name === currentProvider) ||
-    previewableProviders[0];
-  const currentTheme = (activeTheme || DEFAULT_THEME) as AppThemeData;
-  // Ensure we have a valid TinteTheme
-  let tinteTheme: TinteTheme;
+    previewableProviders[0],
+    [previewableProviders, currentProvider]
+  );
 
-  if (
-    currentTheme?.rawTheme &&
-    typeof currentTheme.rawTheme === "object" &&
-    "light" in currentTheme.rawTheme &&
-    "dark" in currentTheme.rawTheme
-  ) {
-    tinteTheme = currentTheme.rawTheme as TinteTheme;
-  } else {
-    // Fallback to DEFAULT_THEME's rawTheme
-    tinteTheme = DEFAULT_THEME.rawTheme as TinteTheme;
-  }
+  // Ensure we have a valid TinteTheme
+  const tinteTheme: TinteTheme = useMemo(() => {
+    if (
+      currentTheme?.rawTheme &&
+      typeof currentTheme.rawTheme === "object" &&
+      "light" in currentTheme.rawTheme &&
+      "dark" in currentTheme.rawTheme
+    ) {
+      return currentTheme.rawTheme as TinteTheme;
+    }
+    return DEFAULT_THEME.rawTheme as TinteTheme;
+  }, [currentTheme]);
 
   // Theme conversion
   const conversion = useThemeConversion(tinteTheme);
 
-  // Enhanced theme selection that resets tokens
+  // Simplified theme selection with view transitions
   const handleThemeSelect = useMemo(
     () => (selectedTheme: AppThemeData) => {
-      baseHandleThemeSelect(selectedTheme);
+      // Apply theme directly with transitions (this saves to localStorage)
+      const currentMode = isDark ? "dark" : "light";
+      applyThemeWithTransition(selectedTheme, currentMode);
+      
+      // Reset tokens after theme change
       resetTokens();
     },
-    [baseHandleThemeSelect, resetTokens]
+    [isDark, resetTokens]
   );
 
   return {
@@ -137,6 +146,7 @@ export function useWorkbenchState(
     currentTokens,
     handleTokenEdit,
     resetTokens,
+    tokensLoading: isLoading,
 
     // Theme selection
     handleThemeSelect,
