@@ -7,46 +7,15 @@ import { Switch } from "@/components/ui/switch";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 
-// Ultra-fast theme state getter - SSR-safe
-function useInstantThemeState() {
-  const [state, setState] = useState({
-    mounted: false,
-    currentMode: 'light' as const,
-    isDark: false
-  });
-  
-  useEffect(() => {
-    // Read from window only after hydration to avoid SSR mismatch
-    if (typeof window !== 'undefined' && window.__TINTE_THEME__) {
-      const mode = window.__TINTE_THEME__.mode;
-      setState({
-        mounted: true,
-        currentMode: mode,
-        isDark: mode === 'dark'
-      });
-    } else {
-      setState(prev => ({ ...prev, mounted: true }));
-    }
-  }, []);
-  
-  return state;
-}
-
 interface ThemeSwitcherProps {
   variant?: "button" | "dual";
 }
 
 export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
-  const instantState = useInstantThemeState(); // Ultra-fast state (instant)
-  const { mounted: hookMounted, isDark: hookIsDark, currentMode: hookCurrentMode, handleModeChange } = useTheme();
+  const { mounted, isDark, currentMode, handleModeChange } = useTheme();
   const id = useId();
-  
-  // Use instant state if available, fallback to hook state
-  const mounted = instantState.mounted || hookMounted;
-  const isDark = instantState.mounted ? instantState.isDark : hookIsDark;
-  const currentMode = instantState.mounted ? instantState.currentMode : hookCurrentMode;
 
-  if (!mounted) {
+  if (!mounted || !currentMode) {
     if (variant === "dual") {
       return (
         <div className="relative inline-grid h-9 grid-cols-[1fr_1fr] items-center text-sm font-medium opacity-50">
