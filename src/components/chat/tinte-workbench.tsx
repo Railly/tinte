@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react';
 import { useWorkbenchState } from '@/hooks/use-workbench-state';
-import { useTheme } from '@/hooks/use-theme';
+import { useThemeContext } from '@/providers/theme';
 import { useChatState } from '@/hooks/use-chat-state';
 import { WorkbenchSidebar } from './workbench-sidebar';
 import { StaticWorkbenchSidebar } from './static-workbench-sidebar';
@@ -16,7 +16,7 @@ interface TinteWorkbenchProps {
 
 export function TinteWorkbench({ chatId, isStatic = false }: TinteWorkbenchProps) {
   const state = useWorkbenchState(chatId, isStatic ? "design" : undefined);
-  const { tinteTheme, handleExportAll, handleExportTinte } = useTheme();
+  const { tinteTheme, handleExportAll, handleExportTinte } = useThemeContext();
   const chatState = useChatState(chatId);
 
   if (isStatic) {

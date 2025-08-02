@@ -53,12 +53,10 @@ export function useTheme() {
   const baseTokens = useMemo(() => {
     if (!mounted || !activeTheme) return {};
     
-    // Always compute tokens from current theme and mode for accurate updates
     const { computeThemeTokens } = require('@/lib/theme-manager');
     const computed = computeThemeTokens(activeTheme);
     const tokens = computed[currentMode];
     
-    // Convert to hex format for consistency
     const processedTokens: Record<string, string> = {};
     for (const [key, value] of Object.entries(tokens)) {
       if (typeof value === "string") {
@@ -75,15 +73,14 @@ export function useTheme() {
   );
 
   const handleModeChange = useCallback((newMode: ThemeMode) => {
-    setCurrentMode(newMode);
-    saveMode(newMode);
-    
-    // Always use the currently saved theme from localStorage
     const savedTheme = loadTheme();
-    applyThemeWithTransition(savedTheme, newMode);
     
-    // Force re-computation of tokens by triggering a state update
+    setCurrentMode(newMode);
     setActiveTheme(savedTheme);
+    setEditedTokens({});
+    
+    saveMode(newMode);
+    applyThemeWithTransition(savedTheme, newMode);
   }, []);
 
   const toggleTheme = useCallback((coords?: Coords) => {
@@ -117,12 +114,10 @@ export function useTheme() {
   const handleThemeSelect = useCallback((theme: ThemeData) => {
     const savedMode = loadMode();
     
-    // Update state first to trigger re-computation
     setActiveTheme(theme);
     setCurrentMode(savedMode);
     setEditedTokens({});
     
-    // Then save and apply
     saveTheme(theme);
     applyThemeWithTransition(theme, savedMode);
   }, []);
@@ -130,14 +125,9 @@ export function useTheme() {
   const handleTokenEdit = useCallback((key: string, value: string) => {
     const hexValue = convertColorToHex(value);
     
-    // Update React state
-    setEditedTokens(prev => ({
-      ...prev,
-      [key]: hexValue,
-    }));
+    setEditedTokens(prev => ({ ...prev, [key]: hexValue }));
     
-    // Update CSS custom property in DOM immediately
-    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    if (typeof window !== 'undefined') {
       document.documentElement.style.setProperty(`--${key}`, hexValue);
     }
   }, []);

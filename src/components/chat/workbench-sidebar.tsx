@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ProviderDesignPanel } from '@/components/shared/provider-design-panel';
+import { ThemeEditorPanel } from '@/components/shared/theme-editor-panel';
 import { ChatContent } from './chat-content';
 import { CHAT_CONFIG } from '@/lib/chat-constants';
 import type { WorkbenchTab } from '@/hooks/use-workbench-state';
@@ -52,7 +52,7 @@ export function WorkbenchSidebar({
         </TabsContent>
 
         <TabsContent value="design" className="flex-1">
-          <ProviderDesignPanel />
+          <ThemeEditorPanel />
         </TabsContent>
       </Tabs>
     </motion.aside>

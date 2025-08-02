@@ -9,23 +9,10 @@ import { cn } from '@/lib/utils';
 import { ThemeData } from '@/lib/theme-tokens';
 import { extractThemeColors } from '@/lib/theme-manager';
 import { ThemeColorPreview } from '@/components/shared/theme-color-preview';
-import { useTheme } from '@/hooks/use-theme';
+import { useThemeContext } from '@/providers/theme';
 
-// Ultra-fast mode getter - SSR-safe
-function useInstantMode() {
-  const [mode, setMode] = React.useState<'light' | 'dark'>('light');
-  
-  React.useEffect(() => {
-    // Read from window only after hydration to avoid SSR mismatch
-    if (typeof window !== 'undefined' && window.__TINTE_THEME__) {
-      setMode(window.__TINTE_THEME__.mode);
-    }
-  }, []);
-  
-  return mode;
-}
 
-export function TinteThemeSwitcher({
+export function ThemeSelector({
   themes,
   activeId,
   onSelect,
@@ -39,11 +26,7 @@ export function TinteThemeSwitcher({
   label?: string;
 }) {
   const [open, setOpen] = React.useState(false);
-  const instantMode = useInstantMode(); // Ultra-fast mode (instant)
-  const { currentMode } = useTheme(); // Fallback mode
-  
-  // Use instant mode if available, fallback to hook mode
-  const activeMode = instantMode || currentMode;
+  const { currentMode } = useThemeContext();
   const active = themes.find(t => t.id === activeId);
 
   return (
@@ -58,7 +41,7 @@ export function TinteThemeSwitcher({
           title={label}
         >
           <div className="flex items-center gap-2 min-w-0">
-            {active && <ThemeColorPreview colors={extractThemeColors(active, activeMode)} maxColors={3} />}
+            {active && <ThemeColorPreview colors={extractThemeColors(active, currentMode)} maxColors={3} />}
             <span className="truncate">
               {active ? active.name : label}
             </span>
@@ -82,7 +65,7 @@ export function TinteThemeSwitcher({
                   }}
                   className="gap-2"
                 >
-                  <ThemeColorPreview colors={extractThemeColors(theme, activeMode)} maxColors={3} />
+                  <ThemeColorPreview colors={extractThemeColors(theme, currentMode)} maxColors={3} />
                   <div className="flex flex-col gap-0.5 min-w-0 flex-1">
                     <span className="text-xs font-medium truncate">{theme.name}</span>
                     {theme.author && (

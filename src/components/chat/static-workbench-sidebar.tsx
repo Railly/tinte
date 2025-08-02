@@ -1,5 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ProviderDesignPanel } from '@/components/shared/provider-design-panel';
+import { ThemeEditorPanel } from '@/components/shared/theme-editor-panel';
 import { ChatContent } from './chat-content';
 import type { WorkbenchTab } from '@/hooks/use-workbench-state';
 
@@ -37,7 +37,7 @@ export function StaticWorkbenchSidebar({
       </TabsContent>
 
       <TabsContent value="design" className="flex-1 m-0 p-0">
-        <ProviderDesignPanel />
+        <ThemeEditorPanel />
       </TabsContent>
     </Tabs>
   );

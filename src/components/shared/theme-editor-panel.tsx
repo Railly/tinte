@@ -4,13 +4,13 @@ import * as React from 'react';
 import { motion, stagger, useAnimate } from 'motion/react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ColorPickerInput } from '@/components/ui/color-picker-input';
-import { TinteThemeSwitcher } from './tinte-theme-switcher';
-import { useTheme } from '@/hooks/use-theme';
+import { ThemeSelector } from './theme-selector';
+import { useThemeContext } from '@/providers/theme';
 
-export function ProviderDesignPanel() {
+export function ThemeEditorPanel() {
   const [scope, animate] = useAnimate();
 
-  const { currentTokens, allThemes, activeTheme, handleThemeSelect, handleTokenEdit, mounted } = useTheme();
+  const { currentTokens, allThemes, activeTheme, handleThemeSelect, handleTokenEdit, mounted } = useThemeContext();
   const tokenEntries = Object.entries(currentTokens);
   
   // Check if we have immediate data available
@@ -35,7 +35,7 @@ export function ProviderDesignPanel() {
       <div className="px-3 space-y-4 border-b flex-shrink-0">
         <div className="space-y-2">
           <div className="text-xs font-medium text-muted-foreground">Theme</div>
-          <TinteThemeSwitcher
+          <ThemeSelector
             themes={allThemes}
             activeId={activeId}
             onSelect={handleThemeSelect}

@@ -13,7 +13,7 @@ import { hexToHsva, hsvaToHex } from "@uiw/color-convert";
 import { Colorful } from "@uiw/react-color";
 import { ChevronDown } from "lucide-react";
 import type React from "react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface ColorPickerInputProps {
   color: string;
@@ -31,7 +31,7 @@ const getContrastColor = (hexColor: string): string => {
 };
 
 
-export const ColorPickerInput = memo(function ColorPickerInput({
+export function ColorPickerInput({
   color,
   onChange,
   disabled = false,
@@ -358,6 +358,6 @@ export const ColorPickerInput = memo(function ColorPickerInput({
       </PopoverContent>
     </Popover>
   );
-});
+}
 
 export default ColorPickerInput;

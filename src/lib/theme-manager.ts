@@ -69,8 +69,7 @@ export function computeThemeTokens(theme: ThemeData): {
         light: shadcnTheme.light,
         dark: shadcnTheme.dark
       };
-    } catch (error) {
-      console.warn('Failed to compute theme tokens:', error);
+    } catch {
       computedTokens = DEFAULT_THEME.computedTokens;
     }
   } else {
@@ -164,8 +163,8 @@ export function saveTheme(theme: ThemeData): void {
     const computedTokens = computeThemeTokens(theme);
     const themeWithTokens = { ...theme, computedTokens };
     localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(themeWithTokens));
-  } catch (error) {
-    console.warn('Failed to save theme:', error);
+  } catch {
+    // Silent fail - localStorage might not be available
   }
 }
 
@@ -177,8 +176,8 @@ export function loadTheme(): ThemeData {
     if (stored) {
       return JSON.parse(stored);
     }
-  } catch (error) {
-    console.warn('Failed to load theme:', error);
+  } catch {
+    // Silent fail - localStorage might not be available
   }
   
   return DEFAULT_THEME;
