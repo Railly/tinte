@@ -40,14 +40,13 @@ src/
 │   ├── code-preview.tsx  # Shiki syntax highlighting
 │   └── monaco-editor-preview.tsx # Monaco editor integration
 ├── hooks/                 # Custom React hooks
-│   ├── use-tinte-theme.ts       # Theme management and selection
-│   ├── use-token-editor.ts      # Token editing with color conversion
+│   ├── use-theme.ts             # Unified theme management (replaces old hooks)
 │   └── use-chat-state.ts        # Chat workbench state
 ├── lib/                   # Core conversion logic
 │   ├── palette-generator.ts      # OKLCH palette generation
 │   ├── tinte-to-shadcn.ts       # Tinte → shadcn conversion
 │   ├── tweakcn-to-tinte.ts      # TweakCN → Tinte conversion
-│   ├── theme-applier.ts         # Theme application with transitions
+│   ├── theme-manager.ts         # Consolidated theme logic and token management
 │   └── tinte-to-vscode/          # Tinte → VS Code conversion
 ├── types/                 # Shared TypeScript definitions
 │   └── tinte.ts          # Common Tinte theme types
@@ -204,20 +203,60 @@ When testing the conversion systems:
 - **OKLCH color space** for better color manipulation
 - **Responsive UI** with modern design patterns
 
-## Theme Workbench Architecture
+## Theme Architecture (Simplified)
 
-### Token Synchronization System
+### Unified Theme System
 
-The chat workbench (`/chat`) implements a sophisticated token synchronization system:
+The theme system has been simplified from 9 complex files to just 3 core files:
 
-1. **`useTinteTheme`**: Manages theme selection and application with view transitions
-2. **`useTokenEditor`**: Handles token editing with automatic color format conversion
-3. **Real-time sync**: Tokens update immediately when themes change
-4. **Color conversion**: OKLCH/LAB values automatically convert to hex for display
-5. **Initial state**: Reads actual CSS custom properties from `globals.css` on first render
+#### Core Files
 
-### Key Hooks
+1. **`lib/theme-manager.ts`** - All theme logic consolidated:
+   - Theme application with view transitions
+   - Token computation and DOM manipulation
+   - localStorage persistence
+   - Color format conversion (OKLCH/LAB → Hex)
 
-- **`use-tinte-theme.ts`**: Theme management, selection, and mode switching
-- **`use-token-editor.ts`**: Token editing with Culori-based color format conversion
-- **`use-chat-state.ts`**: Chat workbench state management
+2. **`hooks/use-theme.ts`** - Single unified hook:
+   - Theme selection and mode switching
+   - Token editing with real-time updates
+   - Theme collections (TweakCN, Rayso, Tinte)
+   - SSR/hydration handling
+   - Legacy compatibility layer
+
+3. **`components/theme-script.tsx`** - Minimal SSR script:
+   - Initial theme application before React hydration
+   - Prevents flash of incorrect theme
+   - Reads from localStorage and applies tokens
+
+#### Key Features
+
+- **Single source of truth**: All theme state in `useTheme()` hook
+- **No state conflicts**: Eliminated Zustand + React Context overlap
+- **Direct data flow**: localStorage → hook → components
+- **Real-time sync**: Tokens update immediately when themes change
+- **Color conversion**: OKLCH/LAB values automatically convert to hex
+- **View transitions**: Smooth theme switching with CSS view transitions
+
+#### Usage
+
+```tsx
+// Replace all old hooks with single unified hook
+import { useTheme } from '@/hooks/use-theme';
+
+function MyComponent() {
+  const { 
+    // Theme state
+    activeTheme, currentMode, isDark, mounted,
+    
+    // Theme collections  
+    allThemes, tweakcnThemes, raysoThemes, tinteThemes,
+    
+    // Token editing
+    currentTokens, handleTokenEdit, resetTokens,
+    
+    // Actions
+    handleThemeSelect, handleModeChange, toggleTheme
+  } = useTheme();
+}
+```

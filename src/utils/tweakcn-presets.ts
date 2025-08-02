@@ -5,7 +5,7 @@ export function extractTweakcnThemeData(isDark = false) {
   return Object.entries(defaultPresets).map(([key, preset]) => {
     const themeMode = isDark ? preset.styles.dark : preset.styles.light;
     return {
-      id: `tweakcn-${key}`,
+      id: key,
       name: preset.label,
       colors: {
         primary: themeMode.primary,

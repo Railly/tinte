@@ -26,18 +26,15 @@ export function useTheme() {
   const [editedTokens, setEditedTokens] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const initialMode = loadMode();
     const storedTheme = loadTheme();
+    const initialMode = loadMode();
     
     setCurrentMode(initialMode);
     setActiveTheme(storedTheme);
     setMounted(true);
     
     applyModeClass(initialMode);
-    
-    if (storedTheme) {
-      applyThemeWithTransition(storedTheme, initialMode);
-    }
+    applyThemeWithTransition(storedTheme, initialMode);
   }, []);
 
   const baseTokens = useMemo(() => {
@@ -54,12 +51,10 @@ export function useTheme() {
     setCurrentMode(newMode);
     saveMode(newMode);
     
-    if (activeTheme) {
-      applyThemeWithTransition(activeTheme, newMode);
-    } else {
-      applyModeClass(newMode);
-    }
-  }, [activeTheme]);
+    // Always use the currently saved theme from localStorage
+    const savedTheme = loadTheme();
+    applyThemeWithTransition(savedTheme, newMode);
+  }, []);
 
   const toggleTheme = useCallback((coords?: Coords) => {
     const newMode = currentMode === "light" ? "dark" : "light";
@@ -93,8 +88,11 @@ export function useTheme() {
     setActiveTheme(theme);
     saveTheme(theme);
     setEditedTokens({});
-    applyThemeWithTransition(theme, currentMode);
-  }, [currentMode]);
+    
+    // Always use the currently saved mode from localStorage
+    const savedMode = loadMode();
+    applyThemeWithTransition(theme, savedMode);
+  }, []);
 
   const handleTokenEdit = useCallback((key: string, value: string) => {
     setEditedTokens(prev => ({
@@ -109,7 +107,7 @@ export function useTheme() {
 
   const tweakcnThemes = useMemo(() => {
     if (!mounted) return [];
-    return extractTweakcnThemeData(currentMode === "dark").map((themeData, index) => ({
+    return extractTweakcnThemeData(false).map((themeData, index) => ({
       ...themeData,
       description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
       author: "tweakcn",
@@ -124,11 +122,11 @@ export function useTheme() {
         "community",
       ],
     }));
-  }, [mounted, currentMode]);
+  }, [mounted]);
 
   const raysoThemes = useMemo(() => {
     if (!mounted) return [];
-    return extractRaysoThemeData(currentMode === "dark").map((themeData, index) => ({
+    return extractRaysoThemeData(false).map((themeData, index) => ({
       ...themeData,
       description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
       author: "ray.so",
@@ -138,11 +136,11 @@ export function useTheme() {
       views: 12000 + index * 1500,
       tags: [themeData.name.toLowerCase(), "rayso", "modern", "community"],
     }));
-  }, [mounted, currentMode]);
+  }, [mounted]);
 
   const tinteThemes = useMemo(() => {
     if (!mounted) return [];
-    return extractTinteThemeData(currentMode === "dark").map((themeData, index) => ({
+    return extractTinteThemeData(false).map((themeData, index) => ({
       ...themeData,
       description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
       author: "tinte",
@@ -157,7 +155,7 @@ export function useTheme() {
         "design",
       ],
     }));
-  }, [mounted, currentMode]);
+  }, [mounted]);
 
   const allThemes = useMemo(() => {
     if (!mounted) return [DEFAULT_THEME];

@@ -135,10 +135,13 @@ export function applyModeClass(mode: ThemeMode): void {
   
   if (mode === "dark") {
     root.classList.add("dark");
+    root.style.colorScheme = "dark";
   } else {
     root.classList.remove("dark");
+    root.style.colorScheme = "light";
   }
 }
+
 
 export function saveTheme(theme: ThemeData): void {
   if (typeof window === 'undefined') return;

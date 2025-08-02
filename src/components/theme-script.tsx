@@ -45,8 +45,10 @@ export function TinteThemeScript() {
         
         if (mode === "dark") {
           root.classList.add("dark");
+          root.style.colorScheme = "dark";
         } else {
           root.classList.remove("dark");
+          root.style.colorScheme = "light";
         }
 
         const tokens = theme.computedTokens ? theme.computedTokens[mode] : DEFAULT_THEME.computedTokens[mode];

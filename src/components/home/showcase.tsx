@@ -16,19 +16,20 @@ import { useTheme } from '@/hooks/use-theme';
 export function Showcase() {
   const [activeTab, setActiveTab] = useState('tweakcn');
   const { currentMode, isDark, handleThemeSelect } = useTheme();
-  
+
   // Static theme data for showcase (no SSR issues)
   const tweakcnThemes = extractTweakcnThemeData(false).map((themeData, index) => ({
     ...themeData,
     description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
     author: "tweakcn",
+    provider: "tweakcn" as const,
     downloads: 8000 + index * 500,
     likes: 400 + index * 50,
     views: 15000 + index * 2000,
     tags: [
       themeData.name.split(" ")[0].toLowerCase(),
       "modern",
-      "preset", 
+      "preset",
       "community",
     ],
   }));
@@ -37,6 +38,7 @@ export function Showcase() {
     ...themeData,
     description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
     author: "ray.so",
+    provider: "rayso" as const,
     downloads: 6000 + index * 400,
     likes: 300 + index * 40,
     views: 12000 + index * 1500,
@@ -47,6 +49,7 @@ export function Showcase() {
     ...themeData,
     description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
     author: "tinte",
+    provider: "tinte" as const,
     downloads: 5000 + index * 350,
     likes: 250 + index * 35,
     views: 10000 + index * 1200,
@@ -113,7 +116,7 @@ export function Showcase() {
             {tweakcnThemes.slice(0, 8).map((theme, index) => (
               <ThemeCard
                 key={theme.id}
-                theme={{ ...theme, id: `tweakcn-${theme.id}` }}
+                theme={theme}
                 index={index}
                 onThemeSelect={handleThemeSelect}
               />

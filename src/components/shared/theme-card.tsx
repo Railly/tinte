@@ -5,26 +5,7 @@ import { Heart, Download, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
-
-interface ThemeData {
-  id: string;
-  name: string;
-  description: string;
-  author: string;
-  downloads: number;
-  likes: number;
-  views: number;
-  createdAt: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    background: string;
-    foreground: string;
-  };
-  tags: string[];
-  preview?: string;
-}
+import { ThemeData } from '@/lib/theme-tokens';
 
 interface ThemeCardProps {
   theme: ThemeData;
@@ -46,6 +27,30 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
     }
   };
 
+  // Extract colors from computed tokens for preview
+  const getThemeColors = () => {
+    const computedTheme = theme as any;
+    if (computedTheme.computedTokens?.light) {
+      const tokens = computedTheme.computedTokens.light;
+      return {
+        primary: tokens.primary || '#000000',
+        secondary: tokens.secondary || '#666666',
+        accent: tokens.accent || '#0066cc',
+        background: tokens.background || '#ffffff',
+        foreground: tokens.foreground || '#000000',
+      };
+    }
+    return {
+      primary: '#000000',
+      secondary: '#666666',
+      accent: '#0066cc',
+      background: '#ffffff',
+      foreground: '#000000',
+    };
+  };
+
+  const colors = getThemeColors();
+
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -60,14 +65,14 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
       <motion.div
         className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity"
         style={{
-          background: `linear-gradient(135deg, ${theme.colors.primary}22, ${theme.colors.accent}11)`,
+          background: `linear-gradient(135deg, ${colors.primary}22, ${colors.accent}11)`,
           willChange: 'auto'
         }}
       />
 
       {/* Color preview strip */}
       <div className="absolute top-3 right-3 flex gap-1">
-        {Object.values(theme.colors).map((color, i) => (
+        {Object.values(colors).map((color, i) => (
           <motion.div
             key={i}
             className="w-2.5 h-2.5 rounded-full border border-white/20 shadow-sm"
