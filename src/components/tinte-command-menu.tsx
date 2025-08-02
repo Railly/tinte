@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { useTinteTheme } from "@/providers/tinte-theme-provider"
+import { useTheme } from "@/hooks/use-theme"
 import { useHotkeys } from "react-hotkeys-hook"
 import {
   Palette,
@@ -74,7 +74,7 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
   const [open, setOpen] = React.useState(false)
   const [selectedType, setSelectedType] = React.useState<string | null>(null)
   const router = useRouter()
-  const { theme, setTheme, handleThemeSelect, isDark, allThemes } = useTinteTheme()
+  const { theme, setTheme, handleThemeSelect, isDark, allThemes } = useTheme()
 
   const runCommand = React.useCallback((command: () => void) => {
     setOpen(false)

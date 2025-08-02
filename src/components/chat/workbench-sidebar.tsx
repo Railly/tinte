@@ -4,7 +4,7 @@ import { ProviderDesignPanel } from '@/components/shared/provider-design-panel';
 import { ChatContent } from './chat-content';
 import { CHAT_CONFIG } from '@/lib/chat-constants';
 import type { WorkbenchTab, UseWorkbenchStateReturn } from '@/hooks/use-workbench-state';
-import { useTinteTheme } from '@/providers/tinte-theme-provider';
+import { useTheme } from '@/hooks/use-theme';
 
 interface WorkbenchSidebarProps {
   split: boolean;
@@ -27,7 +27,7 @@ export function WorkbenchSidebar({
   onTabChange,
   state
 }: WorkbenchSidebarProps) {
-  const { allThemes } = useTinteTheme();
+  const { allThemes } = useTheme();
 
   return (
     <motion.aside

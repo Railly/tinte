@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Moon, Sun } from "lucide-react";
-import { useTinteTheme } from "@/providers/tinte-theme-provider";
+import { useTheme } from "@/hooks/use-theme";
 
 interface ThemeSwitcherProps {
   variant?: "button" | "dual";
 }
 
 export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
-  const { mounted, isDark, currentMode, handleModeChange } = useTinteTheme();
+  const { mounted, isDark, currentMode, handleModeChange } = useTheme();
   const id = useId();
 
   if (!mounted) {

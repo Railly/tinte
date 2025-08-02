@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { TinteThemeProvider } from "@/providers/tinte-theme-provider";
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { siteConfig, META_THEME_COLORS } from "@/config/site";
 import { TinteThemeScript } from "@/components/theme-script";
@@ -87,11 +86,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        <TinteThemeProvider defaultTheme="light">
-          <NuqsAdapter>
-            {children}
-          </NuqsAdapter>
-        </TinteThemeProvider>
+        <NuqsAdapter>
+          {children}
+        </NuqsAdapter>
       </body>
     </html>
   );

@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTinteTheme } from '@/providers/tinte-theme-provider';
+import { useTheme } from '@/hooks/use-theme';
 import { providerRegistry } from '@/lib/providers';
 import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
 
@@ -180,7 +180,7 @@ func main() {
 ];
 
 export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
-  const { activeTheme, currentMode } = useTinteTheme();
+  const { activeTheme, currentMode } = useTheme();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [viewMode, setViewMode] = useState<'split' | 'monaco' | 'shiki' | 'tokens'>('split');
   const [themeVersion, setThemeVersion] = useState(0);

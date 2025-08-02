@@ -1,0 +1,223 @@
+import { ThemeData } from "./theme-tokens";
+import { formatHex, parse } from "culori";
+import { DEFAULT_THEME } from "@/utils/tinte-presets";
+
+export type ThemeMode = "light" | "dark";
+
+const THEME_STORAGE_KEY = "tinte-selected-theme";
+const MODE_STORAGE_KEY = "tinte-current-mode";
+
+let currentAppliedTheme = { id: '', mode: '' };
+
+declare global {
+  interface Window {
+    __TINTE_THEME__?: {
+      theme: ThemeData;
+      mode: ThemeMode;
+      tokens: Record<string, string>;
+    };
+  }
+}
+
+export function convertColorToHex(colorValue: string): string {
+  try {
+    if (colorValue.startsWith("#")) return colorValue;
+    const parsed = parse(colorValue);
+    if (parsed) {
+      return formatHex(parsed) || colorValue;
+    }
+    return colorValue;
+  } catch {
+    return colorValue;
+  }
+}
+
+export function computeThemeTokens(theme: ThemeData): {
+  light: Record<string, string>;
+  dark: Record<string, string>;
+} {
+  if ((theme as any).computedTokens) {
+    return (theme as any).computedTokens;
+  }
+
+  let computedTokens: { light: any; dark: any };
+
+  if (theme.author === "tweakcn" && theme.rawTheme) {
+    computedTokens = {
+      light: theme.rawTheme.light,
+      dark: theme.rawTheme.dark
+    };
+  } else if (theme.rawTheme) {
+    try {
+      const { providerRegistry } = require('@/lib/providers');
+      const shadcnTheme = providerRegistry.convert("shadcn", theme.rawTheme);
+      computedTokens = {
+        light: shadcnTheme.light,
+        dark: shadcnTheme.dark
+      };
+    } catch (error) {
+      console.warn('Failed to compute theme tokens:', error);
+      computedTokens = DEFAULT_THEME.computedTokens;
+    }
+  } else {
+    computedTokens = DEFAULT_THEME.computedTokens;
+  }
+
+  return computedTokens;
+}
+
+export function applyTokensToDOM(tokens: Record<string, string>): void {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  
+  const root = document.documentElement;
+  
+  Object.entries(tokens).forEach(([key, value]) => {
+    if (
+      typeof value === "string" &&
+      !key.startsWith("font-") &&
+      !key.startsWith("shadow-") &&
+      key !== "radius" &&
+      key !== "spacing" &&
+      key !== "letter-spacing"
+    ) {
+      root.style.setProperty(`--${key}`, value);
+    }
+  });
+}
+
+export function applyTheme(theme: ThemeData, mode: ThemeMode): void {
+  const themeKey = `${theme.id}-${mode}`;
+  
+  if (currentAppliedTheme.id === themeKey) return;
+  currentAppliedTheme.id = themeKey;
+  
+  const computedTokens = computeThemeTokens(theme);
+  const tokens = computedTokens[mode];
+  
+  applyTokensToDOM(tokens);
+  
+  if (typeof window !== 'undefined') {
+    window.__TINTE_THEME__ = {
+      theme,
+      mode,
+      tokens
+    };
+  }
+}
+
+export function applyThemeWithTransition(theme: ThemeData, mode: ThemeMode): void {
+  const applyChanges = () => {
+    applyTheme(theme, mode);
+    applyModeClass(mode);
+  };
+
+  if (typeof window === 'undefined') {
+    applyChanges();
+    return;
+  }
+
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  if (!document.startViewTransition || prefersReducedMotion) {
+    applyChanges();
+    return;
+  }
+
+  document.startViewTransition(applyChanges);
+}
+
+export function applyModeClass(mode: ThemeMode): void {
+  if (typeof window === 'undefined') return;
+  
+  const root = document.documentElement;
+  
+  if (mode === "dark") {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+}
+
+export function saveTheme(theme: ThemeData): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const computedTokens = computeThemeTokens(theme);
+    const themeWithTokens = { ...theme, computedTokens };
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(themeWithTokens));
+  } catch (error) {
+    console.warn('Failed to save theme:', error);
+  }
+}
+
+export function loadTheme(): ThemeData {
+  if (typeof window === 'undefined') return DEFAULT_THEME;
+  
+  try {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.warn('Failed to load theme:', error);
+  }
+  
+  return DEFAULT_THEME;
+}
+
+export function saveMode(mode: ThemeMode): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(MODE_STORAGE_KEY, mode);
+}
+
+export function loadMode(): ThemeMode {
+  if (typeof window === 'undefined') return "light";
+  
+  try {
+    const stored = localStorage.getItem(MODE_STORAGE_KEY);
+    if (stored === "dark" || stored === "light") {
+      return stored;
+    }
+    
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+}
+
+export function getTokensFromDOM(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  
+  if (window.__TINTE_THEME__?.tokens) {
+    const processedTokens: Record<string, string> = {};
+    for (const [key, value] of Object.entries(window.__TINTE_THEME__.tokens)) {
+      if (typeof value === "string") {
+        processedTokens[key] = convertColorToHex(value);
+      }
+    }
+    return processedTokens;
+  }
+
+  const root = document.documentElement;
+  const computedStyle = getComputedStyle(root);
+
+  const tokenKeys = [
+    "background", "foreground", "card", "card-foreground", "popover", "popover-foreground",
+    "primary", "primary-foreground", "secondary", "secondary-foreground", 
+    "muted", "muted-foreground", "accent", "accent-foreground", 
+    "destructive", "border", "input", "ring"
+  ];
+
+  const processedTokens: Record<string, string> = {};
+  
+  for (const key of tokenKeys) {
+    const value = computedStyle.getPropertyValue(`--${key}`).trim();
+    if (value) {
+      processedTokens[key] = convertColorToHex(value);
+    }
+  }
+
+  return processedTokens;
+}

@@ -3,7 +3,7 @@ import { ProviderDesignPanel } from '@/components/shared/provider-design-panel';
 import { ChatContent } from './chat-content';
 import type { WorkbenchTab, UseWorkbenchStateReturn } from '@/hooks/use-workbench-state';
 import { ThemeData } from '@/lib/theme-tokens';
-import { useTinteTheme } from '@/providers/tinte-theme-provider';
+import { useTheme } from '@/hooks/use-theme';
 
 interface StaticWorkbenchSidebarProps {
   activeTab: WorkbenchTab;
@@ -24,7 +24,7 @@ export function StaticWorkbenchSidebar({
   onTabChange,
   state
 }: StaticWorkbenchSidebarProps) {
-  const { allThemes } = useTinteTheme();
+  const { allThemes } = useTheme();
 
   return (
     <Tabs

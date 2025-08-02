@@ -26,15 +26,6 @@ export function TinteThemeSwitcher({
 
   const active = themes.find(t => t.id === activeId);
 
-  // Debug logs
-  console.log('🔍 TinteThemeSwitcher Debug:', {
-    activeId,
-    themesCount: themes.length,
-    themeIds: themes.map(t => t.id),
-    active: active ? { id: active.id, name: active.name } : null,
-    label
-  });
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

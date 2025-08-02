@@ -1,10 +1,8 @@
 import { useMemo } from "react";
 import { useQueryState } from "nuqs";
-import { useTinteTheme } from "@/providers/tinte-theme-provider";
-import { useTokenEditor } from "./use-token-editor";
+import { useTheme } from "@/hooks/use-theme";
 import { useThemeAdapters, useThemeConversion } from "./use-theme-adapters";
 import { useChatState } from "./use-chat-state";
-import { applyThemeWithTransition } from "@/lib/theme-applier";
 import type { ThemeData as AppThemeData } from "@/lib/theme-tokens";
 import type { TinteTheme } from "@/types/tinte";
 import { SeedPayload } from "@/utils/seed-mapper";
@@ -68,17 +66,12 @@ export function useWorkbenchState(
   const { previewableProviders, exportTheme } = useThemeAdapters();
 
   // Theme state - simplified
-  const { activeTheme, isDark } = useTinteTheme();
+  const { activeTheme, isDark, currentTokens, handleTokenEdit, resetTokens, isLoading, handleThemeSelect: themeSelect } = useTheme();
 
   // Use current theme or fallback to default
   const currentTheme = useMemo(() => 
     (activeTheme || DEFAULT_THEME) as AppThemeData, 
     [activeTheme]
-  );
-
-  const { currentTokens, handleTokenEdit, resetTokens, isLoading } = useTokenEditor(
-    currentTheme,
-    isDark
   );
 
   // Derived state
@@ -105,18 +98,8 @@ export function useWorkbenchState(
   // Theme conversion
   const conversion = useThemeConversion(tinteTheme);
 
-  // Simplified theme selection with view transitions
-  const handleThemeSelect = useMemo(
-    () => (selectedTheme: AppThemeData) => {
-      // Apply theme directly with transitions (this saves to localStorage)
-      const currentMode = isDark ? "dark" : "light";
-      applyThemeWithTransition(selectedTheme, currentMode);
-      
-      // Reset tokens after theme change
-      resetTokens();
-    },
-    [isDark, resetTokens]
-  );
+  // Use the theme select from the hook
+  const handleThemeSelect = themeSelect;
 
   return {
     // Chat state

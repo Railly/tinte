@@ -1,10 +1,10 @@
 "use client"
 
-import { useTinteTheme } from "@/providers/tinte-theme-provider"
+import { useTheme } from "@/hooks/use-theme"
 import { Toaster as Sonner, ToasterProps } from "sonner"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme } = useTinteTheme()
+  const { theme } = useTheme()
 
   return (
     <Sonner

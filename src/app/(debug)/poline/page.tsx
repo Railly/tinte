@@ -6,7 +6,7 @@ import { oklch } from 'culori';
 
 import { ThemeSwitcher } from '@/components/shared/theme-switcher';
 import { ProviderExperimentTabs } from '@/components/shared/provider-experiment-tabs';
-import { useTinteTheme } from '@/providers/tinte-theme-provider';
+import { useTheme } from '@/hooks/use-theme';
 import { useWorkbenchState } from '@/hooks/use-workbench-state';
 
 // ⬇️ Ajusta esta ruta al archivo donde pegaste mi one-file (`ice-theme.ts`)
@@ -141,7 +141,7 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
 // Page
 // ─────────────────────────────────────────────
 export default function ComparePage() {
-  const { mounted, activeTheme } = useTinteTheme();
+  const { mounted, activeTheme, currentMode } = useTheme();
   const state = useWorkbenchState('123', 'design'); // real tokens + tinteTheme desde tu store
   const [showAccentCharts, setShowAccentCharts] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
@@ -151,7 +151,6 @@ export default function ComparePage() {
     preserveKeys: ['primary', 'secondary', 'accent', 'accent_2', 'accent_3'] as ('primary' | 'secondary' | 'accent' | 'accent_2' | 'accent_3')[],
   });
 
-  const { currentMode } = useTinteTheme();
   const mode = currentMode;
 
   // Use selected theme from enhanced switcher or fallback to workbench state

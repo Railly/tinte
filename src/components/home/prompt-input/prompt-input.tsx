@@ -18,7 +18,7 @@ import { generateTailwindPalette } from '@/lib/palette-generator';
 import { cn } from '@/lib';
 import { Button } from '../../ui/button';
 import { Search } from 'lucide-react';
-import { useTinteTheme } from '@/providers/tinte-theme-provider';
+import { useTheme } from '@/hooks/use-theme';
 import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
@@ -122,7 +122,7 @@ export default function PromptInput({
   const themeSearchRef = useRef<HTMLInputElement>(null);
   const { pastedItems, addPastedItem, removePastedItem, updatePastedItem, clearPastedItems } = usePastedItems();
   const { setBase } = usePalette();
-  const { allThemes } = useTinteTheme();
+  const { allThemes } = useTheme();
 
 
   useEffect(() => {
