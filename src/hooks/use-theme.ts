@@ -128,15 +128,29 @@ export function useTheme() {
   }, []);
 
   const handleTokenEdit = useCallback((key: string, value: string) => {
+    const hexValue = convertColorToHex(value);
+    
+    // Update React state
     setEditedTokens(prev => ({
       ...prev,
-      [key]: convertColorToHex(value),
+      [key]: hexValue,
     }));
+    
+    // Update CSS custom property in DOM immediately
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      document.documentElement.style.setProperty(`--${key}`, hexValue);
+    }
   }, []);
 
   const resetTokens = useCallback(() => {
     setEditedTokens({});
-  }, []);
+    
+    // Restore original CSS custom properties by re-applying the base theme
+    if (typeof window !== 'undefined' && activeTheme) {
+      const savedMode = loadMode();
+      applyThemeWithTransition(activeTheme, savedMode);
+    }
+  }, [activeTheme]);
 
   const tweakcnThemes = useMemo(() => {
     if (!mounted) return [];
