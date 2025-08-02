@@ -1,4 +1,4 @@
-import { providerRegistry } from "@/lib/providers";
+// Import removed to fix circular dependency
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import { WarpIcon } from "@/components/shared/icons/warp";
@@ -16,15 +16,15 @@ import { ObsidianIcon } from "@/components/shared/icons/obsidian";
 import { GIMPIcon } from "@/components/shared/icons/gimp";
 
 export function getAvailableProviders() {
-  return providerRegistry.getAll();
+  return [];
 }
 
 export function getPreviewableProviders() {
-  return providerRegistry.getAllPreviewable();
+  return [];
 }
 
 export function getProvidersByCategory(category: string) {
-  return providerRegistry.getByCategory(category as any);
+  return [];
 }
 
 export const LEGACY_PROVIDERS = [

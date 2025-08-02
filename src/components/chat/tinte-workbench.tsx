@@ -2,7 +2,8 @@
 
 import { AnimatePresence } from 'motion/react';
 import { useWorkbenchState } from '@/hooks/use-workbench-state';
-import { useWorkbenchExports } from '@/hooks/use-workbench-exports';
+import { useTheme } from '@/hooks/use-theme';
+import { useChatState } from '@/hooks/use-chat-state';
 import { WorkbenchSidebar } from './workbench-sidebar';
 import { StaticWorkbenchSidebar } from './static-workbench-sidebar';
 import { WorkbenchPreviewPane } from './workbench-preview-pane';
@@ -15,12 +16,8 @@ interface TinteWorkbenchProps {
 
 export function TinteWorkbench({ chatId, isStatic = false }: TinteWorkbenchProps) {
   const state = useWorkbenchState(chatId, isStatic ? "design" : undefined);
-  
-  const { handleExportAll, handleExportTinte } = useWorkbenchExports(
-    state.tinteTheme,
-    state.conversion,
-    state.exportTheme
-  );
+  const { tinteTheme, handleExportAll, handleExportTinte } = useTheme();
+  const chatState = useChatState(chatId);
 
   if (isStatic) {
     return (
@@ -32,12 +29,11 @@ export function TinteWorkbench({ chatId, isStatic = false }: TinteWorkbenchProps
           <StaticWorkbenchSidebar
             activeTab={state.activeTab}
             onTabChange={state.setActiveTab}
-            state={state}
           />
         </aside>
         
         <WorkbenchPreviewPane
-          theme={state.tinteTheme}
+          theme={tinteTheme}
           onExportAll={handleExportAll}
           onExportTinte={handleExportTinte}
         />
@@ -51,13 +47,14 @@ export function TinteWorkbench({ chatId, isStatic = false }: TinteWorkbenchProps
         split={state.split}
         activeTab={state.activeTab}
         onTabChange={state.setActiveTab}
-        state={state}
+        chatLoading={chatState.loading}
+        chatSeed={chatState.seed}
       />
 
       <AnimatePresence>
         {state.split && (
           <WorkbenchPreviewPane
-            theme={state.tinteTheme}
+            theme={tinteTheme}
             onExportAll={handleExportAll}
             onExportTinte={handleExportTinte}
           />

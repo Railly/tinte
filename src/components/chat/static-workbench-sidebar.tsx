@@ -1,17 +1,11 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ProviderDesignPanel } from '@/components/shared/provider-design-panel';
 import { ChatContent } from './chat-content';
-import type { WorkbenchTab, UseWorkbenchStateReturn } from '@/hooks/use-workbench-state';
-import { ThemeData } from '@/lib/theme-tokens';
-import { useTheme } from '@/hooks/use-theme';
+import type { WorkbenchTab } from '@/hooks/use-workbench-state';
 
 interface StaticWorkbenchSidebarProps {
   activeTab: WorkbenchTab;
   onTabChange: (tab: WorkbenchTab) => void;
-  state: Pick<UseWorkbenchStateReturn,
-    'seed' | 'loading' | 'currentTheme' | 'tinteTheme' |
-    'currentTokens' | 'handleTokenEdit' | 'handleThemeSelect' | 'currentProvider' | 'isDark' | 'tokensLoading'
-  >;
 }
 
 const TAB_CONFIG = [
@@ -21,10 +15,8 @@ const TAB_CONFIG = [
 
 export function StaticWorkbenchSidebar({
   activeTab,
-  onTabChange,
-  state
+  onTabChange
 }: StaticWorkbenchSidebarProps) {
-  const { allThemes } = useTheme();
 
   return (
     <Tabs
@@ -41,21 +33,11 @@ export function StaticWorkbenchSidebar({
       </TabsList>
 
       <TabsContent value="chat" className="flex-1 m-0 p-0">
-        <ChatContent
-          seed={state.seed}
-          loading={state.loading}
-        />
+        <ChatContent loading={false} seed={null} />
       </TabsContent>
 
       <TabsContent value="design" className="flex-1 m-0 p-0">
-        <ProviderDesignPanel
-          allThemes={allThemes}
-          activeTheme={state.currentTheme}
-          currentTokens={state.currentTokens}
-          onTokenEdit={state.handleTokenEdit}
-          onThemeSelect={state.handleThemeSelect}
-          tokensLoading={state.tokensLoading}
-        />
+        <ProviderDesignPanel />
       </TabsContent>
     </Tabs>
   );

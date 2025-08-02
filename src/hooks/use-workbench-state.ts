@@ -1,12 +1,8 @@
 import { useMemo } from "react";
 import { useQueryState } from "nuqs";
-import { useTheme } from "@/hooks/use-theme";
-import { useThemeAdapters, useThemeConversion } from "./use-theme-adapters";
+import { useThemeAdapters } from "./use-theme-adapters";
 import { useChatState } from "./use-chat-state";
-import type { ThemeData as AppThemeData } from "@/lib/theme-tokens";
-import type { TinteTheme } from "@/types/tinte";
 import { SeedPayload } from "@/utils/seed-mapper";
-import { DEFAULT_THEME } from "@/utils/tinte-presets";
 export type WorkbenchTab = "chat" | "design" | "mapping";
 
 export interface UseWorkbenchStateReturn {
@@ -22,26 +18,6 @@ export interface UseWorkbenchStateReturn {
   // Provider state
   currentProvider: string;
   currentAdapter: any;
-
-  // Theme state
-  currentTheme: AppThemeData;
-  tinteTheme: TinteTheme;
-  isDark: boolean;
-
-  // Token editing
-  currentTokens: Record<string, string>;
-  handleTokenEdit: (token: string, value: string) => void;
-  resetTokens: () => void;
-  tokensLoading: boolean;
-
-  // Theme selection
-  handleThemeSelect: (theme: AppThemeData) => void;
-
-  // Theme conversion
-  conversion: ReturnType<typeof useThemeConversion>;
-
-  // Export functions
-  exportTheme: (adapterId: string, theme: TinteTheme) => any;
 }
 
 export function useWorkbenchState(
@@ -63,16 +39,7 @@ export function useWorkbenchState(
 
   // Provider state
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
-  const { previewableProviders, exportTheme } = useThemeAdapters();
-
-  // Theme state - simplified
-  const { activeTheme, isDark, currentTokens, handleTokenEdit, resetTokens, isLoading, handleThemeSelect: themeSelect } = useTheme();
-
-  // Use current theme or fallback to default
-  const currentTheme = useMemo(() => 
-    (activeTheme || DEFAULT_THEME) as AppThemeData, 
-    [activeTheme]
-  );
+  const { previewableProviders } = useThemeAdapters();
 
   // Derived state
   const currentProvider = provider || "shadcn";
@@ -81,25 +48,6 @@ export function useWorkbenchState(
     previewableProviders[0],
     [previewableProviders, currentProvider]
   );
-
-  // Ensure we have a valid TinteTheme
-  const tinteTheme: TinteTheme = useMemo(() => {
-    if (
-      currentTheme?.rawTheme &&
-      typeof currentTheme.rawTheme === "object" &&
-      "light" in currentTheme.rawTheme &&
-      "dark" in currentTheme.rawTheme
-    ) {
-      return currentTheme.rawTheme as TinteTheme;
-    }
-    return DEFAULT_THEME.rawTheme as TinteTheme;
-  }, [currentTheme]);
-
-  // Theme conversion
-  const conversion = useThemeConversion(tinteTheme);
-
-  // Use the theme select from the hook
-  const handleThemeSelect = themeSelect;
 
   return {
     // Chat state
@@ -114,25 +62,5 @@ export function useWorkbenchState(
     // Provider state
     currentProvider,
     currentAdapter,
-
-    // Theme state
-    currentTheme,
-    tinteTheme,
-    isDark,
-
-    // Token editing
-    currentTokens,
-    handleTokenEdit,
-    resetTokens,
-    tokensLoading: isLoading,
-
-    // Theme selection
-    handleThemeSelect,
-
-    // Theme conversion
-    conversion,
-
-    // Export functions
-    exportTheme,
   };
 }

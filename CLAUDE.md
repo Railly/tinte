@@ -203,45 +203,71 @@ When testing the conversion systems:
 - **OKLCH color space** for better color manipulation
 - **Responsive UI** with modern design patterns
 
-## Theme Architecture (Simplified)
+## Theme Architecture (Optimized)
 
-### Unified Theme System
+### Simplified Theme Management
 
-The theme system has been simplified from 9 complex files to just 3 core files:
+The theme system has been streamlined to 3 core files with **localStorage as single source of truth**:
 
 #### Core Files
 
-1. **`lib/theme-manager.ts`** - All theme logic consolidated:
+1. **`lib/theme-manager.ts`** - Theme logic and persistence:
    - Theme application with view transitions
    - Token computation and DOM manipulation
-   - localStorage persistence
+   - localStorage persistence (themes + mode)
    - Color format conversion (OKLCH/LAB → Hex)
+   - Native scrollbar color scheme support
 
-2. **`hooks/use-theme.ts`** - Single unified hook:
-   - Theme selection and mode switching
+2. **`hooks/use-theme.ts`** - Simplified theme hook:
+   - **Optimal persistence pattern**: Always reads from localStorage
+   - Theme selection with mode preservation
+   - Light/dark mode switching with theme preservation
    - Token editing with real-time updates
    - Theme collections (TweakCN, Rayso, Tinte)
-   - SSR/hydration handling
-   - Legacy compatibility layer
 
-3. **`components/theme-script.tsx`** - Minimal SSR script:
+3. **`components/theme-script.tsx`** - SSR prevention:
    - Initial theme application before React hydration
    - Prevents flash of incorrect theme
-   - Reads from localStorage and applies tokens
+   - Applies color-scheme for native elements
 
-#### Key Features
+#### Optimal Persistence Pattern
 
-- **Single source of truth**: All theme state in `useTheme()` hook
-- **No state conflicts**: Eliminated Zustand + React Context overlap
-- **Direct data flow**: localStorage → hook → components
-- **Real-time sync**: Tokens update immediately when themes change
-- **Color conversion**: OKLCH/LAB values automatically convert to hex
-- **View transitions**: Smooth theme switching with CSS view transitions
+**Problem Solved**: Theme selection and mode switching were inconsistent due to stale React state.
+
+**Solution**: localStorage as single source of truth for both operations:
+
+```js
+// Theme selection: preserves current mode
+handleThemeSelect(theme) {
+  saveTheme(theme);
+  const savedMode = loadMode();  // Always read from localStorage
+  applyThemeWithTransition(theme, savedMode);
+}
+
+// Mode switching: preserves current theme  
+handleModeChange(newMode) {
+  saveMode(newMode);
+  const savedTheme = loadTheme();  // Always read from localStorage
+  applyThemeWithTransition(savedTheme, newMode);
+}
+```
+
+#### Key Benefits
+
+- **Bulletproof consistency**: No state synchronization issues
+- **Predictable behavior**: Theme selection preserves mode, mode switching preserves theme
+- **Simple debugging**: Single source of truth eliminates race conditions
+- **Native browser support**: Proper color-scheme for scrollbars and form elements
+- **Instant persistence**: All changes immediately saved to localStorage
+
+#### Storage Keys
+
+- `tinte-selected-theme`: Currently active theme with computed tokens
+- `tinte-current-mode`: Global light/dark mode preference
 
 #### Usage
 
 ```tsx
-// Replace all old hooks with single unified hook
 import { useTheme } from '@/hooks/use-theme';
 
 function MyComponent() {
@@ -255,8 +281,15 @@ function MyComponent() {
     // Token editing
     currentTokens, handleTokenEdit, resetTokens,
     
-    // Actions
+    // Actions (optimized for consistency)
     handleThemeSelect, handleModeChange, toggleTheme
   } = useTheme();
 }
 ```
+
+#### Testing the Persistence
+
+1. **Clean state** → Click theme card → Theme applied
+2. **Switch to dark mode** → Mode preserved, theme stays
+3. **Click different theme** → New theme applied, dark mode preserved
+4. **Refresh page** → Both theme and mode restored correctly

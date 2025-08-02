@@ -6,7 +6,6 @@ export function extractRaysoThemeData(isDark = false) {
     const colorData = isDark ? preset.dark : preset.light;
     return {
       id: `rayso-${index + 1}`,
-      
       name: preset.name,
       colors: {
         primary: colorData.primary,

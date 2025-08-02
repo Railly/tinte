@@ -10,12 +10,14 @@ import {
   saveMode, 
   loadTheme, 
   loadMode,
-  getTokensFromDOM,
   convertColorToHex 
 } from "@/lib/theme-manager";
 import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
 import { extractTinteThemeData, DEFAULT_THEME } from "@/utils/tinte-presets";
+import { useThemeConversion, useThemeAdapters } from "./use-theme-adapters";
+import { downloadFile, downloadJSON, downloadMultipleFiles } from "@/lib/file-download";
+import type { TinteTheme } from "@/types/tinte";
 
 interface Coords { x: number; y: number }
 
@@ -26,21 +28,46 @@ export function useTheme() {
   const [editedTokens, setEditedTokens] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const storedTheme = loadTheme();
-    const initialMode = loadMode();
+    // Try to get immediate data from theme script
+    const preloadedData = typeof window !== 'undefined' ? window.__TINTE_THEME__ : null;
     
-    setCurrentMode(initialMode);
-    setActiveTheme(storedTheme);
-    setMounted(true);
-    
-    applyModeClass(initialMode);
-    applyThemeWithTransition(storedTheme, initialMode);
+    if (preloadedData) {
+      // Use pre-loaded data for instant rendering
+      setCurrentMode(preloadedData.mode);
+      setActiveTheme(preloadedData.theme);
+      setMounted(true);
+    } else {
+      // Fallback to storage
+      const storedTheme = loadTheme();
+      const initialMode = loadMode();
+      
+      setCurrentMode(initialMode);
+      setActiveTheme(storedTheme);
+      setMounted(true);
+      
+      applyModeClass(initialMode);
+      applyThemeWithTransition(storedTheme, initialMode);
+    }
   }, []);
 
   const baseTokens = useMemo(() => {
-    if (!mounted) return {};
-    return getTokensFromDOM();
-  }, [mounted, activeTheme?.id, currentMode]);
+    if (!mounted || !activeTheme) return {};
+    
+    // Always compute tokens from current theme and mode for accurate updates
+    const { computeThemeTokens } = require('@/lib/theme-manager');
+    const computed = computeThemeTokens(activeTheme);
+    const tokens = computed[currentMode];
+    
+    // Convert to hex format for consistency
+    const processedTokens: Record<string, string> = {};
+    for (const [key, value] of Object.entries(tokens)) {
+      if (typeof value === "string") {
+        processedTokens[key] = convertColorToHex(value);
+      }
+    }
+    
+    return processedTokens;
+  }, [mounted, activeTheme, currentMode]);
 
   const currentTokens = useMemo(
     () => ({ ...baseTokens, ...editedTokens }),
@@ -54,6 +81,9 @@ export function useTheme() {
     // Always use the currently saved theme from localStorage
     const savedTheme = loadTheme();
     applyThemeWithTransition(savedTheme, newMode);
+    
+    // Force re-computation of tokens by triggering a state update
+    setActiveTheme(savedTheme);
   }, []);
 
   const toggleTheme = useCallback((coords?: Coords) => {
@@ -85,12 +115,15 @@ export function useTheme() {
   }, [currentMode, handleModeChange]);
 
   const handleThemeSelect = useCallback((theme: ThemeData) => {
+    const savedMode = loadMode();
+    
+    // Update state first to trigger re-computation
     setActiveTheme(theme);
-    saveTheme(theme);
+    setCurrentMode(savedMode);
     setEditedTokens({});
     
-    // Always use the currently saved mode from localStorage
-    const savedMode = loadMode();
+    // Then save and apply
+    saveTheme(theme);
     applyThemeWithTransition(theme, savedMode);
   }, []);
 
@@ -173,6 +206,53 @@ export function useTheme() {
     return uniqueThemes;
   }, [mounted, tinteThemes, raysoThemes, tweakcnThemes]);
 
+  // TinteTheme extraction
+  const tinteTheme: TinteTheme = useMemo(() => {
+    const currentTheme = activeTheme || DEFAULT_THEME;
+    if (
+      currentTheme?.rawTheme &&
+      typeof currentTheme.rawTheme === "object" &&
+      "light" in currentTheme.rawTheme &&
+      "dark" in currentTheme.rawTheme
+    ) {
+      return currentTheme.rawTheme as TinteTheme;
+    }
+    return DEFAULT_THEME.rawTheme as TinteTheme;
+  }, [activeTheme]);
+
+  // Theme conversion
+  const conversion = useThemeConversion(tinteTheme);
+  const { exportTheme } = useThemeAdapters();
+
+  // Export handlers
+  const handleExportAll = useCallback(() => {
+    const allExports = conversion.exportAll();
+    const files = Object.entries(allExports).map(([_, exportResult]) => ({
+      content: exportResult.content,
+      filename: exportResult.filename,
+      mimeType: exportResult.mimeType,
+    }));
+    downloadMultipleFiles(files);
+  }, [conversion]);
+
+  const handleExportTinte = useCallback(() => {
+    downloadJSON(tinteTheme, "tinte-theme");
+  }, [tinteTheme]);
+
+  const handleExport = useCallback(
+    (adapterId: string) => {
+      const exportResult = exportTheme(adapterId, tinteTheme);
+      if (exportResult) {
+        downloadFile({
+          content: exportResult.content,
+          filename: exportResult.filename,
+          mimeType: exportResult.mimeType,
+        });
+      }
+    },
+    [exportTheme, tinteTheme]
+  );
+
   return {
     // State
     mounted,
@@ -191,12 +271,21 @@ export function useTheme() {
     hasEdits: Object.keys(editedTokens).length > 0,
     isLoading: mounted && Object.keys(baseTokens).length === 0,
     
+    // Theme data
+    tinteTheme,
+    conversion,
+    
     // Actions
     handleModeChange,
     toggleTheme,
     handleThemeSelect,
     handleTokenEdit,
     resetTokens,
+    
+    // Export actions
+    handleExport,
+    handleExportAll,
+    handleExportTinte,
     
     // Legacy compatibility
     theme: currentMode,

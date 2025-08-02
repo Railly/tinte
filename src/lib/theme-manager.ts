@@ -32,6 +32,20 @@ export function convertColorToHex(colorValue: string): string {
   }
 }
 
+export function extractThemeColors(theme: ThemeData, mode?: ThemeMode): Record<string, string> {
+  const computed = computeThemeTokens(theme);
+  const currentMode = mode || loadMode();
+  const tokens = computed[currentMode];
+  
+  return {
+    primary: tokens.primary || '#000000',
+    secondary: tokens.secondary || '#666666',
+    accent: tokens.accent || '#0066cc',
+    background: tokens.background || '#ffffff',
+    foreground: tokens.foreground || '#000000',
+  };
+}
+
 export function computeThemeTokens(theme: ThemeData): {
   light: Record<string, string>;
   dark: Record<string, string>;
@@ -190,7 +204,8 @@ export function loadMode(): ThemeMode {
   }
 }
 
-export function getTokensFromDOM(): Record<string, string> {
+// Fast token getter - prioritizes window.__TINTE_THEME__ (instant)
+export function getTokensFast(): Record<string, string> {
   if (typeof window === 'undefined') return {};
   
   if (window.__TINTE_THEME__?.tokens) {
@@ -203,6 +218,20 @@ export function getTokensFromDOM(): Record<string, string> {
     return processedTokens;
   }
 
+  return {};
+}
+
+// Comprehensive token getter - reads from DOM as fallback (slower, for debugging/external integrations)
+export function getTokensFromDOM(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  
+  // First try the fast method
+  const fastTokens = getTokensFast();
+  if (Object.keys(fastTokens).length > 0) {
+    return fastTokens;
+  }
+
+  // Fallback: read from DOM (for debugging or external modifications)
   const root = document.documentElement;
   const computedStyle = getComputedStyle(root);
 

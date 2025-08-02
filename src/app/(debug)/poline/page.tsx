@@ -141,8 +141,7 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
 // Page
 // ─────────────────────────────────────────────
 export default function ComparePage() {
-  const { mounted, activeTheme, currentMode } = useTheme();
-  const state = useWorkbenchState('123', 'design'); // real tokens + tinteTheme desde tu store
+  const { mounted, activeTheme, currentMode, currentTokens, tinteTheme } = useTheme();
   const [showAccentCharts, setShowAccentCharts] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [enablePoline, setEnablePoline] = useState(true);
@@ -153,8 +152,8 @@ export default function ComparePage() {
 
   const mode = currentMode;
 
-  // Use selected theme from enhanced switcher or fallback to workbench state
-  const tinteTheme: TinteTheme | null = selectedTheme?.rawTheme ?? state?.tinteTheme ?? null;
+  // Use selected theme from enhanced switcher or fallback to current theme
+  const currentTinteTheme: TinteTheme | null = selectedTheme?.rawTheme ?? tinteTheme;
 
   const handleThemeSelection = (theme: any) => {
     setSelectedTheme(theme);
@@ -164,31 +163,31 @@ export default function ComparePage() {
 
   // Generado (builder + Poline) desde tu Tinte actual
   const generatedShadcn: ShadcnBlock | null = useMemo(() => {
-    if (!tinteTheme) return null;
-    const built = buildShadcnFromTinte(tinteTheme);
+    if (!currentTinteTheme) return null;
+    const built = buildShadcnFromTinte(currentTinteTheme);
     return built[mode];
-  }, [tinteTheme, mode]);
+  }, [currentTinteTheme, mode]);
 
-  // Tokens reales que estás viendo en el Workbench (shadcn/ui)
-  const realShadcn: Record<string, string> = (state?.currentTokens ?? {}) as any;
+  // Tokens reales usando el hook directamente (shadcn/ui)
+  const realShadcn: Record<string, string> = currentTokens;
 
   // Rampa Poline (a partir de tu Tinte actual)
   const polineRamp: string[] = useMemo(() => {
-    const block = tinteTheme?.[mode];
+    const block = currentTinteTheme?.[mode];
     if (!block) return [];
     return polineRampHex(makePolineFromTinte(block));
-  }, [tinteTheme, mode]);
+  }, [currentTinteTheme, mode]);
 
   // Charts desde accents (nueva funcionalidad)
   const accentCharts: string[] = useMemo(() => {
-    const block = tinteTheme?.[mode];
+    const block = currentTinteTheme?.[mode];
     if (!block) return [];
     return chartColorsFromAccents(
       { accent: block.accent, accent_2: block.accent_2, accent_3: block.accent_3 },
       mode,
       block.background
     );
-  }, [tinteTheme, mode]);
+  }, [currentTinteTheme, mode]);
 
   if (!mounted) return <div className="p-8">Loading…</div>;
 
@@ -237,10 +236,10 @@ export default function ComparePage() {
       </div>
 
       {/* Provider Experiment Tabs */}
-      <ProviderExperimentTabs theme={tinteTheme} />
+      <ProviderExperimentTabs theme={currentTinteTheme} />
 
       {/* Legacy Comparison Section (Optional) */}
-      {tinteTheme && realShadcn && (
+      {currentTinteTheme && realShadcn && (
         <section className="space-y-3 border-t pt-8">
           <h2 className="text-lg font-medium">Legacy Comparison (Real vs Generated)</h2>
           
