@@ -6,7 +6,7 @@ import { oklch } from 'culori';
 
 import { ThemeSwitcher } from '@/components/shared/theme-switcher';
 import { ProviderExperimentTabs } from '@/components/shared/provider-experiment-tabs';
-import { useTheme } from '@/hooks/use-theme';
+import { useThemeContext } from '@/providers/theme';
 import { useWorkbenchState } from '@/hooks/use-workbench-state';
 
 // ⬇️ Ajusta esta ruta al archivo donde pegaste mi one-file (`ice-theme.ts`)
@@ -141,7 +141,7 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
 // Page
 // ─────────────────────────────────────────────
 export default function ComparePage() {
-  const { mounted, activeTheme, currentMode, currentTokens, tinteTheme } = useTheme();
+  const { mounted, activeTheme, currentMode, currentTokens, tinteTheme } = useThemeContext();
   const [showAccentCharts, setShowAccentCharts] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [enablePoline, setEnablePoline] = useState(true);
