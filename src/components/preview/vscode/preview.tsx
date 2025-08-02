@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { VSCodeTheme } from '@/lib/providers/vscode';
-import { useTheme } from 'next-themes';
 import Editor from '@monaco-editor/react';
 import { shikiToMonaco } from '@shikijs/monaco';
 import { createHighlighter } from 'shiki';
@@ -11,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useThemeApplier } from '@/hooks/use-theme-applier';
+import { useTinteTheme } from '@/providers/tinte-theme-provider';
 import { providerRegistry } from '@/lib/providers';
 import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
 
@@ -181,19 +180,18 @@ func main() {
 ];
 
 export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
-  const { resolvedTheme } = useTheme();
+  const { activeTheme, currentMode } = useTinteTheme();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [viewMode, setViewMode] = useState<'split' | 'monaco' | 'shiki' | 'tokens'>('split');
-  const themeApplierChange = useThemeApplier();
   const [themeVersion, setThemeVersion] = useState(0);
 
   // Build complete theme object with both light and dark variants
   let currentThemeSet = theme;
 
-  // If we have a theme change from theme-applier, convert using the same logic as debug page
-  if (themeApplierChange?.themeData?.rawTheme) {
+  // If we have an active theme, convert using the same logic as debug page
+  if (activeTheme?.rawTheme) {
     try {
-      const themeData = themeApplierChange.themeData;
+      const themeData = activeTheme;
 
       // Check if theme is from TweakCN (ShadCN format)
       if (themeData.author === "tweakcn" && themeData.rawTheme) {
@@ -220,15 +218,14 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
     }
   }
 
-  const currentTheme = resolvedTheme === 'dark' ? currentThemeSet.dark : currentThemeSet.light;
-  const currentMode = resolvedTheme === 'dark' ? 'dark' : 'light';
+  const currentTheme = currentMode === 'dark' ? currentThemeSet.dark : currentThemeSet.light;
 
-  // Force theme update when theme-applier changes
+  // Force theme update when active theme changes
   useEffect(() => {
-    if (themeApplierChange) {
+    if (activeTheme) {
       setThemeVersion(prev => prev + 1);
     }
-  }, [themeApplierChange]);
+  }, [activeTheme]);
 
   const tokens = currentTheme.colors || {};
   const currentTemplate = codeTemplates[selectedTemplate];

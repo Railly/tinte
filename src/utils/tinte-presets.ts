@@ -1,5 +1,5 @@
 import { TinteTheme } from "@/types/tinte";
-import { ThemeData } from "@/lib/theme-applier";
+import { ThemeData } from "@/lib/theme-tokens";
 
 export const DEFAULT_THEME_ID = "default-theme";
 export const DEFAULT_THEME_NAME = "text0";
@@ -102,6 +102,7 @@ export const DEFAULT_THEME: ThemeData & {
   name: "text0",
   description: "Default theme based on current design system",
   author: "tinte",
+  provider: "tinte",
   downloads: 0,
   likes: 0,
   views: 0,

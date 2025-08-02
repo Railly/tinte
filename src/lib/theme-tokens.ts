@@ -3,6 +3,7 @@ export interface ThemeData {
   name: string;
   description: string;
   author: string;
+  provider: "tweakcn" | "rayso" | "tinte";
   downloads: number;
   likes: number;
   views: number;

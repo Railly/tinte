@@ -4,13 +4,14 @@ import { ProviderDesignPanel } from '@/components/shared/provider-design-panel';
 import { ChatContent } from './chat-content';
 import { CHAT_CONFIG } from '@/lib/chat-constants';
 import type { WorkbenchTab, UseWorkbenchStateReturn } from '@/hooks/use-workbench-state';
+import { useTinteTheme } from '@/providers/tinte-theme-provider';
 
 interface WorkbenchSidebarProps {
   split: boolean;
   activeTab: WorkbenchTab;
   onTabChange: (tab: WorkbenchTab) => void;
   state: Pick<UseWorkbenchStateReturn,
-    'seed' | 'loading' | 'currentTheme' | 'tinteTheme' | 'allThemes' |
+    'seed' | 'loading' | 'currentTheme' | 'tinteTheme' |
     'currentTokens' | 'handleTokenEdit' | 'handleThemeSelect' | 'currentProvider' | 'isDark' | 'tokensLoading'
   >;
 }
@@ -26,6 +27,7 @@ export function WorkbenchSidebar({
   onTabChange,
   state
 }: WorkbenchSidebarProps) {
+  const { allThemes } = useTinteTheme();
 
   return (
     <motion.aside
@@ -55,7 +57,7 @@ export function WorkbenchSidebar({
         <TabsContent value="design" className="flex-1">
           <ProviderDesignPanel
             activeTheme={state.currentTheme}
-            allThemes={state.allThemes as any}
+            allThemes={allThemes}
             currentTokens={state.currentTokens}
             onTokenEdit={state.handleTokenEdit}
             onThemeSelect={state.handleThemeSelect}

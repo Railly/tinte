@@ -133,7 +133,7 @@ export class AlacrittyProvider implements ThemeProvider<{ light: AlacrittyTheme;
 
   export(theme: TinteTheme, filename?: string): ProviderOutput {
     const converted = this.convert(theme);
-    const themeName = filename || getThemeName(theme.name || 'tinte-theme');
+    const themeName = filename || getThemeName('tinte-theme');
     
     // Create both light and dark theme files
     const lightTheme = converted.light;
@@ -146,7 +146,7 @@ export class AlacrittyProvider implements ThemeProvider<{ light: AlacrittyTheme;
       ...darkTheme,
       
       // Add metadata
-      '# Theme': getDisplayName(theme.name || 'Tinte Theme'),
+      '# Theme': getDisplayName('Tinte Theme'),
       '# Generator': 'Tinte Theme Converter',
       '# Light mode available': 'Switch colors.primary.background and colors.primary.foreground',
     };

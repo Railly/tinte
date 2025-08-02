@@ -1,22 +1,22 @@
-import { TinteTheme } from '@/types/tinte';
-import { ThemeProvider, ProviderOutput, ProviderMetadata } from './types';
-import { WindowsTerminalIcon } from '@/components/shared/icons/windows-terminal';
-import { 
-  createPolineColorMapping, 
-  toJSON, 
-  getThemeName, 
-  getDisplayName 
-} from './poline-base';
+import { TinteTheme } from "@/types/tinte";
+import { ThemeProvider, ProviderOutput, ProviderMetadata } from "./types";
+import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
+import {
+  createPolineColorMapping,
+  toJSON,
+  getThemeName,
+  getDisplayName,
+} from "./poline-base";
 
 export interface WindowsTerminalTheme {
   name: string;
   background: string;
   foreground: string;
-  
+
   // Basic colors
   black: string;
   white: string;
-  
+
   // Normal colors
   blue: string;
   cyan: string;
@@ -24,7 +24,7 @@ export interface WindowsTerminalTheme {
   purple: string;
   red: string;
   yellow: string;
-  
+
   // Bright colors
   brightBlack: string;
   brightWhite: string;
@@ -34,29 +34,32 @@ export interface WindowsTerminalTheme {
   brightPurple: string;
   brightRed: string;
   brightYellow: string;
-  
+
   // Selection and cursor colors
   selectionBackground: string;
   cursorColor: string;
 }
 
-function generateWindowsTerminalTheme(theme: TinteTheme, mode: 'light' | 'dark'): WindowsTerminalTheme {
+function generateWindowsTerminalTheme(
+  theme: TinteTheme,
+  mode: "light" | "dark"
+): WindowsTerminalTheme {
   const block = theme[mode];
   const colorMapping = createPolineColorMapping(block);
-  
+
   // Use opposite mode for contrast colors
-  const oppositeBlock = theme[mode === 'light' ? 'dark' : 'light'];
+  const oppositeBlock = theme[mode === "light" ? "dark" : "light"];
   const oppositeMapping = createPolineColorMapping(oppositeBlock);
-  
+
   return {
-    name: getDisplayName(theme.name || 'Tinte Theme', mode),
+    name: getDisplayName("Tinte Theme", mode),
     background: colorMapping.bg,
     foreground: colorMapping.tx,
-    
+
     // Basic colors
     black: oppositeMapping.bg,
     white: colorMapping.bg2,
-    
+
     // Normal colors
     blue: colorMapping.blue2,
     cyan: colorMapping.cyan2,
@@ -64,7 +67,7 @@ function generateWindowsTerminalTheme(theme: TinteTheme, mode: 'light' | 'dark')
     purple: colorMapping.magenta2,
     red: colorMapping.red2,
     yellow: colorMapping.yellow2,
-    
+
     // Bright colors
     brightBlack: colorMapping.tx3,
     brightWhite: oppositeMapping.bg,
@@ -74,56 +77,63 @@ function generateWindowsTerminalTheme(theme: TinteTheme, mode: 'light' | 'dark')
     brightPurple: colorMapping.magenta,
     brightRed: colorMapping.red,
     brightYellow: colorMapping.yellow,
-    
+
     // Selection and cursor colors
     selectionBackground: colorMapping.ui3,
     cursorColor: colorMapping.accent,
   };
 }
 
-export class WindowsTerminalProvider implements ThemeProvider<{ light: WindowsTerminalTheme; dark: WindowsTerminalTheme }> {
+export class WindowsTerminalProvider
+  implements
+    ThemeProvider<{ light: WindowsTerminalTheme; dark: WindowsTerminalTheme }>
+{
   readonly metadata: ProviderMetadata = {
-    id: 'windows-terminal',
-    name: 'Windows Terminal',
-    description: 'Modern terminal application for Windows',
-    category: 'terminal',
-    tags: ['terminal', 'windows', 'microsoft', 'powershell'],
+    id: "windows-terminal",
+    name: "Windows Terminal",
+    description: "Modern terminal application for Windows",
+    category: "terminal",
+    tags: ["terminal", "windows", "microsoft", "powershell"],
     icon: WindowsTerminalIcon,
-    website: 'https://aka.ms/terminal',
-    documentation: 'https://docs.microsoft.com/en-us/windows/terminal/customize-settings/color-schemes',
+    website: "https://aka.ms/terminal",
+    documentation:
+      "https://docs.microsoft.com/en-us/windows/terminal/customize-settings/color-schemes",
   };
 
-  readonly fileExtension = '.json';
-  readonly mimeType = 'application/json';
+  readonly fileExtension = ".json";
+  readonly mimeType = "application/json";
 
-  convert(theme: TinteTheme): { light: WindowsTerminalTheme; dark: WindowsTerminalTheme } {
+  convert(theme: TinteTheme): {
+    light: WindowsTerminalTheme;
+    dark: WindowsTerminalTheme;
+  } {
     return {
-      light: generateWindowsTerminalTheme(theme, 'light'),
-      dark: generateWindowsTerminalTheme(theme, 'dark'),
+      light: generateWindowsTerminalTheme(theme, "light"),
+      dark: generateWindowsTerminalTheme(theme, "dark"),
     };
   }
 
   export(theme: TinteTheme, filename?: string): ProviderOutput {
     const converted = this.convert(theme);
-    const themeName = filename || getThemeName(theme.name || 'tinte-theme');
-    
+    const themeName = filename || getThemeName("tinte-theme");
+
     // Create both light and dark themes in the Windows Terminal format
     const colorSchemes = [
       {
         ...converted.light,
-        name: `${getDisplayName(theme.name || 'Tinte Theme')} Light`,
+        name: `${getDisplayName("Tinte Theme")} Light`,
       },
       {
         ...converted.dark,
-        name: `${getDisplayName(theme.name || 'Tinte Theme')} Dark`,
-      }
+        name: `${getDisplayName("Tinte Theme")} Dark`,
+      },
     ];
 
     // Windows Terminal expects a specific structure
     const windowsTerminalConfig = {
-      "$help": "https://aka.ms/terminal-documentation",
-      "$schema": "https://aka.ms/terminal-profiles-schema",
-      "schemes": colorSchemes
+      $help: "https://aka.ms/terminal-documentation",
+      $schema: "https://aka.ms/terminal-profiles-schema",
+      schemes: colorSchemes,
     };
 
     return {
@@ -133,7 +143,10 @@ export class WindowsTerminalProvider implements ThemeProvider<{ light: WindowsTe
     };
   }
 
-  validate(output: { light: WindowsTerminalTheme; dark: WindowsTerminalTheme }): boolean {
+  validate(output: {
+    light: WindowsTerminalTheme;
+    dark: WindowsTerminalTheme;
+  }): boolean {
     const validateTheme = (theme: WindowsTerminalTheme): boolean => {
       return !!(
         theme.name &&

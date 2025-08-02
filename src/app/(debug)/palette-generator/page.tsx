@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { generateTailwindPalette } from '@/lib/palette-generator';
 import { TinteThemeSwitcher } from '@/components/shared/tinte-theme-switcher';
 import { extractTinteThemeData } from '@/utils/tinte-presets';
-import { ThemeData } from '@/lib/theme-applier';
+import { ThemeData } from '@/lib/theme-tokens';
 import { TinteTheme } from '@/types/tinte';
 import { oklch, formatHex } from 'culori';
 

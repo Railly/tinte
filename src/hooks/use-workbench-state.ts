@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import { useQueryState } from "nuqs";
-import { useTinteTheme } from "@/stores/tinte-theme";
+import { useTinteTheme } from "@/providers/tinte-theme-provider";
 import { useTokenEditor } from "./use-token-editor";
 import { useThemeAdapters, useThemeConversion } from "./use-theme-adapters";
 import { useChatState } from "./use-chat-state";
 import { applyThemeWithTransition } from "@/lib/theme-applier";
-import { useTheme } from "next-themes";
 import type { ThemeData as AppThemeData } from "@/lib/theme-tokens";
 import type { TinteTheme } from "@/types/tinte";
 import { SeedPayload } from "@/utils/seed-mapper";
@@ -29,7 +28,6 @@ export interface UseWorkbenchStateReturn {
   // Theme state
   currentTheme: AppThemeData;
   tinteTheme: TinteTheme;
-  allThemes: unknown[];
   isDark: boolean;
 
   // Token editing
@@ -70,9 +68,7 @@ export function useWorkbenchState(
   const { previewableProviders, exportTheme } = useThemeAdapters();
 
   // Theme state - simplified
-  const { activeTheme, allThemes } = useTinteTheme();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const { activeTheme, isDark } = useTinteTheme();
 
   // Use current theme or fallback to default
   const currentTheme = useMemo(() => 
@@ -139,7 +135,6 @@ export function useWorkbenchState(
     // Theme state
     currentTheme,
     tinteTheme,
-    allThemes,
     isDark,
 
     // Token editing

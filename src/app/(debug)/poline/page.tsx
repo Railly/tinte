@@ -5,9 +5,8 @@ import { useMemo, useState } from 'react';
 import { oklch } from 'culori';
 
 import { ThemeSwitcher } from '@/components/shared/theme-switcher';
-import { EnhancedTinteThemeSwitcher, UnifiedThemeData } from '@/components/shared/enhanced-tinte-theme-switcher';
 import { ProviderExperimentTabs } from '@/components/shared/provider-experiment-tabs';
-import { useTinteTheme } from '@/stores/tinte-theme';
+import { useTinteTheme } from '@/providers/tinte-theme-provider';
 import { useWorkbenchState } from '@/hooks/use-workbench-state';
 
 // ⬇️ Ajusta esta ruta al archivo donde pegaste mi one-file (`ice-theme.ts`)
@@ -17,8 +16,8 @@ import {
   polineRampHex,
   chartColorsFromAccents,
   type ShadcnBlock,
-  type TinteTheme,
 } from '@/lib/ice-theme';
+import type { TinteTheme } from '@/types/tinte';
 
 // ─────────────────────────────────────────────
 // Utils
@@ -142,22 +141,23 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
 // Page
 // ─────────────────────────────────────────────
 export default function ComparePage() {
-  const { mounted, currentTheme } = useTinteTheme();
+  const { mounted, activeTheme } = useTinteTheme();
   const state = useWorkbenchState('123', 'design'); // real tokens + tinteTheme desde tu store
   const [showAccentCharts, setShowAccentCharts] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState<UnifiedThemeData | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [enablePoline, setEnablePoline] = useState(true);
   const [polineConfig] = useState({
     numPoints: 11,
     preserveKeys: ['primary', 'secondary', 'accent', 'accent_2', 'accent_3'] as ('primary' | 'secondary' | 'accent' | 'accent_2' | 'accent_3')[],
   });
 
-  const mode = (currentTheme as 'light' | 'dark') ?? 'light';
+  const { currentMode } = useTinteTheme();
+  const mode = currentMode;
 
   // Use selected theme from enhanced switcher or fallback to workbench state
   const tinteTheme: TinteTheme | null = selectedTheme?.rawTheme ?? state?.tinteTheme ?? null;
 
-  const handleThemeSelection = (theme: UnifiedThemeData) => {
+  const handleThemeSelection = (theme: any) => {
     setSelectedTheme(theme);
     // Also update the workbench state if needed
     // You might want to call handleThemeSelect here depending on your needs
@@ -216,13 +216,13 @@ export default function ComparePage() {
         
         {/* Enhanced Theme Switcher */}
         <div className="flex items-center gap-4">
-          <EnhancedTinteThemeSwitcher
+          {/* <EnhancedTinteThemeSwitcher
             activeTheme={selectedTheme}
             onSelect={handleThemeSelection}
             label="Select Theme"
             enablePoline={enablePoline}
             polineConfig={polineConfig}
-          />
+          /> */}
           <div className="flex items-center gap-2">
             <label className="text-sm">
               <input

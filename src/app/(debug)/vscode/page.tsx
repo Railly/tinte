@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { raysoPresets } from '@/utils/rayso-presets';
 import { defaultPresets } from '@/utils/tweakcn-presets';
 import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
@@ -10,8 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CodePreview } from '@/components/code-preview';
-import { MonacoEditorPreview } from '@/components/monaco-editor-preview';
+const CodePreview = dynamic(() => import('@/components/code-preview').then(mod => ({ default: mod.CodePreview })), {
+  ssr: false,
+  loading: () => <div className="border rounded p-4 text-center">Loading preview...</div>
+});
+
+const MonacoEditorPreview = dynamic(() => import('@/components/monaco-editor-preview').then(mod => ({ default: mod.MonacoEditorPreview })), {
+  ssr: false,
+  loading: () => <div className="border rounded p-4 text-center">Loading Monaco Editor...</div>
+});
 
 const sampleCode = {
   typescript: `// TypeScript Example
@@ -171,6 +179,7 @@ if __name__ == "__main__":
 };
 
 export default function VSCodePage() {
+  const [isClient, setIsClient] = useState(false);
   const [sourceType, setSourceType] = useState<'rayso' | 'tweakcn'>('rayso');
   const [selectedTheme, setSelectedTheme] = useState(0);
   const [selectedTweakcnTheme, setSelectedTweakcnTheme] = useState('modern-minimal');
@@ -178,27 +187,72 @@ export default function VSCodePage() {
   const [language, setLanguage] = useState<keyof typeof sampleCode>('typescript');
   const [previewType, setPreviewType] = useState<'shiki' | 'monaco'>('shiki');
 
-  // Get current theme based on source type
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Get current theme based on source type with safety checks
   const getCurrentTheme = () => {
-    if (sourceType === 'rayso') {
-      const tinteTheme: TinteTheme = {
-        light: raysoPresets[selectedTheme].light,
-        dark: raysoPresets[selectedTheme].dark
+    try {
+      if (sourceType === 'rayso') {
+        if (!raysoPresets[selectedTheme]) {
+          console.warn('Invalid rayso preset selected, using first preset');
+          const theme = raysoPresets[0];
+          const tinteTheme: TinteTheme = {
+            light: theme.light,
+            dark: theme.dark
+          };
+          return convertTinteToVSCode(tinteTheme, theme.name);
+        }
+        
+        const tinteTheme: TinteTheme = {
+          light: raysoPresets[selectedTheme].light,
+          dark: raysoPresets[selectedTheme].dark
+        };
+        return convertTinteToVSCode(tinteTheme, raysoPresets[selectedTheme].name);
+      } else {
+        const presetKey = selectedTweakcnTheme as keyof typeof defaultPresets;
+        if (!defaultPresets[presetKey]) {
+          console.warn('Invalid tweakcn preset selected, using first preset');
+          const firstKey = Object.keys(defaultPresets)[0] as keyof typeof defaultPresets;
+          const preset = defaultPresets[firstKey];
+          const shadcnTheme = {
+            light: preset.styles.light,
+            dark: preset.styles.dark
+          };
+          const convertedRayso: TinteTheme = shadcnToTinte(shadcnTheme);
+          return convertTinteToVSCode(convertedRayso, `${preset.label} (from TweakCN)`);
+        }
+        
+        const shadcnTheme = {
+          light: defaultPresets[presetKey].styles.light,
+          dark: defaultPresets[presetKey].styles.dark
+        };
+        const convertedRayso: TinteTheme = shadcnToTinte(shadcnTheme);
+        const themeName = defaultPresets[presetKey].label;
+        return convertTinteToVSCode(convertedRayso, `${themeName} (from TweakCN)`);
+      }
+    } catch (error) {
+      console.error('Error generating theme:', error);
+      // Fallback to first rayso preset
+      const fallbackTheme: TinteTheme = {
+        light: raysoPresets[0].light,
+        dark: raysoPresets[0].dark
       };
-      return convertTinteToVSCode(tinteTheme, raysoPresets[selectedTheme].name);
-    } else {
-      const shadcnTheme = {
-        light: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.light,
-        dark: defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].styles.dark
-      };
-      const convertedRayso: TinteTheme = shadcnToTinte(shadcnTheme);
-      const themeName = defaultPresets[selectedTweakcnTheme as keyof typeof defaultPresets].label;
-      return convertTinteToVSCode(convertedRayso, `${themeName} (from TweakCN)`);
+      return convertTinteToVSCode(fallbackTheme, 'Fallback Theme');
     }
   };
 
   const vsCodeThemes = getCurrentTheme();
   const currentVSCodeTheme = vsCodeThemes[mode];
+
+  if (!isClient) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center">Loading VS Code theme converter...</div>
+      </div>
+    );
+  }
 
   const downloadTheme = () => {
     const themeData = JSON.stringify(currentVSCodeTheme, null, 2);

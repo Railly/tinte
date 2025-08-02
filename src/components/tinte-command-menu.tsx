@@ -2,13 +2,12 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { useTheme } from "next-themes"
+import { useTinteTheme } from "@/providers/tinte-theme-provider"
 import { useHotkeys } from "react-hotkeys-hook"
 import {
   Palette,
   Sun,
   Moon,
-  Monitor,
   Home,
   MessageSquare,
   Code2,
@@ -35,7 +34,6 @@ import {
 } from "@/components/ui/command"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { useTinteTheme } from "@/stores/tinte-theme"
 import { ALL_PROVIDERS } from "@/config/providers"
 import { cn } from "@/lib/utils"
 
@@ -65,12 +63,6 @@ const THEME_ACTIONS = [
     shortcut: "m",
     description: "Switch between light and dark mode",
   },
-  {
-    id: "system-mode",
-    title: "Use System Theme",
-    shortcut: "s",
-    description: "Follow system theme preference",
-  },
 ]
 
 interface TinteCommandMenuProps {
@@ -82,8 +74,7 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
   const [open, setOpen] = React.useState(false)
   const [selectedType, setSelectedType] = React.useState<string | null>(null)
   const router = useRouter()
-  const { theme, setTheme } = useTheme()
-  const { allThemes, handleThemeSelect, isDark } = useTinteTheme()
+  const { theme, setTheme, handleThemeSelect, isDark, allThemes } = useTinteTheme()
 
   const runCommand = React.useCallback((command: () => void) => {
     setOpen(false)
@@ -119,13 +110,8 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
     setTheme(theme === "dark" ? "light" : "dark")
   })
 
-  useHotkeys("mod+shift+s", (e) => {
-    e.preventDefault()
-    setTheme("system")
-  })
 
   const getThemeIcon = () => {
-    if (theme === "system") return Monitor
     return isDark ? Moon : Sun
   }
 
@@ -204,23 +190,6 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
                 <CommandShortcut>⌘⇧M</CommandShortcut>
               </CommandItem>
 
-              <CommandItem
-                value="system theme preference"
-                onSelect={() => {
-                  runCommand(() => setTheme("system"))
-                  setSelectedType("theme")
-                }}
-                onMouseEnter={() => setSelectedType("theme")}
-              >
-                <Monitor className="mr-2 h-4 w-4" />
-                <div className="flex flex-col">
-                  <span>Use System Theme</span>
-                  <span className="text-xs text-muted-foreground">
-                    Follow system theme preference
-                  </span>
-                </div>
-                <CommandShortcut>⌘⇧S</CommandShortcut>
-              </CommandItem>
             </CommandGroup>
 
             {/* Popular Themes */}

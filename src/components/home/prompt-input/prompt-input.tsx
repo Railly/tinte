@@ -17,11 +17,8 @@ import { CSSIcon } from '@/components/shared/icons/css';
 import { generateTailwindPalette } from '@/lib/palette-generator';
 import { cn } from '@/lib';
 import { Button } from '../../ui/button';
-import { extractTweakcnThemeData } from '@/utils/tweakcn-presets';
-import { extractRaysoThemeData } from '@/utils/rayso-presets';
-import { extractTinteThemeData } from '@/utils/tinte-presets';
 import { Search } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { useTinteTheme } from '@/providers/tinte-theme-provider';
 import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
 import Logo from '@/components/shared/logo';
@@ -123,14 +120,10 @@ export default function PromptInput({
   const [themeSearchQuery, setThemeSearchQuery] = useState('');
   const colorInputRef = useRef<HTMLInputElement>(null);
   const themeSearchRef = useRef<HTMLInputElement>(null);
-  const { theme: currentTheme, systemTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const { pastedItems, addPastedItem, removePastedItem, updatePastedItem, clearPastedItems } = usePastedItems();
   const { setBase } = usePalette();
+  const { allThemes } = useTinteTheme();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (paletteDropdownOpen) {
@@ -148,15 +141,8 @@ export default function PromptInput({
     }
   }, [themeDropdownOpen]);
 
-  // Get current theme mode
-  const isDark = mounted && (currentTheme === 'system' ? systemTheme : currentTheme) === 'dark';
-
-  // Get all theme presets from different providers
-  const allThemePresets: ThemePreset[] = [
-    ...extractTweakcnThemeData(isDark).map(theme => ({ ...theme, provider: 'tweakcn' as const })),
-    ...extractRaysoThemeData(isDark).map(theme => ({ ...theme, provider: 'rayso' as const })),
-    ...extractTinteThemeData(isDark).map(theme => ({ ...theme, provider: 'tinte' as const }))
-  ];
+  // Get themes from provider (already includes provider field)
+  const allThemePresets = allThemes;
 
   // Filter themes based on search query
   const filteredThemes = allThemePresets.filter(theme =>

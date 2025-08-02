@@ -7,7 +7,6 @@ import { useLoop } from "@/hooks/use-loop";
 import { mergeRefs } from "@/utils/merge-refs";
 import { PromptInput } from "@/components/home/prompt-input";
 
-
 export function Hero() {
   const [ref, bounds] = useMeasure();
   const [active, ref2] = useLoop();

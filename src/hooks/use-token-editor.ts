@@ -42,13 +42,17 @@ export function useTokenEditor(activeTheme: ThemeData, isDark: boolean) {
       hasGlobalState: !!window.__TINTE_THEME__,
       globalTokens: window.__TINTE_THEME__?.tokens ? Object.keys(window.__TINTE_THEME__.tokens).length : 0,
       activeTheme: activeTheme ? { id: activeTheme.id, name: activeTheme.name } : null,
-      isDark
+      isDark,
+      scriptMode: window.__TINTE_THEME__?.mode,
+      mismatch: window.__TINTE_THEME__?.mode !== (isDark ? 'dark' : 'light')
     });
 
     try {
       // First, try to read from the global state set by TinteThemeScript
       if (window.__TINTE_THEME__ && window.__TINTE_THEME__.tokens) {
-        console.log('✅ useTokenEditor: Reading from global state');
+        console.log('✅ useTokenEditor: Reading from global state (using script mode)');
+        
+        // Use tokens directly from script (they're already for the correct mode)
         const tokens = window.__TINTE_THEME__.tokens;
         const processedTokens: Record<string, string> = {};
         
@@ -89,7 +93,7 @@ export function useTokenEditor(activeTheme: ThemeData, isDark: boolean) {
       console.error("❌ useTokenEditor: Error reading theme tokens:", error);
       return {};
     }
-  }, [activeTheme, isDark]);
+  }, [activeTheme?.id, isDark]); // Only re-render when theme ID or mode actually changes
 
   // Add a loading state for better UX
   const isLoading = typeof window !== "undefined" && Object.keys(baseTokens).length === 0;

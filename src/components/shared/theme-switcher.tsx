@@ -1,25 +1,19 @@
 "use client";
 
-import { useEffect, useState, useId } from "react";
+import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTinteTheme } from "@/providers/tinte-theme-provider";
 
 interface ThemeSwitcherProps {
   variant?: "button" | "dual";
 }
 
 export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
-  const [mounted, setMounted] = useState(false);
+  const { mounted, isDark, currentMode, handleModeChange } = useTinteTheme();
   const id = useId();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (!mounted) {
     if (variant === "dual") {
@@ -44,8 +38,8 @@ export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
 
   if (variant === "dual") {
     const handleToggle = (checked: boolean) => {
-      const newTheme = checked ? "dark" : "light";
-      setTheme(newTheme);
+      const newMode = checked ? "dark" : "light";
+      handleModeChange(newMode);
     };
 
     return (
@@ -73,12 +67,12 @@ export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
 
   const cycleTheme = (event: React.MouseEvent) => {
     // Simple dual toggle: light <-> dark
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
+    const newMode = currentMode === "light" ? "dark" : "light";
+    handleModeChange(newMode);
   };
 
   const getIcon = () => {
-    return theme === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />;
+    return currentMode === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />;
   };
 
   return (

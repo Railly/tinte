@@ -46,6 +46,7 @@ export function ProviderDesignPanel({
         name: t.name,
         description: t.description,
         author: t.author,
+        provider: t.provider,
         downloads: t.downloads,
         likes: t.likes,
         views: t.views,

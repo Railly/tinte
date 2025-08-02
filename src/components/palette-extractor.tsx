@@ -8,13 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ThemeSwitcher } from "@/components/shared/theme-switcher";
-import { useTheme } from "next-themes";
+import { useTinteTheme } from "@/providers/tinte-theme-provider";
 
 export function PaletteExtractor() {
   const [baseColor, setBaseColor] = useState("#3b82f6");
   const [palette, setPalette] = useState<PaletteColor[]>([]);
   const [hasInitialPalette, setHasInitialPalette] = useState(false);
-  const { resolvedTheme } = useTheme();
+  const { currentMode } = useTinteTheme();
 
   const generatePalette = (color: string) => {
     try {

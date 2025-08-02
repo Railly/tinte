@@ -12,11 +12,11 @@ import { extractTweakcnThemeData } from '@/utils/tweakcn-presets';
 import { extractRaysoThemeData } from '@/utils/rayso-presets';
 import { extractTinteThemeData } from '@/utils/tinte-presets';
 import { applyThemeWithTransition } from '@/lib/theme-applier';
-import { useTheme } from 'next-themes';
+import { useTinteTheme } from '@/providers/tinte-theme-provider';
 
 export function Showcase() {
   const [activeTab, setActiveTab] = useState('tweakcn');
-  const { theme } = useTheme();
+  const { theme, isDark } = useTinteTheme();
   
   // Static theme data for showcase (no SSR issues)
   const tweakcnThemes = extractTweakcnThemeData(false).map((themeData, index) => ({
@@ -60,7 +60,7 @@ export function Showcase() {
   }));
 
   const handleThemeSelect = (selectedTheme: any) => {
-    const currentMode = theme === 'dark' ? 'dark' : 'light';
+    const currentMode = isDark ? 'dark' : 'light';
     applyThemeWithTransition(selectedTheme, currentMode);
   };
 
