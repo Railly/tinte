@@ -2,16 +2,18 @@
 
 import * as React from 'react';
 import { motion, stagger, useAnimate } from 'motion/react';
+import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ColorPickerInput } from '@/components/ui/color-picker-input';
+import { Button } from '@/components/ui/button';
 import { ThemeSelector } from './theme-selector';
 import { useThemeContext } from '@/providers/theme';
 
 export function ThemeEditorPanel() {
   const [scope, animate] = useAnimate();
 
-  const { currentTokens, allThemes, activeTheme, handleThemeSelect, handleTokenEdit, mounted } = useThemeContext();
-  
+  const { currentTokens, allThemes, activeTheme, handleThemeSelect, handleTokenEdit, navigateTheme, mounted } = useThemeContext();
+
   // List of known color tokens from shadcn.ts
   const colorTokenKeys = React.useMemo(() => [
     'accent', 'accent-foreground', 'background', 'border', 'card', 'card-foreground',
@@ -28,9 +30,9 @@ export function ThemeEditorPanel() {
       return colorTokenKeys.includes(key) && typeof value === 'string' && value.startsWith('#');
     });
   }, [currentTokens, colorTokenKeys]);
-  
+
   const tokenEntries = colorTokens;
-  
+
   // Check if we have immediate data available
   const hasImmediateData = typeof window !== 'undefined' && window.__TINTE_THEME__ && mounted;
 
@@ -50,16 +52,47 @@ export function ThemeEditorPanel() {
 
   return (
     <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_4.5rem)]">
-      <div className="px-3 space-y-4 border-b flex-shrink-0">
+      <div className="px-3 space-y-4 flex-shrink-0">
         <div className="space-y-2">
           <div className="text-xs font-medium text-muted-foreground">Theme</div>
-          <ThemeSelector
-            themes={allThemes}
-            activeId={activeId}
-            onSelect={handleThemeSelect}
-            triggerClassName="w-full"
-            label="Browse themes…"
-          />
+          <div className="flex gap-2">
+            <ThemeSelector
+              themes={allThemes}
+              activeId={activeId}
+              onSelect={handleThemeSelect}
+              triggerClassName="flex-1"
+              label="Browse themes…"
+            />
+            <div className="flex gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateTheme('prev')}
+                className="px-2"
+                title="Previous theme"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateTheme('next')}
+                className="px-2"
+                title="Next theme"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigateTheme('random')}
+                className="px-2"
+                title="Random theme"
+              >
+                <Shuffle className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 

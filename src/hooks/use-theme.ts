@@ -257,6 +257,36 @@ export function useTheme() {
     [exportTheme, tinteTheme]
   );
 
+  // Theme navigation
+  const navigateTheme = useCallback((direction: 'prev' | 'next' | 'random') => {
+    if (!activeTheme || allThemes.length <= 1) return;
+    
+    const currentIndex = allThemes.findIndex(t => t.id === activeTheme.id);
+    let nextTheme: ThemeData;
+    
+    switch (direction) {
+      case 'prev':
+        const prevIndex = currentIndex <= 0 ? allThemes.length - 1 : currentIndex - 1;
+        nextTheme = allThemes[prevIndex];
+        break;
+      case 'next':
+        const nextIndex = currentIndex >= allThemes.length - 1 ? 0 : currentIndex + 1;
+        nextTheme = allThemes[nextIndex];
+        break;
+      case 'random':
+        const availableThemes = allThemes.filter(t => t.id !== activeTheme.id);
+        const randomIndex = Math.floor(Math.random() * availableThemes.length);
+        nextTheme = availableThemes[randomIndex];
+        break;
+      default:
+        return;
+    }
+    
+    if (nextTheme) {
+      handleThemeSelect(nextTheme);
+    }
+  }, [activeTheme, allThemes, handleThemeSelect]);
+
   return {
     // State
     mounted,
@@ -285,6 +315,7 @@ export function useTheme() {
     handleThemeSelect,
     handleTokenEdit,
     resetTokens,
+    navigateTheme,
     
     // Export actions
     handleExport,
