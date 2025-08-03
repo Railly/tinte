@@ -135,30 +135,19 @@ export function useMonacoEditor({
 
   // Simplified theme initialization following working pattern
 
-  // Apply theme with smart fallback
+  // Apply theme - always use custom themes
   const applyTheme = useCallback(
-    (editor: any, monaco: any, useBuiltInFallback = false) => {
+    (editor: any, monaco: any) => {
       try {
-        let themeToApply;
-
-        if (useBuiltInFallback && !highlighterRef.current) {
-          // Use built-in themes only before Shiki initialization
-          themeToApply = currentMode === "dark" ? "vs-dark" : "vs";
-        } else {
-          // Use custom themes after Shiki initialization
-          themeToApply = currentThemeName;
-        }
-
         console.log("Monaco: Applying theme", {
-          themeToApply,
+          currentThemeName,
           currentMode,
-          useBuiltInFallback,
           hasShikiHighlighter: !!highlighterRef.current,
           templateLanguage: template.language,
         });
 
-        monaco.editor.setTheme(themeToApply);
-        console.log("Monaco: Theme set successfully to", themeToApply);
+        monaco.editor.setTheme(currentThemeName);
+        console.log("Monaco: Theme set successfully to", currentThemeName);
 
         // Update editor content and language
         const model = editor.getModel();
@@ -171,7 +160,7 @@ export function useMonacoEditor({
         editor.layout();
       } catch (error) {
         console.error("Monaco: Failed to apply theme:", error, {
-          attemptedTheme: useBuiltInFallback ? "built-in" : "custom",
+          attemptedTheme: currentThemeName,
           hasHighlighter: !!highlighterRef.current,
         });
       }
@@ -185,16 +174,13 @@ export function useMonacoEditor({
       editorRef.current = editor;
       monacoRef.current = monaco;
 
-      // Apply built-in theme immediately to avoid blank screen
-      applyTheme(editor, monaco, true);
-
-      // Initialize Monaco with Shiki integration in background
-      initializeMonaco(monaco).then(() => {
-        // Apply custom theme once Shiki is ready
-        setTimeout(() => {
-          applyTheme(editor, monaco, false);
-        }, 50); // Reduced from 100ms
-      });
+      // Initialize Monaco with Shiki integration first
+      await initializeMonaco(monaco);
+      
+      // Apply theme once Shiki is ready
+      setTimeout(() => {
+        applyTheme(editor, monaco);
+      }, 50);
     },
     [initializeMonaco, applyTheme]
   );
@@ -204,27 +190,16 @@ export function useMonacoEditor({
     if (editorRef.current && monacoRef.current) {
       console.log("Monaco: Theme/mode changed, updating themes");
 
-      // Only apply built-in theme if we don't have Shiki highlighter yet
-      if (!highlighterRef.current) {
-        applyTheme(editorRef.current, monacoRef.current, true);
-      }
-
-      // Re-initialize only if theme version changed
+      // Re-initialize if theme version changed, then apply theme
       initializeMonaco(monacoRef.current).then(() => {
         // Apply custom theme with reduced delay
         setTimeout(() => {
           console.log("Monaco: Applying updated theme:", currentThemeName);
-          applyTheme(editorRef.current, monacoRef.current, false);
-        }, 50); // Reduced from 100ms
+          applyTheme(editorRef.current, monacoRef.current);
+        }, 50);
       });
     }
-  }, [
-    currentMode,
-    themeVersion,
-    currentThemeName,
-    initializeMonaco,
-    applyTheme,
-  ]);
+  }, [currentMode, themeVersion, currentThemeName, initializeMonaco, applyTheme]);
 
   // Set ready state
   useEffect(() => {
