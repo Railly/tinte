@@ -43,16 +43,24 @@ src/
 │   │   ├── theme-selector.tsx     # Theme picker dropdown
 │   │   ├── theme-editor-panel.tsx # Token editor with color inputs
 │   │   └── theme-card.tsx         # Theme selection cards
+│   ├── preview/vscode/   # VS Code theme preview components
+│   │   ├── preview.tsx           # Main VS Code preview container
+│   │   ├── monaco-preview.tsx    # Monaco editor component
+│   │   ├── shiki-preview.tsx     # Shiki highlighting component
+│   │   └── tokens-preview.tsx    # Theme tokens display
 │   ├── code-preview.tsx  # Shiki syntax highlighting
 │   └── monaco-editor-preview.tsx # Monaco editor integration
 ├── hooks/                 # Custom React hooks
 │   ├── use-theme.ts             # Core theme management (used by provider only)
-│   └── use-chat-state.ts        # Chat workbench state
+│   ├── use-chat-state.ts        # Chat workbench state
+│   ├── use-monaco-editor.ts     # Monaco editor logic & theme management
+│   └── use-shiki-highlighter.ts # Shiki highlighting with debounced updates
 ├── lib/                   # Core conversion logic
 │   ├── palette-generator.ts      # OKLCH palette generation
 │   ├── tinte-to-shadcn.ts       # Tinte → shadcn conversion
 │   ├── tweakcn-to-tinte.ts      # TweakCN → Tinte conversion
 │   ├── theme-manager.ts         # DOM manipulation & localStorage persistence
+│   ├── vscode-preview-utils.ts  # VS Code preview utilities & code templates
 │   └── tinte-to-vscode/          # Tinte → VS Code conversion
 ├── types/                 # Shared TypeScript definitions
 │   └── tinte.ts          # Common Tinte theme types
@@ -147,6 +155,9 @@ bun dev
 - **Semantic naming** following Flexoki philosophy
 - **Type safety** with comprehensive TypeScript definitions
 - **Component composition** with shadcn/ui patterns
+- **Modular architecture** with separated concerns and single responsibility
+- **Custom hooks** for complex logic extraction and reusability
+- **Predictable state management** with minimal useEffect usage
 
 ## Dependencies
 
@@ -208,6 +219,9 @@ When testing the conversion systems:
 - **Export functionality** for generated themes
 - **OKLCH color space** for better color manipulation
 - **Responsive UI** with modern design patterns
+- **Modular VS Code preview** with separated Monaco, Shiki, and Tokens components
+- **Performance-optimized hooks** with reduced useEffect usage and predictable state
+- **View transition loading states** preserved during theme switching (non-negotiable UX)
 
 ## Theme Architecture (Ultra-Resilient)
 
@@ -315,3 +329,60 @@ function MyComponent() {
 3. **Theme change in dropdown** → All components sync immediately
 4. **Token edit** → Real-time DOM updates + state persistence
 5. **Page refresh** → Perfect state restoration
+
+## VS Code Preview Architecture (Recently Refactored)
+
+### Modular Component Structure
+
+The VS Code preview system has been refactored into a clean, modular architecture:
+
+#### Component Hierarchy
+```
+/components/preview/vscode/
+├── preview.tsx           # Main container with UI coordination
+├── monaco-preview.tsx    # Monaco editor with hooks integration  
+├── shiki-preview.tsx     # Shiki highlighting with hooks integration
+└── tokens-preview.tsx    # Theme tokens display and inspection
+```
+
+#### Custom Hooks
+```
+/hooks/
+├── use-monaco-editor.ts     # Complete Monaco editor logic
+└── use-shiki-highlighter.ts # Shiki highlighting with performance optimization
+```
+
+#### Utilities
+```
+/lib/
+└── vscode-preview-utils.ts  # Code templates & theme conversion utilities
+```
+
+### Key Improvements
+
+**🎯 Reduced Complexity**: 
+- Main component: 7 useEffect → 2 useEffect
+- Monaco logic: Consolidated into single hook
+- Shiki logic: Separated with optimized debouncing
+
+**🚀 Performance**:
+- Eliminated race conditions between multiple useEffect
+- Single initialization pattern per hook
+- Debounced highlighting for better UX during transitions
+
+**🧩 Modularity**:
+- Each component has single responsibility
+- Hooks are reusable across different contexts
+- Clear separation between UI and business logic
+
+**⚡ Developer Experience**:
+- Lower cognitive load per file
+- Easier testing and debugging
+- Predictable state flow without complex dependencies
+
+**💯 Preserved UX**:
+- View transition loading states maintained (400ms)
+- Word wrap and layout fixes preserved
+- All original functionality intact
+
+This architecture serves as a model for other complex preview components in the codebase.
