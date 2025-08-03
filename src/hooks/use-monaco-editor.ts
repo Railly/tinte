@@ -126,15 +126,7 @@ export function useMonacoEditor({
   const applyTheme = useCallback(
     (editor: any, monaco: any) => {
       try {
-        console.log("Monaco: Applying theme", {
-          currentThemeName,
-          currentMode,
-          hasShikiHighlighter: !!highlighterRef.current,
-          templateLanguage: template.language,
-        });
-
         monaco.editor.setTheme(currentThemeName);
-        console.log("Monaco: Theme set successfully to", currentThemeName);
 
         const model = editor.getModel();
         if (model) {
@@ -184,6 +176,7 @@ export function useMonacoEditor({
     currentThemeName,
     initializeMonaco,
     applyTheme,
+    isReady,
   ]);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { ChatHeader } from '@/components/shared/chat-header'
-import { TinteWorkbench } from '@/components/chat/tinte-workbench'
+import { Workbench } from '@/components/chat/workbench'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default async function ChatPage({
   return (
     <div className="flex flex-col min-h-screen">
       <ChatHeader chatId={id} />
-      <TinteWorkbench chatId={id} isStatic={showStatic} />
+      <Workbench chatId={id} isStatic={showStatic} />
     </div>
   )
 }
