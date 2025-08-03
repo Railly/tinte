@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { generateTailwindPalette } from '@/lib/palette-generator';
-import { TinteThemeSwitcher } from '@/components/shared/tinte-theme-switcher';
+import { ThemeSelector } from '@/components/shared/theme-selector';
 import { extractTinteThemeData } from '@/utils/tinte-presets';
 import { ThemeData } from '@/lib/theme-tokens';
 import { TinteTheme } from '@/types/tinte';
@@ -259,7 +259,7 @@ export default function PaletteGeneratorPage() {
           >
             {isDark ? 'Dark' : 'Light'} Mode
           </button>
-          <TinteThemeSwitcher
+          <ThemeSelector
             themes={themes}
             activeId={selectedTheme.id}
             onSelect={setSelectedTheme}
