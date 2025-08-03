@@ -65,7 +65,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
 
   const currentTheme = currentMode === 'dark' ? currentThemeSet.dark : currentThemeSet.light;
   const currentTemplate = useMemo(() => codeTemplates[selectedTemplate], [selectedTemplate]);
-  
+
   // Get abbreviated name for mobile
   const getShortName = (name: string) => {
     const abbrevMap: Record<string, string> = {
@@ -82,7 +82,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
 
   return (
     <div
-      className={`rounded-lg border overflow-hidden font-mono text-sm flex flex-col h-[85vh] bg-background text-foreground ${className || ''}`}
+      className={`rounded-lg border overflow-hidden font-mono text-sm flex flex-col h-full bg-background text-foreground ${className || ''}`}
     >
       {/* Title bar */}
       <div

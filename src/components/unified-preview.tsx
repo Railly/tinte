@@ -32,7 +32,7 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const PreviewComponent = currentProvider.preview.component;
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn("h-[calc(100dvh-var(--header-height)_-_2rem)] space-y-6", className)}>
       <PreviewComponent
         theme={converted}
         {...(currentProvider.preview.defaultProps || {})}
