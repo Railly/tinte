@@ -38,7 +38,7 @@ export function useMonacoEditor({
   useEffect(() => {
     if (isReady && editorRef.current) {
       setIsViewTransitioning(true);
-      const timer = setTimeout(() => setIsViewTransitioning(false), 100);
+      const timer = setTimeout(() => setIsViewTransitioning(false), 300);
       return () => clearTimeout(timer);
     }
   }, [themeVersion, isReady]);
@@ -108,7 +108,7 @@ export function useMonacoEditor({
   const registerThemes = useCallback(
     async (monaco: any) => {
       const themeKey = `${themeVersion}-${JSON.stringify(themeData)}`;
-      
+
       if (themesRegisteredRef.current.has(themeKey)) {
         return; // Already registered
       }
@@ -119,7 +119,9 @@ export function useMonacoEditor({
           base,
           inherit: true,
           rules: theme.tokenColors.flatMap((token: any) => {
-            const scopes = Array.isArray(token.scope) ? token.scope : [token.scope];
+            const scopes = Array.isArray(token.scope)
+              ? token.scope
+              : [token.scope];
             return scopes.filter(Boolean).map((scope: string) => ({
               token: scope.replace(/\./g, " "),
               foreground: token.settings.foreground?.replace("#", "") || "",
@@ -130,9 +132,15 @@ export function useMonacoEditor({
         });
 
         // Define both themes
-        monaco.editor.defineTheme(lightThemeName, createFallback(themeData.light, "vs"));
-        monaco.editor.defineTheme(darkThemeName, createFallback(themeData.dark, "vs-dark"));
-        
+        monaco.editor.defineTheme(
+          lightThemeName,
+          createFallback(themeData.light, "vs")
+        );
+        monaco.editor.defineTheme(
+          darkThemeName,
+          createFallback(themeData.dark, "vs-dark")
+        );
+
         themesRegisteredRef.current.add(themeKey);
       } catch (error) {
         console.error("Failed to register themes:", error);
@@ -147,7 +155,7 @@ export function useMonacoEditor({
       try {
         // Set theme
         monaco.editor.setTheme(currentThemeName);
-        
+
         // Update editor content and language
         const model = editor.getModel();
         if (model) {
@@ -169,7 +177,7 @@ export function useMonacoEditor({
     async (editor: any, monaco: any) => {
       editorRef.current = editor;
       monacoRef.current = monaco;
-      
+
       // Register languages once
       ["python", "go", "javascript"].forEach((lang) => {
         if (!monaco.languages.getLanguages().some((l: any) => l.id === lang)) {
@@ -186,12 +194,24 @@ export function useMonacoEditor({
 
   // Update theme when mode or version changes
   useEffect(() => {
-    if (editorRef.current && monacoRef.current && isReady && !isViewTransitioning) {
+    if (
+      editorRef.current &&
+      monacoRef.current &&
+      isReady &&
+      !isViewTransitioning
+    ) {
       registerThemes(monacoRef.current).then(() => {
         applyTheme(editorRef.current, monacoRef.current);
       });
     }
-  }, [registerThemes, applyTheme, isReady, isViewTransitioning, currentMode, themeVersion]);
+  }, [
+    registerThemes,
+    applyTheme,
+    isReady,
+    isViewTransitioning,
+    currentMode,
+    themeVersion,
+  ]);
 
   return {
     isReady,

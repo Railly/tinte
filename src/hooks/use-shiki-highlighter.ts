@@ -29,7 +29,7 @@ export function useShikiHighlighter({
   // View transition loading (non-negotiable)
   useEffect(() => {
     setIsViewTransitioning(true);
-    const timer = setTimeout(() => setIsViewTransitioning(false), 200);
+    const timer = setTimeout(() => setIsViewTransitioning(false), 300);
     return () => clearTimeout(timer);
   }, [themeVersion, currentMode]);
 
