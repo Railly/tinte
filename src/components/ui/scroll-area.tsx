@@ -2,21 +2,61 @@
 
 import * as React from "react"
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
+import { motion, useScroll, useTransform } from "motion/react"
 
 import { cn } from "@/lib/utils"
+
+interface ScrollIndicatorProps {
+  showScrollIndicators?: boolean
+  indicatorType?: "shadow" | "mask" | "border"
+}
 
 function ScrollArea({
   className,
   children,
+  showScrollIndicators = false,
+  indicatorType = "shadow",
   ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+}: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & ScrollIndicatorProps) {
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollRef })
+  
+  // Top indicator: invisible at start (0), visible when scrolling (0.1+)
+  const topOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1])
+  
+  // Bottom indicator: visible at start (1), invisible near end (0.9+)
+  const bottomOpacity = useTransform(scrollYProgress, [0.9, 1], [1, 0])
+
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
       className={cn("relative", className)}
       {...props}
     >
+      {showScrollIndicators && (
+        <>
+          <motion.div 
+            className={cn(
+              "absolute top-0 left-0 right-0 h-6 z-50 pointer-events-none",
+              indicatorType === "shadow" && "bg-gradient-to-b from-background via-background/60 to-transparent shadow-md",
+              indicatorType === "border" && "bg-gradient-to-b from-background/80 to-transparent border-b border-border/40",
+              indicatorType === "mask" && "bg-gradient-to-b from-background/90 to-transparent"
+            )}
+            style={{ opacity: topOpacity }}
+          />
+          <motion.div 
+            className={cn(
+              "absolute bottom-0 left-0 right-0 h-6 z-50 pointer-events-none",
+              indicatorType === "shadow" && "bg-gradient-to-t from-background via-background/60 to-transparent shadow-md",
+              indicatorType === "border" && "bg-gradient-to-t from-background/80 to-transparent border-t border-border/40",
+              indicatorType === "mask" && "bg-gradient-to-t from-background/90 to-transparent"
+            )}
+            style={{ opacity: bottomOpacity }}
+          />
+        </>
+      )}
       <ScrollAreaPrimitive.Viewport
+        ref={scrollRef}
         data-slot="scroll-area-viewport"
         className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
       >
@@ -40,9 +80,9 @@ function ScrollBar({
       className={cn(
         "flex touch-none p-px transition-colors select-none",
         orientation === "vertical" &&
-          "h-full w-2.5 border-l border-l-transparent",
+        "h-full w-2.5 border-l border-l-transparent",
         orientation === "horizontal" &&
-          "h-2.5 flex-col border-t border-t-transparent",
+        "h-2.5 flex-col border-t border-t-transparent",
         className
       )}
       {...props}

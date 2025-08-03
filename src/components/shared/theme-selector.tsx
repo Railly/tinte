@@ -37,7 +37,7 @@ export function ThemeSelector({
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={cn('justify-between gap-2 md:h-auto md:py-2', triggerClassName)}
+          className={cn('justify-between gap-2 md:h-auto md:py-2 hover:text-muted-foreground w-[20ch]', triggerClassName)}
           title={label}
         >
           {/* Desktop layout - horizontal */}
@@ -47,7 +47,7 @@ export function ThemeSelector({
               {active ? active.name : label}
             </span>
           </div>
-          
+
           {/* Mobile layout - stacked */}
           <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
             <div className="flex items-center justify-between w-full min-w-0">
@@ -56,22 +56,22 @@ export function ThemeSelector({
               </span>
             </div>
             {active && (
-              <ThemeColorPreview 
-                colors={extractThemeColors(active, currentMode)} 
+              <ThemeColorPreview
+                colors={extractThemeColors(active, currentMode)}
                 maxColors={8}
                 size="sm"
                 className="self-start"
               />
             )}
           </div>
-          
+
           <ChevronsUpDown className="ml-2 h-4 w-4 md:h-3 md:w-3 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
+      <PopoverContent align="start" className="w-[--radix-popover-trigger-width] p-0">
         <Command>
           <CommandInput placeholder="Search themes..." className="h-9" />
-          <CommandList>
+          <CommandList className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-thumb]:bg-border">
             <CommandEmpty>No theme found.</CommandEmpty>
             <CommandGroup>
               {themes.map((theme) => (
@@ -96,7 +96,7 @@ export function ThemeSelector({
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Mobile layout - stacked */}
                   <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
                     <div className="flex items-center justify-between w-full min-w-0">
@@ -107,8 +107,8 @@ export function ThemeSelector({
                         </span>
                       )}
                     </div>
-                    <ThemeColorPreview 
-                      colors={extractThemeColors(theme, currentMode)} 
+                    <ThemeColorPreview
+                      colors={extractThemeColors(theme, currentMode)}
                       maxColors={8}
                       size="sm"
                       className="self-start"

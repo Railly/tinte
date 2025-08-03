@@ -21,7 +21,7 @@ export function Hero() {
           AI Theme Editor
         </div>
         <h1 className="flex flex-col items-center gap-2 md:gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold overflow-hidden text-center">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center">
             <span>Design your</span>
             <div className="flex items-center gap-2 sm:gap-3 whitespace-nowrap">
               <motion.div

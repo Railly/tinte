@@ -41,7 +41,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={`justify-between ${className}`}
+          className={`justify-between ${className} hover:text-muted-foreground w-[20ch]`}
         >
           <div className="flex items-center gap-2 min-w-0">
             <activeProvider.icon className="h-4 w-4 shrink-0" />
@@ -53,26 +53,23 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
       <PopoverContent align='start' className="w-[230px] p-0">
         <Command>
           <CommandInput placeholder="Search providers..." className="h-9" />
-          <CommandList>
+          <CommandList className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-thumb]:bg-border">
             <CommandEmpty>No provider found.</CommandEmpty>
             <CommandGroup>
-              {ALL_PROVIDERS.map((prov, index) => (
-                <CommandItem
-                  key={prov.id}
-                  value={prov.id}
-                  onSelect={() => {
-                    setProvider(prov.id);
-                    setOpen(false);
-                  }}
-                  className="gap-2"
-                >
-                  <prov.icon className="h-4 w-4" />
-                  <span>{prov.name}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">
-                    ⌘{index + 1}
-                  </span>
-                </CommandItem>
-              ))}
+                {ALL_PROVIDERS.map((prov) => (
+                  <CommandItem
+                    key={prov.id}
+                    value={prov.id}
+                    onSelect={() => {
+                      setProvider(prov.id);
+                      setOpen(false);
+                    }}
+                    className="gap-2"
+                  >
+                    <prov.icon className="h-4 w-4" />
+                    <span>{prov.name}</span>
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </CommandList>
         </Command>

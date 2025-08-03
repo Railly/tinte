@@ -65,10 +65,16 @@ function PreviewPaneHeader({
 
 function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
   return (
-    <ScrollArea className="p-4 h-[calc(100dvh-var(--header-height))]">
-      <UnifiedPreview
-        theme={theme}
-      />
+    <ScrollArea
+      className="h-[calc(100dvh-var(--header-height))]"
+      showScrollIndicators={true}
+      indicatorType="shadow"
+    >
+      <div className="h-full p-4">
+        <UnifiedPreview
+          theme={theme}
+        />
+      </div>
     </ScrollArea>
   );
 }
