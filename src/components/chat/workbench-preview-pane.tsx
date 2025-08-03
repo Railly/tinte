@@ -82,12 +82,12 @@ export function WorkbenchPreviewPane({
     <main
       className="flex flex-col overflow-hidden w-full"
     >
-      <PreviewPaneHeader
+      {/* <PreviewPaneHeader
         onExportAll={onExportAll}
         onExportTinte={onExportTinte}
       />
 
-      <Separator />
+      <Separator /> */}
 
       <PreviewPaneContent theme={theme} />
     </main>

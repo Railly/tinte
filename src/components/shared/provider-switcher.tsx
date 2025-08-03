@@ -43,9 +43,9 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           size="sm"
           className={`justify-between ${className}`}
         >
-          <div className="flex items-center gap-2">
-            <activeProvider.icon className="h-4 w-4" />
-            <span className="font-medium">{activeProvider.name}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <activeProvider.icon className="h-4 w-4 shrink-0" />
+            <span className="font-medium max-w-[8ch] md:max-w-none truncate">{activeProvider.name}</span>
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

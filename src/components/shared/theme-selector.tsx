@@ -37,16 +37,35 @@ export function ThemeSelector({
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={cn('justify-between gap-2', triggerClassName)}
+          className={cn('justify-between gap-2 md:h-auto md:py-2', triggerClassName)}
           title={label}
         >
-          <div className="flex items-center gap-2 min-w-0">
+          {/* Desktop layout - horizontal */}
+          <div className="hidden md:flex items-center gap-2 min-w-0">
             {active && <ThemeColorPreview colors={extractThemeColors(active, currentMode)} maxColors={3} />}
             <span className="truncate">
               {active ? active.name : label}
             </span>
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          
+          {/* Mobile layout - stacked */}
+          <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
+            <div className="flex items-center justify-between w-full min-w-0">
+              <span className="text-xs font-medium truncate">
+                {active ? active.name : label}
+              </span>
+            </div>
+            {active && (
+              <ThemeColorPreview 
+                colors={extractThemeColors(active, currentMode)} 
+                maxColors={8}
+                size="sm"
+                className="self-start"
+              />
+            )}
+          </div>
+          
+          <ChevronsUpDown className="ml-2 h-4 w-4 md:h-3 md:w-3 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
@@ -63,16 +82,37 @@ export function ThemeSelector({
                     onSelect(theme);
                     setOpen(false);
                   }}
-                  className="gap-2"
+                  className="gap-2 md:h-auto md:py-2"
                 >
-                  <ThemeColorPreview colors={extractThemeColors(theme, currentMode)} maxColors={3} />
-                  <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                    <span className="text-xs font-medium truncate">{theme.name}</span>
-                    {theme.author && (
-                      <span className="text-[10px] text-muted-foreground truncate">
-                        {theme.author}
-                      </span>
-                    )}
+                  {/* Desktop layout - horizontal */}
+                  <div className="hidden md:flex items-center gap-2 min-w-0 flex-1">
+                    <ThemeColorPreview colors={extractThemeColors(theme, currentMode)} maxColors={3} />
+                    <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                      <span className="text-xs font-medium truncate">{theme.name}</span>
+                      {theme.author && (
+                        <span className="text-[10px] text-muted-foreground truncate">
+                          {theme.author}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Mobile layout - stacked */}
+                  <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
+                    <div className="flex items-center justify-between w-full min-w-0">
+                      <span className="text-xs font-medium truncate">{theme.name}</span>
+                      {theme.author && (
+                        <span className="text-[10px] text-muted-foreground truncate ml-2">
+                          {theme.author}
+                        </span>
+                      )}
+                    </div>
+                    <ThemeColorPreview 
+                      colors={extractThemeColors(theme, currentMode)} 
+                      maxColors={8}
+                      size="sm"
+                      className="self-start"
+                    />
                   </div>
                 </CommandItem>
               ))}
