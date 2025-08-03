@@ -3,7 +3,6 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { useThemeContext } from "@/providers/theme"
-import { useHotkeys } from "react-hotkeys-hook"
 import {
   Palette,
   Sun,
@@ -81,34 +80,39 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
     command()
   }, [])
 
-  // Keyboard shortcuts
-  useHotkeys("mod+k", (e) => {
-    e.preventDefault()
-    setOpen((open) => !open)
-  })
+  // Custom keyboard shortcuts handler
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Detect cmd key by checking metaKey (works on any keyboard layout)
+      if (!e.metaKey) return
 
-  useHotkeys("mod+/", (e) => {
-    e.preventDefault()
-    setOpen((open) => !open)
-  }, { enableOnFormTags: true })
+      // Check exact key characters for shortcuts
+      switch (e.key.toLowerCase()) {
+        case "k":
+        case "/":
+          e.preventDefault()
+          setOpen((open) => !open)
+          break
+        case "h":
+          e.preventDefault()
+          router.push("/")
+          break
+        case "w":
+          e.preventDefault()
+          router.push("/chat")
+          break
+        case "m":
+          if (e.shiftKey) {
+            e.preventDefault()
+            setTheme(theme === "dark" ? "light" : "dark")
+          }
+          break
+      }
+    }
 
-  // Navigation shortcuts
-  useHotkeys("mod+h", (e) => {
-    e.preventDefault()
-    router.push("/")
-  })
-
-  useHotkeys("mod+w", (e) => {
-    e.preventDefault()
-    router.push("/chat")
-  })
-
-
-  // Theme shortcuts
-  useHotkeys("mod+shift+m", (e) => {
-    e.preventDefault()
-    setTheme(theme === "dark" ? "light" : "dark")
-  })
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [router, setTheme, theme])
 
 
   const getThemeIcon = () => {
