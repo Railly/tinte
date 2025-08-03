@@ -14,6 +14,7 @@ import { Colorful } from "@uiw/react-color";
 import { ChevronDown } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 interface ColorPickerInputProps {
   color: string;
@@ -45,9 +46,44 @@ export function ColorPickerInput({
     setInputValue(color);
   }, [color]);
 
-  const contrastColor = useMemo(() => getContrastColor(color), [color]);
+  const contrastColor = useMemo(() => {
+    if (!color || typeof color !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(color)) {
+      return "#000000";
+    }
+    return getContrastColor(color);
+  }, [color]);
 
   const colorValues = useMemo(() => {
+    if (!color || typeof color !== 'string') {
+      console.warn('ColorPickerInput: Invalid color prop:', color);
+      toast.error(`Invalid color prop: ${JSON.stringify(color)}`, {
+        description: 'Color must be a string',
+        duration: 5000,
+      });
+      return {
+        hex: '#000000',
+        rgb: { r: 0, g: 0, b: 0 },
+        hsl: { h: 0, s: 0, l: 0 },
+        oklch: { l: 0, c: 0, h: 0 },
+        lch: { l: 0, c: 0, h: 0 },
+      };
+    }
+
+    if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
+      console.warn('ColorPickerInput: Invalid hex color format:', color);
+      toast.error(`Invalid hex color format: ${color}`, {
+        description: 'Expected format: #RRGGBB',
+        duration: 5000,
+      });
+      return {
+        hex: '#000000',
+        rgb: { r: 0, g: 0, b: 0 },
+        hsl: { h: 0, s: 0, l: 0 },
+        oklch: { l: 0, c: 0, h: 0 },
+        lch: { l: 0, c: 0, h: 0 },
+      };
+    }
+
     const rgbColor = rgb(color);
     const hslColor = culoriHsl(color);
     const oklchColor = oklch(color);
@@ -125,7 +161,12 @@ export function ColorPickerInput({
     [onChange],
   );
 
-  const hsvaColor = useMemo(() => hexToHsva(color), [color]);
+  const hsvaColor = useMemo(() => {
+    if (!color || typeof color !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(color)) {
+      return { h: 0, s: 0, v: 0, a: 1 };
+    }
+    return hexToHsva(color);
+  }, [color]);
 
   const quickColors = useMemo(
     () => [

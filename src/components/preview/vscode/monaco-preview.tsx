@@ -24,21 +24,18 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
   if (!isReady) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-background text-muted-foreground">
-        Loading Monaco...
-      </div>
-    );
-  }
-
-  if (isViewTransitioning) {
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-muted text-muted-foreground">
-        <div className="text-sm">Applying theme...</div>
+        <div className="text-sm">Loading Monaco...</div>
       </div>
     );
   }
 
   return (
-    <div className="h-full w-full overflow-hidden">
+    <div className="h-full w-full overflow-hidden relative">
+      {isViewTransitioning && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted">
+          <div className="text-sm text-muted-foreground">Applying theme...</div>
+        </div>
+      )}
       <Editor
         height="100%"
         width="100%"

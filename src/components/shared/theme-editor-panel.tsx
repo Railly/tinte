@@ -11,7 +11,25 @@ export function ThemeEditorPanel() {
   const [scope, animate] = useAnimate();
 
   const { currentTokens, allThemes, activeTheme, handleThemeSelect, handleTokenEdit, mounted } = useThemeContext();
-  const tokenEntries = Object.entries(currentTokens);
+  
+  // List of known color tokens from shadcn.ts
+  const colorTokenKeys = React.useMemo(() => [
+    'accent', 'accent-foreground', 'background', 'border', 'card', 'card-foreground',
+    'chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5', 'destructive', 'destructive-foreground',
+    'foreground', 'input', 'muted', 'muted-foreground', 'popover', 'popover-foreground',
+    'primary', 'primary-foreground', 'ring', 'secondary', 'secondary-foreground',
+    'sidebar', 'sidebar-accent', 'sidebar-accent-foreground', 'sidebar-border',
+    'sidebar-foreground', 'sidebar-primary', 'sidebar-primary-foreground', 'sidebar-ring'
+  ], []);
+
+  // Filter only known color tokens
+  const colorTokens = React.useMemo(() => {
+    return Object.entries(currentTokens).filter(([key, value]) => {
+      return colorTokenKeys.includes(key) && typeof value === 'string' && value.startsWith('#');
+    });
+  }, [currentTokens, colorTokenKeys]);
+  
+  const tokenEntries = colorTokens;
   
   // Check if we have immediate data available
   const hasImmediateData = typeof window !== 'undefined' && window.__TINTE_THEME__ && mounted;

@@ -22,24 +22,23 @@ export function ShikiPreview({ themeSet, currentMode, template, themeVersion }: 
 
   if (loading) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-background text-muted-foreground">
-        Loading Shiki...
-      </div>
-    );
-  }
-
-  if (isViewTransitioning) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
-        <div className="text-sm">Applying theme...</div>
+      <div className="w-full h-full flex items-center justify-center bg-muted backdrop-blur-sm text-muted-foreground">
+        <div className="text-sm">Loading Shiki...</div>
       </div>
     );
   }
 
   return (
-    <div
-      className="h-full overflow-auto text-sm leading-relaxed scrollbar-thin bg-background text-foreground"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <div className="h-full w-full overflow-hidden relative">
+      {isViewTransitioning && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted">
+          <div className="text-sm text-muted-foreground">Applying theme...</div>
+        </div>
+      )}
+      <div
+        className="h-full overflow-auto text-sm leading-relaxed scrollbar-thin bg-background text-foreground"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </div>
   );
 }

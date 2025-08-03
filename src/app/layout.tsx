@@ -5,6 +5,7 @@ import { siteConfig, META_THEME_COLORS } from "@/config/site";
 import { TinteThemeScript } from "@/components/theme-script";
 import { ThemeProvider } from "@/providers/theme";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -92,6 +93,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </NuqsAdapter>
+        <Toaster />
       </body>
     </html>
   );

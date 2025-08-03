@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
-import { codeToHtml } from 'shiki';
-import { VSCodeTheme } from '@/lib/providers/vscode';
+import { useState, useEffect, useMemo } from "react";
+import { codeToHtml } from "shiki";
+import { VSCodeTheme } from "@/lib/providers/vscode";
 
 interface CodeTemplate {
   name: string;
@@ -11,20 +11,25 @@ interface CodeTemplate {
 
 interface UseShikiHighlighterProps {
   themeSet: { light: VSCodeTheme; dark: VSCodeTheme };
-  currentMode: 'light' | 'dark';
+  currentMode: "light" | "dark";
   template: CodeTemplate;
   themeVersion: number;
 }
 
-export function useShikiHighlighter({ themeSet, currentMode, template, themeVersion }: UseShikiHighlighterProps) {
-  const [html, setHtml] = useState<string>('');
+export function useShikiHighlighter({
+  themeSet,
+  currentMode,
+  template,
+  themeVersion,
+}: UseShikiHighlighterProps) {
+  const [html, setHtml] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [isViewTransitioning, setIsViewTransitioning] = useState(false);
 
   // View transition loading (non-negotiable)
   useEffect(() => {
     setIsViewTransitioning(true);
-    const timer = setTimeout(() => setIsViewTransitioning(false), 400);
+    const timer = setTimeout(() => setIsViewTransitioning(false), 200);
     return () => clearTimeout(timer);
   }, [themeVersion, currentMode]);
 
@@ -35,17 +40,22 @@ export function useShikiHighlighter({ themeSet, currentMode, template, themeVers
       name: `tinte-${currentMode}`,
       type: currentTheme.type,
       colors: {
-        'editor.background': currentTheme.colors['editor.background'] || (currentMode === 'dark' ? '#1e1e1e' : '#ffffff'),
-        'editor.foreground': currentTheme.colors['editor.foreground'] || (currentMode === 'dark' ? '#d4d4d4' : '#000000'),
-        'editorLineNumber.foreground': currentTheme.colors['editorLineNumber.foreground'] || '#6a6a6a',
+        "editor.background":
+          currentTheme.colors["editor.background"] ||
+          (currentMode === "dark" ? "#1e1e1e" : "#ffffff"),
+        "editor.foreground":
+          currentTheme.colors["editor.foreground"] ||
+          (currentMode === "dark" ? "#d4d4d4" : "#000000"),
+        "editorLineNumber.foreground":
+          currentTheme.colors["editorLineNumber.foreground"] || "#6a6a6a",
       },
-      tokenColors: currentTheme.tokenColors.map(token => ({
+      tokenColors: currentTheme.tokenColors.map((token) => ({
         scope: token.scope,
         settings: {
           foreground: token.settings.foreground,
           fontStyle: token.settings.fontStyle,
-        }
-      }))
+        },
+      })),
     };
   }, [themeSet, currentMode, themeVersion]);
 
@@ -70,7 +80,7 @@ export function useShikiHighlighter({ themeSet, currentMode, template, themeVers
         setHtml(modifiedResult);
         setLoading(false);
       } catch (error) {
-        console.error('Failed to highlight code:', error);
+        console.error("Failed to highlight code:", error);
         setHtml(`<pre><code>${template.code}</code></pre>`);
         setLoading(false);
       }
@@ -83,6 +93,6 @@ export function useShikiHighlighter({ themeSet, currentMode, template, themeVers
   return {
     html,
     loading,
-    isViewTransitioning
+    isViewTransitioning,
   };
 }

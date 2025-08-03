@@ -1,6 +1,6 @@
-import { VSCodeTheme } from '@/lib/providers/vscode';
-import { providerRegistry } from '@/lib/providers';
-import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
+import { VSCodeTheme } from "@/lib/providers/vscode";
+import { providerRegistry } from "@/lib/providers";
+import { shadcnToTinte } from "@/lib/shadcn-to-tinte";
 
 export interface CodeTemplate {
   name: string;
@@ -11,9 +11,9 @@ export interface CodeTemplate {
 
 export const codeTemplates: CodeTemplate[] = [
   {
-    name: 'Python',
-    filename: 'user_service.py',
-    language: 'python',
+    name: "Python",
+    filename: "user_service.py",
+    language: "python",
     code: `from typing import Optional, List
 import asyncio
 from dataclasses import dataclass
@@ -44,51 +44,12 @@ class UserService:
             email=email
         )
         self.users.append(user)
-        return user`
+        return user`,
   },
   {
-    name: 'Rust',
-    filename: 'main.rs',
-    language: 'rust',
-    code: `use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct User {
-    id: u64,
-    name: String,
-    email: String,
-    is_active: bool,
-}
-
-impl User {
-    fn new(id: u64, name: String, email: String) -> Self {
-        Self {
-            id,
-            name,
-            email,
-            is_active: true,
-        }
-    }
-    
-    fn deactivate(&mut self) {
-        self.is_active = false;
-    }
-}
-
-fn main() {
-    let mut users: HashMap<u64, User> = HashMap::new();
-    
-    let user = User::new(1, "Alice".to_string(), "alice@example.com".to_string());
-    users.insert(user.id, user);
-    
-    println!("Created {} users", users.len());
-}`
-  },
-  {
-    name: 'Go',
-    filename: 'main.go',
-    language: 'go',
+    name: "Go",
+    filename: "main.go",
+    language: "go",
     code: `package main
 
 import (
@@ -130,12 +91,12 @@ func main() {
 	service := NewUserService()
 	user := service.CreateUser("John Doe", "john@example.com")
 	fmt.Printf("Created user: %+v\\n", user)
-}`
+}`,
   },
   {
-    name: 'JavaScript',
-    filename: 'main.js',
-    language: 'javascript',
+    name: "JavaScript",
+    filename: "main.js",
+    language: "javascript",
     code: `class User {
   constructor(name, email) {
     this.id = Math.floor(Math.random() * 1000);
@@ -192,11 +153,14 @@ const updated = userService.updateUser(user.id, { name: 'Jane Doe' });
 console.log('Updated user:', updated.toJSON());
 
 const deleted = userService.deleteUser(user.id);
-console.log('User deleted:', deleted);`
-  }
+console.log('User deleted:', deleted);`,
+  },
 ];
 
-export function convertThemeToVSCode(activeTheme: any, fallbackTheme: { light: VSCodeTheme; dark: VSCodeTheme }) {
+export function convertThemeToVSCode(
+  activeTheme: any,
+  fallbackTheme: { light: VSCodeTheme; dark: VSCodeTheme }
+) {
   if (!activeTheme?.rawTheme) return fallbackTheme;
 
   try {
@@ -206,19 +170,25 @@ export function convertThemeToVSCode(activeTheme: any, fallbackTheme: { light: V
       // TweakCN themes: ShadCN → Tinte → VSCode
       const shadcnTheme = {
         light: themeData.rawTheme.light || themeData.rawTheme,
-        dark: themeData.rawTheme.dark || themeData.rawTheme
+        dark: themeData.rawTheme.dark || themeData.rawTheme,
       };
       const tinteTheme = shadcnToTinte(shadcnTheme);
-      const vscodeTheme = providerRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
+      const vscodeTheme = providerRegistry.convert("vscode", tinteTheme) as {
+        dark: VSCodeTheme;
+        light: VSCodeTheme;
+      };
       return vscodeTheme || fallbackTheme;
     } else {
       // Direct Tinte themes: Tinte → VSCode
       const tinteTheme = themeData.rawTheme;
-      const vscodeTheme = providerRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
+      const vscodeTheme = providerRegistry.convert("vscode", tinteTheme) as {
+        dark: VSCodeTheme;
+        light: VSCodeTheme;
+      };
       return vscodeTheme || fallbackTheme;
     }
   } catch (error) {
-    console.warn('Failed to convert theme:', error);
+    console.warn("Failed to convert theme:", error);
     return fallbackTheme;
   }
 }
