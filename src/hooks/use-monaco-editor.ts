@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { createHighlighter } from "shiki";
+import { shikiToMonaco } from "@shikijs/monaco";
 import { VSCodeTheme } from "@/lib/providers/vscode";
 
 interface CodeTemplate {
@@ -73,7 +74,7 @@ export function useMonacoEditor({
     };
   }, []);
 
-  // Stable theme data
+  // Stable theme data using same format as Shiki highlighter
   const themeData = useMemo(
     () => ({
       light: {
@@ -104,7 +105,7 @@ export function useMonacoEditor({
     [themeSet, lightThemeName, darkThemeName]
   );
 
-  // Optimized theme registration with caching
+  // Register themes using shikiToMonaco for consistency
   const registerThemes = useCallback(
     async (monaco: any) => {
       const themeKey = `${themeVersion}-${JSON.stringify(themeData)}`;
@@ -114,36 +115,25 @@ export function useMonacoEditor({
       }
 
       try {
-        // Always use fallback registration for better reliability
-        const createFallback = (theme: any, base: "vs" | "vs-dark") => ({
-          base,
-          inherit: true,
-          rules: theme.tokenColors.flatMap((token: any) => {
-            const scopes = Array.isArray(token.scope)
-              ? token.scope
-              : [token.scope];
-            return scopes.filter(Boolean).map((scope: string) => ({
-              token: scope.replace(/\./g, " "),
-              foreground: token.settings.foreground?.replace("#", "") || "",
-              fontStyle: token.settings.fontStyle || "",
-            }));
-          }),
-          colors: theme.colors,
-        });
+        if (highlighterRef.current) {
+          // Load themes into Shiki highlighter
+          await highlighterRef.current.loadTheme(themeData.light);
+          await highlighterRef.current.loadTheme(themeData.dark);
 
-        // Define both themes
-        monaco.editor.defineTheme(
-          lightThemeName,
-          createFallback(themeData.light, "vs")
-        );
-        monaco.editor.defineTheme(
-          darkThemeName,
-          createFallback(themeData.dark, "vs-dark")
-        );
+          // Register languages first
+          ["python", "go", "javascript"].forEach((lang) => {
+            if (!monaco.languages.getLanguages().some((l: any) => l.id === lang)) {
+              monaco.languages.register({ id: lang });
+            }
+          });
 
-        themesRegisteredRef.current.add(themeKey);
+          // Use shikiToMonaco for consistent theme registration
+          shikiToMonaco(highlighterRef.current, monaco);
+
+          themesRegisteredRef.current.add(themeKey);
+        }
       } catch (error) {
-        console.error("Failed to register themes:", error);
+        console.error("Failed to register themes with shikiToMonaco:", error);
       }
     },
     [themeData, themeVersion, lightThemeName, darkThemeName]
@@ -177,13 +167,6 @@ export function useMonacoEditor({
     async (editor: any, monaco: any) => {
       editorRef.current = editor;
       monacoRef.current = monaco;
-
-      // Register languages once
-      ["python", "go", "javascript"].forEach((lang) => {
-        if (!monaco.languages.getLanguages().some((l: any) => l.id === lang)) {
-          monaco.languages.register({ id: lang });
-        }
-      });
 
       // Register themes and apply
       await registerThemes(monaco);
