@@ -3,7 +3,7 @@
 import React from 'react';
 import { VSCodeTheme } from '@/lib/providers/vscode';
 import { useShikiHighlighter } from '@/hooks/use-shiki-highlighter';
-import { type CodeTemplate } from '@/lib/vscode-preview-utils';
+import { CodeTemplate } from '@/lib/providers/vscode';
 
 interface ShikiPreviewProps {
   themeSet: { light: VSCodeTheme; dark: VSCodeTheme };
@@ -36,7 +36,7 @@ export function ShikiPreview({ themeSet, currentMode, template, themeVersion }: 
         </div>
       )}
       <div
-        className="h-full overflow-auto text-sm leading-relaxed scrollbar-thin bg-background text-foreground"
+        className="h-full overflow-auto text-sm scrollbar-thin bg-background text-foreground !font-mono !text-[13px] !leading-[1.53] !break-words"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

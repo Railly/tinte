@@ -38,6 +38,7 @@
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@shikijs/monaco": "^3.9.1",
+    "@tanstack/react-query": "^5.84.1",
     "@tanstack/react-table": "^8.21.3",
     "@types/cheerio": "^0.22.35",
     "@types/nanoid": "^2.1.0",

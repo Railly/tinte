@@ -1,7 +1,13 @@
 import { oklch, rgb, formatHex } from "culori";
 import { generateTailwindPalette } from "../palette-generator";
 import { TinteBlock, TinteTheme } from "@/types/tinte";
-import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
+import {
+  DEFAULT_BASE,
+  DEFAULT_FONTS,
+  DEFAULT_SHADOWS,
+  ShadcnBlock,
+  ShadcnTheme,
+} from "@/types/shadcn";
 import { PreviewableProvider, ThemeMode, ProviderOutput } from "./types";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
@@ -139,6 +145,9 @@ function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
     "sidebar-accent-foreground": ensureFg(sidebarAccent),
     "sidebar-border": border,
     "sidebar-ring": ring,
+    ...DEFAULT_BASE,
+    ...DEFAULT_FONTS,
+    ...DEFAULT_SHADOWS,
   };
 }
 

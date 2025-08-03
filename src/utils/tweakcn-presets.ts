@@ -1,4 +1,4 @@
-import { ShadcnTheme } from "@/types/shadcn";
+import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
 
 // Extract themes for theme showcase
 export function extractTweakcnThemeData(isDark = false) {
@@ -15,7 +15,13 @@ export function extractTweakcnThemeData(isDark = false) {
         foreground: themeMode.foreground,
       },
       createdAt: (preset as any).createdAt || "2025-01-01",
-      rawTheme: preset.styles as ShadcnTheme,
+      rawTheme: {
+        light: preset.styles.light as ShadcnBlock,
+        dark: {
+          ...(preset.styles.light as ShadcnBlock),
+          ...(preset.styles.dark as ShadcnBlock),
+        } as ShadcnBlock,
+      },
     };
   });
 }

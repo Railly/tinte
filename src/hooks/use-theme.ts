@@ -2,24 +2,31 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { ThemeData } from "@/lib/theme-tokens";
-import { 
-  ThemeMode, 
-  applyThemeWithTransition, 
+import {
+  ThemeMode,
+  applyThemeWithTransition,
   applyModeClass,
-  saveTheme, 
-  saveMode, 
-  loadTheme, 
+  saveTheme,
+  saveMode,
+  loadTheme,
   loadMode,
-  convertColorToHex 
+  convertColorToHex,
 } from "@/lib/theme-manager";
 import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
 import { extractTinteThemeData, DEFAULT_THEME } from "@/utils/tinte-presets";
 import { useThemeConversion, useThemeAdapters } from "./use-theme-adapters";
-import { downloadFile, downloadJSON, downloadMultipleFiles } from "@/lib/file-download";
+import {
+  downloadFile,
+  downloadJSON,
+  downloadMultipleFiles,
+} from "@/lib/file-download";
 import type { TinteTheme } from "@/types/tinte";
 
-interface Coords { x: number; y: number }
+interface Coords {
+  x: number;
+  y: number;
+}
 
 export function useTheme() {
   const [mounted, setMounted] = useState(false);
@@ -28,9 +35,11 @@ export function useTheme() {
   const [editedTokens, setEditedTokens] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    console.log("useEffect");
     // Try to get immediate data from theme script
-    const preloadedData = typeof window !== 'undefined' ? window.__TINTE_THEME__ : null;
-    
+    const preloadedData =
+      typeof window !== "undefined" ? window.__TINTE_THEME__ : null;
+
     if (preloadedData) {
       // Use pre-loaded data for instant rendering
       setCurrentMode(preloadedData.mode);
@@ -40,30 +49,31 @@ export function useTheme() {
       // Fallback to storage
       const storedTheme = loadTheme();
       const initialMode = loadMode();
-      
+
       setCurrentMode(initialMode);
       setActiveTheme(storedTheme);
       setMounted(true);
-      
+
       applyModeClass(initialMode);
+      console.log({ storedTheme, initialMode });
       applyThemeWithTransition(storedTheme, initialMode);
     }
   }, []);
 
   const baseTokens = useMemo(() => {
     if (!mounted || !activeTheme) return {};
-    
-    const { computeThemeTokens } = require('@/lib/theme-manager');
+
+    const { computeThemeTokens } = require("@/lib/theme-manager");
     const computed = computeThemeTokens(activeTheme);
     const tokens = computed[currentMode];
-    
+
     const processedTokens: Record<string, string> = {};
     for (const [key, value] of Object.entries(tokens)) {
       if (typeof value === "string") {
         processedTokens[key] = convertColorToHex(value);
       }
     }
-    
+
     return processedTokens;
   }, [mounted, activeTheme, currentMode]);
 
@@ -74,69 +84,83 @@ export function useTheme() {
 
   const handleModeChange = useCallback((newMode: ThemeMode) => {
     const savedTheme = loadTheme();
-    
+
     setCurrentMode(newMode);
     setActiveTheme(savedTheme);
     setEditedTokens({});
-    
+
     saveMode(newMode);
     applyThemeWithTransition(savedTheme, newMode);
   }, []);
 
-  const toggleTheme = useCallback((coords?: Coords) => {
-    const newMode = currentMode === "light" ? "dark" : "light";
-    
-    if (typeof window === 'undefined') {
-      handleModeChange(newMode);
-      return;
-    }
+  const toggleTheme = useCallback(
+    (coords?: Coords) => {
+      const newMode = currentMode === "light" ? "dark" : "light";
 
-    const root = document.documentElement;
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+      if (typeof window === "undefined") {
+        handleModeChange(newMode);
+        return;
+      }
 
-    if (!document.startViewTransition || prefersReducedMotion) {
-      handleModeChange(newMode);
-      return;
-    }
+      const root = document.documentElement;
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
 
-    if (coords) {
-      root.style.setProperty("--x", `${coords.x}px`);
-      root.style.setProperty("--y", `${coords.y}px`);
-    }
+      if (!document.startViewTransition || prefersReducedMotion) {
+        handleModeChange(newMode);
+        return;
+      }
 
-    document.startViewTransition(() => {
-      handleModeChange(newMode);
-    });
-  }, [currentMode, handleModeChange]);
+      if (coords) {
+        root.style.setProperty("--x", `${coords.x}px`);
+        root.style.setProperty("--y", `${coords.y}px`);
+      }
 
-  const handleThemeSelect = useCallback((theme: ThemeData) => {
-    // Use current mode instead of loading from storage to maintain consistency
-    const modeToUse = currentMode;
-    
-    setActiveTheme(theme);
-    setEditedTokens({});
-    
-    saveTheme(theme);
-    applyThemeWithTransition(theme, modeToUse);
-  }, [currentMode]);
+      document.startViewTransition(() => {
+        handleModeChange(newMode);
+      });
+    },
+    [currentMode, handleModeChange]
+  );
+
+  const handleThemeSelect = useCallback(
+    (theme: ThemeData) => {
+      // Use current mode instead of loading from storage to maintain consistency
+      const modeToUse = currentMode;
+
+      setActiveTheme(theme);
+      setEditedTokens({});
+
+      saveTheme(theme);
+      applyThemeWithTransition(theme, modeToUse);
+    },
+    [currentMode]
+  );
 
   const handleTokenEdit = useCallback((key: string, value: string) => {
-    const hexValue = convertColorToHex(value);
-    
-    setEditedTokens(prev => ({ ...prev, [key]: hexValue }));
-    
-    if (typeof window !== 'undefined') {
-      document.documentElement.style.setProperty(`--${key}`, hexValue);
+    // Only convert to hex for color tokens, leave other tokens as-is
+    const processedValue =
+      key.includes("font") ||
+      key.includes("shadow") ||
+      key === "radius" ||
+      key === "spacing" ||
+      key === "letter-spacing"
+        ? value
+        : convertColorToHex(value);
+
+    setEditedTokens((prev) => ({ ...prev, [key]: processedValue }));
+
+    if (typeof window !== "undefined") {
+      document.documentElement.style.setProperty(`--${key}`, processedValue);
     }
   }, []);
 
   const resetTokens = useCallback(() => {
     setEditedTokens({});
-    
+
     // Restore original CSS custom properties by re-applying the base theme
-    if (typeof window !== 'undefined' && activeTheme) {
+    if (typeof window !== "undefined" && activeTheme) {
       const savedMode = loadMode();
       applyThemeWithTransition(activeTheme, savedMode);
     }
@@ -155,7 +179,7 @@ export function useTheme() {
       tags: [
         themeData.name.split(" ")[0].toLowerCase(),
         "modern",
-        "preset", 
+        "preset",
         "community",
       ],
     }));
@@ -196,17 +220,17 @@ export function useTheme() {
 
   const allThemes = useMemo(() => {
     if (!mounted) return [DEFAULT_THEME];
-    
+
     const combinedThemes = [
-      DEFAULT_THEME, 
-      ...tinteThemes, 
-      ...raysoThemes, 
-      ...tweakcnThemes
+      DEFAULT_THEME,
+      ...tinteThemes,
+      ...raysoThemes,
+      ...tweakcnThemes,
     ];
-    const uniqueThemes = combinedThemes.filter((theme, index, arr) => 
-      arr.findIndex(t => t.id === theme.id) === index
+    const uniqueThemes = combinedThemes.filter(
+      (theme, index, arr) => arr.findIndex((t) => t.id === theme.id) === index
     );
-    
+
     return uniqueThemes;
   }, [mounted, tinteThemes, raysoThemes, tweakcnThemes]);
 
@@ -226,6 +250,7 @@ export function useTheme() {
 
   // Theme conversion
   const conversion = useThemeConversion(tinteTheme);
+  console.log({ conversion });
   const { exportTheme } = useThemeAdapters();
 
   // Export handlers
@@ -258,34 +283,43 @@ export function useTheme() {
   );
 
   // Theme navigation
-  const navigateTheme = useCallback((direction: 'prev' | 'next' | 'random') => {
-    if (!activeTheme || allThemes.length <= 1) return;
-    
-    const currentIndex = allThemes.findIndex(t => t.id === activeTheme.id);
-    let nextTheme: ThemeData;
-    
-    switch (direction) {
-      case 'prev':
-        const prevIndex = currentIndex <= 0 ? allThemes.length - 1 : currentIndex - 1;
-        nextTheme = allThemes[prevIndex];
-        break;
-      case 'next':
-        const nextIndex = currentIndex >= allThemes.length - 1 ? 0 : currentIndex + 1;
-        nextTheme = allThemes[nextIndex];
-        break;
-      case 'random':
-        const availableThemes = allThemes.filter(t => t.id !== activeTheme.id);
-        const randomIndex = Math.floor(Math.random() * availableThemes.length);
-        nextTheme = availableThemes[randomIndex];
-        break;
-      default:
-        return;
-    }
-    
-    if (nextTheme) {
-      handleThemeSelect(nextTheme);
-    }
-  }, [activeTheme, allThemes, handleThemeSelect]);
+  const navigateTheme = useCallback(
+    (direction: "prev" | "next" | "random") => {
+      if (!activeTheme || allThemes.length <= 1) return;
+
+      const currentIndex = allThemes.findIndex((t) => t.id === activeTheme.id);
+      let nextTheme: ThemeData;
+
+      switch (direction) {
+        case "prev":
+          const prevIndex =
+            currentIndex <= 0 ? allThemes.length - 1 : currentIndex - 1;
+          nextTheme = allThemes[prevIndex];
+          break;
+        case "next":
+          const nextIndex =
+            currentIndex >= allThemes.length - 1 ? 0 : currentIndex + 1;
+          nextTheme = allThemes[nextIndex];
+          break;
+        case "random":
+          const availableThemes = allThemes.filter(
+            (t) => t.id !== activeTheme.id
+          );
+          const randomIndex = Math.floor(
+            Math.random() * availableThemes.length
+          );
+          nextTheme = availableThemes[randomIndex];
+          break;
+        default:
+          return;
+      }
+
+      if (nextTheme) {
+        handleThemeSelect(nextTheme);
+      }
+    },
+    [activeTheme, allThemes, handleThemeSelect]
+  );
 
   return {
     // State
@@ -293,22 +327,22 @@ export function useTheme() {
     currentMode,
     activeTheme,
     isDark: currentMode === "dark",
-    
+
     // Theme collections
     allThemes,
     tweakcnThemes,
     raysoThemes,
     tinteThemes,
-    
+
     // Token editing
     currentTokens,
     hasEdits: Object.keys(editedTokens).length > 0,
     isLoading: mounted && Object.keys(baseTokens).length === 0,
-    
+
     // Theme data
     tinteTheme,
     conversion,
-    
+
     // Actions
     handleModeChange,
     toggleTheme,
@@ -316,12 +350,12 @@ export function useTheme() {
     handleTokenEdit,
     resetTokens,
     navigateTheme,
-    
+
     // Export actions
     handleExport,
     handleExportAll,
     handleExportTinte,
-    
+
     // Legacy compatibility
     theme: currentMode,
     setTheme: handleModeChange,

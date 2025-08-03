@@ -13,12 +13,7 @@ export function TinteThemeScript() {
       function applyTokens(tokens) {
         if (!tokens) return;
         Object.entries(tokens).forEach(function([key, value]) {
-          if (typeof value === "string" && 
-              !key.startsWith("font-") && 
-              !key.startsWith("shadow-") &&
-              key !== "radius" && 
-              key !== "spacing" && 
-              key !== "letter-spacing") {
+          if (typeof value === "string") {
             root.style.setProperty("--" + key, value);
           }
         });

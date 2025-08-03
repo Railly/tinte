@@ -1,13 +1,15 @@
 import { ThemeData } from "./theme-tokens";
 import { formatHex, parse } from "culori";
 import { DEFAULT_THEME } from "@/utils/tinte-presets";
+import { providerRegistry } from "./providers";
+import { ShadcnTheme } from "@/types/shadcn";
 
 export type ThemeMode = "light" | "dark";
 
 const THEME_STORAGE_KEY = "tinte-selected-theme";
 const MODE_STORAGE_KEY = "tinte-current-mode";
 
-let currentAppliedTheme = { id: '', mode: '' };
+let currentAppliedTheme = { id: "", mode: "" };
 
 declare global {
   interface Window {
@@ -32,17 +34,20 @@ export function convertColorToHex(colorValue: string): string {
   }
 }
 
-export function extractThemeColors(theme: ThemeData, mode?: ThemeMode): Record<string, string> {
+export function extractThemeColors(
+  theme: ThemeData,
+  mode?: ThemeMode
+): Record<string, string> {
   const computed = computeThemeTokens(theme);
   const currentMode = mode || loadMode();
   const tokens = computed[currentMode];
-  
+
   return {
-    primary: tokens.primary || '#000000',
-    secondary: tokens.secondary || '#666666',
-    accent: tokens.accent || '#0066cc',
-    background: tokens.background || '#ffffff',
-    foreground: tokens.foreground || '#000000',
+    primary: tokens.primary || "#000000",
+    secondary: tokens.secondary || "#666666",
+    accent: tokens.accent || "#0066cc",
+    background: tokens.background || "#ffffff",
+    foreground: tokens.foreground || "#000000",
   };
 }
 
@@ -59,15 +64,17 @@ export function computeThemeTokens(theme: ThemeData): {
   if (theme.author === "tweakcn" && theme.rawTheme) {
     computedTokens = {
       light: theme.rawTheme.light,
-      dark: theme.rawTheme.dark
+      dark: theme.rawTheme.dark,
     };
   } else if (theme.rawTheme) {
     try {
-      const { providerRegistry } = require('@/lib/providers');
-      const shadcnTheme = providerRegistry.convert("shadcn", theme.rawTheme);
+      const shadcnTheme = providerRegistry.convert(
+        "shadcn",
+        theme.rawTheme
+      ) as ShadcnTheme;
       computedTokens = {
         light: shadcnTheme.light,
-        dark: shadcnTheme.dark
+        dark: shadcnTheme.dark,
       };
     } catch {
       computedTokens = DEFAULT_THEME.computedTokens;
@@ -80,19 +87,15 @@ export function computeThemeTokens(theme: ThemeData): {
 }
 
 export function applyTokensToDOM(tokens: Record<string, string>): void {
-  if (typeof window === 'undefined' || typeof document === 'undefined') return;
-  
+  console.log({ tokens });
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+
   const root = document.documentElement;
-  
+
   Object.entries(tokens).forEach(([key, value]) => {
-    if (
-      typeof value === "string" &&
-      !key.startsWith("font-") &&
-      !key.startsWith("shadow-") &&
-      key !== "radius" &&
-      key !== "spacing" &&
-      key !== "letter-spacing"
-    ) {
+    console.log({ key, value });
+    if (typeof value === "string" && value.trim()) {
+      // Apply all tokens - colors, fonts, shadows, radius, spacing, etc.
       root.style.setProperty(`--${key}`, value);
     }
   });
@@ -100,31 +103,38 @@ export function applyTokensToDOM(tokens: Record<string, string>): void {
 
 export function applyTheme(theme: ThemeData, mode: ThemeMode): void {
   const themeKey = `${theme.id}-${mode}`;
-  
+  console.log({ themeKey });
+
   if (currentAppliedTheme.id === themeKey) return;
   currentAppliedTheme.id = themeKey;
-  
+
   const computedTokens = computeThemeTokens(theme);
   const tokens = computedTokens[mode];
-  
+
+  console.log({ tokens });
   applyTokensToDOM(tokens);
-  
-  if (typeof window !== 'undefined') {
+
+  if (typeof window !== "undefined") {
     window.__TINTE_THEME__ = {
       theme,
       mode,
-      tokens
+      tokens,
     };
   }
 }
 
-export function applyThemeWithTransition(theme: ThemeData, mode: ThemeMode): void {
+export function applyThemeWithTransition(
+  theme: ThemeData,
+  mode: ThemeMode
+): void {
   const applyChanges = () => {
     applyTheme(theme, mode);
     applyModeClass(mode);
   };
 
-  if (typeof window === 'undefined') {
+  console.log({ applyChanges });
+
+  if (typeof window === "undefined") {
     applyChanges();
     return;
   }
@@ -142,10 +152,10 @@ export function applyThemeWithTransition(theme: ThemeData, mode: ThemeMode): voi
 }
 
 export function applyModeClass(mode: ThemeMode): void {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   const root = document.documentElement;
-  
+
   if (mode === "dark") {
     root.classList.add("dark");
     root.style.colorScheme = "dark";
@@ -155,10 +165,9 @@ export function applyModeClass(mode: ThemeMode): void {
   }
 }
 
-
 export function saveTheme(theme: ThemeData): void {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   try {
     const computedTokens = computeThemeTokens(theme);
     const themeWithTokens = { ...theme, computedTokens };
@@ -169,8 +178,8 @@ export function saveTheme(theme: ThemeData): void {
 }
 
 export function loadTheme(): ThemeData {
-  if (typeof window === 'undefined') return DEFAULT_THEME;
-  
+  if (typeof window === "undefined") return DEFAULT_THEME;
+
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored) {
@@ -179,25 +188,27 @@ export function loadTheme(): ThemeData {
   } catch {
     // Silent fail - localStorage might not be available
   }
-  
+
   return DEFAULT_THEME;
 }
 
 export function saveMode(mode: ThemeMode): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   localStorage.setItem(MODE_STORAGE_KEY, mode);
 }
 
 export function loadMode(): ThemeMode {
-  if (typeof window === 'undefined') return "light";
-  
+  if (typeof window === "undefined") return "light";
+
   try {
     const stored = localStorage.getItem(MODE_STORAGE_KEY);
     if (stored === "dark" || stored === "light") {
       return stored;
     }
-    
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   } catch {
     return "light";
   }
@@ -205,8 +216,8 @@ export function loadMode(): ThemeMode {
 
 // Fast token getter - prioritizes window.__TINTE_THEME__ (instant)
 export function getTokensFast(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  
+  if (typeof window === "undefined") return {};
+
   if (window.__TINTE_THEME__?.tokens) {
     const processedTokens: Record<string, string> = {};
     for (const [key, value] of Object.entries(window.__TINTE_THEME__.tokens)) {
@@ -218,37 +229,4 @@ export function getTokensFast(): Record<string, string> {
   }
 
   return {};
-}
-
-// Comprehensive token getter - reads from DOM as fallback (slower, for debugging/external integrations)
-export function getTokensFromDOM(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  
-  // First try the fast method
-  const fastTokens = getTokensFast();
-  if (Object.keys(fastTokens).length > 0) {
-    return fastTokens;
-  }
-
-  // Fallback: read from DOM (for debugging or external modifications)
-  const root = document.documentElement;
-  const computedStyle = getComputedStyle(root);
-
-  const tokenKeys = [
-    "background", "foreground", "card", "card-foreground", "popover", "popover-foreground",
-    "primary", "primary-foreground", "secondary", "secondary-foreground", 
-    "muted", "muted-foreground", "accent", "accent-foreground", 
-    "destructive", "border", "input", "ring"
-  ];
-
-  const processedTokens: Record<string, string> = {};
-  
-  for (const key of tokenKeys) {
-    const value = computedStyle.getPropertyValue(`--${key}`).trim();
-    if (value) {
-      processedTokens[key] = convertColorToHex(value);
-    }
-  }
-
-  return processedTokens;
 }

@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { VSCodeTheme } from '@/lib/providers/vscode';
+import { CodeTemplate, VSCodeTheme } from '@/lib/providers/vscode';
 import Editor from '@monaco-editor/react';
 import { useMonacoEditor } from '@/hooks/use-monaco-editor';
-import { type CodeTemplate } from '@/lib/vscode-preview-utils';
+import { useThemeContext } from '@/providers/theme';
 
 interface MonacoPreviewProps {
   themeSet: { light: VSCodeTheme; dark: VSCodeTheme };
@@ -14,12 +14,15 @@ interface MonacoPreviewProps {
 }
 
 export function MonacoPreview({ themeSet, currentMode, template, themeVersion }: MonacoPreviewProps) {
+  const { currentTokens } = useThemeContext();
   const { isReady, isViewTransitioning, currentThemeName, handleEditorDidMount } = useMonacoEditor({
     themeSet,
     currentMode,
     template,
     themeVersion
   });
+
+  const monoFont = currentTokens['font-mono'] || 'monospace';
 
   if (!isReady) {
     return (
@@ -39,6 +42,7 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
       <Editor
         height="100%"
         width="100%"
+        className="!font-mono"
         language={template.language}
         value={template.code}
         onMount={handleEditorDidMount}
@@ -48,6 +52,7 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
           scrollBeyondLastLine: false,
           fontSize: 13,
           lineNumbers: 'on',
+          lineHeight: 1.5,
           glyphMargin: false,
           folding: false,
           lineDecorationsWidth: 20,
@@ -59,6 +64,7 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
           overviewRulerLanes: 0,
           hideCursorInOverviewRuler: true,
           overviewRulerBorder: false,
+          fontFamily: monoFont,
           scrollbar: {
             vertical: 'auto',
             horizontal: 'hidden',

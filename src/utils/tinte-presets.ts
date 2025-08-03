@@ -37,7 +37,7 @@ export const DEFAULT_THEME_PRESET: TinteTheme = {
   },
 };
 
-// Pre-compute tokens for default theme
+// Pre-compute tokens for default theme (computed by algorithm, not stored)
 const DEFAULT_COMPUTED_TOKENS = {
   light: {
     background: "#FFFFFF",
