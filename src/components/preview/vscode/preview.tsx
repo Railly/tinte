@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useThemeContext } from '@/providers/theme';
 import { providerRegistry } from '@/lib/providers';
 import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
+import { applyThemeWithTransition } from '@/lib/theme-manager';
 
 interface VSCodePreviewProps {
   theme: { light: VSCodeTheme; dark: VSCodeTheme };
@@ -184,12 +185,12 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [viewMode, setViewMode] = useState<'split' | 'monaco' | 'shiki' | 'tokens'>('split');
   const [themeVersion, setThemeVersion] = useState(0);
+  const [currentThemeSet, setCurrentThemeSet] = useState(theme);
 
-  // Build complete theme object with both light and dark variants
-  let currentThemeSet = theme;
+  // Memoize theme conversion to prevent unnecessary recalculations
+  const convertedTheme = useMemo(() => {
+    if (!activeTheme?.rawTheme) return theme;
 
-  // If we have an active theme, convert using the same logic as debug page
-  if (activeTheme?.rawTheme) {
     try {
       const themeData = activeTheme;
 
@@ -202,49 +203,62 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
         };
         const tinteTheme = shadcnToTinte(shadcnTheme);
         const vscodeTheme = providerRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
-        if (vscodeTheme) {
-          currentThemeSet = vscodeTheme;
-        }
+        return vscodeTheme || theme;
       } else {
         // For direct Tinte themes: Tinte → VSCode
         const tinteTheme = themeData.rawTheme;
         const vscodeTheme = providerRegistry.convert('vscode', tinteTheme) as { dark: VSCodeTheme; light: VSCodeTheme };
-        if (vscodeTheme) {
-          currentThemeSet = vscodeTheme;
-        }
+        return vscodeTheme || theme;
       }
     } catch (error) {
       console.warn('Failed to convert theme from theme-applier:', error);
+      return theme;
     }
-  }
+  }, [activeTheme, theme]);
+
+  // Apply theme changes (view transitions handled by theme-switcher)
+  useEffect(() => {
+    if (convertedTheme !== currentThemeSet) {
+      setCurrentThemeSet(convertedTheme);
+      setThemeVersion(prev => prev + 1);
+    }
+  }, [convertedTheme, currentThemeSet]);
 
   const currentTheme = currentMode === 'dark' ? currentThemeSet.dark : currentThemeSet.light;
 
-  // Force theme update when active theme changes
-  useEffect(() => {
-    if (activeTheme) {
-      setThemeVersion(prev => prev + 1);
-    }
-  }, [activeTheme]);
+  const tokens = useMemo(() => currentTheme.colors || {}, [currentTheme.colors]);
+  const currentTemplate = useMemo(() => codeTemplates[selectedTemplate], [selectedTemplate]);
 
-  const tokens = currentTheme.colors || {};
-  const currentTemplate = codeTemplates[selectedTemplate];
+  // Memoize container styles to prevent unnecessary re-renders
+  const containerStyles = useMemo(() => ({
+    backgroundColor: tokens['editor.background'] || '#1e1e1e',
+    color: tokens['editor.foreground'] || '#d4d4d4',
+  }), [tokens]);
+
+  const titleBarStyles = useMemo(() => ({
+    backgroundColor: tokens['titleBar.activeBackground'] || '#2d2d30',
+    borderColor: tokens['titleBar.border'] || '#404040',
+  }), [tokens]);
+
+  const statusBarStyles = useMemo(() => ({
+    backgroundColor: tokens['statusBar.background'] || '#007acc',
+    color: tokens['statusBar.foreground'] || '#ffffff',
+  }), [tokens]);
+
+  const headerStyles = useMemo(() => ({
+    backgroundColor: tokens['editorGroupHeader.tabsBackground'] || tokens['editor.background'] || '#f5f5f5',
+    borderColor: tokens['editorGroupHeader.border'] || tokens['border'] || '#e0e0e0'
+  }), [tokens]);
 
   return (
     <div
       className={`rounded-lg border overflow-hidden font-mono text-sm flex flex-col h-[85vh] ${className || ''}`}
-      style={{
-        backgroundColor: tokens['editor.background'] || '#1e1e1e',
-        color: tokens['editor.foreground'] || '#d4d4d4',
-      }}
+      style={containerStyles}
     >
       {/* Title bar */}
       <div
         className="px-4 py-2 border-b flex items-center gap-2"
-        style={{
-          backgroundColor: tokens['titleBar.activeBackground'] || '#2d2d30',
-          borderColor: tokens['titleBar.border'] || '#404040',
-        }}
+        style={titleBarStyles}
       >
         <div className="flex gap-1">
           <div className="w-3 h-3 rounded-full bg-red-500" />
@@ -297,7 +311,10 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
           <div className="flex flex-1 overflow-hidden">
             {/* Monaco Editor */}
             <div className="w-1/2 border-r border-border/50 flex flex-col overflow-hidden">
-              <div className="bg-muted/50 px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0">
+              <div 
+                className="px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0"
+                style={headerStyles}
+              >
                 <Badge variant="secondary" className="text-xs">Monaco Editor</Badge>
               </div>
               <div className="flex-1 overflow-hidden">
@@ -312,7 +329,10 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
 
             {/* Shiki */}
             <div className="w-1/2 flex flex-col overflow-hidden">
-              <div className="bg-muted/50 px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0">
+              <div 
+                className="px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0"
+                style={headerStyles}
+              >
                 <Badge variant="secondary" className="text-xs">Shiki</Badge>
               </div>
               <div className="flex-1 overflow-hidden">
@@ -362,10 +382,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
       {/* Status bar */}
       <div
         className="px-4 py-1 text-xs flex items-center justify-between flex-shrink-0"
-        style={{
-          backgroundColor: tokens['statusBar.background'] || '#007acc',
-          color: tokens['statusBar.foreground'] || '#ffffff',
-        }}
+        style={statusBarStyles}
       >
         <div>{currentTemplate.name} • {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} View</div>
         <div>Ln 1, Col 1</div>
@@ -439,7 +456,7 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
         }
       }))
     }
-  }), [themeSet, lightThemeName, darkThemeName]);
+  }), [themeSet, lightThemeName, darkThemeName, themeVersion]);
 
   const registerThemes = useCallback(async (monaco: any) => {
     if (!highlighterRef.current || themesRegistered) return;
@@ -550,6 +567,7 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
       const monaco = (window as any).monaco;
       if (monaco) {
         const themeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
+        
         try {
           monaco.editor.setTheme(themeName);
 
@@ -649,7 +667,7 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
   const [html, setHtml] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
-  // Memoize Shiki theme data
+  // Memoize Shiki theme data with deeper dependency tracking
   const shikiThemeData = useMemo(() => {
     const currentTheme = themeSet[currentMode];
     return {
@@ -668,9 +686,9 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
         }
       }))
     };
-  }, [themeSet, currentMode]);
+  }, [themeSet, currentMode, themeVersion]);
 
-  // Debounced highlighting to improve performance
+  // Debounced highlighting to improve performance with view transitions
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
@@ -683,11 +701,16 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
           theme: shikiThemeData as any,
         });
 
-        setHtml(result);
+        // Update Shiki content and exclude from view transitions
+        const modifiedResult = result.replace(
+          /<pre([^>]*)>/g, 
+          '<pre$1 style="view-transition-name: none;">'
+        );
+        setHtml(modifiedResult);
+        setLoading(false);
       } catch (error) {
         console.error('Failed to highlight code:', error);
         setHtml(`<pre><code>${template.code}</code></pre>`);
-      } finally {
         setLoading(false);
       }
     };
@@ -715,6 +738,7 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
       style={{
         backgroundColor: currentTheme.colors['editor.background'],
         color: currentTheme.colors['editor.foreground'],
+        viewTransitionName: 'none', // Exclude from view transitions
       }}
     />
   );

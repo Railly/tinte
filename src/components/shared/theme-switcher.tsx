@@ -12,7 +12,7 @@ interface ThemeSwitcherProps {
 }
 
 export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
-  const { mounted, isDark, currentMode, handleModeChange } = useThemeContext();
+  const { mounted, isDark, currentMode, handleModeChange, toggleTheme } = useThemeContext();
   const id = useId();
 
   if (!mounted || !currentMode) {
@@ -37,9 +37,19 @@ export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
   }
 
   if (variant === "dual") {
-    const handleToggle = (checked: boolean) => {
-      const newMode = checked ? "dark" : "light";
-      handleModeChange(newMode);
+    const handleToggle = (checked: boolean, event?: React.MouseEvent) => {
+      // Get coordinates from the switch element if available
+      let coords;
+      if (event) {
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        coords = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        };
+      }
+      
+      // Use toggleTheme for view transitions instead of handleModeChange
+      toggleTheme(coords);
     };
 
     return (
@@ -48,7 +58,7 @@ export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
           <Switch
             id={id}
             checked={isDark}
-            onCheckedChange={handleToggle}
+            onCheckedChange={(checked) => handleToggle(checked)}
             className="absolute border border-muted inset-0 h-[inherit] w-auto [&_span]:h-full [&_span]:w-1/2 [&_span]:transition-transform [&_span]:duration-300 [&_span]:ease-[cubic-bezier(0.16,1,0.3,1)] [&_span]:data-[state=checked]:translate-x-full [&_span]:data-[state=checked]:rtl:-translate-x-full"
           />
           <span className="pointer-events-none relative ms-0.5 flex min-w-8 items-center justify-center text-center">
@@ -66,9 +76,15 @@ export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
   }
 
   const cycleTheme = (event: React.MouseEvent) => {
-    // Simple dual toggle: light <-> dark
-    const newMode = currentMode === "light" ? "dark" : "light";
-    handleModeChange(newMode);
+    // Get click coordinates for view transition
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    const coords = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
+    
+    // Use toggleTheme which includes view transitions
+    toggleTheme(coords);
   };
 
   const getIcon = () => {

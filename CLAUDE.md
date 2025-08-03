@@ -33,20 +33,26 @@ src/
 │   ├── vscode/            # Rayso → VS Code converter page
 │   ├── experiment/        # Rayso → shadcn converter page
 │   └── chat/              # Main workbench with theme editor
+├── providers/             # React Context providers
+│   └── theme.tsx          # Single theme context provider
 ├── components/            # Reusable UI components
 │   ├── ui/               # shadcn/ui base components
 │   ├── chat/             # Chat workbench components
 │   ├── shared/           # Shared theme components
+│   │   ├── theme-switcher.tsx     # Light/dark mode toggle
+│   │   ├── theme-selector.tsx     # Theme picker dropdown
+│   │   ├── theme-editor-panel.tsx # Token editor with color inputs
+│   │   └── theme-card.tsx         # Theme selection cards
 │   ├── code-preview.tsx  # Shiki syntax highlighting
 │   └── monaco-editor-preview.tsx # Monaco editor integration
 ├── hooks/                 # Custom React hooks
-│   ├── use-theme.ts             # Unified theme management (replaces old hooks)
+│   ├── use-theme.ts             # Core theme management (used by provider only)
 │   └── use-chat-state.ts        # Chat workbench state
 ├── lib/                   # Core conversion logic
 │   ├── palette-generator.ts      # OKLCH palette generation
 │   ├── tinte-to-shadcn.ts       # Tinte → shadcn conversion
 │   ├── tweakcn-to-tinte.ts      # TweakCN → Tinte conversion
-│   ├── theme-manager.ts         # Consolidated theme logic and token management
+│   ├── theme-manager.ts         # DOM manipulation & localStorage persistence
 │   └── tinte-to-vscode/          # Tinte → VS Code conversion
 ├── types/                 # Shared TypeScript definitions
 │   └── tinte.ts          # Common Tinte theme types
@@ -203,76 +209,62 @@ When testing the conversion systems:
 - **OKLCH color space** for better color manipulation
 - **Responsive UI** with modern design patterns
 
-## Theme Architecture (Optimized)
+## Theme Architecture (Ultra-Resilient)
 
-### Simplified Theme Management
+### Context-Based Single Source of Truth
 
-The theme system has been streamlined to 3 core files with **localStorage as single source of truth**:
+The theme system uses a **React Context Provider** pattern for bulletproof state synchronization across all components:
+
+#### Core Architecture
+
+```
+src/
+├── providers/theme.tsx          # Single theme context provider
+├── hooks/use-theme.ts           # Core theme logic (used only by provider)
+├── lib/theme-manager.ts         # DOM manipulation & localStorage persistence
+└── components/shared/
+    ├── theme-switcher.tsx       # Light/dark mode toggle
+    ├── theme-selector.tsx       # Theme picker dropdown
+    └── theme-editor-panel.tsx   # Token editor with color inputs
+```
 
 #### Core Files
 
-1. **`lib/theme-manager.ts`** - Theme logic and persistence:
-   - Theme application with view transitions
-   - Token computation and DOM manipulation
-   - localStorage persistence (themes + mode)
-   - Color format conversion (OKLCH/LAB → Hex)
-   - Native scrollbar color scheme support
+1. **`providers/theme.tsx`** - Global theme state provider:
+   - Single instance of `useTheme()` hook
+   - Provides theme context to entire app
+   - Prevents multiple hook instances and state desync
 
-2. **`hooks/use-theme.ts`** - Simplified theme hook:
-   - **Optimal persistence pattern**: Always reads from localStorage
-   - Theme selection with mode preservation
-   - Light/dark mode switching with theme preservation
-   - Token editing with real-time updates
+2. **`hooks/use-theme.ts`** - Core theme logic:
+   - localStorage as single source of truth
+   - Theme selection with mode preservation  
+   - Token editing with real-time DOM updates
    - Theme collections (TweakCN, Rayso, Tinte)
 
-3. **`components/theme-script.tsx`** - SSR prevention:
-   - Initial theme application before React hydration
-   - Prevents flash of incorrect theme
-   - Applies color-scheme for native elements
+3. **`lib/theme-manager.ts`** - DOM & persistence layer:
+   - Theme application with view transitions
+   - Token computation and CSS custom property injection
+   - Silent localStorage fallbacks
+   - Color format conversion (OKLCH/LAB → Hex)
 
-#### Optimal Persistence Pattern
+#### Context Provider Pattern
 
-**Problem Solved**: Theme selection and mode switching were inconsistent due to stale React state.
+**Problem Solved**: Multiple hook instances caused state desynchronization between components.
 
-**Solution**: localStorage as single source of truth for both operations:
-
-```js
-// Theme selection: preserves current mode
-handleThemeSelect(theme) {
-  saveTheme(theme);
-  const savedMode = loadMode();  // Always read from localStorage
-  applyThemeWithTransition(theme, savedMode);
-}
-
-// Mode switching: preserves current theme  
-handleModeChange(newMode) {
-  saveMode(newMode);
-  const savedTheme = loadTheme();  // Always read from localStorage
-  applyThemeWithTransition(savedTheme, newMode);
-}
-```
-
-#### Key Benefits
-
-- **Bulletproof consistency**: No state synchronization issues
-- **Predictable behavior**: Theme selection preserves mode, mode switching preserves theme
-- **Simple debugging**: Single source of truth eliminates race conditions
-- **Native browser support**: Proper color-scheme for scrollbars and form elements
-- **Instant persistence**: All changes immediately saved to localStorage
-
-#### Storage Keys
-
-- `tinte-selected-theme`: Currently active theme with computed tokens
-- `tinte-current-mode`: Global light/dark mode preference
-
-#### Usage
+**Solution**: Single context provider wraps entire app:
 
 ```tsx
-import { useTheme } from '@/hooks/use-theme';
+// App Layout
+<ThemeProvider>
+  {children}
+</ThemeProvider>
+
+// All components use shared context
+import { useThemeContext } from '@/providers/theme';
 
 function MyComponent() {
   const { 
-    // Theme state
+    // Shared theme state
     activeTheme, currentMode, isDark, mounted,
     
     // Theme collections  
@@ -281,15 +273,45 @@ function MyComponent() {
     // Token editing
     currentTokens, handleTokenEdit, resetTokens,
     
-    // Actions (optimized for consistency)
+    // Actions (globally synchronized)
     handleThemeSelect, handleModeChange, toggleTheme
-  } = useTheme();
+  } = useThemeContext();
 }
 ```
 
-#### Testing the Persistence
+#### Component Responsibilities
 
-1. **Clean state** → Click theme card → Theme applied
-2. **Switch to dark mode** → Mode preserved, theme stays
-3. **Click different theme** → New theme applied, dark mode preserved
-4. **Refresh page** → Both theme and mode restored correctly
+- **`theme-switcher.tsx`**: Light/dark mode toggle (header)
+- **`theme-selector.tsx`**: Theme picker dropdown (design panel)  
+- **`theme-editor-panel.tsx`**: Live token editor with color inputs
+- **`theme-card.tsx`**: Theme selection from showcase (homepage)
+
+#### Key Benefits
+
+- **Zero state desync**: Single context eliminates race conditions
+- **Predictable behavior**: All components always see same state
+- **Instant synchronization**: Mode changes update all components immediately
+- **Cross-page consistency**: Theme selection from homepage properly updates editor
+- **Simple debugging**: One source of truth, clear data flow
+- **Type-safe**: Full TypeScript support throughout
+
+#### Storage Keys
+
+- `tinte-selected-theme`: Currently active theme with computed tokens
+- `tinte-current-mode`: Global light/dark mode preference
+
+#### Edge Cases Handled
+
+✅ **Theme card navigation**: Clicking theme on homepage → navigate to `/chat/id` → editor shows correct tokens  
+✅ **Mode switching**: Toggle dark/light anywhere → all components sync instantly  
+✅ **Token editing**: Edit color in panel → immediate visual feedback  
+✅ **Page refresh**: Theme and mode restored correctly  
+✅ **SSR/hydration**: No flash of incorrect theme  
+
+#### Testing the Resilience
+
+1. **Homepage theme selection** → Navigate to chat → Editor shows correct tokens
+2. **Mode toggle in header** → Design panel tokens update instantly  
+3. **Theme change in dropdown** → All components sync immediately
+4. **Token edit** → Real-time DOM updates + state persistence
+5. **Page refresh** → Perfect state restoration
