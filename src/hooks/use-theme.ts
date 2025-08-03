@@ -112,15 +112,15 @@ export function useTheme() {
   }, [currentMode, handleModeChange]);
 
   const handleThemeSelect = useCallback((theme: ThemeData) => {
-    const savedMode = loadMode();
+    // Use current mode instead of loading from storage to maintain consistency
+    const modeToUse = currentMode;
     
     setActiveTheme(theme);
-    setCurrentMode(savedMode);
     setEditedTokens({});
     
     saveTheme(theme);
-    applyThemeWithTransition(theme, savedMode);
-  }, []);
+    applyThemeWithTransition(theme, modeToUse);
+  }, [currentMode]);
 
   const handleTokenEdit = useCallback((key: string, value: string) => {
     const hexValue = convertColorToHex(value);

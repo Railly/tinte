@@ -29,13 +29,24 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
     [activeTheme, theme]
   );
 
-  // Apply theme changes
+  // Apply theme changes - trigger on theme ID and mode changes
   useEffect(() => {
-    if (convertedTheme !== currentThemeSet) {
-      setCurrentThemeSet(convertedTheme);
-      setThemeVersion(prev => prev + 1);
-    }
-  }, [convertedTheme, currentThemeSet]);
+    console.log('VSCodePreview: Theme change detected', {
+      activeThemeId: activeTheme?.id,
+      currentMode,
+      themeVersion,
+      convertedTheme: {
+        light: convertedTheme.light.name,
+        dark: convertedTheme.dark.name
+      }
+    });
+    setCurrentThemeSet(convertedTheme);
+    setThemeVersion(prev => {
+      const newVersion = prev + 1;
+      console.log('VSCodePreview: themeVersion updated', prev, '->', newVersion);
+      return newVersion;
+    });
+  }, [activeTheme?.id || 'default', currentMode]);
 
   const currentTheme = currentMode === 'dark' ? currentThemeSet.dark : currentThemeSet.light;
   const currentTemplate = useMemo(() => codeTemplates[selectedTemplate], [selectedTemplate]);

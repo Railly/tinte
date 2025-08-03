@@ -26,125 +26,139 @@ export function useMonacoEditor({
   const editorRef = useRef<any>(null);
   const highlighterRef = useRef<any>(null);
   const monacoRef = useRef<any>(null);
-  const themesRegisteredRef = useRef<Set<string>>(new Set());
+  const currentThemeVersionRef = useRef<number>(-1);
   const [isReady, setIsReady] = useState(false);
   const [isViewTransitioning, setIsViewTransitioning] = useState(false);
 
-  const lightThemeName = "tinte-light";
-  const darkThemeName = "tinte-dark";
-  const currentThemeName =
-    currentMode === "dark" ? darkThemeName : lightThemeName;
+  // Use same theme structure as Shiki highlighter
+  const themeNames = {
+    light: "tinte-light",
+    dark: "tinte-dark",
+  };
+
+  const currentThemeName = useMemo(() => {
+    return currentMode === "dark" ? themeNames.dark : themeNames.light;
+  }, [currentMode]);
 
   // Minimal view transition for theme changes only
   useEffect(() => {
     if (isReady && editorRef.current) {
       setIsViewTransitioning(true);
-      const timer = setTimeout(() => setIsViewTransitioning(false), 300);
+      const timer = setTimeout(() => setIsViewTransitioning(false), 300); // Reduced from 300ms
       return () => clearTimeout(timer);
     }
   }, [themeVersion, isReady]);
 
-  // Initialize Shiki highlighter once
-  useEffect(() => {
-    let mounted = true;
-
-    const initializeShiki = async () => {
-      if (!highlighterRef.current) {
-        try {
-          const highlighter = await createHighlighter({
-            themes: [],
-            langs: ["python", "go", "javascript"],
-          });
-          if (mounted) {
-            highlighterRef.current = highlighter;
-            setIsReady(true);
-          }
-        } catch (error) {
-          console.error("Failed to initialize Shiki:", error);
-          if (mounted) {
-            setIsReady(true); // Continue without Shiki
-          }
-        }
-      }
-    };
-
-    initializeShiki();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // Stable theme data using same format as Shiki highlighter
-  const themeData = useMemo(
-    () => ({
-      light: {
-        name: lightThemeName,
-        type: themeSet.light.type,
-        colors: themeSet.light.colors,
-        tokenColors: themeSet.light.tokenColors.map((token) => ({
+  // Create theme objects using same structure as Shiki highlighter
+  const createThemeData = useCallback(
+    (mode: "light" | "dark") => {
+      const currentTheme = themeSet[mode];
+      return {
+        name: themeNames[mode],
+        type: currentTheme.type,
+        colors: {
+          "editor.background":
+            currentTheme.colors["editor.background"] ||
+            (mode === "dark" ? "#1e1e1e" : "#ffffff"),
+          "editor.foreground":
+            currentTheme.colors["editor.foreground"] ||
+            (mode === "dark" ? "#d4d4d4" : "#000000"),
+          "editorLineNumber.foreground":
+            currentTheme.colors["editorLineNumber.foreground"] || "#6a6a6a",
+        },
+        tokenColors: currentTheme.tokenColors.map((token) => ({
           scope: token.scope,
           settings: {
             foreground: token.settings.foreground,
             fontStyle: token.settings.fontStyle,
           },
         })),
-      },
-      dark: {
-        name: darkThemeName,
-        type: themeSet.dark.type,
-        colors: themeSet.dark.colors,
-        tokenColors: themeSet.dark.tokenColors.map((token) => ({
-          scope: token.scope,
-          settings: {
-            foreground: token.settings.foreground,
-            fontStyle: token.settings.fontStyle,
-          },
-        })),
-      },
-    }),
-    [themeSet, lightThemeName, darkThemeName]
+      };
+    },
+    [themeSet]
   );
 
-  // Register themes using shikiToMonaco for consistency
-  const registerThemes = useCallback(
+  // Initialize Monaco with Shiki integration
+  const initializeMonaco = useCallback(
     async (monaco: any) => {
-      const themeKey = `${themeVersion}-${JSON.stringify(themeData)}`;
-
-      if (themesRegisteredRef.current.has(themeKey)) {
-        return; // Already registered
+      // Check if we need to update based on theme version
+      if (
+        highlighterRef.current &&
+        currentThemeVersionRef.current === themeVersion
+      ) {
+        console.log(
+          "Monaco: Themes already up to date, skipping initialization"
+        );
+        return; // Already initialized with current theme version
       }
 
       try {
-        if (highlighterRef.current) {
-          // Load themes into Shiki highlighter
-          await highlighterRef.current.loadTheme(themeData.light);
-          await highlighterRef.current.loadTheme(themeData.dark);
+        console.log("Monaco: Initializing Shiki highlighter", {
+          currentVersion: currentThemeVersionRef.current,
+          newVersion: themeVersion,
+        });
 
-          // Register languages first
-          ["python", "go", "javascript"].forEach((lang) => {
-            if (!monaco.languages.getLanguages().some((l: any) => l.id === lang)) {
-              monaco.languages.register({ id: lang });
-            }
-          });
+        // Create themes using same structure as Shiki highlighter
+        const lightTheme = createThemeData("light");
+        const darkTheme = createThemeData("dark");
 
-          // Use shikiToMonaco for consistent theme registration
-          shikiToMonaco(highlighterRef.current, monaco);
+        console.log("Monaco: Created theme data", { lightTheme, darkTheme });
 
-          themesRegisteredRef.current.add(themeKey);
-        }
+        // Don't dispose - just create a new highlighter
+        const highlighter = await createHighlighter({
+          themes: [lightTheme, darkTheme],
+          langs: ["python", "go", "javascript"],
+        });
+
+        // Register languages first
+        ["python", "go", "javascript"].forEach((lang) => {
+          if (
+            !monaco.languages.getLanguages().some((l: any) => l.id === lang)
+          ) {
+            monaco.languages.register({ id: lang });
+          }
+        });
+
+        // Apply shikiToMonaco integration
+        shikiToMonaco(highlighter, monaco);
+
+        // Update refs
+        highlighterRef.current = highlighter;
+        currentThemeVersionRef.current = themeVersion;
+        console.log("Monaco: Shiki integration completed successfully");
       } catch (error) {
-        console.error("Failed to register themes with shikiToMonaco:", error);
+        console.error("Monaco: Failed to initialize Shiki:", error);
       }
     },
-    [themeData, themeVersion, lightThemeName, darkThemeName]
+    [createThemeData, themeVersion]
   );
 
-  // Apply theme and content
+  // Simplified theme initialization following working pattern
+
+  // Apply theme with smart fallback
   const applyTheme = useCallback(
-    (editor: any, monaco: any) => {
+    (editor: any, monaco: any, useBuiltInFallback = false) => {
       try {
-        // Set theme
-        monaco.editor.setTheme(currentThemeName);
+        let themeToApply;
+
+        if (useBuiltInFallback && !highlighterRef.current) {
+          // Use built-in themes only before Shiki initialization
+          themeToApply = currentMode === "dark" ? "vs-dark" : "vs";
+        } else {
+          // Use custom themes after Shiki initialization
+          themeToApply = currentThemeName;
+        }
+
+        console.log("Monaco: Applying theme", {
+          themeToApply,
+          currentMode,
+          useBuiltInFallback,
+          hasShikiHighlighter: !!highlighterRef.current,
+          templateLanguage: template.language,
+        });
+
+        monaco.editor.setTheme(themeToApply);
+        console.log("Monaco: Theme set successfully to", themeToApply);
 
         // Update editor content and language
         const model = editor.getModel();
@@ -156,10 +170,13 @@ export function useMonacoEditor({
         // Force layout
         editor.layout();
       } catch (error) {
-        console.error("Failed to apply theme:", error);
+        console.error("Monaco: Failed to apply theme:", error, {
+          attemptedTheme: useBuiltInFallback ? "built-in" : "custom",
+          hasHighlighter: !!highlighterRef.current,
+        });
       }
     },
-    [currentThemeName, template]
+    [currentThemeName, template, currentMode]
   );
 
   // Handle editor mount
@@ -168,33 +185,51 @@ export function useMonacoEditor({
       editorRef.current = editor;
       monacoRef.current = monaco;
 
-      // Register themes and apply
-      await registerThemes(monaco);
-      applyTheme(editor, monaco);
+      // Apply built-in theme immediately to avoid blank screen
+      applyTheme(editor, monaco, true);
+
+      // Initialize Monaco with Shiki integration in background
+      initializeMonaco(monaco).then(() => {
+        // Apply custom theme once Shiki is ready
+        setTimeout(() => {
+          applyTheme(editor, monaco, false);
+        }, 50); // Reduced from 100ms
+      });
     },
-    [registerThemes, applyTheme]
+    [initializeMonaco, applyTheme]
   );
 
   // Update theme when mode or version changes
   useEffect(() => {
-    if (
-      editorRef.current &&
-      monacoRef.current &&
-      isReady &&
-      !isViewTransitioning
-    ) {
-      registerThemes(monacoRef.current).then(() => {
-        applyTheme(editorRef.current, monacoRef.current);
+    if (editorRef.current && monacoRef.current) {
+      console.log("Monaco: Theme/mode changed, updating themes");
+
+      // Only apply built-in theme if we don't have Shiki highlighter yet
+      if (!highlighterRef.current) {
+        applyTheme(editorRef.current, monacoRef.current, true);
+      }
+
+      // Re-initialize only if theme version changed
+      initializeMonaco(monacoRef.current).then(() => {
+        // Apply custom theme with reduced delay
+        setTimeout(() => {
+          console.log("Monaco: Applying updated theme:", currentThemeName);
+          applyTheme(editorRef.current, monacoRef.current, false);
+        }, 50); // Reduced from 100ms
       });
     }
   }, [
-    registerThemes,
-    applyTheme,
-    isReady,
-    isViewTransitioning,
     currentMode,
     themeVersion,
+    currentThemeName,
+    initializeMonaco,
+    applyTheme,
   ]);
+
+  // Set ready state
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
 
   return {
     isReady,
