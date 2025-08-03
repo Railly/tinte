@@ -8,7 +8,7 @@ import { CardsShare } from "./demos/share"
 import { CardsStats } from "./demos/stats"
 import { CardsTeamMembers } from "./demos/team-members"
 
-export function CardsDemo() {
+export function ShadcnPreview() {
   return (
     <div className="h-full md:grids-col-2 grid **:data-[slot=card]:shadow-none md:gap-4 lg:grid-cols-10 xl:grid-cols-13">
       <div className="h-full grid gap-4 lg:col-span-4 xl:col-span-6">

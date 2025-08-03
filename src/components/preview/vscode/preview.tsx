@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useThemeContext } from '@/providers/theme';
-import { codeTemplates, convertThemeToVSCode } from '@/lib/vscode-preview-utils';
+import { codeTemplates, convertThemeToVSCode } from '@/lib/providers/vscode';
 import { MonacoPreview } from './monaco-preview';
 import { ShikiPreview } from './shiki-preview';
 import { TokensPreview } from './tokens-preview';

@@ -4,7 +4,7 @@ import { TinteBlock, TinteTheme } from "@/types/tinte";
 import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
 import { PreviewableProvider, ThemeMode, ProviderOutput } from "./types";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
-import { CardsDemo } from "@/components/preview/shadcn/cards-demo";
+import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
 
 const ANCHORS = {
   light: { primary: 600, border: 200, muted: 100, mutedFg: 600, accent: 300 },
@@ -22,13 +22,16 @@ const L = (hex: string) => {
 };
 
 const contrast = (a: string, b: string) => {
-  const la = L(a), lb = L(b);
-  const lighter = Math.max(la, lb), darker = Math.min(la, lb);
+  const la = L(a),
+    lb = L(b);
+  const lighter = Math.max(la, lb),
+    darker = Math.min(la, lb);
   return (lighter + 0.05) / (darker + 0.05);
 };
 
 const bestTextFor = (bg: string) => {
-  const w = "#ffffff", k = "#000000";
+  const w = "#ffffff",
+    k = "#000000";
   return contrast(w, bg) >= contrast(k, bg) ? w : k;
 };
 
@@ -44,7 +47,12 @@ const tweakL = (hex: string, dL: number) => {
 };
 
 function buildNeutralRamp(block: TinteBlock): string[] {
-  const seed = block.interface || block.interface_2 || block.interface_3 || block.background || "#808080";
+  const seed =
+    block.interface ||
+    block.interface_2 ||
+    block.interface_3 ||
+    block.background ||
+    "#808080";
   return generateTailwindPalette(seed).map((s) => s.value);
 }
 
@@ -53,7 +61,9 @@ function buildRamp(seed?: string): string[] {
 }
 
 const pick = (ramp: string[], step: number) => {
-  const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(step);
+  const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(
+    step
+  );
   return ramp[Math.max(0, idx)];
 };
 
@@ -67,7 +77,9 @@ function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
 
   const neutralRamp = buildNeutralRamp(block);
   const primaryRamp = buildRamp(block.primary);
-  const accentRamp = buildRamp(block.accent || block.accent_2 || block.secondary);
+  const accentRamp = buildRamp(
+    block.accent || block.accent_2 || block.secondary
+  );
 
   const A = ANCHORS[mode];
   const primary = pick(primaryRamp, A.primary);
@@ -140,11 +152,11 @@ function convertTinteToShadcn(tinte: TinteTheme): ShadcnTheme {
 function generateCSSVariables(theme: ShadcnTheme): string {
   const lightVars = Object.entries(theme.light)
     .map(([key, value]) => `    --${key}: ${value};`)
-    .join('\n');
-  
+    .join("\n");
+
   const darkVars = Object.entries(theme.dark)
     .map(([key, value]) => `    --${key}: ${value};`)
-    .join('\n');
+    .join("\n");
 
   return `:root {
 ${lightVars}
@@ -159,14 +171,15 @@ export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
   metadata: {
     id: "shadcn",
     name: "shadcn/ui",
-    description: "Beautifully designed components built on Radix UI and Tailwind CSS",
+    description:
+      "Beautifully designed components built on Radix UI and Tailwind CSS",
     category: "ui",
     tags: ["react", "tailwind", "components", "ui"],
     icon: ShadcnIcon,
     website: "https://ui.shadcn.com/",
     documentation: "https://ui.shadcn.com/docs",
   },
-  
+
   fileExtension: "css",
   mimeType: "text/css",
 
@@ -179,11 +192,16 @@ export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
   }),
 
   validate: (output: ShadcnTheme) => {
-    return !!(output.light && output.dark && 
-      output.light.background && output.dark.background);
+    return !!(
+      output.light &&
+      output.dark &&
+      output.light.background &&
+      output.dark.background
+    );
   },
 
   preview: {
-    component: CardsDemo,
+    component: ShadcnPreview,
+    showDock: true,
   },
 };

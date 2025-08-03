@@ -2,6 +2,196 @@ import { TinteTheme, TinteBlock } from "@/types/tinte";
 import { PreviewableProvider, ProviderOutput } from "./types";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import { VSCodePreview } from "@/components/preview/vscode/preview";
+import { shadcnToTinte } from "../shadcn-to-tinte";
+
+export interface CodeTemplate {
+  name: string;
+  filename: string;
+  language: string;
+  code: string;
+}
+
+export const codeTemplates: CodeTemplate[] = [
+  {
+    name: "Python",
+    filename: "user_service.py",
+    language: "python",
+    code: `from typing import Optional, List
+import asyncio
+from dataclasses import dataclass
+
+@dataclass
+class User:
+    id: int
+    name: str
+    email: str
+    is_active: bool = True
+
+class UserService:
+    def __init__(self, database_url: str):
+        self.db_url = database_url
+        self.users: List[User] = []
+    
+    async def get_user(self, user_id: int) -> Optional[User]:
+        """Fetch a user by ID"""
+        for user in self.users:
+            if user.id == user_id:
+                return user
+        return None
+    
+    def create_user(self, name: str, email: str) -> User:
+        user = User(
+            id=len(self.users) + 1,
+            name=name,
+            email=email
+        )
+        self.users.append(user)
+        return user`,
+  },
+  {
+    name: "Go",
+    filename: "main.go",
+    language: "go",
+    code: `package main
+
+import (
+\t"encoding/json"
+\t"fmt"
+\t"log"
+\t"net/http"
+)
+
+type User struct {
+\tID       int    \`json:"id"\`
+\tName     string \`json:"name"\`
+\tEmail    string \`json:"email"\`
+\tIsActive bool   \`json:"is_active"\`
+}
+
+type UserService struct {
+\tusers map[int]*User
+}
+
+func NewUserService() *UserService {
+\treturn &UserService{
+\t\tusers: make(map[int]*User),
+\t}
+}
+
+func (s *UserService) CreateUser(name, email string) *User {
+\tuser := &User{
+\t\tID:       len(s.users) + 1,
+\t\tName:     name,
+\t\tEmail:    email,
+\t\tIsActive: true,
+\t}
+\ts.users[user.ID] = user
+\treturn user
+}
+
+func main() {
+\tservice := NewUserService()
+\tuser := service.CreateUser("John Doe", "john@example.com")
+\tfmt.Printf("Created user: %+v\\\\n", user)
+}`,
+  },
+  {
+    name: "JavaScript",
+    filename: "main.js",
+    language: "javascript",
+    code: `class User {
+  constructor(name, email) {
+    this.id = Math.floor(Math.random() * 1000);
+    this.name = name;
+    this.email = email;
+    this.isActive = true;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name, 
+      email: this.email,
+      isActive: this.isActive
+    };
+  }
+}
+
+class UserService {
+  constructor() {
+    this.users = new Map();
+  }
+
+  createUser(name, email) {
+    const user = new User(name, email);
+    this.users.set(user.id, user);
+    return user;
+  }
+
+  getUser(id) {
+    return this.users.get(id);
+  }
+
+  updateUser(id, updates) {
+    const user = this.getUser(id);
+    if (!user) return null;
+    
+    Object.assign(user, updates);
+    return user;
+  }
+
+  deleteUser(id) {
+    return this.users.delete(id);
+  }
+}
+
+// Example usage
+const userService = new UserService();
+
+const user = userService.createUser('John Doe', 'john@example.com');
+console.log('Created user:', user.toJSON());
+
+const updated = userService.updateUser(user.id, { name: 'Jane Doe' });
+console.log('Updated user:', updated.toJSON());
+
+const deleted = userService.deleteUser(user.id);
+console.log('User deleted:', deleted);`,
+  },
+];
+
+export function convertThemeToVSCode(
+  activeTheme: any,
+  fallbackTheme: { light: VSCodeTheme; dark: VSCodeTheme }
+) {
+  if (!activeTheme?.rawTheme) return fallbackTheme;
+
+  try {
+    const themeData = activeTheme;
+
+    if (themeData.author === "tweakcn" && themeData.rawTheme) {
+      const shadcnTheme = {
+        light: themeData.rawTheme.light || themeData.rawTheme,
+        dark: themeData.rawTheme.dark || themeData.rawTheme,
+      };
+      const tinteTheme = shadcnToTinte(shadcnTheme);
+      const vscodeTheme = convertTinteToVSCode(tinteTheme) as {
+        dark: VSCodeTheme;
+        light: VSCodeTheme;
+      };
+      return vscodeTheme || fallbackTheme;
+    } else {
+      const tinteTheme = themeData.rawTheme;
+      const vscodeTheme = convertTinteToVSCode(tinteTheme) as {
+        dark: VSCodeTheme;
+        light: VSCodeTheme;
+      };
+      return vscodeTheme || fallbackTheme;
+    }
+  } catch (error) {
+    console.warn("Failed to convert theme:", error);
+    return fallbackTheme;
+  }
+}
 
 export interface VSCodeTheme {
   name: string;
@@ -21,14 +211,46 @@ export interface VSCodeTokenColor {
 }
 
 export type SemanticToken =
-  | "plain" | "classes" | "interfaces" | "structs" | "enums" | "keys"
-  | "methods" | "functions" | "variables" | "variablesOther" | "globalVariables"
-  | "localVariables" | "parameters" | "properties" | "strings" | "stringEscapeSequences"
-  | "keywords" | "keywordsControl" | "storageModifiers" | "comments" | "docComments"
-  | "numbers" | "booleans" | "operators" | "macros" | "preprocessor" | "urls"
-  | "tags" | "jsxTags" | "attributes" | "types" | "constants" | "labels"
-  | "namespaces" | "modules" | "typeParameters" | "exceptions" | "decorators"
-  | "calls" | "punctuation";
+  | "plain"
+  | "classes"
+  | "interfaces"
+  | "structs"
+  | "enums"
+  | "keys"
+  | "methods"
+  | "functions"
+  | "variables"
+  | "variablesOther"
+  | "globalVariables"
+  | "localVariables"
+  | "parameters"
+  | "properties"
+  | "strings"
+  | "stringEscapeSequences"
+  | "keywords"
+  | "keywordsControl"
+  | "storageModifiers"
+  | "comments"
+  | "docComments"
+  | "numbers"
+  | "booleans"
+  | "operators"
+  | "macros"
+  | "preprocessor"
+  | "urls"
+  | "tags"
+  | "jsxTags"
+  | "attributes"
+  | "types"
+  | "constants"
+  | "labels"
+  | "namespaces"
+  | "modules"
+  | "typeParameters"
+  | "exceptions"
+  | "decorators"
+  | "calls"
+  | "punctuation";
 
 export type TokenColorMap = Record<SemanticToken, keyof TinteBlock>;
 
@@ -82,17 +304,33 @@ const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
   enums: ["entity.name.type.enum"],
   keys: ["meta.object-literal.key"],
   methods: ["entity.name.function.method", "meta.function.method"],
-  functions: ["entity.name.function", "support.function", "meta.function-call.generic"],
-  variables: ["variable", "meta.variable", "variable.other.object.property", "variable.other.readwrite.alias"],
+  functions: [
+    "entity.name.function",
+    "support.function",
+    "meta.function-call.generic",
+  ],
+  variables: [
+    "variable",
+    "meta.variable",
+    "variable.other.object.property",
+    "variable.other.readwrite.alias",
+  ],
   variablesOther: ["variable.other.object"],
   globalVariables: ["variable.other.global", "variable.language.this"],
   localVariables: ["variable.other.local"],
   parameters: ["variable.parameter", "meta.parameter"],
   properties: ["variable.other.property", "meta.property"],
   strings: ["string", "string.other.link", "markup.inline.raw.string.markdown"],
-  stringEscapeSequences: ["constant.character.escape", "constant.other.placeholder"],
+  stringEscapeSequences: [
+    "constant.character.escape",
+    "constant.other.placeholder",
+  ],
   keywords: ["keyword"],
-  keywordsControl: ["keyword.control.import", "keyword.control.from", "keyword.import"],
+  keywordsControl: [
+    "keyword.control.import",
+    "keyword.control.from",
+    "keyword.import",
+  ],
   storageModifiers: ["storage.modifier", "keyword.modifier", "storage.type"],
   comments: ["comment", "punctuation.definition.comment"],
   docComments: ["comment.documentation", "comment.line.documentation"],
@@ -108,13 +346,28 @@ const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
   types: ["support.type"],
   constants: ["variable.other.constant", "variable.readonly"],
   labels: ["entity.name.label", "punctuation.definition.label"],
-  namespaces: ["entity.name.namespace", "storage.modifier.namespace", "markup.bold.markdown"],
+  namespaces: [
+    "entity.name.namespace",
+    "storage.modifier.namespace",
+    "markup.bold.markdown",
+  ],
   modules: ["entity.name.module", "storage.modifier.module"],
   typeParameters: ["variable.type.parameter", "variable.parameter.type"],
   exceptions: ["keyword.control.exception", "keyword.control.trycatch"],
-  decorators: ["meta.decorator", "punctuation.decorator", "entity.name.function.decorator"],
+  decorators: [
+    "meta.decorator",
+    "punctuation.decorator",
+    "entity.name.function.decorator",
+  ],
   calls: ["variable.function"],
-  punctuation: ["punctuation", "punctuation.terminator", "punctuation.definition.tag", "punctuation.separator", "punctuation.definition.string", "punctuation.section.block"],
+  punctuation: [
+    "punctuation",
+    "punctuation.terminator",
+    "punctuation.definition.tag",
+    "punctuation.separator",
+    "punctuation.definition.string",
+    "punctuation.section.block",
+  ],
   plain: ["source", "support.type.property-name.css"],
 };
 
@@ -228,7 +481,11 @@ const editorColorMap = {
   "activityBarBadge.foreground": "background",
 } as const;
 
-const applyCustomizations = (color: string, token: string, mode: "light" | "dark") => {
+const applyCustomizations = (
+  color: string,
+  token: string,
+  mode: "light" | "dark"
+) => {
   switch (token) {
     case "editor.findMatchBackground":
       return mode === "light" ? color + "55" : color + "66";
@@ -267,7 +524,10 @@ function getVSCodeColors(palette: TinteBlock, mode: "light" | "dark") {
   return vsCodeColors;
 }
 
-function generateTokenColors(palette: TinteBlock, tokenColors: TokenColorMap = defaultTokenColorMap): VSCodeTokenColor[] {
+function generateTokenColors(
+  palette: TinteBlock,
+  tokenColors: TokenColorMap = defaultTokenColorMap
+): VSCodeTokenColor[] {
   return Object.entries(tokenColors).map(([token, colorKey]) => ({
     name: token,
     scope: tokenToScopeMapping[token as SemanticToken],
@@ -277,7 +537,10 @@ function generateTokenColors(palette: TinteBlock, tokenColors: TokenColorMap = d
   }));
 }
 
-function convertTinteToVSCode(tinteTheme: TinteTheme, name: string = "Tinte Theme"): { light: VSCodeTheme; dark: VSCodeTheme } {
+function convertTinteToVSCode(
+  tinteTheme: TinteTheme,
+  name: string = "Tinte Theme"
+): { light: VSCodeTheme; dark: VSCodeTheme } {
   const lightTheme: VSCodeTheme = {
     name: `${name} Light`,
     displayName: `${name} (Light)`,
@@ -297,27 +560,37 @@ function convertTinteToVSCode(tinteTheme: TinteTheme, name: string = "Tinte Them
   return { light: lightTheme, dark: darkTheme };
 }
 
-function generateVSCodeThemeFile(themes: { light: VSCodeTheme; dark: VSCodeTheme }): string {
-  return JSON.stringify({
-    ...themes.dark,
-    extends: [
-      {
-        ...themes.light,
-        name: themes.light.name,
-        uiTheme: "vs",
-      },
-      {
-        ...themes.dark,
-        name: themes.dark.name,
-        uiTheme: "vs-dark",
-      }
-    ]
-  }, null, 2);
+function generateVSCodeThemeFile(themes: {
+  light: VSCodeTheme;
+  dark: VSCodeTheme;
+}): string {
+  return JSON.stringify(
+    {
+      ...themes.dark,
+      extends: [
+        {
+          ...themes.light,
+          name: themes.light.name,
+          uiTheme: "vs",
+        },
+        {
+          ...themes.dark,
+          name: themes.dark.name,
+          uiTheme: "vs-dark",
+        },
+      ],
+    },
+    null,
+    2
+  );
 }
 
 export { convertTinteToVSCode };
 
-export const vscodeProvider: PreviewableProvider<{ light: VSCodeTheme; dark: VSCodeTheme }> = {
+export const vscodeProvider: PreviewableProvider<{
+  light: VSCodeTheme;
+  dark: VSCodeTheme;
+}> = {
   metadata: {
     id: "vscode",
     name: "VS Code",
@@ -326,7 +599,8 @@ export const vscodeProvider: PreviewableProvider<{ light: VSCodeTheme; dark: VSC
     tags: ["editor", "microsoft", "typescript", "javascript"],
     icon: VSCodeIcon,
     website: "https://code.visualstudio.com/",
-    documentation: "https://code.visualstudio.com/api/extension-guides/color-theme",
+    documentation:
+      "https://code.visualstudio.com/api/extension-guides/color-theme",
   },
 
   fileExtension: "json",
@@ -344,12 +618,18 @@ export const vscodeProvider: PreviewableProvider<{ light: VSCodeTheme; dark: VSC
   },
 
   validate: (output: { light: VSCodeTheme; dark: VSCodeTheme }) => {
-    return !!(output.light && output.dark && 
-      output.light.colors && output.dark.colors &&
-      output.light.tokenColors && output.dark.tokenColors);
+    return !!(
+      output.light &&
+      output.dark &&
+      output.light.colors &&
+      output.dark.colors &&
+      output.light.tokenColors &&
+      output.dark.tokenColors
+    );
   },
 
   preview: {
     component: VSCodePreview,
+    showDock: true,
   },
 };

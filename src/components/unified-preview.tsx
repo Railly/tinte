@@ -2,6 +2,7 @@ import { TinteTheme } from "@/types/tinte";
 import { providerRegistry } from "@/lib/providers";
 import { useQueryState } from "nuqs";
 import { cn } from "@/lib/utils";
+import { Dock } from "./shared/dock";
 
 interface UnifiedPreviewProps {
   theme: TinteTheme;
@@ -30,13 +31,22 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   }
 
   const PreviewComponent = currentProvider.preview.component;
+  const showDock = currentProvider.preview.showDock ?? false;
 
   return (
-    <div className={cn("h-[calc(100dvh-var(--header-height)_-_2rem)] space-y-6", className)}>
+    <div className={cn("h-[calc(100dvh-var(--header-height)_-_2rem)] space-y-6 relative", className)}>
       <PreviewComponent
         theme={converted}
         {...(currentProvider.preview.defaultProps || {})}
       />
+
+      {showDock && (
+        <Dock
+          theme={theme}
+          providerId={currentProvider.metadata.id}
+          providerName={currentProvider.metadata.name}
+        />
+      )}
     </div>
   );
 }
