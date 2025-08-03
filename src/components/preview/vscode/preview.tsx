@@ -181,7 +181,7 @@ func main() {
 ];
 
 export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
-  const { activeTheme, currentMode } = useThemeContext();
+  const { activeTheme, currentMode, mounted } = useThemeContext();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [viewMode, setViewMode] = useState<'split' | 'monaco' | 'shiki' | 'tokens'>('split');
   const [themeVersion, setThemeVersion] = useState(0);
@@ -229,36 +229,14 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
   const tokens = useMemo(() => currentTheme.colors || {}, [currentTheme.colors]);
   const currentTemplate = useMemo(() => codeTemplates[selectedTemplate], [selectedTemplate]);
 
-  // Memoize container styles to prevent unnecessary re-renders
-  const containerStyles = useMemo(() => ({
-    backgroundColor: tokens['editor.background'] || '#1e1e1e',
-    color: tokens['editor.foreground'] || '#d4d4d4',
-  }), [tokens]);
-
-  const titleBarStyles = useMemo(() => ({
-    backgroundColor: tokens['titleBar.activeBackground'] || '#2d2d30',
-    borderColor: tokens['titleBar.border'] || '#404040',
-  }), [tokens]);
-
-  const statusBarStyles = useMemo(() => ({
-    backgroundColor: tokens['statusBar.background'] || '#007acc',
-    color: tokens['statusBar.foreground'] || '#ffffff',
-  }), [tokens]);
-
-  const headerStyles = useMemo(() => ({
-    backgroundColor: tokens['editorGroupHeader.tabsBackground'] || tokens['editor.background'] || '#f5f5f5',
-    borderColor: tokens['editorGroupHeader.border'] || tokens['border'] || '#e0e0e0'
-  }), [tokens]);
 
   return (
     <div
-      className={`rounded-lg border overflow-hidden font-mono text-sm flex flex-col h-[85vh] ${className || ''}`}
-      style={containerStyles}
+      className={`rounded-lg border overflow-hidden font-mono text-sm flex flex-col h-[85vh] bg-background text-foreground ${className || ''}`}
     >
       {/* Title bar */}
       <div
-        className="px-4 py-2 border-b flex items-center gap-2"
-        style={titleBarStyles}
+        className="px-4 py-2 border-b flex items-center gap-2 bg-muted/50"
       >
         <div className="flex gap-1">
           <div className="w-3 h-3 rounded-full bg-red-500" />
@@ -311,9 +289,8 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
           <div className="flex flex-1 overflow-hidden">
             {/* Monaco Editor */}
             <div className="w-1/2 border-r border-border/50 flex flex-col overflow-hidden">
-              <div 
-                className="px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0"
-                style={headerStyles}
+              <div
+                className="px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0 bg-muted/30"
               >
                 <Badge variant="secondary" className="text-xs">Monaco Editor</Badge>
               </div>
@@ -329,9 +306,8 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
 
             {/* Shiki */}
             <div className="w-1/2 flex flex-col overflow-hidden">
-              <div 
-                className="px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0"
-                style={headerStyles}
+              <div
+                className="px-2 py-1 border-b border-border/50 flex items-center gap-2 flex-shrink-0 bg-muted/30"
               >
                 <Badge variant="secondary" className="text-xs">Shiki</Badge>
               </div>
@@ -381,8 +357,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
 
       {/* Status bar */}
       <div
-        className="px-4 py-1 text-xs flex items-center justify-between flex-shrink-0"
-        style={statusBarStyles}
+        className="px-4 py-1 text-xs flex items-center justify-between flex-shrink-0 bg-muted/50 text-muted-foreground border-t border-border"
       >
         <div>{currentTemplate.name} • {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} View</div>
         <div>Ln 1, Col 1</div>
@@ -404,10 +379,23 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
   const highlighterRef = useRef<any>(null);
   const [isReady, setIsReady] = useState(false);
   const [themesRegistered, setThemesRegistered] = useState(false);
+  const [isViewTransitioning, setIsViewTransitioning] = useState(false);
 
   const lightThemeName = 'tinte-light';
   const darkThemeName = 'tinte-dark';
   const currentThemeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
+
+  // Show loading state during theme transitions
+  useEffect(() => {
+    setIsViewTransitioning(true);
+    
+    // Wait for view transition and theme application to complete
+    const timer = setTimeout(() => {
+      setIsViewTransitioning(false);
+    }, 400); // Duration slightly longer than typical view transition (300ms)
+
+    return () => clearTimeout(timer);
+  }, [themeVersion, currentMode]);
 
   // Initialize Shiki highlighter with memoization
   const initializeShiki = useCallback(async () => {
@@ -567,7 +555,7 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
       const monaco = (window as any).monaco;
       if (monaco) {
         const themeName = currentMode === 'dark' ? darkThemeName : lightThemeName;
-        
+
         try {
           monaco.editor.setTheme(themeName);
 
@@ -617,8 +605,18 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
 
   if (!isReady) {
     return (
-      <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+      <div
+        className="h-full w-full flex items-center justify-center bg-background text-muted-foreground"
+      >
         Loading Monaco...
+      </div>
+    );
+  }
+
+  if (isViewTransitioning) {
+    return (
+      <div className="h-full w-full flex items-center justify-center bg-muted text-muted-foreground">
+        <div className="text-sm">Applying theme...</div>
       </div>
     );
   }
@@ -666,6 +664,19 @@ function MonacoSection({ themeSet, currentMode, template, themeVersion }: Sectio
 function ShikiSection({ themeSet, currentMode, template, themeVersion }: SectionProps) {
   const [html, setHtml] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [isViewTransitioning, setIsViewTransitioning] = useState(false);
+
+  // Show loading state during theme transitions
+  useEffect(() => {
+    setIsViewTransitioning(true);
+    
+    // Wait for view transition and theme application to complete
+    const timer = setTimeout(() => {
+      setIsViewTransitioning(false);
+    }, 400); // Duration slightly longer than typical view transition (300ms)
+
+    return () => clearTimeout(timer);
+  }, [themeVersion, currentMode]);
 
   // Memoize Shiki theme data with deeper dependency tracking
   const shikiThemeData = useMemo(() => {
@@ -703,7 +714,7 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
 
         // Update Shiki content and exclude from view transitions
         const modifiedResult = result.replace(
-          /<pre([^>]*)>/g, 
+          /<pre([^>]*)>/g,
           '<pre$1 style="view-transition-name: none;">'
         );
         setHtml(modifiedResult);
@@ -723,23 +734,24 @@ function ShikiSection({ themeSet, currentMode, template, themeVersion }: Section
 
   if (loading) {
     return (
-      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+      <div className="w-full h-full flex items-center justify-center bg-background text-muted-foreground">
         Loading Shiki...
       </div>
     );
   }
 
-  const currentTheme = themeSet[currentMode];
+  if (isViewTransitioning) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
+        <div className="text-sm">Applying theme...</div>
+      </div>
+    );
+  }
 
   return (
     <div
-      className="h-full overflow-auto text-sm leading-relaxed scrollbar-thin"
+      className="h-full overflow-auto text-sm leading-relaxed scrollbar-thin bg-background text-foreground"
       dangerouslySetInnerHTML={{ __html: html }}
-      style={{
-        backgroundColor: currentTheme.colors['editor.background'],
-        color: currentTheme.colors['editor.foreground'],
-        viewTransitionName: 'none', // Exclude from view transitions
-      }}
     />
   );
 }
