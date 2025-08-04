@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useWorkbench } from '@/hooks/use-workbench';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { WorkbenchSidebar } from './workbench-sidebar';
@@ -33,6 +33,7 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
     return cleanup;
   }, [chatId, isStatic, initializeWorkbench]);
 
+  // Mobile layout
   if (isMobile) {
     return (
       <WorkbenchMobile
@@ -49,6 +50,7 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
     );
   }
 
+  // Static layout (design mode)
   if (isStatic) {
     return (
       <div className="h-[calc(100dvh-var(--header-height))] w-full overflow-hidden flex">
@@ -59,10 +61,10 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
           <WorkbenchSidebar
             activeTab={activeTab}
             onTabChange={setActiveTab}
+            chatLoading={loading}
             isStatic={true}
           />
         </aside>
-
         <WorkbenchPreviewPane
           theme={tinteTheme}
           onExportAll={handleExportAll}
@@ -72,14 +74,23 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
     );
   }
 
+  // Dynamic layout (default)
   return (
     <div className="h-[calc(100dvh-var(--header-height))] w-full overflow-hidden flex">
-      <WorkbenchSidebar
-        split={split}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        chatLoading={loading}
-      />
+      <motion.aside
+        initial={{ width: '100%' }}
+        animate={{ width: split ? CHAT_CONFIG.SIDEBAR_WIDTH : '100%' }}
+        transition={{ type: 'spring', ...CHAT_CONFIG.ANIMATION.SPRING }}
+        className="border-r bg-background flex flex-col flex-shrink-0"
+        style={{ willChange: 'width' }}
+      >
+        <WorkbenchSidebar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          chatLoading={loading}
+          split={split}
+        />
+      </motion.aside>
 
       <AnimatePresence>
         {split && (

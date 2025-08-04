@@ -697,3 +697,135 @@ const [activeTab, setActiveTab] = useQueryState('tab', {
 - **Single responsibility** - Each hook/store has one clear purpose
 
 This architecture provides a **scalable, maintainable, and simple** state management solution that follows modern React best practices while avoiding common performance pitfalls. The elimination of useState/useEffect for URL state management is a key architectural decision that prevents infinite loops and improves both performance and developer experience.
+
+## Simplified SOLID Architecture (Workbench Components)
+
+### Pragmatic SOLID Application
+
+The workbench components follow **simplified SOLID principles** that maintain extensibility and clean architecture without over-engineering:
+
+#### Component Structure
+
+```
+src/components/workbench/
+├── workbench.tsx              # Re-export for compatibility
+├── workbench-main.tsx         # Main component with 3 clear layout strategies
+├── workbench-sidebar.tsx      # Configuration-driven sidebar
+├── workbench-mobile.tsx       # Mobile-specific layout
+├── workbench-preview-pane.tsx # Preview rendering
+├── workbench-header.tsx       # Header component
+├── chat-content.tsx           # Chat tab content
+├── attachment-bubble.tsx      # Chat attachments
+└── workbench.config.ts        # Single configuration file
+```
+
+#### Core Principles Applied
+
+**🎯 Single Responsibility Principle**:
+- **WorkbenchMain**: Clear separation of 3 layout strategies (mobile/static/dynamic)
+- **WorkbenchSidebar**: Configuration-driven with extracted theme navigation
+- **Each component**: Single, clear purpose
+
+**🔧 Open/Closed Principle**:
+- **Extensible via configuration**: Add new tabs in `workbench.config.ts`
+- **Layout strategies**: Easy to add new device layouts
+- **No modification**: Extend functionality without changing existing code
+
+#### Configuration-Driven Architecture
+
+**Simple Tab Extension**:
+```typescript
+// workbench.config.ts - Single file for all configuration
+export const WORKBENCH_TABS = [
+  { 
+    id: 'chat', 
+    label: 'Chat', 
+    component: ChatContent, 
+    requiresLoading: true 
+  },
+  { 
+    id: 'design', 
+    label: 'Design', 
+    component: ThemeEditorPanel, 
+    requiresLoading: false 
+  },
+  // Easy to add new tabs:
+  // { id: 'mapping', label: 'Mapping', component: MappingPanel, requiresLoading: false }
+];
+```
+
+**Layout Strategy Pattern (Simplified)**:
+```tsx
+// WorkbenchMain - Clear 3-strategy approach
+export function WorkbenchMain({ chatId, isStatic }) {
+  // Mobile layout
+  if (isMobile) {
+    return <WorkbenchMobile {...props} />;
+  }
+
+  // Static layout (design mode)
+  if (isStatic) {
+    return <StaticLayout {...props} />;
+  }
+
+  // Dynamic layout (default)
+  return <DynamicLayout {...props} />;
+}
+```
+
+#### Key Benefits Achieved
+
+**✅ Extensibility Without Complexity**:
+- **New tabs**: Just add to config array
+- **New layouts**: Add new if condition in WorkbenchMain
+- **Zero prop drilling**: Maintained Zustand + nuqs architecture
+
+**✅ Maintainability**:
+- **Single config file**: All workbench configuration in one place
+- **Clear separation**: Each layout strategy is obvious
+- **No file explosion**: Pragmatic approach with essential files only
+
+**✅ Developer Experience**:
+- **Easy to understand**: Clear, commented layout strategies
+- **Simple to extend**: Configuration-driven approach
+- **Fast development**: No complex abstractions to learn
+
+#### Usage Examples
+
+**Adding New Tab Type**:
+```typescript
+// 1. Create component
+export function MappingPanel() {
+  return <div>Theme mapping interface</div>;
+}
+
+// 2. Add to config (workbench.config.ts)
+{ 
+  id: 'mapping', 
+  label: 'Mapping', 
+  component: MappingPanel, 
+  requiresLoading: false 
+}
+
+// That's it! No other files need modification
+```
+
+**Adding New Layout**:
+```tsx
+// WorkbenchMain.tsx - Add new condition
+if (isTablet && !isStatic) {
+  return <TabletWorkbenchLayout {...props} />;
+}
+```
+
+#### Architecture Philosophy
+
+**Simplified SOLID** = **SOLID benefits without over-engineering**
+
+- ✅ **Single Responsibility**: Clear component purposes
+- ✅ **Open/Closed**: Extensible via configuration
+- ✅ **Interface Segregation**: Props only include what's needed
+- ✅ **Dependency Inversion**: Components depend on configuration, not hardcoded logic
+- 🚫 **Avoid**: Strategy pattern classes, abstract factories, complex inheritance
+
+This approach provides **90% of SOLID benefits** with **10% of the complexity**, making it perfect for a fast-moving project that needs to remain maintainable and extensible.
