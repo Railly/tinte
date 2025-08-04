@@ -2,12 +2,9 @@
 
 import * as React from 'react';
 import { motion, stagger, useAnimate } from 'motion/react';
-import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ColorPickerInput } from '@/components/ui/color-picker-input';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ThemeSelector } from './theme-selector';
 import { FontSelector } from './font-selector';
 import { useThemeContext } from '@/providers/theme';
 import { TOKEN_GROUPS, NON_COLOR_GROUPS, DEFAULT_FONTS, DEFAULT_BASE, DEFAULT_SHADOWS, type FontToken, type ShadowToken, type BaseVarToken } from '@/types/shadcn';
@@ -17,7 +14,7 @@ import { buildFontFamily } from '@/utils/fonts';
 export function ThemeEditorPanel() {
   const [scope, animate] = useAnimate();
 
-  const { currentTokens, allThemes, activeTheme, handleThemeSelect, handleTokenEdit, navigateTheme, mounted } = useThemeContext();
+  const { currentTokens, activeTheme, handleTokenEdit, mounted } = useThemeContext();
 
   const handleFontSelect = React.useCallback((key: string, font: FontInfo) => {
     const fontCategory = key.includes('sans') ? 'sans-serif' :
@@ -119,51 +116,9 @@ export function ThemeEditorPanel() {
   const activeId = activeTheme?.id || null;
 
   return (
-    <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_4.5rem)]">
-      <div className="px-3 space-y-4 flex-shrink-0">
-        <div className="space-y-2">
-          <div className="text-xs font-medium text-muted-foreground">Theme</div>
-          <div className="flex gap-2">
-            <ThemeSelector
-              themes={allThemes}
-              activeId={activeId}
-              onSelect={handleThemeSelect}
-              triggerClassName="flex-1"
-              label="Browse themes…"
-            />
-            <div className="flex gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigateTheme('prev')}
-                className="px-2"
-                title="Previous theme"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigateTheme('next')}
-                className="px-2"
-                title="Next theme"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigateTheme('random')}
-                className="px-2"
-                title="Random theme"
-              >
-                <Shuffle className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_4.5rem)]"
+      showScrollIndicators={true}
+    >
       <div className="flex-1 min-h-0" ref={scope}>
         <div className="p-3 space-y-4">
           <div className="text-xs font-medium text-muted-foreground">Tokens</div>
@@ -241,7 +196,7 @@ export function ThemeEditorPanel() {
                               onChange={(e) => handleTokenEdit(key, e.target.value)}
                               className="h-9 text-sm font-mono"
                               placeholder={group.type === 'shadow' ? 'Box shadow...' :
-                                         group.type === 'base' ? 'CSS value...' : 'Value...'}
+                                group.type === 'base' ? 'CSS value...' : 'Value...'}
                             />
                           )}
                         </motion.div>

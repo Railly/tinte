@@ -37,7 +37,7 @@ export function ThemeSelector({
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={cn('justify-between gap-2 md:h-auto md:py-2 hover:text-muted-foreground w-[20ch]', triggerClassName)}
+          className={cn('justify-between gap-2 md:h-auto md:py-1.5 hover:text-muted-foreground w-[20ch]', triggerClassName)}
           title={label}
         >
           {/* Desktop layout - horizontal */}

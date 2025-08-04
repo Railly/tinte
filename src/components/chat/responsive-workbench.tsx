@@ -37,36 +37,12 @@ export function ResponsiveWorkbench({
 }: ResponsiveWorkbenchProps) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
-  if (isStatic) {
-    return (
-      <div className="h-[calc(100dvh-var(--header-height))] w-full flex flex-col">
-        <MobileThemeControls onThemeEditorOpen={() => setDrawerOpen(true)} />
-
-        <div className="flex-1 overflow-hidden">
-          <WorkbenchPreviewPane
-            theme={tinteTheme}
-            onExportAll={onExportAll}
-            onExportTinte={onExportTinte}
-          />
-        </div>
-
-        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-          <DrawerContent className="max-h-[85vh]">
-            <DrawerHeader>
-              <DrawerTitle>Theme Editor</DrawerTitle>
-            </DrawerHeader>
-            <div className="overflow-hidden">
-              <MobileThemeEditor />
-            </div>
-          </DrawerContent>
-        </Drawer>
-      </div>
-    );
-  }
+  const showPreview = isStatic || split;
+  const showTabs = !isStatic && !split;
 
   return (
     <div className="h-[calc(100dvh-var(--header-height))] w-full flex flex-col">
-      {split ? (
+      {showPreview && (
         <>
           <MobileThemeControls onThemeEditorOpen={() => setDrawerOpen(true)} />
           <div className="flex-1 overflow-hidden">
@@ -77,7 +53,9 @@ export function ResponsiveWorkbench({
             />
           </div>
         </>
-      ) : (
+      )}
+
+      {showTabs && (
         <div className="h-full">
           {activeTab === 'chat' ? (
             <ChatContent loading={chatLoading} seed={chatSeed} />
@@ -89,28 +67,26 @@ export function ResponsiveWorkbench({
         </div>
       )}
 
-      <div className="absolute bottom-4 right-4 z-10 flex flex-col gap-2">
-        {!split && (
-          <div className="flex gap-2">
-            <Button
-              variant={activeTab === 'chat' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onTabChange('chat')}
-              className="bg-background/95 backdrop-blur-sm border shadow-sm"
-            >
-              Chat
-            </Button>
-            <Button
-              variant={activeTab === 'design' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onTabChange('design')}
-              className="bg-background/95 backdrop-blur-sm border shadow-sm"
-            >
-              Design
-            </Button>
-          </div>
-        )}
-      </div>
+      {showTabs && (
+        <div className="absolute bottom-4 right-4 z-10 flex gap-2">
+          <Button
+            variant={activeTab === 'chat' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => onTabChange('chat')}
+            className="bg-background/95 backdrop-blur-sm border shadow-sm"
+          >
+            Chat
+          </Button>
+          <Button
+            variant={activeTab === 'design' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => onTabChange('design')}
+            className="bg-background/95 backdrop-blur-sm border shadow-sm"
+          >
+            Design
+          </Button>
+        </div>
+      )}
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent className="max-h-[85vh]">
