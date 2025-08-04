@@ -161,7 +161,7 @@ export function FontSelector({
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={cn('bg-input/25 justify-between gap-2 md:h-auto md:py-2', className)}
+          className={cn('bg-input/25 w-full justify-between gap-2 md:h-auto md:py-2', className)}
         >
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {currentFont ? (
