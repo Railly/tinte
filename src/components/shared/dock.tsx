@@ -89,7 +89,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         <motion.div
-          className="bg-primary/50 backdrop-blur-sm rounded-full border border-border shadow-lg p-2 flex gap-2"
+          className="bg-primary/50 text-primary-foreground backdrop-blur-sm rounded-full border border-border shadow-lg p-2 flex gap-2"
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
         >

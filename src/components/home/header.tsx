@@ -62,7 +62,7 @@ export function Header() {
               </a>
             </Button>
             <Button size="sm" className="h-7 px-3 text-xs" asChild>
-              <Link href="/chat">
+              <Link href="/workbench">
                 Get Started
               </Link>
             </Button>
@@ -111,9 +111,11 @@ export function Header() {
                       </a>
                     </Button>
                   </div>
-                  <Button size="lg" className="h-12 px-8 text-base w-full font-medium">
-                    Get Started
-                  </Button>
+                  <Link href="/workbench">
+                    <Button size="lg" className="h-12 px-8 text-base w-full font-medium">
+                      Get Started
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </SheetContent>

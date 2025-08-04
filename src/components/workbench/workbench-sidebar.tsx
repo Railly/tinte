@@ -7,7 +7,7 @@ import { ThemeEditorPanel } from '@/components/shared/theme-editor-panel';
 import { ChatContent } from './chat-content';
 import { CHAT_CONFIG } from '@/lib/chat-constants';
 import { useThemeContext } from '@/providers/theme';
-import type { WorkbenchTab } from '@/hooks/use-workbench-state';
+import type { WorkbenchTab } from '@/stores/workbench-store';
 
 interface WorkbenchSidebarProps {
   activeTab: WorkbenchTab;

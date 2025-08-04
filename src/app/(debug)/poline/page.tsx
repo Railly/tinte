@@ -7,7 +7,6 @@ import { oklch } from 'culori';
 import { ThemeSwitcher } from '@/components/shared/theme-switcher';
 import { ProviderExperimentTabs } from '@/components/shared/provider-experiment-tabs';
 import { useThemeContext } from '@/providers/theme';
-import { useWorkbenchState } from '@/hooks/use-workbench-state';
 
 // ⬇️ Ajusta esta ruta al archivo donde pegaste mi one-file (`ice-theme.ts`)
 import {

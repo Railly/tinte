@@ -8,9 +8,10 @@ import { MobileThemeControls } from '@/components/shared/mobile-theme-controls';
 import { MobileThemeEditor } from '@/components/shared/mobile-theme-editor';
 import { WorkbenchPreviewPane } from './workbench-preview-pane';
 import { ChatContent } from './chat-content';
-import type { WorkbenchTab } from '@/hooks/use-workbench-state';
+import { useWorkbenchStore } from '@/stores/workbench-store';
+import type { WorkbenchTab } from '@/stores/workbench-store';
 
-interface ResponsiveWorkbenchProps {
+interface WorkbenchMobileProps {
   chatId: string;
   isStatic: boolean;
   activeTab: WorkbenchTab;
@@ -19,11 +20,10 @@ interface ResponsiveWorkbenchProps {
   onExportAll: () => void;
   onExportTinte: () => void;
   chatLoading?: boolean;
-  chatSeed?: any;
   split?: boolean;
 }
 
-export function ResponsiveWorkbench({
+export function WorkbenchMobile({
   chatId: _chatId,
   isStatic,
   activeTab,
@@ -32,10 +32,13 @@ export function ResponsiveWorkbench({
   onExportAll,
   onExportTinte,
   chatLoading = false,
-  chatSeed,
   split = false
-}: ResponsiveWorkbenchProps) {
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+}: WorkbenchMobileProps) {
+  const { drawerOpen, toggleDrawer, setDrawerOpen } = useWorkbenchStore((state) => ({
+    drawerOpen: state.drawerOpen,
+    toggleDrawer: state.toggleDrawer,
+    setDrawerOpen: state.setDrawerOpen
+  }));
 
   const showPreview = isStatic || split;
   const showTabs = !isStatic && !split;

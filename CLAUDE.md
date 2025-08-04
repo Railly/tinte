@@ -459,3 +459,241 @@ const initializeMonaco = useCallback(async (monaco: any) => {
 - **Developer-Friendly**: Single source of truth for theme structure across both systems
 
 This integration serves as the gold standard for combining Shiki syntax highlighting with Monaco Editor in modern web applications.
+
+## Workbench State Management (Zustand + nuqs Architecture)
+
+### Single Source of Truth with Zustand Stores
+
+The workbench system uses **Zustand** for state management with **nuqs** integration for URL state synchronization, eliminating prop drilling and providing scalable state architecture:
+
+#### Store Architecture
+
+```
+src/
+├── stores/
+│   ├── workbench-store.ts     # Main workbench state management
+│   └── export-store.ts        # Theme export functionality state
+├── hooks/
+│   ├── use-workbench.ts       # Unified workbench interface
+│   └── use-workbench-url-sync.ts # URL ↔ store synchronization
+└── components/workbench/
+    ├── workbench.tsx          # Re-export for compatibility
+    ├── workbench-main.tsx     # Main workbench logic
+    ├── workbench-mobile.tsx   # Mobile responsive version
+    ├── workbench-sidebar.tsx  # Sidebar component
+    └── workbench-preview-pane.tsx # Preview pane
+```
+
+#### Core Store Files
+
+1. **`stores/workbench-store.ts`** - Main workbench state:
+   - Chat ID and static mode management
+   - Tab state (`chat`, `design`, `mapping`)
+   - Split view and loading states
+   - Drawer state for mobile
+   - Provider selection state
+   - Zustand devtools and subscribeWithSelector middleware
+
+2. **`stores/export-store.ts`** - Export functionality:
+   - Export progress tracking
+   - Format selection (`all`, `tinte`, `vscode`, `shadcn`)
+   - Export status management
+   - Separate store for clean separation of concerns
+
+3. **`hooks/use-workbench-url-sync.ts`** - URL synchronization:
+   - nuqs integration for tab and provider state
+   - Bidirectional sync between URL params and store
+   - Theme adapter integration
+   - Perfect browser navigation support
+
+4. **`hooks/use-workbench.ts`** - Unified interface:
+   - Combines workbench, export, and URL sync state
+   - Theme context integration
+   - Computed values for UI state
+   - Single hook for all workbench needs
+
+#### Key Features
+
+**🎯 Zero Prop Drilling**:
+```tsx
+// Before: 12+ props passed through components
+<WorkbenchSidebar
+  activeTab={activeTab}
+  onTabChange={setActiveTab}
+  split={split}
+  chatLoading={loading}
+  // ... 8+ more props
+/>
+
+// After: Components access state directly
+export function WorkbenchSidebar() {
+  const { activeTab, split, loading } = useWorkbench();
+  // Zero props needed!
+}
+```
+
+**⚡ URL State Synchronization**:
+- Tab changes update URL: `/workbench/abc123?tab=design`
+- Provider changes: `/workbench/abc123?tab=design&provider=vscode`
+- Perfect browser back/forward navigation
+- Shareable URLs with preserved state
+
+**🚀 Performance Optimized**:
+```tsx
+// Selective subscriptions for performance
+const split = useWorkbenchStore((state) => state.split);
+const { activeTab, loading } = useWorkbench(
+  (state) => ({ activeTab: state.activeTab, loading: state.loading })
+);
+```
+
+**🧩 Clean Architecture**:
+- Single responsibility stores
+- Type-safe throughout with TypeScript
+- Devtools integration for debugging
+- Middleware for enhanced functionality
+
+#### State Structure
+
+```typescript
+// Zustand Store (server state only)
+interface WorkbenchState {
+  chatId: string;
+  isStatic: boolean;
+  split: boolean;
+  loading: boolean;
+  seed: SeedPayload | null;
+  drawerOpen: boolean;
+}
+
+// URL State (via nuqs - client state)
+type WorkbenchTab = 'chat' | 'design' | 'mapping';
+// activeTab and currentProvider managed by nuqs directly
+
+interface ExportState {
+  isExporting: boolean;
+  exportFormat: 'all' | 'tinte' | 'vscode' | 'shadcn' | null;
+  exportProgress: number;
+}
+```
+
+#### Usage Patterns
+
+**Component Integration**:
+```tsx
+export function WorkbenchMain({ chatId, isStatic }: Props) {
+  const {
+    activeTab,        // From nuqs URL state
+    split,           // From Zustand store
+    loading,         // From Zustand store
+    initializeWorkbench,
+    tinteTheme,      // From theme context
+    handleExportAll, // From theme context
+    setActiveTab     // nuqs setter (updates URL)
+  } = useWorkbench(isStatic ? 'design' : 'chat');
+
+  useEffect(() => {
+    const cleanup = initializeWorkbench(chatId, isStatic);
+    return cleanup;
+  }, [chatId, isStatic, initializeWorkbench]);
+
+  // No prop drilling - all state from unified hook
+}
+```
+
+**Pure nuqs URL State (No useEffect needed)**:
+```tsx
+// URL state management with zero useEffect/useState
+export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
+  const [activeTab, setActiveTab] = useQueryState('tab', {
+    defaultValue: defaultTab,
+    parse: (value): WorkbenchTab => {
+      if (value === 'design' || value === 'mapping') return value;
+      return 'chat';
+    },
+  });
+
+  const [currentProvider, setCurrentProvider] = useQueryState('provider', { 
+    defaultValue: 'shadcn' 
+  });
+
+  // No useEffect - nuqs handles URL sync automatically
+  return { activeTab, currentProvider, setActiveTab, setCurrentProvider };
+}
+```
+
+#### Benefits Over Previous Architecture
+
+**Before (useState + useEffect + prop drilling)**:
+- 12+ props passed through component tree
+- Multiple useState hooks scattered across components
+- Complex useEffect chains causing infinite loops
+- State synchronization issues between components
+- Circular dependencies between URL and store state
+- Difficult to add new features without refactoring
+
+**After (Zustand + nuqs - Zero useEffect)**:
+- **Zero prop drilling** - Components access state directly
+- **Zero useState/useEffect** for URL state - nuqs handles everything
+- **Single source of truth** - Clear separation between server/client state
+- **URL state automatically synchronized** - Browser navigation works perfectly
+- **No infinite loops** - Eliminated circular useEffect dependencies  
+- **Better performance** - Selective subscriptions + no unnecessary re-renders
+- **Easy to extend** - Add new features with simple store actions
+- **Full TypeScript support** with devtools integration
+
+#### Architecture Principles
+
+**🎯 State Separation**:
+- **Server State**: Zustand store (`chatId`, `split`, `loading`, `seed`, `drawerOpen`)
+- **Client State**: nuqs URL params (`activeTab`, `currentProvider`)
+- **Theme State**: React Context (`tinteTheme`, theme actions)
+
+**⚡ Zero useState/useEffect Pattern**:
+```tsx
+// ❌ Before: Complex useState + useEffect chains
+const [activeTab, setActiveTab] = useState('chat');
+const [urlTab, setUrlTab] = useQueryState('tab');
+
+useEffect(() => {
+  if (urlTab !== activeTab) setActiveTab(urlTab);
+}, [urlTab, activeTab]);
+
+useEffect(() => {
+  if (activeTab !== urlTab) setUrlTab(activeTab);
+}, [activeTab, urlTab]); // 🔥 Infinite loop!
+
+// ✅ After: Pure nuqs handles everything
+const [activeTab, setActiveTab] = useQueryState('tab', {
+  defaultValue: 'chat'
+});
+// No useEffect needed - nuqs handles URL sync automatically
+```
+
+#### Testing State Management
+
+1. **URL Synchronization**: Change tabs → URL updates, browser back/forward works perfectly
+2. **State Persistence**: Refresh page → state restored from URL params automatically  
+3. **Component Isolation**: Components work independently with store access
+4. **Performance**: No unnecessary re-renders with selective subscriptions
+5. **Export Flow**: Export progress tracked across components via separate store
+6. **Mobile Drawer**: Drawer state managed globally, accessible anywhere
+7. **No Infinite Loops**: Zero circular useEffect dependencies, stable performance
+
+#### Key Lessons Learned
+
+**🚀 Performance Anti-Patterns Avoided**:
+- ❌ Multiple useState hooks for the same logical state
+- ❌ useEffect chains that update each other in circles  
+- ❌ Prop drilling through 4+ component levels
+- ❌ Re-creating setter functions on every render
+- ❌ Complex state synchronization logic scattered across components
+
+**✅ Modern React Patterns Applied**:
+- **nuqs for URL state** - Built-in synchronization, no useEffect needed
+- **Zustand for global state** - Minimal boilerplate, excellent DevTools
+- **Selective subscriptions** - Components only re-render when needed
+- **Stable actions** - Actions don't change reference, preventing unnecessary effects
+- **Single responsibility** - Each hook/store has one clear purpose
+
+This architecture provides a **scalable, maintainable, and simple** state management solution that follows modern React best practices while avoiding common performance pitfalls. The elimination of useState/useEffect for URL state management is a key architectural decision that prevents infinite loops and improves both performance and developer experience.
