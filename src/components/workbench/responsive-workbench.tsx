@@ -58,7 +58,7 @@ export function ResponsiveWorkbench({
       {showTabs && (
         <div className="h-full">
           {activeTab === 'chat' ? (
-            <ChatContent loading={chatLoading} seed={chatSeed} />
+            <ChatContent loading={chatLoading} />
           ) : (
             <div className="h-full p-4">
               <ThemeEditorPanel />
