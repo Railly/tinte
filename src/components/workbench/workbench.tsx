@@ -68,7 +68,6 @@ export function Workbench({ chatId, isStatic = false }: WorkbenchProps) {
         activeTab={state.activeTab}
         onTabChange={state.setActiveTab}
         chatLoading={chatState.loading}
-        chatSeed={chatState.seed}
       />
 
       <AnimatePresence>

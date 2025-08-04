@@ -1,5 +1,5 @@
-import { ChatHeader } from '@/components/shared/chat-header'
-import { Workbench } from '@/components/chat/workbench'
+import { WorkbenchHeader } from '@/components/workbench/workbench-header'
+import { Workbench } from '@/components/workbench/workbench'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Create, edit, and convert themes with Tinte\'s powerful workbench',
 }
 
-export default async function ChatPage({
+export default async function WorkbenchIdPage({
   params,
   searchParams
 }: {
@@ -20,7 +20,7 @@ export default async function ChatPage({
 
   return (
     <div className="flex flex-col min-h-screen">
-      <ChatHeader chatId={id} />
+      <WorkbenchHeader chatId={id} />
       <Workbench chatId={id} isStatic={showStatic} />
     </div>
   )

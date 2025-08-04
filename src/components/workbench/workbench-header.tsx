@@ -4,21 +4,21 @@ import { Slash } from 'lucide-react';
 import Logo from '@/components/shared/logo';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ProviderSwitcher } from '@/components/shared/provider-switcher';
-import { ThemeSwitcher } from './theme-switcher';
+import { ThemeSwitcher } from '../shared/theme-switcher';
 import { siteConfig } from '@/config/site';
 import { Button } from '../ui/button';
-import GithubIcon from './icons/github';
-import TwitterIcon from './icons/twitter';
+import GithubIcon from '../shared/icons/github';
+import TwitterIcon from '../shared/icons/twitter';
 import { Separator } from '../ui/separator';
-import DiscordIcon from './icons/discord';
+import DiscordIcon from '../shared/icons/discord';
 import { TinteCommandMenu } from '../tinte-command-menu';
 import Link from 'next/link';
 
-interface ChatHeaderProps {
+interface WorkbenchHeaderProps {
   chatId: string;
 }
 
-export function ChatHeader({ chatId }: ChatHeaderProps) {
+export function WorkbenchHeader({ chatId }: WorkbenchHeaderProps) {
   return (
     <header className="sticky px-3 md:px-4 flex items-center justify-between h-[var(--header-height)] top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">

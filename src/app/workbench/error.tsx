@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 
-export default function ChatError({
+export default function WorkbenchError({
   error,
   reset,
 }: {
