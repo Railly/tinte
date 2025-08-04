@@ -119,7 +119,7 @@ export function ThemeEditorPanel() {
     <ScrollArea className="h-[calc(100dvh-var(--header-height)_-_4.5rem)]"
       showScrollIndicators={true}
     >
-      <div className="flex-1 min-h-0" ref={scope}>
+      <div className="flex-1 min-h-0 pb-8" ref={scope}>
         <div className="p-3 space-y-4">
           <div className="text-xs font-medium text-muted-foreground">Tokens</div>
 

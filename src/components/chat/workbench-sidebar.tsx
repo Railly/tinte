@@ -14,7 +14,6 @@ interface WorkbenchSidebarProps {
   onTabChange: (tab: WorkbenchTab) => void;
   split?: boolean;
   chatLoading?: boolean;
-  chatSeed?: any;
   isStatic?: boolean;
   width?: string;
 }
@@ -29,7 +28,6 @@ export function WorkbenchSidebar({
   onTabChange,
   split = false,
   chatLoading = false,
-  chatSeed = null,
   isStatic = false,
   width
 }: WorkbenchSidebarProps) {
@@ -91,7 +89,7 @@ export function WorkbenchSidebar({
             </TabsList>
 
             <TabsContent value="chat" className={isStatic ? "flex-1 m-0 p-0" : "flex-1"}>
-              <ChatContent loading={chatLoading} seed={chatSeed} />
+              <ChatContent loading={chatLoading} />
             </TabsContent>
 
             <TabsContent value="design" className={isStatic ? "flex-1 m-0 p-0" : "flex-1"}>
