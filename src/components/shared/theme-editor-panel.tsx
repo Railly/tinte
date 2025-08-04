@@ -11,6 +11,16 @@ import { TOKEN_GROUPS, NON_COLOR_GROUPS, DEFAULT_FONTS, DEFAULT_BASE, DEFAULT_SH
 import { FontInfo } from '@/types/fonts';
 import { buildFontFamily } from '@/utils/fonts';
 
+declare global {
+  interface Window {
+    __TINTE_THEME__?: {
+      theme: any;
+      mode: string;
+      tokens: Record<string, string>;
+    };
+  }
+}
+
 export function ThemeEditorPanel() {
   const [scope, animate] = useAnimate();
 

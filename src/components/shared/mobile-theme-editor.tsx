@@ -6,6 +6,16 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ColorPickerInput } from '@/components/ui/color-picker-input';
 import { useThemeContext } from '@/providers/theme';
 
+declare global {
+  interface Window {
+    __TINTE_THEME__?: {
+      theme: any;
+      mode: string;
+      tokens: Record<string, string>;
+    };
+  }
+}
+
 export function MobileThemeEditor() {
   const [scope, animate] = useAnimate();
   const { currentTokens, handleTokenEdit, mounted } = useThemeContext();

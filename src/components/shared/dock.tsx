@@ -1,5 +1,5 @@
 import { TinteTheme } from "@/types/tinte";
-import { providerRegistry } from "@/lib/providers";
+import { exportTheme } from "@/lib/providers";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -24,7 +24,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const output = providerRegistry.export(providerId, theme);
+      const output = exportTheme(providerId, theme);
       if (!output) {
         throw new Error(`Failed to export theme for ${providerName}`);
       }
@@ -47,7 +47,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   const handleCopyTheme = async () => {
     try {
-      const output = providerRegistry.export(providerId, theme);
+      const output = exportTheme(providerId, theme);
       if (output) {
         await navigator.clipboard.writeText(output.content);
       }
@@ -60,7 +60,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     setIsSharing(true);
     try {
       if (navigator.share) {
-        const output = providerRegistry.export(providerId, theme);
+        const output = exportTheme(providerId, theme);
         if (output) {
           await navigator.share({
             title: `${providerName} Theme`,

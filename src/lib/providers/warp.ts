@@ -1,5 +1,5 @@
 import { TinteTheme } from "@/types/tinte";
-import { ThemeProvider, ProviderOutput, ProviderMetadata } from "./types";
+import { ProviderOutput, ThemeProvider } from "./types";
 import { WarpIcon } from "@/components/shared/icons/warp";
 import {
   createPolineColorMapping,
@@ -78,10 +78,8 @@ function generateWarpTheme(
   };
 }
 
-export class WarpProvider
-  implements ThemeProvider<{ light: WarpTheme; dark: WarpTheme }>
-{
-  readonly metadata: ProviderMetadata = {
+export const warpProvider: ThemeProvider<{ light: WarpTheme; dark: WarpTheme }> = {
+  metadata: {
     id: "warp",
     name: "Warp",
     description: "Modern terminal with AI and collaboration features",
@@ -90,20 +88,18 @@ export class WarpProvider
     icon: WarpIcon,
     website: "https://www.warp.dev/",
     documentation: "https://docs.warp.dev/appearance/custom-themes",
-  };
+  },
 
-  readonly fileExtension = ".yaml";
-  readonly mimeType = "application/x-yaml";
+  fileExtension: "yaml",
+  mimeType: "application/x-yaml",
 
-  convert(theme: TinteTheme): { light: WarpTheme; dark: WarpTheme } {
-    return {
-      light: generateWarpTheme(theme, "light"),
-      dark: generateWarpTheme(theme, "dark"),
-    };
-  }
+  convert: (theme: TinteTheme) => ({
+    light: generateWarpTheme(theme, "light"),
+    dark: generateWarpTheme(theme, "dark"),
+  }),
 
-  export(theme: TinteTheme, filename?: string): ProviderOutput {
-    const converted = this.convert(theme);
+  export: (theme: TinteTheme, filename?: string): ProviderOutput => {
+    const converted = warpProvider.convert(theme);
     const themeName = filename || getThemeName("tinte-theme");
 
     // Use dark theme by default
@@ -130,13 +126,13 @@ ${toYAML(warpTheme)}`;
     return {
       content: yamlContent,
       filename: `${themeName}-warp.yaml`,
-      mimeType: this.mimeType,
+      mimeType: warpProvider.mimeType,
     };
-  }
+  },
 
-  validate(output: { light: WarpTheme; dark: WarpTheme }): boolean {
-    const validateTheme = (theme: WarpTheme): boolean => {
-      return !!(
+  validate: (output: { light: WarpTheme; dark: WarpTheme }) => {
+    const validateTheme = (theme: WarpTheme) =>
+      !!(
         theme.accent &&
         theme.background &&
         theme.foreground &&
@@ -148,8 +144,7 @@ ${toYAML(warpTheme)}`;
         theme.terminal_colors?.normal?.green &&
         theme.terminal_colors?.normal?.blue
       );
-    };
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  }
-}
+  },
+};

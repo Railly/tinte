@@ -8,9 +8,11 @@ import {
   ShadcnBlock,
   ShadcnTheme,
 } from "@/types/shadcn";
-import { PreviewableProvider, ThemeMode, ProviderOutput } from "./types";
+import { PreviewableProvider, ProviderOutput } from "./types";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
+
+type ThemeMode = 'light' | 'dark';
 
 const ANCHORS = {
   light: { primary: 600, border: 200, muted: 100, mutedFg: 600, accent: 300 },
@@ -178,36 +180,29 @@ ${darkVars}
 
 export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
   metadata: {
-    id: "shadcn",
-    name: "shadcn/ui",
-    description:
-      "Beautifully designed components built on Radix UI and Tailwind CSS",
-    category: "ui",
-    tags: ["react", "tailwind", "components", "ui"],
+    id: 'shadcn',
+    name: 'shadcn/ui',
+    description: 'Beautifully designed components built on Radix UI and Tailwind CSS',
+    category: 'ui',
+    tags: ['react', 'tailwind', 'components', 'ui'],
     icon: ShadcnIcon,
-    website: "https://ui.shadcn.com/",
-    documentation: "https://ui.shadcn.com/docs",
+    website: 'https://ui.shadcn.com/',
+    documentation: 'https://ui.shadcn.com/docs',
   },
 
-  fileExtension: "css",
-  mimeType: "text/css",
-
+  fileExtension: 'css',
+  mimeType: 'text/css',
   convert: convertTinteToShadcn,
-
+  
   export: (theme: TinteTheme, filename?: string): ProviderOutput => ({
     content: generateCSSVariables(convertTinteToShadcn(theme)),
-    filename: filename || "shadcn-theme.css",
-    mimeType: "text/css",
+    filename: filename || 'shadcn-theme.css',
+    mimeType: 'text/css',
   }),
 
-  validate: (output: ShadcnTheme) => {
-    return !!(
-      output.light &&
-      output.dark &&
-      output.light.background &&
-      output.dark.background
-    );
-  },
+  validate: (output: ShadcnTheme) => !!(
+    output.light?.background && output.dark?.background
+  ),
 
   preview: {
     component: ShadcnPreview,

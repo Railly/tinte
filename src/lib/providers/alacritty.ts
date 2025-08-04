@@ -1,5 +1,5 @@
 import { TinteTheme } from '@/types/tinte';
-import { ThemeProvider, ProviderOutput, ProviderMetadata } from './types';
+import { ThemeProvider, ProviderOutput } from './types';
 import { AlacrittyIcon } from '@/components/shared/icons/alacritty';
 import { 
   createPolineColorMapping, 
@@ -109,8 +109,8 @@ function generateAlacrittyTheme(theme: TinteTheme, mode: 'light' | 'dark'): Alac
   };
 }
 
-export class AlacrittyProvider implements ThemeProvider<{ light: AlacrittyTheme; dark: AlacrittyTheme }> {
-  readonly metadata: ProviderMetadata = {
+export const alacrittyProvider: ThemeProvider<{ light: AlacrittyTheme; dark: AlacrittyTheme }> = {
+  metadata: {
     id: 'alacritty',
     name: 'Alacritty',
     description: 'Cross-platform, OpenGL terminal emulator',
@@ -119,33 +119,22 @@ export class AlacrittyProvider implements ThemeProvider<{ light: AlacrittyTheme;
     icon: AlacrittyIcon,
     website: 'https://alacritty.org/',
     documentation: 'https://alacritty.org/config.html',
-  };
+  },
 
-  readonly fileExtension = '.yml';
-  readonly mimeType = 'application/x-yaml';
+  fileExtension: 'yml',
+  mimeType: 'application/x-yaml',
 
-  convert(theme: TinteTheme): { light: AlacrittyTheme; dark: AlacrittyTheme } {
-    return {
-      light: generateAlacrittyTheme(theme, 'light'),
-      dark: generateAlacrittyTheme(theme, 'dark'),
-    };
-  }
+  convert: (theme: TinteTheme) => ({
+    light: generateAlacrittyTheme(theme, 'light'),
+    dark: generateAlacrittyTheme(theme, 'dark'),
+  }),
 
-  export(theme: TinteTheme, filename?: string): ProviderOutput {
-    const converted = this.convert(theme);
+  export: (theme: TinteTheme, filename?: string): ProviderOutput => {
+    const converted = alacrittyProvider.convert(theme);
     const themeName = filename || getThemeName('tinte-theme');
     
-    // Create both light and dark theme files
-    const lightTheme = converted.light;
-    const darkTheme = converted.dark;
-    
-    // For Alacritty, we'll export the dark theme by default (more common)
-    // But include both in a structured format
     const output = {
-      // Main theme (dark mode)
-      ...darkTheme,
-      
-      // Add metadata
+      ...converted.dark,
       '# Theme': getDisplayName('Tinte Theme'),
       '# Generator': 'Tinte Theme Converter',
       '# Light mode available': 'Switch colors.primary.background and colors.primary.foreground',
@@ -154,24 +143,18 @@ export class AlacrittyProvider implements ThemeProvider<{ light: AlacrittyTheme;
     return {
       content: toYAML(output),
       filename: `${themeName}-alacritty.yml`,
-      mimeType: this.mimeType,
+      mimeType: alacrittyProvider.mimeType,
     };
-  }
+  },
 
-  validate(output: { light: AlacrittyTheme; dark: AlacrittyTheme }): boolean {
-    const validateTheme = (theme: AlacrittyTheme): boolean => {
-      return !!(
-        theme.colors?.primary?.background &&
-        theme.colors?.primary?.foreground &&
-        theme.colors?.normal?.red &&
-        theme.colors?.normal?.green &&
-        theme.colors?.normal?.blue &&
-        theme.colors?.bright?.red &&
-        theme.colors?.bright?.green &&
-        theme.colors?.bright?.blue
-      );
-    };
+  validate: (output) => {
+    const validateTheme = (theme: AlacrittyTheme) => !!(
+      theme.colors?.primary?.background &&
+      theme.colors?.primary?.foreground &&
+      theme.colors?.normal?.red &&
+      theme.colors?.bright?.blue
+    );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  }
-}
+  },
+};

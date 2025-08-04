@@ -1,6 +1,6 @@
 import { useQueryState } from 'nuqs';
 import { type WorkbenchTab } from '@/stores/workbench-store';
-import { useThemeAdapters } from './use-theme-adapters';
+import { useThemeAdapters } from '@/lib/theme-utils';
 
 export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
   const { previewableProviders } = useThemeAdapters();
@@ -19,7 +19,7 @@ export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
   });
 
   const currentAdapter = previewableProviders.find(
-    (p) => p.metadata.name === (currentProvider || 'shadcn')
+    (p: any) => p.metadata.name === (currentProvider || 'shadcn')
   ) || previewableProviders[0];
 
   return {

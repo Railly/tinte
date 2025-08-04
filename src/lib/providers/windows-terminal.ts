@@ -1,5 +1,5 @@
 import { TinteTheme } from "@/types/tinte";
-import { ThemeProvider, ProviderOutput, ProviderMetadata } from "./types";
+import { ThemeProvider, ProviderOutput } from "./types";
 import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
 import {
   createPolineColorMapping,
@@ -84,11 +84,8 @@ function generateWindowsTerminalTheme(
   };
 }
 
-export class WindowsTerminalProvider
-  implements
-    ThemeProvider<{ light: WindowsTerminalTheme; dark: WindowsTerminalTheme }>
-{
-  readonly metadata: ProviderMetadata = {
+export const windowsTerminalProvider: ThemeProvider<{ light: WindowsTerminalTheme; dark: WindowsTerminalTheme }> = {
+  metadata: {
     id: "windows-terminal",
     name: "Windows Terminal",
     description: "Modern terminal application for Windows",
@@ -96,25 +93,19 @@ export class WindowsTerminalProvider
     tags: ["terminal", "windows", "microsoft", "powershell"],
     icon: WindowsTerminalIcon,
     website: "https://aka.ms/terminal",
-    documentation:
-      "https://docs.microsoft.com/en-us/windows/terminal/customize-settings/color-schemes",
-  };
+    documentation: "https://docs.microsoft.com/en-us/windows/terminal/customize-settings/color-schemes",
+  },
 
-  readonly fileExtension = ".json";
-  readonly mimeType = "application/json";
+  fileExtension: "json",
+  mimeType: "application/json",
 
-  convert(theme: TinteTheme): {
-    light: WindowsTerminalTheme;
-    dark: WindowsTerminalTheme;
-  } {
-    return {
-      light: generateWindowsTerminalTheme(theme, "light"),
-      dark: generateWindowsTerminalTheme(theme, "dark"),
-    };
-  }
+  convert: (theme: TinteTheme) => ({
+    light: generateWindowsTerminalTheme(theme, "light"),
+    dark: generateWindowsTerminalTheme(theme, "dark"),
+  }),
 
-  export(theme: TinteTheme, filename?: string): ProviderOutput {
-    const converted = this.convert(theme);
+  export: (theme: TinteTheme, filename?: string): ProviderOutput => {
+    const converted = windowsTerminalProvider.convert(theme);
     const themeName = filename || getThemeName("tinte-theme");
 
     // Create both light and dark themes in the Windows Terminal format
@@ -139,30 +130,25 @@ export class WindowsTerminalProvider
     return {
       content: toJSON(windowsTerminalConfig),
       filename: `${themeName}-windows-terminal.json`,
-      mimeType: this.mimeType,
+      mimeType: windowsTerminalProvider.mimeType,
     };
-  }
+  },
 
-  validate(output: {
-    light: WindowsTerminalTheme;
-    dark: WindowsTerminalTheme;
-  }): boolean {
-    const validateTheme = (theme: WindowsTerminalTheme): boolean => {
-      return !!(
-        theme.name &&
-        theme.background &&
-        theme.foreground &&
-        theme.black &&
-        theme.white &&
-        theme.red &&
-        theme.green &&
-        theme.blue &&
-        theme.brightRed &&
-        theme.brightGreen &&
-        theme.brightBlue
-      );
-    };
+  validate: (output: { light: WindowsTerminalTheme; dark: WindowsTerminalTheme }) => {
+    const validateTheme = (theme: WindowsTerminalTheme) => !!(
+      theme.name &&
+      theme.background &&
+      theme.foreground &&
+      theme.black &&
+      theme.white &&
+      theme.red &&
+      theme.green &&
+      theme.blue &&
+      theme.brightRed &&
+      theme.brightGreen &&
+      theme.brightBlue
+    );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  }
-}
+  },
+};

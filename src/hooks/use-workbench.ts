@@ -20,7 +20,6 @@ export function useWorkbench(defaultTab: WorkbenchTab = 'chat') {
     setDrawerOpen,
     initializeWorkbench,
     toggleDrawer,
-    reset
   } = useWorkbenchStore();
   
   const exportState = useExportStore();
@@ -43,8 +42,6 @@ export function useWorkbench(defaultTab: WorkbenchTab = 'chat') {
     setDrawerOpen,
     initializeWorkbench,
     toggleDrawer,
-    reset,
-    
     // Export state  
     ...exportState,
     

@@ -7,9 +7,9 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ThemeData } from '@/lib/theme-tokens';
-import { extractThemeColors } from '@/lib/theme-manager';
 import { ThemeColorPreview } from '@/components/shared/theme-color-preview';
 import { useThemeContext } from '@/providers/theme';
+import { extractThemeColors } from '@/lib/theme-utils';
 
 
 export function ThemeSelector({

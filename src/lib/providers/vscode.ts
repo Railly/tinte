@@ -599,13 +599,11 @@ export const vscodeProvider: PreviewableProvider<{
     tags: ["editor", "microsoft", "typescript", "javascript"],
     icon: VSCodeIcon,
     website: "https://code.visualstudio.com/",
-    documentation:
-      "https://code.visualstudio.com/api/extension-guides/color-theme",
+    documentation: "https://code.visualstudio.com/api/extension-guides/color-theme",
   },
 
   fileExtension: "json",
   mimeType: "application/json",
-
   convert: convertTinteToVSCode,
 
   export: (theme: TinteTheme, filename?: string): ProviderOutput => {
@@ -617,16 +615,13 @@ export const vscodeProvider: PreviewableProvider<{
     };
   },
 
-  validate: (output: { light: VSCodeTheme; dark: VSCodeTheme }) => {
-    return !!(
-      output.light &&
-      output.dark &&
-      output.light.colors &&
-      output.dark.colors &&
-      output.light.tokenColors &&
-      output.dark.tokenColors
-    );
-  },
+  validate: (output: { light: VSCodeTheme; dark: VSCodeTheme }) =>
+    !!(
+      output.light?.colors &&
+      output.dark?.colors &&
+      output.light?.tokenColors &&
+      output.dark?.tokenColors
+    ),
 
   preview: {
     component: VSCodePreview,

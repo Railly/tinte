@@ -829,3 +829,269 @@ if (isTablet && !isStatic) {
 - 🚫 **Avoid**: Strategy pattern classes, abstract factories, complex inheritance
 
 This approach provides **90% of SOLID benefits** with **10% of the complexity**, making it perfect for a fast-moving project that needs to remain maintainable and extensible.
+
+## Modern Provider Architecture (Type-Safe & Extensible)
+
+### Registry-Based Provider System
+
+The provider system has been completely modernized with a **type-safe registry architecture** that eliminates legacy patterns and provides clean extensibility:
+
+#### Core Architecture
+
+```
+src/lib/providers/
+├── types.ts                    # Core provider interfaces & types
+├── registry.ts                 # Provider registry implementation
+├── index.ts                    # Public API & registry setup
+├── poline-base.ts             # Shared color mapping utilities
+├── shadcn.ts                  # shadcn/ui provider (previewable)
+├── vscode.ts                  # VS Code provider (previewable)
+├── alacritty.ts               # Alacritty terminal provider
+├── kitty.ts                   # Kitty terminal provider
+├── warp.ts                    # Warp terminal provider
+├── windows-terminal.ts        # Windows Terminal provider
+├── gimp.ts                    # GIMP palette provider
+└── slack.ts                   # Slack theme provider
+```
+
+#### Provider Type System
+
+**Core Interfaces**:
+```typescript
+// Base provider interface
+interface ThemeProvider<TOutput = any> {
+  readonly metadata: ProviderMetadata;
+  readonly fileExtension: string;
+  readonly mimeType: string;
+  
+  convert(theme: TinteTheme): TOutput;
+  export(theme: TinteTheme, filename?: string): ProviderOutput;
+  validate?(output: TOutput): boolean;
+}
+
+// Extended interface for previewable providers
+interface PreviewableProvider<TOutput = any> extends ThemeProvider<TOutput> {
+  preview: {
+    component: React.ComponentType<{ theme: TOutput; className?: string }>;
+    defaultProps?: Record<string, any>;
+    showDock?: boolean;
+  };
+}
+
+// Provider metadata structure
+interface ProviderMetadata {
+  id: string;
+  name: string;
+  description?: string;
+  category: "editor" | "terminal" | "ui" | "design" | "other";
+  tags: string[];
+  icon?: React.ComponentType<{ className?: string }>;
+  website?: string;
+  documentation?: string;
+}
+```
+
+#### Registry Implementation
+
+**Type-Safe Registration**:
+```typescript
+export class ProviderRegistry {
+  private providers = new Map<string, ThemeProvider>();
+  private previewableProviders = new Map<string, PreviewableProvider>();
+
+  register<T>(provider: ThemeProvider<T>): void {
+    this.providers.set(provider.metadata.id, provider);
+  }
+
+  registerPreviewable<T>(provider: PreviewableProvider<T>): void {
+    this.previewableProviders.set(provider.metadata.id, provider);
+    this.providers.set(provider.metadata.id, provider);
+  }
+
+  // Type-safe retrieval methods
+  get(id: string): ThemeProvider | undefined;
+  getPreviewable(id: string): PreviewableProvider | undefined;
+  getAll(): ThemeProvider[];
+  getAllPreviewable(): PreviewableProvider[];
+  // ... conversion & export methods
+}
+```
+
+#### Public API
+
+**Clean Function-Based Interface**:
+```typescript
+// Public API functions (replaces legacy providerRegistry object)
+export function getAvailableProviders(): ThemeProvider[]
+export function getPreviewableProviders(): PreviewableProvider[]
+export function getProvidersByCategory(category: string): ThemeProvider[]
+export function convertTheme<T>(providerId: string, theme: TinteTheme): T | null
+export function exportTheme(providerId: string, theme: TinteTheme, filename?: string): ProviderOutput | null
+export function convertAllThemes(theme: TinteTheme): Record<string, any>
+export function exportAllThemes(theme: TinteTheme): Record<string, ProviderOutput>
+```
+
+### Provider Implementation Examples
+
+#### Basic Provider (Terminal/Tool)
+```typescript
+export const alacrittyProvider: ThemeProvider<{ light: AlacrittyTheme; dark: AlacrittyTheme }> = {
+  metadata: {
+    id: 'alacritty',
+    name: 'Alacritty',
+    description: 'Cross-platform, OpenGL terminal emulator',
+    category: 'terminal',
+    tags: ['terminal', 'opengl', 'cross-platform'],
+    icon: AlacrittyIcon,
+    website: 'https://alacritty.org/',
+    documentation: 'https://alacritty.org/config.html',
+  },
+
+  fileExtension: 'yml',
+  mimeType: 'application/x-yaml',
+
+  convert: (theme: TinteTheme) => ({
+    light: generateAlacrittyTheme(theme, 'light'),
+    dark: generateAlacrittyTheme(theme, 'dark'),
+  }),
+
+  export: (theme: TinteTheme, filename?: string): ProviderOutput => ({
+    content: toYAML(alacrittyProvider.convert(theme).dark),
+    filename: filename || 'alacritty-theme.yml',
+    mimeType: 'application/x-yaml',
+  }),
+
+  validate: (output) => !!(output.light?.colors && output.dark?.colors),
+};
+```
+
+#### Previewable Provider (UI/Editor)
+```typescript
+export const vscodeProvider: PreviewableProvider<{
+  light: VSCodeTheme;
+  dark: VSCodeTheme;
+}> = {
+  metadata: {
+    id: "vscode",
+    name: "VS Code",
+    description: "The most popular code editor with extensive theme support",
+    category: "editor",
+    tags: ["editor", "microsoft", "typescript", "javascript"],
+    icon: VSCodeIcon,
+    website: "https://code.visualstudio.com/",
+    documentation: "https://code.visualstudio.com/api/extension-guides/color-theme",
+  },
+
+  fileExtension: "json",
+  mimeType: "application/json",
+  convert: convertTinteToVSCode,
+  export: (theme, filename) => ({ /* ... */ }),
+  validate: (output) => !!(output.light?.colors && output.dark?.colors),
+
+  preview: {
+    component: VSCodePreview,
+    showDock: true,
+  },
+};
+```
+
+### Registry Setup & Usage
+
+#### Centralized Registration
+```typescript
+// src/lib/providers/index.ts - Single registry instance
+const registry = new ProviderRegistry();
+
+// Register providers by type
+registry.registerPreviewable(shadcnProvider);  // UI preview
+registry.registerPreviewable(vscodeProvider);  // Editor preview
+registry.register(alacrittyProvider);          // Terminal export
+registry.register(kittyProvider);              // Terminal export
+registry.register(warpProvider);               // Terminal export
+registry.register(windowsTerminalProvider);    // Terminal export
+registry.register(gimpProvider);               // Design tool export
+registry.register(slackProvider);              // Communication tool export
+```
+
+#### Component Usage
+```typescript
+// Replace legacy providerRegistry usage:
+
+// ❌ Legacy (removed)
+import { providerRegistry } from "@/lib/providers";
+const output = providerRegistry.export(providerId, theme);
+const providers = providerRegistry.getAllPreviewable();
+
+// ✅ Modern (type-safe)
+import { exportTheme, getPreviewableProviders } from "@/lib/providers";
+const output = exportTheme(providerId, theme);
+const providers = getPreviewableProviders();
+```
+
+### Key Architecture Benefits
+
+**🎯 Type Safety**:
+- **Full TypeScript support** throughout provider system
+- **Compile-time validation** of provider implementations
+- **IntelliSense support** for all provider methods and properties
+
+**🔧 Clean Separation**:
+- **ThemeProvider**: Basic conversion & export functionality
+- **PreviewableProvider**: Adds live preview capabilities
+- **Registry**: Centralized management with type-safe operations
+
+**⚡ Performance**:
+- **No runtime reflection** - all providers statically registered
+- **Tree-shakeable** - unused providers eliminated in production builds
+- **Efficient lookup** - Map-based provider resolution
+
+**🧩 Extensibility**:
+- **Simple provider creation** - implement interface, register once
+- **Category-based organization** - group providers by application type
+- **Tag-based filtering** - flexible provider discovery
+- **Metadata-driven UI** - automatic integration in interface
+
+### Provider Categories & Examples
+
+#### Editor Providers (Previewable)
+- **shadcn/ui**: React component theme system with live preview
+- **VS Code**: Editor theme with Monaco + Shiki integration
+
+#### Terminal Providers
+- **Alacritty**: GPU-accelerated terminal (YAML config)
+- **Kitty**: Feature-rich terminal (conf format)
+- **Warp**: Modern AI-powered terminal (YAML config)
+- **Windows Terminal**: Microsoft's modern terminal (JSON config)
+
+#### Design Tool Providers
+- **GIMP**: Color palette export for image editing
+- **Slack**: Team communication theme colors
+
+### Migration from Legacy System
+
+**Removed Legacy Patterns**:
+- ❌ `providerRegistry` object with mixed methods
+- ❌ `Provider` interface with inconsistent naming
+- ❌ `meta` property (renamed to `metadata`)
+- ❌ `fileExt` property (renamed to `fileExtension`)
+- ❌ `docs` property (renamed to `documentation`)
+- ❌ Mixed preview properties (`preview`, `showDock` separate)
+
+**Modern Replacements**:
+- ✅ **Function-based API** with clear purpose separation
+- ✅ **Consistent naming** across all provider interfaces
+- ✅ **Structured preview object** with component + configuration
+- ✅ **Type-safe registry** with compile-time validation
+- ✅ **Clean public API** without internal implementation details
+
+### Testing Provider System
+
+1. **Provider Registration**: All providers register without TypeScript errors
+2. **Type Safety**: Provider implementations match interface contracts
+3. **Conversion Testing**: Each provider converts Tinte themes correctly
+4. **Export Testing**: Generated files match expected format & structure
+5. **Preview Testing**: Previewable providers render without errors
+6. **Category Filtering**: Providers group correctly by category/tags
+7. **Registry Operations**: All CRUD operations work type-safely
+
+This modern provider architecture provides a **scalable, type-safe, and maintainable** system for theme conversion while eliminating technical debt from the previous implementation.

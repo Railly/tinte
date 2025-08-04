@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, useEffect } from "react";
+import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -12,7 +12,7 @@ interface ThemeSwitcherProps {
 }
 
 export function ThemeSwitcher({ variant = "button" }: ThemeSwitcherProps) {
-  const { mounted, isDark, currentMode, handleModeChange, toggleTheme } = useThemeContext();
+  const { mounted, isDark, currentMode, toggleTheme } = useThemeContext();
   const id = useId();
 
   if (!mounted || !currentMode) {

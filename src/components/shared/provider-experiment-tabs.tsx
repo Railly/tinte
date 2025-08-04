@@ -146,10 +146,10 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
   
   // Group providers by category
   const providersByCategory = React.useMemo(() => {
-    const categories: Record<string, typeof availableProviders> = {};
+    const categories: Record<string, any[]> = {};
     
-    availableProviders.forEach(provider => {
-      const category = provider.metadata.category;
+    availableProviders.forEach((provider: any) => {
+      const category = provider.meta.category;
       if (!categories[category]) {
         categories[category] = [];
       }
@@ -188,30 +188,30 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
         {orderedCategories.map(category => (
           <TabsContent key={category} value={category} className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {providersByCategory[category].map(provider => {
-                const isPreviewable = previewableProviders.some(p => p.metadata.id === provider.metadata.id);
+              {providersByCategory[category].map((provider: any) => {
+                const isPreviewable = previewableProviders.some((p: any) => p.meta.id === provider.meta.id);
                 
                 return (
-                  <Card key={provider.metadata.id} className="h-fit">
+                  <Card key={provider.meta.id} className="h-fit">
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-2">
-                        {provider.metadata.icon && (
-                          <provider.metadata.icon className="h-4 w-4" />
+                        {provider.meta.icon && (
+                          <provider.meta.icon className="h-4 w-4" />
                         )}
-                        <CardTitle className="text-sm">{provider.metadata.name}</CardTitle>
+                        <CardTitle className="text-sm">{provider.meta.name}</CardTitle>
                         {isPreviewable && (
                           <Badge variant="secondary" className="text-xs">
                             Preview
                           </Badge>
                         )}
                       </div>
-                      {provider.metadata.description && (
+                      {provider.meta.description && (
                         <CardDescription className="text-xs">
-                          {provider.metadata.description}
+                          {provider.meta.description}
                         </CardDescription>
                       )}
                       <div className="flex flex-wrap gap-1">
-                        {provider.metadata.tags.map(tag => (
+                        {provider.meta.tags.map((tag: string) => (
                           <Badge key={tag} variant="outline" className="text-[10px] h-5">
                             {tag}
                           </Badge>

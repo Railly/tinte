@@ -1,16 +1,14 @@
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem
 } from '@/components/ui/dropdown-menu';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Download } from 'lucide-react';
 import { UnifiedPreview } from '@/components/unified-preview';
-import { useThemeAdapters } from '@/hooks/use-theme-adapters';
+import { useThemeAdapters } from '@/lib/theme-utils';
 import { useQueryState } from 'nuqs';
 import type { TinteTheme } from '@/types/tinte';
 

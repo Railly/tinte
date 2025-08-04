@@ -1,5 +1,5 @@
 import { TinteTheme } from '@/types/tinte';
-import { ThemeProvider, ProviderOutput, ProviderMetadata } from './types';
+import { ThemeProvider, ProviderOutput } from './types';
 import { KittyIcon } from '@/components/shared/icons/kitty';
 import { 
   createPolineColorMapping, 
@@ -96,8 +96,8 @@ function generateKittyTheme(theme: TinteTheme, mode: 'light' | 'dark'): KittyThe
   };
 }
 
-export class KittyProvider implements ThemeProvider<{ light: KittyTheme; dark: KittyTheme }> {
-  readonly metadata: ProviderMetadata = {
+export const kittyProvider: ThemeProvider<{ light: KittyTheme; dark: KittyTheme }> = {
+  metadata: {
     id: 'kitty',
     name: 'Kitty',
     description: 'Fast, feature-rich, GPU based terminal emulator',
@@ -106,26 +106,22 @@ export class KittyProvider implements ThemeProvider<{ light: KittyTheme; dark: K
     icon: KittyIcon,
     website: 'https://sw.kovidgoyal.net/kitty/',
     documentation: 'https://sw.kovidgoyal.net/kitty/conf/',
-  };
+  },
 
-  readonly fileExtension = '.conf';
-  readonly mimeType = 'text/plain';
+  fileExtension: 'conf',
+  mimeType: 'text/plain',
 
-  convert(theme: TinteTheme): { light: KittyTheme; dark: KittyTheme } {
-    return {
-      light: generateKittyTheme(theme, 'light'),
-      dark: generateKittyTheme(theme, 'dark'),
-    };
-  }
+  convert: (theme: TinteTheme) => ({
+    light: generateKittyTheme(theme, 'light'),
+    dark: generateKittyTheme(theme, 'dark'),
+  }),
 
-  export(theme: TinteTheme, filename?: string): ProviderOutput {
-    const converted = this.convert(theme);
+  export: (theme: TinteTheme, filename?: string): ProviderOutput => {
+    const converted = kittyProvider.convert(theme);
     const themeName = filename || getThemeName('tinte-theme');
     
-    // Use dark theme by default
     const kittyTheme = converted.dark;
     
-    // Create structured output with comments
     const structuredTheme: Record<string, string> = {
       '# Theme': getDisplayName('Tinte Theme'),
       '# Generator': 'Tinte Theme Converter with Poline',
@@ -190,7 +186,6 @@ export class KittyProvider implements ThemeProvider<{ light: KittyTheme; dark: K
       color15: kittyTheme.color15,
     };
 
-    // Convert to Kitty conf format
     const confContent = Object.entries(structuredTheme)
       .map(([key, value]) => {
         if (key.startsWith('#')) {
@@ -206,34 +201,19 @@ export class KittyProvider implements ThemeProvider<{ light: KittyTheme; dark: K
     return {
       content: confContent,
       filename: `${themeName}-kitty.conf`,
-      mimeType: this.mimeType,
+      mimeType: kittyProvider.mimeType,
     };
-  }
+  },
 
-  validate(output: { light: KittyTheme; dark: KittyTheme }): boolean {
-    const validateTheme = (theme: KittyTheme): boolean => {
-      return !!(
-        theme.foreground &&
-        theme.background &&
-        theme.color0 &&
-        theme.color1 &&
-        theme.color2 &&
-        theme.color3 &&
-        theme.color4 &&
-        theme.color5 &&
-        theme.color6 &&
-        theme.color7 &&
-        theme.color8 &&
-        theme.color9 &&
-        theme.color10 &&
-        theme.color11 &&
-        theme.color12 &&
-        theme.color13 &&
-        theme.color14 &&
-        theme.color15
-      );
-    };
+  validate: (output: { light: KittyTheme; dark: KittyTheme }) => {
+    const validateTheme = (theme: KittyTheme) => !!(
+      theme.foreground && theme.background &&
+      theme.color0 && theme.color1 && theme.color2 && theme.color3 &&
+      theme.color4 && theme.color5 && theme.color6 && theme.color7 &&
+      theme.color8 && theme.color9 && theme.color10 && theme.color11 &&
+      theme.color12 && theme.color13 && theme.color14 && theme.color15
+    );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  }
-}
+  },
+};

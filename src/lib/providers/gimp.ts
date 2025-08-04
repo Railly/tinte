@@ -1,5 +1,5 @@
 import { TinteTheme } from "@/types/tinte";
-import { ThemeProvider, ProviderOutput, ProviderMetadata } from "./types";
+import { ThemeProvider, ProviderOutput } from "./types";
 import { GIMPIcon } from "@/components/shared/icons/gimp";
 import {
   createPolineColorMapping,
@@ -102,10 +102,8 @@ function generateGIMPPalette(
   };
 }
 
-export class GIMPProvider
-  implements ThemeProvider<{ light: GIMPPalette; dark: GIMPPalette }>
-{
-  readonly metadata: ProviderMetadata = {
+export const gimpProvider: ThemeProvider<{ light: GIMPPalette; dark: GIMPPalette }> = {
+  metadata: {
     id: "gimp",
     name: "GIMP",
     description: "GNU Image Manipulation Program color palette",
@@ -114,20 +112,18 @@ export class GIMPProvider
     icon: GIMPIcon,
     website: "https://www.gimp.org/",
     documentation: "https://docs.gimp.org/en/gimp-concepts-palettes.html",
-  };
+  },
 
-  readonly fileExtension = ".gpl";
-  readonly mimeType = "text/plain";
+  fileExtension: "gpl",
+  mimeType: "text/plain",
 
-  convert(theme: TinteTheme): { light: GIMPPalette; dark: GIMPPalette } {
-    return {
-      light: generateGIMPPalette(theme, "light"),
-      dark: generateGIMPPalette(theme, "dark"),
-    };
-  }
+  convert: (theme: TinteTheme) => ({
+    light: generateGIMPPalette(theme, "light"),
+    dark: generateGIMPPalette(theme, "dark"),
+  }),
 
-  export(theme: TinteTheme, filename?: string): ProviderOutput {
-    const converted = this.convert(theme);
+  export: (theme: TinteTheme, filename?: string): ProviderOutput => {
+    const converted = gimpProvider.convert(theme);
     const themeName = filename || getThemeName("tinte-theme");
 
     // Use dark palette by default, but we could generate both
@@ -160,32 +156,30 @@ export class GIMPProvider
     return {
       content: gimpContent,
       filename: `${themeName}-gimp.gpl`,
-      mimeType: this.mimeType,
+      mimeType: gimpProvider.mimeType,
     };
-  }
+  },
 
-  validate(output: { light: GIMPPalette; dark: GIMPPalette }): boolean {
-    const validatePalette = (palette: GIMPPalette): boolean => {
-      return !!(
-        palette.name &&
-        palette.colors &&
-        palette.colors.length > 0 &&
-        palette.colors.every(
-          (color) =>
-            typeof color.red === "number" &&
-            typeof color.green === "number" &&
-            typeof color.blue === "number" &&
-            typeof color.name === "string" &&
-            color.red >= 0 &&
-            color.red <= 255 &&
-            color.green >= 0 &&
-            color.green <= 255 &&
-            color.blue >= 0 &&
-            color.blue <= 255
-        )
-      );
-    };
+  validate: (output: { light: GIMPPalette; dark: GIMPPalette }) => {
+    const validatePalette = (palette: GIMPPalette) => !!(
+      palette.name &&
+      palette.colors &&
+      palette.colors.length > 0 &&
+      palette.colors.every(
+        (color) =>
+          typeof color.red === "number" &&
+          typeof color.green === "number" &&
+          typeof color.blue === "number" &&
+          typeof color.name === "string" &&
+          color.red >= 0 &&
+          color.red <= 255 &&
+          color.green >= 0 &&
+          color.green <= 255 &&
+          color.blue >= 0 &&
+          color.blue <= 255
+      )
+    );
 
     return validatePalette(output.light) && validatePalette(output.dark);
-  }
-}
+  },
+};
