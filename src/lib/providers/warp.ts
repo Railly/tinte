@@ -1,6 +1,7 @@
 import { TinteTheme } from "@/types/tinte";
-import { ProviderOutput, ThemeProvider } from "./types";
+import { ProviderOutput, PreviewableProvider } from "./types";
 import { WarpIcon } from "@/components/shared/icons/warp";
+import { WarpPreview } from "@/components/preview/warp/warp-preview";
 import {
   createPolineColorMapping,
   toYAML,
@@ -78,7 +79,7 @@ function generateWarpTheme(
   };
 }
 
-export const warpProvider: ThemeProvider<{ light: WarpTheme; dark: WarpTheme }> = {
+export const warpProvider: PreviewableProvider<{ light: WarpTheme; dark: WarpTheme }> = {
   metadata: {
     id: "warp",
     name: "Warp",
@@ -146,5 +147,9 @@ ${toYAML(warpTheme)}`;
       );
 
     return validateTheme(output.light) && validateTheme(output.dark);
+  },
+
+  preview: {
+    component: WarpPreview,
   },
 };

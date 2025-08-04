@@ -1,5 +1,5 @@
 import { TinteTheme } from '@/types/tinte';
-import { ThemeProvider, ProviderOutput } from './types';
+import { PreviewableProvider, ProviderOutput } from './types';
 import { AlacrittyIcon } from '@/components/shared/icons/alacritty';
 import { 
   createPolineColorMapping, 
@@ -109,7 +109,9 @@ function generateAlacrittyTheme(theme: TinteTheme, mode: 'light' | 'dark'): Alac
   };
 }
 
-export const alacrittyProvider: ThemeProvider<{ light: AlacrittyTheme; dark: AlacrittyTheme }> = {
+import { AlacrittyPreview } from '@/components/preview/alacritty/alacritty-preview';
+
+export const alacrittyProvider: PreviewableProvider<{ light: AlacrittyTheme; dark: AlacrittyTheme }> = {
   metadata: {
     id: 'alacritty',
     name: 'Alacritty',
@@ -156,5 +158,9 @@ export const alacrittyProvider: ThemeProvider<{ light: AlacrittyTheme; dark: Ala
     );
 
     return validateTheme(output.light) && validateTheme(output.dark);
+  },
+
+  preview: {
+    component: AlacrittyPreview,
   },
 };

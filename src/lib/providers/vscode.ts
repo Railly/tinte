@@ -1,7 +1,7 @@
 import { TinteTheme, TinteBlock } from "@/types/tinte";
 import { PreviewableProvider, ProviderOutput } from "./types";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
-import { VSCodePreview } from "@/components/preview/vscode/preview";
+import { VSCodePreview } from "@/components/preview/vscode/vscode-preview";
 import { shadcnToTinte } from "../shadcn-to-tinte";
 
 export interface CodeTemplate {
@@ -599,7 +599,8 @@ export const vscodeProvider: PreviewableProvider<{
     tags: ["editor", "microsoft", "typescript", "javascript"],
     icon: VSCodeIcon,
     website: "https://code.visualstudio.com/",
-    documentation: "https://code.visualstudio.com/api/extension-guides/color-theme",
+    documentation:
+      "https://code.visualstudio.com/api/extension-guides/color-theme",
   },
 
   fileExtension: "json",

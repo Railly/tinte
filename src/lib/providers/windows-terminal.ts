@@ -1,6 +1,7 @@
 import { TinteTheme } from "@/types/tinte";
-import { ThemeProvider, ProviderOutput } from "./types";
+import { PreviewableProvider, ProviderOutput } from "./types";
 import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
+import { WindowsTerminalPreview } from "@/components/preview/windows-terminal/windows-terminal-preview";
 import {
   createPolineColorMapping,
   toJSON,
@@ -84,7 +85,7 @@ function generateWindowsTerminalTheme(
   };
 }
 
-export const windowsTerminalProvider: ThemeProvider<{ light: WindowsTerminalTheme; dark: WindowsTerminalTheme }> = {
+export const windowsTerminalProvider: PreviewableProvider<{ light: WindowsTerminalTheme; dark: WindowsTerminalTheme }> = {
   metadata: {
     id: "windows-terminal",
     name: "Windows Terminal",
@@ -150,5 +151,9 @@ export const windowsTerminalProvider: ThemeProvider<{ light: WindowsTerminalThem
     );
 
     return validateTheme(output.light) && validateTheme(output.dark);
+  },
+
+  preview: {
+    component: WindowsTerminalPreview,
   },
 };

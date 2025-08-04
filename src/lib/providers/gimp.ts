@@ -1,6 +1,7 @@
 import { TinteTheme } from "@/types/tinte";
-import { ThemeProvider, ProviderOutput } from "./types";
+import { PreviewableProvider, ProviderOutput } from "./types";
 import { GIMPIcon } from "@/components/shared/icons/gimp";
+import { GimpPreview } from "@/components/preview/gimp/gimp-preview";
 import {
   createPolineColorMapping,
   hexToInt,
@@ -102,7 +103,7 @@ function generateGIMPPalette(
   };
 }
 
-export const gimpProvider: ThemeProvider<{ light: GIMPPalette; dark: GIMPPalette }> = {
+export const gimpProvider: PreviewableProvider<{ light: GIMPPalette; dark: GIMPPalette }> = {
   metadata: {
     id: "gimp",
     name: "GIMP",
@@ -181,5 +182,9 @@ export const gimpProvider: ThemeProvider<{ light: GIMPPalette; dark: GIMPPalette
     );
 
     return validatePalette(output.light) && validatePalette(output.dark);
+  },
+
+  preview: {
+    component: GimpPreview,
   },
 };

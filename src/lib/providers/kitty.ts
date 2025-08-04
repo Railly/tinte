@@ -1,6 +1,7 @@
 import { TinteTheme } from '@/types/tinte';
-import { ThemeProvider, ProviderOutput } from './types';
+import { PreviewableProvider, ProviderOutput } from './types';
 import { KittyIcon } from '@/components/shared/icons/kitty';
+import { KittyPreview } from '@/components/preview/kitty/kitty-preview';
 import { 
   createPolineColorMapping, 
   getThemeName, 
@@ -96,7 +97,7 @@ function generateKittyTheme(theme: TinteTheme, mode: 'light' | 'dark'): KittyThe
   };
 }
 
-export const kittyProvider: ThemeProvider<{ light: KittyTheme; dark: KittyTheme }> = {
+export const kittyProvider: PreviewableProvider<{ light: KittyTheme; dark: KittyTheme }> = {
   metadata: {
     id: 'kitty',
     name: 'Kitty',
@@ -215,5 +216,9 @@ export const kittyProvider: ThemeProvider<{ light: KittyTheme; dark: KittyTheme 
     );
 
     return validateTheme(output.light) && validateTheme(output.dark);
+  },
+
+  preview: {
+    component: KittyPreview,
   },
 };

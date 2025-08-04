@@ -27,12 +27,12 @@ import { slackProvider } from './slack';
 const registry = new ProviderRegistry();
 registry.registerPreviewable(shadcnProvider);
 registry.registerPreviewable(vscodeProvider);
-registry.register(alacrittyProvider);
-registry.register(kittyProvider);
-registry.register(warpProvider);
-registry.register(windowsTerminalProvider);
-registry.register(gimpProvider);
-registry.register(slackProvider);
+registry.registerPreviewable(alacrittyProvider);
+registry.registerPreviewable(kittyProvider);
+registry.registerPreviewable(warpProvider);
+registry.registerPreviewable(windowsTerminalProvider);
+registry.registerPreviewable(gimpProvider);
+registry.registerPreviewable(slackProvider);
 
 export function getAvailableProviders() {
   return registry.getAll();

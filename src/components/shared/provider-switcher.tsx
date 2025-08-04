@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown, CheckCircle, Clock } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 
 import {
@@ -18,7 +18,8 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { ALL_PROVIDERS } from '@/config/providers';
+import { getAvailableProviders } from '@/lib/providers';
+import { PLANNED_PROVIDERS } from '@/config/providers';
 
 interface ProviderSwitcherProps {
   className?: string;
@@ -31,7 +32,26 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
   });
   const [open, setOpen] = React.useState(false);
 
-  const activeProvider = ALL_PROVIDERS.find(p => p.id === provider) || ALL_PROVIDERS[0];
+  const availableProviders = React.useMemo(() => {
+    return getAvailableProviders().map(p => ({
+      id: p.metadata.id,
+      name: p.metadata.name,
+      icon: p.metadata.icon,
+      category: p.metadata.category,
+      available: true,
+    }));
+  }, []);
+
+  const plannedProviders = React.useMemo(() => {
+    const availableIds = new Set(availableProviders.map(p => p.id));
+    return PLANNED_PROVIDERS.filter(p => !availableIds.has(p.id)).map(p => ({
+      ...p,
+      available: false,
+    }));
+  }, [availableProviders]);
+
+  const allProviders = [...availableProviders, ...plannedProviders];
+  const activeProvider = allProviders.find(p => p.id === provider) || availableProviders[0];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -44,19 +64,22 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           className={`justify-between ${className} hover:text-muted-foreground w-[20ch]`}
         >
           <div className="flex items-center gap-2 min-w-0">
-            <activeProvider.icon className="h-4 w-4 shrink-0" />
+            {activeProvider.icon && <activeProvider.icon className="h-4 w-4 shrink-0" />}
             <span className="font-medium max-w-[8ch] md:max-w-none truncate">{activeProvider.name}</span>
+            {!activeProvider.available && <Clock className="h-3 w-3 text-amber-500 shrink-0" />}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align='start' className="w-[230px] p-0">
+      <PopoverContent align='start' className="w-[280px] p-0">
         <Command>
           <CommandInput placeholder="Search providers..." className="h-9" />
           <CommandList className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-thumb]:bg-border">
             <CommandEmpty>No provider found.</CommandEmpty>
-            <CommandGroup>
-                {ALL_PROVIDERS.map((prov) => (
+
+            {availableProviders.length > 0 && (
+              <CommandGroup heading="Available">
+                {availableProviders.map((prov) => (
                   <CommandItem
                     key={prov.id}
                     value={prov.id}
@@ -66,11 +89,32 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
                     }}
                     className="gap-2"
                   >
-                    <prov.icon className="h-4 w-4" />
-                    <span>{prov.name}</span>
+                    {prov.icon && <prov.icon className="h-4 w-4" />}
+                    <span className="flex-1">{prov.name}</span>
                   </CommandItem>
                 ))}
-            </CommandGroup>
+              </CommandGroup>
+            )}
+
+            {plannedProviders.length > 0 && (
+              <CommandGroup heading="Coming Soon">
+                {plannedProviders.map((prov) => (
+                  <CommandItem
+                    key={prov.id}
+                    value={prov.id}
+                    onSelect={() => {
+                      setOpen(false);
+                    }}
+                    className="gap-2 opacity-60 cursor-not-allowed"
+                    disabled
+                  >
+                    <prov.icon className="h-4 w-4" />
+                    <span className="flex-1">{prov.name}</span>
+                    <Clock className="h-3 w-3 text-amber-500" />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

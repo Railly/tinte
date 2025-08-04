@@ -1,6 +1,7 @@
 import { TinteTheme } from "@/types/tinte";
-import { ProviderOutput, ThemeProvider } from "./types";
+import { ProviderOutput, PreviewableProvider } from "./types";
 import { SlackIcon } from "@/components/shared/icons/slack";
+import { SlackPreview } from "@/components/preview/slack/slack-preview";
 import {
   createPolineColorMapping,
   toJSON,
@@ -56,7 +57,7 @@ function generateSlackTheme(
   };
 }
 
-export const slackProvider: ThemeProvider<{
+export const slackProvider: PreviewableProvider<{
   light: SlackTheme;
   dark: SlackTheme;
 }> = {
@@ -123,5 +124,9 @@ export const slackProvider: ThemeProvider<{
       );
 
     return validateTheme(output.light) && validateTheme(output.dark);
+  },
+
+  preview: {
+    component: SlackPreview,
   },
 };

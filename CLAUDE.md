@@ -42,12 +42,30 @@ src/
 │   │   ├── theme-switcher.tsx     # Light/dark mode toggle
 │   │   ├── theme-selector.tsx     # Theme picker dropdown
 │   │   ├── theme-editor-panel.tsx # Token editor with color inputs
-│   │   └── theme-card.tsx         # Theme selection cards
-│   ├── preview/vscode/   # VS Code theme preview components
-│   │   ├── preview.tsx           # Main VS Code preview container
-│   │   ├── monaco-preview.tsx    # Monaco editor component
-│   │   ├── shiki-preview.tsx     # Shiki highlighting component
-│   │   └── tokens-preview.tsx    # Theme tokens display
+│   │   ├── theme-card.tsx         # Theme selection cards
+│   │   └── provider-switcher.tsx  # Provider selector with status indicators
+│   ├── preview/          # Theme preview components for all providers
+│   │   ├── vscode/       # VS Code theme preview components
+│   │   │   ├── vscode-preview.tsx    # Main VS Code preview container
+│   │   │   ├── monaco-preview.tsx    # Monaco editor component
+│   │   │   ├── shiki-preview.tsx     # Shiki highlighting component
+│   │   │   └── tokens-preview.tsx    # Theme tokens display
+│   │   ├── shadcn/       # shadcn/ui theme preview components
+│   │   │   ├── shadcn-preview.tsx    # Main shadcn preview container
+│   │   │   └── demos/               # Interactive demo components
+│   │   ├── alacritty/    # Alacritty terminal preview
+│   │   │   └── alacritty-preview.tsx
+│   │   ├── kitty/        # Kitty terminal preview
+│   │   │   └── kitty-preview.tsx
+│   │   ├── warp/         # Warp terminal preview
+│   │   │   └── warp-preview.tsx
+│   │   ├── windows-terminal/ # Windows Terminal preview
+│   │   │   └── windows-terminal-preview.tsx
+│   │   ├── gimp/         # GIMP palette preview
+│   │   │   └── gimp-preview.tsx
+│   │   └── slack/        # Slack theme preview
+│   │       └── slack-preview.tsx
+│   ├── unified-preview.tsx # Central preview component that routes to provider previews
 │   ├── code-preview.tsx  # Shiki syntax highlighting
 │   └── monaco-editor-preview.tsx # Monaco editor integration
 ├── hooks/                 # Custom React hooks
@@ -214,7 +232,7 @@ When testing the conversion systems:
 - **Live theme workbench** with real-time editing and preview
 - **Synchronized token editor** with automatic color format conversion (OKLCH/LAB → Hex)
 - **Theme selection** with instant visual feedback and no render delays
-- **Multi-format support** for TweakCN, Rayso, Tinte, and VS Code themes
+- **Multi-format support** for TweakCN, Rayso, Tinte, VS Code, and 8+ other providers (terminals, design tools, etc.)
 - **Semantic color mapping** with perceptual consistency
 - **Format-agnostic** conversion between theme systems
 - **Export functionality** for generated themes
@@ -223,6 +241,7 @@ When testing the conversion systems:
 - **Modular VS Code preview** with separated Monaco, Shiki, and Tokens components
 - **Performance-optimized hooks** with reduced useEffect usage and predictable state
 - **View transition loading states** preserved during theme switching (non-negotiable UX)
+- **Universal theme previews** with rich visual representations for all supported providers
 
 ## Theme Architecture (Ultra-Resilient)
 
@@ -1053,19 +1072,19 @@ const providers = getPreviewableProviders();
 
 ### Provider Categories & Examples
 
-#### Editor Providers (Previewable)
-- **shadcn/ui**: React component theme system with live preview
-- **VS Code**: Editor theme with Monaco + Shiki integration
+#### Editor Providers (All Previewable)
+- **shadcn/ui**: React component theme system with interactive demos
+- **VS Code**: Editor theme with Monaco + Shiki integration and split views
 
-#### Terminal Providers
-- **Alacritty**: GPU-accelerated terminal (YAML config)
-- **Kitty**: Feature-rich terminal (conf format)
-- **Warp**: Modern AI-powered terminal (YAML config)
-- **Windows Terminal**: Microsoft's modern terminal (JSON config)
+#### Terminal Providers (All Previewable)
+- **Alacritty**: GPU-accelerated terminal with syntax highlighting preview (YAML config)
+- **Kitty**: Feature-rich terminal with tab interface and config display (conf format)
+- **Warp**: Modern AI-powered terminal with git integration and command suggestions (YAML config)
+- **Windows Terminal**: Microsoft's modern terminal with PowerShell interface (JSON config)
 
-#### Design Tool Providers
-- **GIMP**: Color palette export for image editing
-- **Slack**: Team communication theme colors
+#### Design & Communication Tool Providers (All Previewable)
+- **GIMP**: Color palette with interactive swatches and RGB display (GPL format)
+- **Slack**: Team communication interface with sidebar, messages, and theme colors (JSON config)
 
 ### Migration from Legacy System
 
@@ -1095,3 +1114,193 @@ const providers = getPreviewableProviders();
 7. **Registry Operations**: All CRUD operations work type-safely
 
 This modern provider architecture provides a **scalable, type-safe, and maintainable** system for theme conversion while eliminating technical debt from the previous implementation.
+
+## Universal Theme Preview System (Comprehensive Implementation)
+
+### Unified Preview Architecture
+
+The theme preview system provides rich visual representations for all supported providers through a centralized, type-safe architecture:
+
+#### Core Components
+
+```
+src/components/
+├── unified-preview.tsx          # Central routing component for all previews
+├── shared/provider-switcher.tsx # Enhanced provider selector with status indicators
+└── preview/                     # Provider-specific preview components
+    ├── vscode/vscode-preview.tsx      # Monaco + Shiki + Tokens views
+    ├── shadcn/shadcn-preview.tsx      # Interactive component demos
+    ├── alacritty/alacritty-preview.tsx     # Terminal with syntax highlighting
+    ├── kitty/kitty-preview.tsx            # Terminal with tabs and config
+    ├── warp/warp-preview.tsx              # Modern terminal with AI features
+    ├── windows-terminal/windows-terminal-preview.tsx # PowerShell interface
+    ├── gimp/gimp-preview.tsx              # Color palette with RGB values
+    └── slack/slack-preview.tsx            # Chat interface with theme colors
+```
+
+#### Key Features
+
+**🎯 Real Theme Data Integration**:
+- All previews use actual converted theme colors instead of hardcoded values
+- Type-safe integration with provider output structures
+- Dynamic color application based on current theme mode (light/dark)
+
+**⚡ Provider Status Visualization**:
+```tsx
+// Provider switcher with clear status indicators
+export function ProviderSwitcher() {
+  const availableProviders = getAvailableProviders(); // From registry
+  const plannedProviders = PLANNED_PROVIDERS.filter(/* not implemented */);
+  
+  return (
+    <Command>
+      <CommandGroup heading="Available">
+        {availableProviders.map(provider => (
+          <CommandItem>
+            <provider.icon />
+            <span>{provider.name}</span>
+            <CheckCircle className="text-green-500" /> {/* Available indicator */}
+          </CommandItem>
+        ))}
+      </CommandGroup>
+      
+      <CommandGroup heading="Coming Soon">
+        {plannedProviders.map(provider => (
+          <CommandItem disabled>
+            <provider.icon />
+            <span>{provider.name}</span>
+            <Clock className="text-amber-500" /> {/* Coming soon indicator */}
+          </CommandItem>
+        ))}
+      </CommandGroup>
+    </Command>
+  );
+}
+```
+
+**🚀 Performance Optimizations**:
+- Lazy loading of preview components
+- Memoized theme conversions
+- Responsive design for mobile and desktop
+- Optimized re-renders using React.memo where appropriate
+
+#### Preview Implementation Examples
+
+**Terminal Previews** (Alacritty, Kitty, Warp, Windows Terminal):
+```tsx
+// Real theme data usage pattern
+export function AlacrittyPreview({ theme }: { theme: { light: AlacrittyTheme; dark: AlacrittyTheme } }) {
+  const { currentMode } = useThemeContext();
+  const currentTheme = currentMode === 'dark' ? theme.dark : theme.light;
+  
+  // Use actual theme colors for terminal elements
+  const terminalColors = {
+    background: currentTheme.colors.primary.background,
+    foreground: currentTheme.colors.primary.foreground,
+    cursor: currentTheme.colors.cursor.cursor,
+    // ... map all colors from actual theme structure
+  };
+  
+  return (
+    <div style={{ backgroundColor: terminalColors.background }}>
+      {/* Realistic terminal interface with actual colors */}
+    </div>
+  );
+}
+```
+
+**Design Tool Previews** (GIMP, Slack):
+```tsx
+// GIMP palette preview with RGB conversion
+export function GimpPreview({ theme }: { theme: { light: GIMPPalette; dark: GIMPPalette } }) {
+  const currentPalette = currentMode === 'dark' ? theme.dark : theme.light;
+  
+  return (
+    <div>
+      {/* Color swatches from actual palette data */}
+      {currentPalette.colors.map(color => (
+        <div 
+          style={{ backgroundColor: rgbToHex(color.red, color.green, color.blue) }}
+          title={`${color.name}: RGB(${color.red}, ${color.green}, ${color.blue})`}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+#### Central Routing System
+
+```tsx
+// Unified preview component that routes to appropriate provider preview
+export function UnifiedPreview({ theme }: { theme: TinteTheme }) {
+  const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
+  const currentProvider = getPreviewableProvider(provider);
+  
+  if (!currentProvider) {
+    return <div>No preview available for {provider}</div>;
+  }
+  
+  const converted = convertTheme(currentProvider.metadata.id, theme);
+  const PreviewComponent = currentProvider.preview.component;
+  
+  return (
+    <div>
+      <PreviewComponent theme={converted} />
+      {currentProvider.preview.showDock && <Dock />}
+    </div>
+  );
+}
+```
+
+### Enhanced Provider Switcher
+
+#### Status-Aware Provider Selection
+
+The provider switcher now provides clear visual feedback about provider availability:
+
+**Visual Indicators**:
+- ✅ **Green checkmark**: Provider is implemented and ready to use
+- 🕐 **Amber clock**: Provider is planned but not yet implemented
+- **Grouped sections**: "Available" and "Coming Soon" for clear organization
+- **Disabled interaction**: Coming soon providers are visually muted and non-selectable
+
+**Dynamic Detection**:
+- Uses `getAvailableProviders()` from the actual registry to detect implemented providers
+- Filters out duplicates between available and planned providers
+- Updates automatically when new providers are registered
+
+**Enhanced UX**:
+- Wider dropdown to accommodate status indicators
+- Status icon shows in both button and dropdown items
+- Search functionality works across all providers
+- Keyboard navigation support
+
+#### Implementation Benefits
+
+**🎯 User Clarity**:
+- Users immediately understand which providers are ready to use
+- Clear roadmap visibility for upcoming features
+- No confusion about why some providers don't work
+
+**⚡ Developer Experience**:
+- Automatic detection eliminates manual status management
+- Type-safe integration with provider registry
+- Easy to extend when new providers are added
+
+**🧩 Maintainability**:
+- Single source of truth (provider registry) for availability
+- No hardcoded provider lists to maintain
+- Consistent behavior across all provider selection interfaces
+
+### Testing Preview System
+
+1. **Provider Detection**: Available providers show with green checkmarks
+2. **Theme Application**: All previews use actual converted theme colors
+3. **Mode Switching**: Light/dark mode updates all preview components
+4. **Error Handling**: Graceful fallback for missing or invalid theme data
+5. **Performance**: No unnecessary re-renders during theme switching
+6. **Responsive Design**: Previews work correctly on mobile and desktop
+7. **Type Safety**: All preview components have proper TypeScript integration
+
+This comprehensive preview system transforms the user experience from basic "No preview available" messages to rich, interactive visualizations that accurately represent how themes will appear in each target application.
