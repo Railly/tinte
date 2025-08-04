@@ -32,7 +32,6 @@ export interface PreviewableProvider<TOutput = any>
   preview: {
     component: React.ComponentType<{ theme: TOutput; className?: string }>;
     defaultProps?: Record<string, any>;
-    showDock?: boolean;
   };
 }
 

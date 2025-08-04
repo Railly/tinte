@@ -265,13 +265,15 @@ src/
 #### Core Files
 
 1. **`providers/theme.tsx`** - Global theme state provider:
+
    - Single instance of `useTheme()` hook
    - Provides theme context to entire app
    - Prevents multiple hook instances and state desync
 
 2. **`hooks/use-theme.ts`** - Core theme logic:
+
    - localStorage as single source of truth
-   - Theme selection with mode preservation  
+   - Theme selection with mode preservation
    - Token editing with real-time DOM updates
    - Theme collections (TweakCN, Rayso, Tinte)
 
@@ -289,26 +291,34 @@ src/
 
 ```tsx
 // App Layout
-<ThemeProvider>
-  {children}
-</ThemeProvider>
+<ThemeProvider>{children}</ThemeProvider>;
 
 // All components use shared context
-import { useThemeContext } from '@/providers/theme';
+import { useThemeContext } from "@/providers/theme";
 
 function MyComponent() {
-  const { 
+  const {
     // Shared theme state
-    activeTheme, currentMode, isDark, mounted,
-    
-    // Theme collections  
-    allThemes, tweakcnThemes, raysoThemes, tinteThemes,
-    
+    activeTheme,
+    currentMode,
+    isDark,
+    mounted,
+
+    // Theme collections
+    allThemes,
+    tweakcnThemes,
+    raysoThemes,
+    tinteThemes,
+
     // Token editing
-    currentTokens, handleTokenEdit, resetTokens,
-    
+    currentTokens,
+    handleTokenEdit,
+    resetTokens,
+
     // Actions (globally synchronized)
-    handleThemeSelect, handleModeChange, toggleTheme
+    handleThemeSelect,
+    handleModeChange,
+    toggleTheme,
   } = useThemeContext();
 }
 ```
@@ -316,7 +326,7 @@ function MyComponent() {
 #### Component Responsibilities
 
 - **`theme-switcher.tsx`**: Light/dark mode toggle (header)
-- **`theme-selector.tsx`**: Theme picker dropdown (design panel)  
+- **`theme-selector.tsx`**: Theme picker dropdown (design panel)
 - **`theme-editor-panel.tsx`**: Live token editor with color inputs
 - **`theme-card.tsx`**: Theme selection from showcase (homepage)
 
@@ -340,12 +350,12 @@ function MyComponent() {
 ✅ **Mode switching**: Toggle dark/light anywhere → all components sync instantly  
 ✅ **Token editing**: Edit color in panel → immediate visual feedback  
 ✅ **Page refresh**: Theme and mode restored correctly  
-✅ **SSR/hydration**: No flash of incorrect theme  
+✅ **SSR/hydration**: No flash of incorrect theme
 
 #### Testing the Resilience
 
 1. **Homepage theme selection** → Navigate to chat → Editor shows correct tokens
-2. **Mode toggle in header** → Design panel tokens update instantly  
+2. **Mode toggle in header** → Design panel tokens update instantly
 3. **Theme change in dropdown** → All components sync immediately
 4. **Token edit** → Real-time DOM updates + state persistence
 5. **Page refresh** → Perfect state restoration
@@ -357,15 +367,17 @@ function MyComponent() {
 The VS Code preview system has been refactored into a clean, modular architecture:
 
 #### Component Hierarchy
+
 ```
 /components/preview/vscode/
 ├── preview.tsx           # Main container with UI coordination
-├── monaco-preview.tsx    # Monaco editor with hooks integration  
+├── monaco-preview.tsx    # Monaco editor with hooks integration
 ├── shiki-preview.tsx     # Shiki highlighting with hooks integration
 └── tokens-preview.tsx    # Theme tokens display and inspection
 ```
 
 #### Custom Hooks
+
 ```
 /hooks/
 ├── use-monaco-editor.ts     # Complete Monaco editor logic
@@ -373,6 +385,7 @@ The VS Code preview system has been refactored into a clean, modular architectur
 ```
 
 #### Utilities
+
 ```
 /lib/
 └── vscode-preview-utils.ts  # Code templates & theme conversion utilities
@@ -380,27 +393,32 @@ The VS Code preview system has been refactored into a clean, modular architectur
 
 ### Key Improvements
 
-**🎯 Reduced Complexity**: 
+**🎯 Reduced Complexity**:
+
 - Main component: 7 useEffect → 2 useEffect
 - Monaco logic: Consolidated into single hook
 - Shiki logic: Separated with optimized debouncing
 
 **🚀 Performance**:
+
 - Eliminated race conditions between multiple useEffect
 - Single initialization pattern per hook
 - Debounced highlighting for better UX during transitions
 
 **🧩 Modularity**:
+
 - Each component has single responsibility
 - Hooks are reusable across different contexts
 - Clear separation between UI and business logic
 
 **⚡ Developer Experience**:
+
 - Lower cognitive load per file
 - Easier testing and debugging
 - Predictable state flow without complex dependencies
 
 **💯 Preserved UX**:
+
 - View transition loading states maintained (150ms optimized)
 - Word wrap and layout fixes preserved
 - All original functionality intact
@@ -416,17 +434,20 @@ The project achieves perfect consistency between Shiki and Monaco Editor through
 #### Key Integration Features
 
 **🎯 Consistent Theme Mapping**:
+
 - Uses identical theme structure between `use-shiki-highlighter.ts` and `use-monaco-editor.ts`
 - Same theme names: `"tinte-light"` and `"tinte-dark"`
 - Identical color fallbacks and token mappings
 
 **⚡ Optimized Performance**:
+
 - Version-based caching system prevents unnecessary re-initialization
 - Smart theme detection using `currentThemeVersionRef`
 - 50ms delays for smooth transitions
 - No disposal conflicts between highlighter instances
 
 **🔄 Bulletproof Theme Switching**:
+
 - Theme selector changes: Detects version change → Re-initializes Shiki → Applies new theme
 - Mode changes: Uses existing highlighter → Instant theme switch
 - Built-in fallback protection for missing themes
@@ -435,36 +456,44 @@ The project achieves perfect consistency between Shiki and Monaco Editor through
 
 ```typescript
 // Version-based caching strategy
-const initializeMonaco = useCallback(async (monaco: any) => {
-  if (highlighterRef.current && currentThemeVersionRef.current === themeVersion) {
-    return; // Skip if already up to date
-  }
-  
-  // Create themes with consistent structure
-  const lightTheme = createThemeData("light");
-  const darkTheme = createThemeData("dark");
-  
-  const highlighter = await createHighlighter({
-    themes: [lightTheme, darkTheme],
-    langs: ["python", "go", "javascript"],
-  });
-  
-  shikiToMonaco(highlighter, monaco);
-  
-  // Update version tracking
-  currentThemeVersionRef.current = themeVersion;
-}, [themeVersion]);
+const initializeMonaco = useCallback(
+  async (monaco: any) => {
+    if (
+      highlighterRef.current &&
+      currentThemeVersionRef.current === themeVersion
+    ) {
+      return; // Skip if already up to date
+    }
+
+    // Create themes with consistent structure
+    const lightTheme = createThemeData("light");
+    const darkTheme = createThemeData("dark");
+
+    const highlighter = await createHighlighter({
+      themes: [lightTheme, darkTheme],
+      langs: ["python", "go", "javascript"],
+    });
+
+    shikiToMonaco(highlighter, monaco);
+
+    // Update version tracking
+    currentThemeVersionRef.current = themeVersion;
+  },
+  [themeVersion]
+);
 ```
 
 #### Performance Optimizations
 
 **🚀 Speed Improvements**:
+
 - Reduced view transition time: 300ms → 150ms
 - Reduced theme application delay: 100ms → 50ms
 - Eliminated built-in theme fallbacks (no more `vs`/`vs-dark` conflicts)
 - Smart initialization prevents redundant Shiki creation
 
 **⚡ UX Enhancements**:
+
 - No more blank/black screens during theme changes
 - Instant feedback for theme switching
 - Consistent visual appearance between Shiki and Monaco previews
@@ -506,6 +535,7 @@ src/
 #### Core Store Files
 
 1. **`stores/workbench-store.ts`** - Main workbench state:
+
    - Chat ID and static mode management
    - Tab state (`chat`, `design`, `mapping`)
    - Split view and loading states
@@ -514,12 +544,14 @@ src/
    - Zustand devtools and subscribeWithSelector middleware
 
 2. **`stores/export-store.ts`** - Export functionality:
+
    - Export progress tracking
    - Format selection (`all`, `tinte`, `vscode`, `shadcn`)
    - Export status management
    - Separate store for clean separation of concerns
 
 3. **`hooks/use-workbench-url-sync.ts`** - URL synchronization:
+
    - nuqs integration for tab and provider state
    - Bidirectional sync between URL params and store
    - Theme adapter integration
@@ -534,6 +566,7 @@ src/
 #### Key Features
 
 **🎯 Zero Prop Drilling**:
+
 ```tsx
 // Before: 12+ props passed through components
 <WorkbenchSidebar
@@ -542,7 +575,7 @@ src/
   split={split}
   chatLoading={loading}
   // ... 8+ more props
-/>
+/>;
 
 // After: Components access state directly
 export function WorkbenchSidebar() {
@@ -552,21 +585,25 @@ export function WorkbenchSidebar() {
 ```
 
 **⚡ URL State Synchronization**:
+
 - Tab changes update URL: `/workbench/abc123?tab=design`
 - Provider changes: `/workbench/abc123?tab=design&provider=vscode`
 - Perfect browser back/forward navigation
 - Shareable URLs with preserved state
 
 **🚀 Performance Optimized**:
+
 ```tsx
 // Selective subscriptions for performance
 const split = useWorkbenchStore((state) => state.split);
-const { activeTab, loading } = useWorkbench(
-  (state) => ({ activeTab: state.activeTab, loading: state.loading })
-);
+const { activeTab, loading } = useWorkbench((state) => ({
+  activeTab: state.activeTab,
+  loading: state.loading,
+}));
 ```
 
 **🧩 Clean Architecture**:
+
 - Single responsibility stores
 - Type-safe throughout with TypeScript
 - Devtools integration for debugging
@@ -586,12 +623,12 @@ interface WorkbenchState {
 }
 
 // URL State (via nuqs - client state)
-type WorkbenchTab = 'chat' | 'design' | 'mapping';
+type WorkbenchTab = "chat" | "design" | "mapping";
 // activeTab and currentProvider managed by nuqs directly
 
 interface ExportState {
   isExporting: boolean;
-  exportFormat: 'all' | 'tinte' | 'vscode' | 'shadcn' | null;
+  exportFormat: "all" | "tinte" | "vscode" | "shadcn" | null;
   exportProgress: number;
 }
 ```
@@ -599,17 +636,18 @@ interface ExportState {
 #### Usage Patterns
 
 **Component Integration**:
+
 ```tsx
 export function WorkbenchMain({ chatId, isStatic }: Props) {
   const {
-    activeTab,        // From nuqs URL state
-    split,           // From Zustand store
-    loading,         // From Zustand store
+    activeTab, // From nuqs URL state
+    split, // From Zustand store
+    loading, // From Zustand store
     initializeWorkbench,
-    tinteTheme,      // From theme context
+    tinteTheme, // From theme context
     handleExportAll, // From theme context
-    setActiveTab     // nuqs setter (updates URL)
-  } = useWorkbench(isStatic ? 'design' : 'chat');
+    setActiveTab, // nuqs setter (updates URL)
+  } = useWorkbench(isStatic ? "design" : "chat");
 
   useEffect(() => {
     const cleanup = initializeWorkbench(chatId, isStatic);
@@ -621,19 +659,20 @@ export function WorkbenchMain({ chatId, isStatic }: Props) {
 ```
 
 **Pure nuqs URL State (No useEffect needed)**:
+
 ```tsx
 // URL state management with zero useEffect/useState
-export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
-  const [activeTab, setActiveTab] = useQueryState('tab', {
+export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = "chat") {
+  const [activeTab, setActiveTab] = useQueryState("tab", {
     defaultValue: defaultTab,
     parse: (value): WorkbenchTab => {
-      if (value === 'design' || value === 'mapping') return value;
-      return 'chat';
+      if (value === "design" || value === "mapping") return value;
+      return "chat";
     },
   });
 
-  const [currentProvider, setCurrentProvider] = useQueryState('provider', { 
-    defaultValue: 'shadcn' 
+  const [currentProvider, setCurrentProvider] = useQueryState("provider", {
+    defaultValue: "shadcn",
   });
 
   // No useEffect - nuqs handles URL sync automatically
@@ -644,6 +683,7 @@ export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
 #### Benefits Over Previous Architecture
 
 **Before (useState + useEffect + prop drilling)**:
+
 - 12+ props passed through component tree
 - Multiple useState hooks scattered across components
 - Complex useEffect chains causing infinite loops
@@ -652,11 +692,12 @@ export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
 - Difficult to add new features without refactoring
 
 **After (Zustand + nuqs - Zero useEffect)**:
+
 - **Zero prop drilling** - Components access state directly
 - **Zero useState/useEffect** for URL state - nuqs handles everything
 - **Single source of truth** - Clear separation between server/client state
 - **URL state automatically synchronized** - Browser navigation works perfectly
-- **No infinite loops** - Eliminated circular useEffect dependencies  
+- **No infinite loops** - Eliminated circular useEffect dependencies
 - **Better performance** - Selective subscriptions + no unnecessary re-renders
 - **Easy to extend** - Add new features with simple store actions
 - **Full TypeScript support** with devtools integration
@@ -664,15 +705,17 @@ export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
 #### Architecture Principles
 
 **🎯 State Separation**:
+
 - **Server State**: Zustand store (`chatId`, `split`, `loading`, `seed`, `drawerOpen`)
 - **Client State**: nuqs URL params (`activeTab`, `currentProvider`)
 - **Theme State**: React Context (`tinteTheme`, theme actions)
 
 **⚡ Zero useState/useEffect Pattern**:
+
 ```tsx
 // ❌ Before: Complex useState + useEffect chains
-const [activeTab, setActiveTab] = useState('chat');
-const [urlTab, setUrlTab] = useQueryState('tab');
+const [activeTab, setActiveTab] = useState("chat");
+const [urlTab, setUrlTab] = useQueryState("tab");
 
 useEffect(() => {
   if (urlTab !== activeTab) setActiveTab(urlTab);
@@ -683,8 +726,8 @@ useEffect(() => {
 }, [activeTab, urlTab]); // 🔥 Infinite loop!
 
 // ✅ After: Pure nuqs handles everything
-const [activeTab, setActiveTab] = useQueryState('tab', {
-  defaultValue: 'chat'
+const [activeTab, setActiveTab] = useQueryState("tab", {
+  defaultValue: "chat",
 });
 // No useEffect needed - nuqs handles URL sync automatically
 ```
@@ -692,7 +735,7 @@ const [activeTab, setActiveTab] = useQueryState('tab', {
 #### Testing State Management
 
 1. **URL Synchronization**: Change tabs → URL updates, browser back/forward works perfectly
-2. **State Persistence**: Refresh page → state restored from URL params automatically  
+2. **State Persistence**: Refresh page → state restored from URL params automatically
 3. **Component Isolation**: Components work independently with store access
 4. **Performance**: No unnecessary re-renders with selective subscriptions
 5. **Export Flow**: Export progress tracked across components via separate store
@@ -702,13 +745,15 @@ const [activeTab, setActiveTab] = useQueryState('tab', {
 #### Key Lessons Learned
 
 **🚀 Performance Anti-Patterns Avoided**:
+
 - ❌ Multiple useState hooks for the same logical state
-- ❌ useEffect chains that update each other in circles  
+- ❌ useEffect chains that update each other in circles
 - ❌ Prop drilling through 4+ component levels
 - ❌ Re-creating setter functions on every render
 - ❌ Complex state synchronization logic scattered across components
 
 **✅ Modern React Patterns Applied**:
+
 - **nuqs for URL state** - Built-in synchronization, no useEffect needed
 - **Zustand for global state** - Minimal boilerplate, excellent DevTools
 - **Selective subscriptions** - Components only re-render when needed
@@ -741,11 +786,13 @@ src/components/workbench/
 #### Core Principles Applied
 
 **🎯 Single Responsibility Principle**:
+
 - **WorkbenchMain**: Clear separation of 3 layout strategies (mobile/static/dynamic)
 - **WorkbenchSidebar**: Configuration-driven with extracted theme navigation
 - **Each component**: Single, clear purpose
 
 **🔧 Open/Closed Principle**:
+
 - **Extensible via configuration**: Add new tabs in `workbench.config.ts`
 - **Layout strategies**: Easy to add new device layouts
 - **No modification**: Extend functionality without changing existing code
@@ -753,20 +800,21 @@ src/components/workbench/
 #### Configuration-Driven Architecture
 
 **Simple Tab Extension**:
+
 ```typescript
 // workbench.config.ts - Single file for all configuration
 export const WORKBENCH_TABS = [
-  { 
-    id: 'chat', 
-    label: 'Chat', 
-    component: ChatContent, 
-    requiresLoading: true 
+  {
+    id: "chat",
+    label: "Chat",
+    component: ChatContent,
+    requiresLoading: true,
   },
-  { 
-    id: 'design', 
-    label: 'Design', 
-    component: ThemeEditorPanel, 
-    requiresLoading: false 
+  {
+    id: "design",
+    label: "Design",
+    component: ThemeEditorPanel,
+    requiresLoading: false,
   },
   // Easy to add new tabs:
   // { id: 'mapping', label: 'Mapping', component: MappingPanel, requiresLoading: false }
@@ -774,6 +822,7 @@ export const WORKBENCH_TABS = [
 ```
 
 **Layout Strategy Pattern (Simplified)**:
+
 ```tsx
 // WorkbenchMain - Clear 3-strategy approach
 export function WorkbenchMain({ chatId, isStatic }) {
@@ -795,16 +844,19 @@ export function WorkbenchMain({ chatId, isStatic }) {
 #### Key Benefits Achieved
 
 **✅ Extensibility Without Complexity**:
+
 - **New tabs**: Just add to config array
 - **New layouts**: Add new if condition in WorkbenchMain
 - **Zero prop drilling**: Maintained Zustand + nuqs architecture
 
 **✅ Maintainability**:
+
 - **Single config file**: All workbench configuration in one place
 - **Clear separation**: Each layout strategy is obvious
 - **No file explosion**: Pragmatic approach with essential files only
 
 **✅ Developer Experience**:
+
 - **Easy to understand**: Clear, commented layout strategies
 - **Simple to extend**: Configuration-driven approach
 - **Fast development**: No complex abstractions to learn
@@ -812,6 +864,7 @@ export function WorkbenchMain({ chatId, isStatic }) {
 #### Usage Examples
 
 **Adding New Tab Type**:
+
 ```typescript
 // 1. Create component
 export function MappingPanel() {
@@ -819,17 +872,18 @@ export function MappingPanel() {
 }
 
 // 2. Add to config (workbench.config.ts)
-{ 
-  id: 'mapping', 
-  label: 'Mapping', 
-  component: MappingPanel, 
-  requiresLoading: false 
+{
+  id: 'mapping',
+  label: 'Mapping',
+  component: MappingPanel,
+  requiresLoading: false
 }
 
 // That's it! No other files need modification
 ```
 
 **Adding New Layout**:
+
 ```tsx
 // WorkbenchMain.tsx - Add new condition
 if (isTablet && !isStatic) {
@@ -876,13 +930,14 @@ src/lib/providers/
 #### Provider Type System
 
 **Core Interfaces**:
+
 ```typescript
 // Base provider interface
 interface ThemeProvider<TOutput = any> {
   readonly metadata: ProviderMetadata;
   readonly fileExtension: string;
   readonly mimeType: string;
-  
+
   convert(theme: TinteTheme): TOutput;
   export(theme: TinteTheme, filename?: string): ProviderOutput;
   validate?(output: TOutput): boolean;
@@ -893,7 +948,6 @@ interface PreviewableProvider<TOutput = any> extends ThemeProvider<TOutput> {
   preview: {
     component: React.ComponentType<{ theme: TOutput; className?: string }>;
     defaultProps?: Record<string, any>;
-    showDock?: boolean;
   };
 }
 
@@ -913,6 +967,7 @@ interface ProviderMetadata {
 #### Registry Implementation
 
 **Type-Safe Registration**:
+
 ```typescript
 export class ProviderRegistry {
   private providers = new Map<string, ThemeProvider>();
@@ -939,45 +994,59 @@ export class ProviderRegistry {
 #### Public API
 
 **Clean Function-Based Interface**:
+
 ```typescript
 // Public API functions (replaces legacy providerRegistry object)
-export function getAvailableProviders(): ThemeProvider[]
-export function getPreviewableProviders(): PreviewableProvider[]
-export function getProvidersByCategory(category: string): ThemeProvider[]
-export function convertTheme<T>(providerId: string, theme: TinteTheme): T | null
-export function exportTheme(providerId: string, theme: TinteTheme, filename?: string): ProviderOutput | null
-export function convertAllThemes(theme: TinteTheme): Record<string, any>
-export function exportAllThemes(theme: TinteTheme): Record<string, ProviderOutput>
+export function getAvailableProviders(): ThemeProvider[];
+export function getPreviewableProviders(): PreviewableProvider[];
+export function getProvidersByCategory(category: string): ThemeProvider[];
+export function convertTheme<T>(
+  providerId: string,
+  theme: TinteTheme
+): T | null;
+export function exportTheme(
+  providerId: string,
+  theme: TinteTheme,
+  filename?: string
+): ProviderOutput | null;
+export function convertAllThemes(theme: TinteTheme): Record<string, any>;
+export function exportAllThemes(
+  theme: TinteTheme
+): Record<string, ProviderOutput>;
 ```
 
 ### Provider Implementation Examples
 
 #### Basic Provider (Terminal/Tool)
+
 ```typescript
-export const alacrittyProvider: ThemeProvider<{ light: AlacrittyTheme; dark: AlacrittyTheme }> = {
+export const alacrittyProvider: ThemeProvider<{
+  light: AlacrittyTheme;
+  dark: AlacrittyTheme;
+}> = {
   metadata: {
-    id: 'alacritty',
-    name: 'Alacritty',
-    description: 'Cross-platform, OpenGL terminal emulator',
-    category: 'terminal',
-    tags: ['terminal', 'opengl', 'cross-platform'],
+    id: "alacritty",
+    name: "Alacritty",
+    description: "Cross-platform, OpenGL terminal emulator",
+    category: "terminal",
+    tags: ["terminal", "opengl", "cross-platform"],
     icon: AlacrittyIcon,
-    website: 'https://alacritty.org/',
-    documentation: 'https://alacritty.org/config.html',
+    website: "https://alacritty.org/",
+    documentation: "https://alacritty.org/config.html",
   },
 
-  fileExtension: 'yml',
-  mimeType: 'application/x-yaml',
+  fileExtension: "yml",
+  mimeType: "application/x-yaml",
 
   convert: (theme: TinteTheme) => ({
-    light: generateAlacrittyTheme(theme, 'light'),
-    dark: generateAlacrittyTheme(theme, 'dark'),
+    light: generateAlacrittyTheme(theme, "light"),
+    dark: generateAlacrittyTheme(theme, "dark"),
   }),
 
   export: (theme: TinteTheme, filename?: string): ProviderOutput => ({
     content: toYAML(alacrittyProvider.convert(theme).dark),
-    filename: filename || 'alacritty-theme.yml',
-    mimeType: 'application/x-yaml',
+    filename: filename || "alacritty-theme.yml",
+    mimeType: "application/x-yaml",
   }),
 
   validate: (output) => !!(output.light?.colors && output.dark?.colors),
@@ -985,6 +1054,7 @@ export const alacrittyProvider: ThemeProvider<{ light: AlacrittyTheme; dark: Ala
 ```
 
 #### Previewable Provider (UI/Editor)
+
 ```typescript
 export const vscodeProvider: PreviewableProvider<{
   light: VSCodeTheme;
@@ -998,18 +1068,20 @@ export const vscodeProvider: PreviewableProvider<{
     tags: ["editor", "microsoft", "typescript", "javascript"],
     icon: VSCodeIcon,
     website: "https://code.visualstudio.com/",
-    documentation: "https://code.visualstudio.com/api/extension-guides/color-theme",
+    documentation:
+      "https://code.visualstudio.com/api/extension-guides/color-theme",
   },
 
   fileExtension: "json",
   mimeType: "application/json",
   convert: convertTinteToVSCode,
-  export: (theme, filename) => ({ /* ... */ }),
+  export: (theme, filename) => ({
+    /* ... */
+  }),
   validate: (output) => !!(output.light?.colors && output.dark?.colors),
 
   preview: {
     component: VSCodePreview,
-    showDock: true,
   },
 };
 ```
@@ -1017,22 +1089,24 @@ export const vscodeProvider: PreviewableProvider<{
 ### Registry Setup & Usage
 
 #### Centralized Registration
+
 ```typescript
 // src/lib/providers/index.ts - Single registry instance
 const registry = new ProviderRegistry();
 
 // Register providers by type
-registry.registerPreviewable(shadcnProvider);  // UI preview
-registry.registerPreviewable(vscodeProvider);  // Editor preview
-registry.register(alacrittyProvider);          // Terminal export
-registry.register(kittyProvider);              // Terminal export
-registry.register(warpProvider);               // Terminal export
-registry.register(windowsTerminalProvider);    // Terminal export
-registry.register(gimpProvider);               // Design tool export
-registry.register(slackProvider);              // Communication tool export
+registry.registerPreviewable(shadcnProvider); // UI preview
+registry.registerPreviewable(vscodeProvider); // Editor preview
+registry.register(alacrittyProvider); // Terminal export
+registry.register(kittyProvider); // Terminal export
+registry.register(warpProvider); // Terminal export
+registry.register(windowsTerminalProvider); // Terminal export
+registry.register(gimpProvider); // Design tool export
+registry.register(slackProvider); // Communication tool export
 ```
 
 #### Component Usage
+
 ```typescript
 // Replace legacy providerRegistry usage:
 
@@ -1050,21 +1124,25 @@ const providers = getPreviewableProviders();
 ### Key Architecture Benefits
 
 **🎯 Type Safety**:
+
 - **Full TypeScript support** throughout provider system
 - **Compile-time validation** of provider implementations
 - **IntelliSense support** for all provider methods and properties
 
 **🔧 Clean Separation**:
+
 - **ThemeProvider**: Basic conversion & export functionality
 - **PreviewableProvider**: Adds live preview capabilities
 - **Registry**: Centralized management with type-safe operations
 
 **⚡ Performance**:
+
 - **No runtime reflection** - all providers statically registered
 - **Tree-shakeable** - unused providers eliminated in production builds
 - **Efficient lookup** - Map-based provider resolution
 
 **🧩 Extensibility**:
+
 - **Simple provider creation** - implement interface, register once
 - **Category-based organization** - group providers by application type
 - **Tag-based filtering** - flexible provider discovery
@@ -1073,30 +1151,34 @@ const providers = getPreviewableProviders();
 ### Provider Categories & Examples
 
 #### Editor Providers (All Previewable)
+
 - **shadcn/ui**: React component theme system with interactive demos
 - **VS Code**: Editor theme with Monaco + Shiki integration and split views
 
 #### Terminal Providers (All Previewable)
+
 - **Alacritty**: GPU-accelerated terminal with syntax highlighting preview (YAML config)
 - **Kitty**: Feature-rich terminal with tab interface and config display (conf format)
 - **Warp**: Modern AI-powered terminal with git integration and command suggestions (YAML config)
 - **Windows Terminal**: Microsoft's modern terminal with PowerShell interface (JSON config)
 
 #### Design & Communication Tool Providers (All Previewable)
+
 - **GIMP**: Color palette with interactive swatches and RGB display (GPL format)
 - **Slack**: Team communication interface with sidebar, messages, and theme colors (JSON config)
 
 ### Migration from Legacy System
 
 **Removed Legacy Patterns**:
+
 - ❌ `providerRegistry` object with mixed methods
 - ❌ `Provider` interface with inconsistent naming
 - ❌ `meta` property (renamed to `metadata`)
 - ❌ `fileExt` property (renamed to `fileExtension`)
 - ❌ `docs` property (renamed to `documentation`)
-- ❌ Mixed preview properties (`preview`, `showDock` separate)
 
 **Modern Replacements**:
+
 - ✅ **Function-based API** with clear purpose separation
 - ✅ **Consistent naming** across all provider interfaces
 - ✅ **Structured preview object** with component + configuration
@@ -1141,31 +1223,34 @@ src/components/
 #### Key Features
 
 **🎯 Real Theme Data Integration**:
+
 - All previews use actual converted theme colors instead of hardcoded values
 - Type-safe integration with provider output structures
 - Dynamic color application based on current theme mode (light/dark)
 
 **⚡ Provider Status Visualization**:
+
 ```tsx
 // Provider switcher with clear status indicators
 export function ProviderSwitcher() {
   const availableProviders = getAvailableProviders(); // From registry
   const plannedProviders = PLANNED_PROVIDERS.filter(/* not implemented */);
-  
+
   return (
     <Command>
       <CommandGroup heading="Available">
-        {availableProviders.map(provider => (
+        {availableProviders.map((provider) => (
           <CommandItem>
             <provider.icon />
             <span>{provider.name}</span>
-            <CheckCircle className="text-green-500" /> {/* Available indicator */}
+            <CheckCircle className="text-green-500" />{" "}
+            {/* Available indicator */}
           </CommandItem>
         ))}
       </CommandGroup>
-      
+
       <CommandGroup heading="Coming Soon">
-        {plannedProviders.map(provider => (
+        {plannedProviders.map((provider) => (
           <CommandItem disabled>
             <provider.icon />
             <span>{provider.name}</span>
@@ -1179,6 +1264,7 @@ export function ProviderSwitcher() {
 ```
 
 **🚀 Performance Optimizations**:
+
 - Lazy loading of preview components
 - Memoized theme conversions
 - Responsive design for mobile and desktop
@@ -1187,12 +1273,17 @@ export function ProviderSwitcher() {
 #### Preview Implementation Examples
 
 **Terminal Previews** (Alacritty, Kitty, Warp, Windows Terminal):
+
 ```tsx
 // Real theme data usage pattern
-export function AlacrittyPreview({ theme }: { theme: { light: AlacrittyTheme; dark: AlacrittyTheme } }) {
+export function AlacrittyPreview({
+  theme,
+}: {
+  theme: { light: AlacrittyTheme; dark: AlacrittyTheme };
+}) {
   const { currentMode } = useThemeContext();
-  const currentTheme = currentMode === 'dark' ? theme.dark : theme.light;
-  
+  const currentTheme = currentMode === "dark" ? theme.dark : theme.light;
+
   // Use actual theme colors for terminal elements
   const terminalColors = {
     background: currentTheme.colors.primary.background,
@@ -1200,7 +1291,7 @@ export function AlacrittyPreview({ theme }: { theme: { light: AlacrittyTheme; da
     cursor: currentTheme.colors.cursor.cursor,
     // ... map all colors from actual theme structure
   };
-  
+
   return (
     <div style={{ backgroundColor: terminalColors.background }}>
       {/* Realistic terminal interface with actual colors */}
@@ -1210,17 +1301,24 @@ export function AlacrittyPreview({ theme }: { theme: { light: AlacrittyTheme; da
 ```
 
 **Design Tool Previews** (GIMP, Slack):
+
 ```tsx
 // GIMP palette preview with RGB conversion
-export function GimpPreview({ theme }: { theme: { light: GIMPPalette; dark: GIMPPalette } }) {
-  const currentPalette = currentMode === 'dark' ? theme.dark : theme.light;
-  
+export function GimpPreview({
+  theme,
+}: {
+  theme: { light: GIMPPalette; dark: GIMPPalette };
+}) {
+  const currentPalette = currentMode === "dark" ? theme.dark : theme.light;
+
   return (
     <div>
       {/* Color swatches from actual palette data */}
-      {currentPalette.colors.map(color => (
-        <div 
-          style={{ backgroundColor: rgbToHex(color.red, color.green, color.blue) }}
+      {currentPalette.colors.map((color) => (
+        <div
+          style={{
+            backgroundColor: rgbToHex(color.red, color.green, color.blue),
+          }}
           title={`${color.name}: RGB(${color.red}, ${color.green}, ${color.blue})`}
         />
       ))}
@@ -1234,20 +1332,19 @@ export function GimpPreview({ theme }: { theme: { light: GIMPPalette; dark: GIMP
 ```tsx
 // Unified preview component that routes to appropriate provider preview
 export function UnifiedPreview({ theme }: { theme: TinteTheme }) {
-  const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
+  const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const currentProvider = getPreviewableProvider(provider);
-  
+
   if (!currentProvider) {
     return <div>No preview available for {provider}</div>;
   }
-  
+
   const converted = convertTheme(currentProvider.metadata.id, theme);
   const PreviewComponent = currentProvider.preview.component;
-  
+
   return (
     <div>
       <PreviewComponent theme={converted} />
-      {currentProvider.preview.showDock && <Dock />}
     </div>
   );
 }
@@ -1260,17 +1357,20 @@ export function UnifiedPreview({ theme }: { theme: TinteTheme }) {
 The provider switcher now provides clear visual feedback about provider availability:
 
 **Visual Indicators**:
+
 - ✅ **Green checkmark**: Provider is implemented and ready to use
 - 🕐 **Amber clock**: Provider is planned but not yet implemented
 - **Grouped sections**: "Available" and "Coming Soon" for clear organization
 - **Disabled interaction**: Coming soon providers are visually muted and non-selectable
 
 **Dynamic Detection**:
+
 - Uses `getAvailableProviders()` from the actual registry to detect implemented providers
 - Filters out duplicates between available and planned providers
 - Updates automatically when new providers are registered
 
 **Enhanced UX**:
+
 - Wider dropdown to accommodate status indicators
 - Status icon shows in both button and dropdown items
 - Search functionality works across all providers
@@ -1279,16 +1379,19 @@ The provider switcher now provides clear visual feedback about provider availabi
 #### Implementation Benefits
 
 **🎯 User Clarity**:
+
 - Users immediately understand which providers are ready to use
 - Clear roadmap visibility for upcoming features
 - No confusion about why some providers don't work
 
 **⚡ Developer Experience**:
+
 - Automatic detection eliminates manual status management
 - Type-safe integration with provider registry
 - Easy to extend when new providers are added
 
 **🧩 Maintainability**:
+
 - Single source of truth (provider registry) for availability
 - No hardcoded provider lists to maintain
 - Consistent behavior across all provider selection interfaces

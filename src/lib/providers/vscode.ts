@@ -626,6 +626,5 @@ export const vscodeProvider: PreviewableProvider<{
 
   preview: {
     component: VSCodePreview,
-    showDock: true,
   },
 };

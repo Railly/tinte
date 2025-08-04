@@ -27,7 +27,7 @@ export function WorkbenchSidebar({
   return (
     <div className="flex flex-col h-full">
       {/* Theme Navigation */}
-      <div className="flex gap-2 px-3 pt-3">
+      <div className="flex gap-2 p-3">
         <ThemeSelector
           themes={allThemes}
           activeId={activeId}
@@ -81,9 +81,9 @@ export function WorkbenchSidebar({
         </TabsList>
 
         {WORKBENCH_TABS.map(({ id, component: Component, requiresLoading }) => (
-          <TabsContent 
-            key={id} 
-            value={id} 
+          <TabsContent
+            key={id}
+            value={id}
             className={isStatic ? "flex-1 m-0 p-0" : "flex-1"}
           >
             {requiresLoading ? (

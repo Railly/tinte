@@ -31,7 +31,6 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   }
 
   const PreviewComponent = currentProvider.preview.component;
-  const showDock = currentProvider.preview.showDock ?? false;
 
   return (
     <div className={cn("h-[calc(100dvh-var(--header-height)_-_2rem)] space-y-6 relative", className)}>
@@ -39,13 +38,11 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
         theme={converted}
       />
 
-      {showDock && (
-        <Dock
-          theme={theme}
-          providerId={currentProvider.metadata.id}
-          providerName={currentProvider.metadata.name}
-        />
-      )}
+      <Dock
+        theme={theme}
+        providerId={currentProvider.metadata.id}
+        providerName={currentProvider.metadata.name}
+      />
     </div>
   );
 }
