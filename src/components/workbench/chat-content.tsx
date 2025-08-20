@@ -1,4 +1,8 @@
+import { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Send } from 'lucide-react';
 import { useWorkbenchStore } from '@/stores/workbench-store';
 import { AttachmentBubble } from './attachment-bubble';
 
@@ -8,10 +12,29 @@ interface ChatContentProps {
 
 export function ChatContent({ loading }: ChatContentProps) {
   const seed = useWorkbenchStore((state) => state.seed);
+  const [message, setMessage] = useState('');
+
+  const handleSend = () => {
+    if (!message.trim()) return;
+
+    // TODO: Implement actual chat functionality
+    console.log('Sending message:', message);
+    setMessage('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-var(--header-height)_-_6rem)]">
-      <ScrollArea className="flex-1">
+    <div className="flex flex-col h-[calc(100dvh-var(--header-height)_-_6.5rem)]">
+      <ScrollArea
+        className="flex-1 min-h-0"
+        showScrollIndicators={true}
+      >
         <div className="p-4">
           {loading ? (
             <div className="flex items-center justify-center h-32">
@@ -28,27 +51,16 @@ export function ChatContent({ loading }: ChatContentProps) {
                       {seed.content}
                     </div>
                   )}
-                  
+
                   {/* Attachments */}
                   {seed.attachments.length > 0 && (
                     <div className="space-y-2 mt-3 first:mt-0">
-                      {seed.attachments.map((attachment) => {
-                        // Debug logging for images
-                        if (attachment.kind === 'image') {
-                          console.log('Image attachment:', {
-                            id: attachment.id,
-                            hasImageData: !!attachment.imageData,
-                            imageDataLength: attachment.imageData?.length || 0,
-                            imageDataPreview: attachment.imageData?.substring(0, 50) + '...'
-                          });
-                        }
-                        return (
-                          <AttachmentBubble
-                            key={attachment.id}
-                            att={attachment}
-                          />
-                        );
-                      })}
+                      {seed.attachments.map((attachment) => (
+                        <AttachmentBubble
+                          key={attachment.id}
+                          att={attachment}
+                        />
+                      ))}
                     </div>
                   )}
                 </div>
@@ -104,11 +116,26 @@ export function ChatContent({ loading }: ChatContentProps) {
       </ScrollArea>
 
       <div className="flex-shrink-0 p-3 border-t border-border bg-background">
-        <textarea
-          placeholder="Type a message..."
-          className="w-full min-h-[80px] max-h-[200px] resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          rows={3}
-        />
+        <div className="flex gap-2 items-end">
+          <div className="flex-1">
+            <Textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
+              className="min-h-[80px] max-h-[200px] resize-none"
+              rows={3}
+            />
+          </div>
+          <Button
+            onClick={handleSend}
+            disabled={!message.trim()}
+            size="icon"
+            className="mb-1"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -12,15 +12,17 @@ import type { WorkbenchTab } from '@/stores/workbench-store';
 interface WorkbenchSidebarProps {
   isStatic?: boolean;
   split?: boolean;
+  defaultTab?: string;
 }
 
 export function WorkbenchSidebar({
   isStatic = false,
   split = false,
+  defaultTab,
 }: WorkbenchSidebarProps) {
   // Get own data - no prop drilling
   const loading = useWorkbenchStore((state) => state.loading);
-  const { activeTab, setActiveTab } = useWorkbenchUrlSync(isStatic ? 'design' : 'chat');
+  const { activeTab, setActiveTab } = useWorkbenchUrlSync(defaultTab || (isStatic ? 'design' : 'chat'));
   const { allThemes, activeTheme, handleThemeSelect, navigateTheme } = useThemeContext();
   const activeId = activeTheme?.id || null;
 

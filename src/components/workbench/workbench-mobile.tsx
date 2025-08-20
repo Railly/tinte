@@ -14,11 +14,13 @@ import { useWorkbenchUrlSync } from '@/hooks/use-workbench-url-sync';
 interface WorkbenchMobileProps {
   chatId: string;
   isStatic: boolean;
+  defaultTab?: string;
 }
 
 export function WorkbenchMobile({
   chatId: _chatId,
   isStatic,
+  defaultTab,
 }: WorkbenchMobileProps) {
   // Direct store access
   const split = useWorkbenchStore((state) => state.split);
@@ -27,7 +29,7 @@ export function WorkbenchMobile({
   const setDrawerOpen = useWorkbenchStore((state) => state.setDrawerOpen);
   
   // URL state
-  const { activeTab, setActiveTab } = useWorkbenchUrlSync(isStatic ? 'design' : 'chat');
+  const { activeTab, setActiveTab } = useWorkbenchUrlSync(defaultTab || (isStatic ? 'design' : 'chat'));
   
   // Theme context (only what this component needs)
   // Export functions are handled by WorkbenchPreviewPane itself

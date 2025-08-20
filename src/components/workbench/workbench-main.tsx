@@ -12,9 +12,10 @@ import { CHAT_CONFIG } from '@/lib/chat-constants';
 interface WorkbenchMainProps {
   chatId: string;
   isStatic?: boolean;
+  defaultTab?: string;
 }
 
-export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) {
+export function WorkbenchMain({ chatId, isStatic = false, defaultTab }: WorkbenchMainProps) {
   // Only what THIS component needs for layout decisions
   const split = useWorkbenchStore((state) => state.split);
   const initializeWorkbench = useWorkbenchStore((state) => state.initializeWorkbench);
@@ -31,6 +32,7 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
       <WorkbenchMobile
         chatId={chatId}
         isStatic={isStatic}
+        defaultTab={defaultTab}
       />
     );
   }
@@ -43,7 +45,7 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
           className="border-r bg-background flex flex-col flex-shrink-0"
           style={{ width: CHAT_CONFIG.SIDEBAR_WIDTH }}
         >
-          <WorkbenchSidebar isStatic />
+          <WorkbenchSidebar isStatic defaultTab={defaultTab} />
         </aside>
         <WorkbenchPreviewPane />
       </div>
@@ -60,7 +62,7 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
         className="border-r bg-background flex flex-col flex-shrink-0"
         style={{ willChange: 'width' }}
       >
-        <WorkbenchSidebar split={split} />
+        <WorkbenchSidebar split={split} defaultTab={defaultTab} />
       </motion.aside>
 
       <AnimatePresence>

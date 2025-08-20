@@ -1,22 +1,23 @@
-import { useQueryState } from 'nuqs';
+import { useQueryState, useQueryStates } from 'nuqs';
 import { type WorkbenchTab } from '@/stores/workbench-store';
 import { useThemeAdapters } from '@/lib/theme-utils';
+import { workbenchParsers } from '@/app/workbench/client-search-params';
 
 export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
   const { previewableProviders } = useThemeAdapters();
   
-  const [activeTab, setActiveTab] = useQueryState('tab', {
-    defaultValue: defaultTab,
-    parse: (value): WorkbenchTab => {
-      if (value === 'design' || value === 'mapping') return value;
-      return 'chat';
-    },
-    serialize: (value) => value,
+  // Use client parsers for consistency with server-side
+  const [{ tab: activeTab }, setWorkbenchParams] = useQueryStates({
+    tab: workbenchParsers.tab.withDefault(defaultTab)
   });
 
   const [currentProvider, setCurrentProvider] = useQueryState('provider', { 
     defaultValue: 'shadcn' 
   });
+
+  const setActiveTab = (tab: WorkbenchTab) => {
+    setWorkbenchParams({ tab });
+  };
 
   const currentAdapter = previewableProviders.find(
     (p: any) => p.metadata.name === (currentProvider || 'shadcn')

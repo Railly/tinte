@@ -3,7 +3,7 @@ import { UnifiedPreview } from '@/components/unified-preview';
 import { useThemeContext } from '@/providers/theme';
 import type { TinteTheme } from '@/types/tinte';
 
-interface WorkbenchPreviewPaneProps {}
+interface WorkbenchPreviewPaneProps { }
 
 function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
   return (
@@ -21,7 +21,7 @@ function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
   );
 }
 
-export function WorkbenchPreviewPane({}: WorkbenchPreviewPaneProps) {
+export function WorkbenchPreviewPane({ }: WorkbenchPreviewPaneProps) {
   // Get own data - no prop drilling
   const { tinteTheme } = useThemeContext();
   return (
