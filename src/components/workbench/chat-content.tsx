@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Send } from 'lucide-react';
 import { useWorkbenchStore } from '@/stores/workbench-store';
 import { AttachmentBubble } from './attachment-bubble';
+import { ChatInput } from './chat-input';
+import type { PastedItem } from '@/lib/input-detection';
 
 interface ChatContentProps {
   loading: boolean;
@@ -12,21 +10,14 @@ interface ChatContentProps {
 
 export function ChatContent({ loading }: ChatContentProps) {
   const seed = useWorkbenchStore((state) => state.seed);
-  const [message, setMessage] = useState('');
 
-  const handleSend = () => {
-    if (!message.trim()) return;
-
+  const handleChatSubmit = (content: string, attachments: PastedItem[]) => {
     // TODO: Implement actual chat functionality
-    console.log('Sending message:', message);
-    setMessage('');
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+    console.log('Sending chat message:', {
+      content,
+      attachments: attachments.length,
+      attachmentTypes: attachments.map(a => a.kind)
+    });
   };
 
   return (
@@ -115,28 +106,11 @@ export function ChatContent({ loading }: ChatContentProps) {
         </div>
       </ScrollArea>
 
-      <div className="flex-shrink-0 p-3 border-t border-border bg-background">
-        <div className="flex gap-2 items-end">
-          <div className="flex-1">
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a message..."
-              className="min-h-[80px] max-h-[200px] resize-none"
-              rows={3}
-            />
-          </div>
-          <Button
-            onClick={handleSend}
-            disabled={!message.trim()}
-            size="icon"
-            className="mb-1"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <ChatInput
+        onSubmit={handleChatSubmit}
+        placeholder="Type a message..."
+        disabled={loading}
+      />
     </div>
   );
 }
