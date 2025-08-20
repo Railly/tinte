@@ -204,7 +204,7 @@ export default function PromptInput({
     if (!allContent && pastedItems.length === 0) return;
 
     const chatId = nanoid();
-    const attachments = mapPastedToAttachments(pastedItems, 300_000);
+    const attachments = mapPastedToAttachments(pastedItems, 1_000_000); // Increased to 1MB for images
     writeSeed(chatId, {
       id: chatId,
       content: allContent,
@@ -212,7 +212,7 @@ export default function PromptInput({
       createdAt: Date.now(),
     });
 
-    router.push(`/chat/${chatId}`);
+    router.push(`/workbench/${chatId}`);
     onSubmit?.('prompt', allContent);
   }
 

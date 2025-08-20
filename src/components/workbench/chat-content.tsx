@@ -1,10 +1,14 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useWorkbenchStore } from '@/stores/workbench-store';
+import { AttachmentBubble } from './attachment-bubble';
 
 interface ChatContentProps {
   loading: boolean;
 }
 
 export function ChatContent({ loading }: ChatContentProps) {
+  const seed = useWorkbenchStore((state) => state.seed);
+
   return (
     <div className="flex flex-col h-[calc(100dvh-var(--header-height)_-_6rem)]">
       <ScrollArea className="flex-1">
@@ -12,6 +16,52 @@ export function ChatContent({ loading }: ChatContentProps) {
           {loading ? (
             <div className="flex items-center justify-center h-32">
               <div className="text-sm text-muted-foreground">Loading...</div>
+            </div>
+          ) : seed ? (
+            <div className="space-y-4">
+              {/* User message */}
+              <div className="flex justify-end">
+                <div className="max-w-[85%] sm:max-w-[80%] lg:max-w-[70%] bg-primary text-primary-foreground rounded-2xl px-3 sm:px-4 py-2 sm:py-3">
+                  {/* User's text content */}
+                  {seed.content && (
+                    <div className="text-sm whitespace-pre-wrap mb-3 last:mb-0">
+                      {seed.content}
+                    </div>
+                  )}
+                  
+                  {/* Attachments */}
+                  {seed.attachments.length > 0 && (
+                    <div className="space-y-2 mt-3 first:mt-0">
+                      {seed.attachments.map((attachment) => {
+                        // Debug logging for images
+                        if (attachment.kind === 'image') {
+                          console.log('Image attachment:', {
+                            id: attachment.id,
+                            hasImageData: !!attachment.imageData,
+                            imageDataLength: attachment.imageData?.length || 0,
+                            imageDataPreview: attachment.imageData?.substring(0, 50) + '...'
+                          });
+                        }
+                        return (
+                          <AttachmentBubble
+                            key={attachment.id}
+                            att={attachment}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* AI response placeholder */}
+              <div className="flex justify-start">
+                <div className="max-w-[85%] sm:max-w-[80%] lg:max-w-[70%] bg-muted rounded-2xl px-3 sm:px-4 py-2 sm:py-3">
+                  <div className="text-sm text-muted-foreground">
+                    AI response would appear here...
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8 px-4 text-center">

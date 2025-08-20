@@ -48,7 +48,7 @@ const NAVIGATION_ITEMS = [
   {
     id: "chat",
     title: "Theme Workbench",
-    path: "/chat",
+    path: "/workbench",
     icon: MessageSquare,
     shortcut: "w",
     description: "Create and edit themes",
@@ -99,7 +99,7 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
           break
         case "w":
           e.preventDefault()
-          router.push("/chat")
+          router.push("/workbench")
           break
         case "m":
           if (e.shiftKey) {
@@ -240,7 +240,7 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
                     onSelect={() => {
                       runCommand(() => {
                         // Navigate to chat with provider focus
-                        router.push(`/chat?provider=${provider.id}`)
+                        router.push(`/workbench?provider=${provider.id}`)
                       })
                       setSelectedType("export")
                     }}
