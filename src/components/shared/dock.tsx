@@ -2,13 +2,11 @@ import { TinteTheme } from "@/types/tinte";
 import { exportTheme, getProvider } from "@/lib/providers";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { motion } from "motion/react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useDockState } from "@/hooks/use-dock-state";
 import { useDockActions } from "@/hooks/use-dock-actions";
 import { DockCollapsed } from "@/components/shared/dock/dock-collapsed";
 import { DockExpanded } from "@/components/shared/dock/dock-expanded";
 import { DockInfo } from "@/components/shared/dock/dock-info";
-import { RegistryModal } from "@/components/shared/dock/registry-modal";
 import { useState } from "react";
 
 interface DockProps {
@@ -18,8 +16,6 @@ interface DockProps {
 }
 
 export function Dock({ theme, providerId, providerName }: DockProps) {
-  const [showRegistryModal, setShowRegistryModal] = useState(false);
-  const isMobile = useIsMobile();
   const { dockState, setDockState, dockRef } = useDockState();
 
   const provider = getProvider(providerId);
@@ -64,7 +60,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     <TooltipProvider>
       {/* Main Dock */}
       <motion.div
-        className="fixed bottom-0 left-1/2 z-50"
+        className="fixed bottom-4 left-1/2 z-50"
         initial={{ opacity: 0, y: 20, x: "-50%" }}
         animate={{ opacity: 1, y: 0, x: "-50%" }}
         exit={{ opacity: 0, y: 20, x: "-50%" }}
@@ -91,7 +87,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
               isExporting={isExporting}
               onPrimaryAction={handlePrimaryAction}
               onCopyCommand={handleCopyCommandAction}
-              onShowInstallGuide={() => setShowRegistryModal(true)}
+              onShowInstallGuide={() => {}}
               onExpand={() => setDockState('expanded')}
             />
           ) : dockState === 'expanded' ? (
@@ -112,16 +108,6 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
           )}
         </motion.div>
       </motion.div>
-
-      <RegistryModal
-        providerId={providerId}
-        isMobile={isMobile}
-        isOpen={showRegistryModal}
-        onOpenChange={setShowRegistryModal}
-        onExport={handlePrimaryAction}
-        onCopyCommand={handleCopyCommand}
-        exportedTheme={exportedTheme || undefined}
-      />
     </TooltipProvider>
   );
 }

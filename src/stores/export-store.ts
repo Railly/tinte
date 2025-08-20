@@ -26,7 +26,7 @@ const initialState: ExportState = {
 
 export const useExportStore = create<ExportStore>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       ...initialState,
 
       setExporting: (isExporting: boolean) => {
@@ -74,12 +74,19 @@ export const useExportState = (selector?: (state: ExportStore) => any) => {
 };
 
 export const useExportActions = () => {
-  return useExportStore((state) => ({
-    setExporting: state.setExporting,
-    setExportFormat: state.setExportFormat,
-    setExportProgress: state.setExportProgress,
-    startExport: state.startExport,
-    completeExport: state.completeExport,
-    reset: state.reset,
-  }));
+  const setExporting = useExportStore((state) => state.setExporting);
+  const setExportFormat = useExportStore((state) => state.setExportFormat);
+  const setExportProgress = useExportStore((state) => state.setExportProgress);
+  const startExport = useExportStore((state) => state.startExport);
+  const completeExport = useExportStore((state) => state.completeExport);
+  const reset = useExportStore((state) => state.reset);
+  
+  return {
+    setExporting,
+    setExportFormat,
+    setExportProgress,
+    startExport,
+    completeExport,
+    reset,
+  };
 };

@@ -4,23 +4,23 @@ import { Button } from '@/components/ui/button';
 import { ThemeSelector } from '@/components/shared/theme-selector';
 import { ChatContent } from './chat-content';
 import { useThemeContext } from '@/providers/theme';
+import { useWorkbenchStore } from '@/stores/workbench-store';
+import { useWorkbenchUrlSync } from '@/hooks/use-workbench-url-sync';
 import { WORKBENCH_TABS } from './workbench.config';
 import type { WorkbenchTab } from '@/stores/workbench-store';
 
 interface WorkbenchSidebarProps {
-  activeTab: WorkbenchTab;
-  onTabChange: (tab: WorkbenchTab) => void;
-  chatLoading?: boolean;
   isStatic?: boolean;
   split?: boolean;
 }
 
 export function WorkbenchSidebar({
-  activeTab,
-  onTabChange,
-  chatLoading = false,
   isStatic = false,
+  split = false,
 }: WorkbenchSidebarProps) {
+  // Get own data - no prop drilling
+  const loading = useWorkbenchStore((state) => state.loading);
+  const { activeTab, setActiveTab } = useWorkbenchUrlSync(isStatic ? 'design' : 'chat');
   const { allThemes, activeTheme, handleThemeSelect, navigateTheme } = useThemeContext();
   const activeId = activeTheme?.id || null;
 
@@ -69,7 +69,7 @@ export function WorkbenchSidebar({
       {/* Tabs - Simple and extensible */}
       <Tabs
         value={activeTab}
-        onValueChange={(v) => onTabChange(v as WorkbenchTab)}
+        onValueChange={(v) => setActiveTab(v as WorkbenchTab)}
         className="flex flex-col h-full"
       >
         <TabsList className="mx-3">
@@ -87,7 +87,7 @@ export function WorkbenchSidebar({
             className={isStatic ? "flex-1 m-0 p-0" : "flex-1"}
           >
             {requiresLoading ? (
-              <ChatContent loading={chatLoading} />
+              <ChatContent loading={loading} />
             ) : (
               <Component />
             )}

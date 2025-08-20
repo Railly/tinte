@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useWorkbench } from '@/hooks/use-workbench';
+import { useWorkbenchStore } from '@/stores/workbench-store';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { WorkbenchSidebar } from './workbench-sidebar';
 import { WorkbenchPreviewPane } from './workbench-preview-pane';
@@ -15,17 +15,9 @@ interface WorkbenchMainProps {
 }
 
 export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) {
-  const {
-    activeTab,
-    split,
-    loading,
-    initializeWorkbench,
-    tinteTheme,
-    handleExportAll,
-    handleExportTinte,
-    setActiveTab
-  } = useWorkbench(isStatic ? 'design' : 'chat');
-  
+  // Only what THIS component needs for layout decisions
+  const split = useWorkbenchStore((state) => state.split);
+  const initializeWorkbench = useWorkbenchStore((state) => state.initializeWorkbench);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -39,13 +31,6 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
       <WorkbenchMobile
         chatId={chatId}
         isStatic={isStatic}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        tinteTheme={tinteTheme}
-        onExportAll={handleExportAll}
-        onExportTinte={handleExportTinte}
-        chatLoading={loading}
-        split={split}
       />
     );
   }
@@ -58,18 +43,9 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
           className="border-r bg-background flex flex-col flex-shrink-0"
           style={{ width: CHAT_CONFIG.SIDEBAR_WIDTH }}
         >
-          <WorkbenchSidebar
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            chatLoading={loading}
-            isStatic={true}
-          />
+          <WorkbenchSidebar isStatic />
         </aside>
-        <WorkbenchPreviewPane
-          theme={tinteTheme}
-          onExportAll={handleExportAll}
-          onExportTinte={handleExportTinte}
-        />
+        <WorkbenchPreviewPane />
       </div>
     );
   }
@@ -84,22 +60,11 @@ export function WorkbenchMain({ chatId, isStatic = false }: WorkbenchMainProps) 
         className="border-r bg-background flex flex-col flex-shrink-0"
         style={{ willChange: 'width' }}
       >
-        <WorkbenchSidebar
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          chatLoading={loading}
-          split={split}
-        />
+        <WorkbenchSidebar split={split} />
       </motion.aside>
 
       <AnimatePresence>
-        {split && (
-          <WorkbenchPreviewPane
-            theme={tinteTheme}
-            onExportAll={handleExportAll}
-            onExportTinte={handleExportTinte}
-          />
-        )}
+        {split && <WorkbenchPreviewPane />}
       </AnimatePresence>
     </div>
   );

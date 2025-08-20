@@ -9,36 +9,28 @@ import { MobileThemeEditor } from '@/components/shared/mobile-theme-editor';
 import { WorkbenchPreviewPane } from './workbench-preview-pane';
 import { ChatContent } from './chat-content';
 import { useWorkbenchStore } from '@/stores/workbench-store';
-import type { WorkbenchTab } from '@/stores/workbench-store';
+import { useWorkbenchUrlSync } from '@/hooks/use-workbench-url-sync';
 
 interface WorkbenchMobileProps {
   chatId: string;
   isStatic: boolean;
-  activeTab: WorkbenchTab;
-  onTabChange: (tab: WorkbenchTab) => void;
-  tinteTheme: any;
-  onExportAll: () => void;
-  onExportTinte: () => void;
-  chatLoading?: boolean;
-  split?: boolean;
 }
 
 export function WorkbenchMobile({
   chatId: _chatId,
   isStatic,
-  activeTab,
-  onTabChange,
-  tinteTheme,
-  onExportAll,
-  onExportTinte,
-  chatLoading = false,
-  split = false
 }: WorkbenchMobileProps) {
-  const { drawerOpen, toggleDrawer, setDrawerOpen } = useWorkbenchStore((state) => ({
-    drawerOpen: state.drawerOpen,
-    toggleDrawer: state.toggleDrawer,
-    setDrawerOpen: state.setDrawerOpen
-  }));
+  // Direct store access
+  const split = useWorkbenchStore((state) => state.split);
+  const loading = useWorkbenchStore((state) => state.loading);
+  const drawerOpen = useWorkbenchStore((state) => state.drawerOpen);
+  const setDrawerOpen = useWorkbenchStore((state) => state.setDrawerOpen);
+  
+  // URL state
+  const { activeTab, setActiveTab } = useWorkbenchUrlSync(isStatic ? 'design' : 'chat');
+  
+  // Theme context (only what this component needs)
+  // Export functions are handled by WorkbenchPreviewPane itself
 
   const showPreview = isStatic || split;
   const showTabs = !isStatic && !split;
@@ -49,11 +41,7 @@ export function WorkbenchMobile({
         <>
           <MobileThemeControls onThemeEditorOpen={() => setDrawerOpen(true)} />
           <div className="flex-1 overflow-hidden">
-            <WorkbenchPreviewPane
-              theme={tinteTheme}
-              onExportAll={onExportAll}
-              onExportTinte={onExportTinte}
-            />
+            <WorkbenchPreviewPane />
           </div>
         </>
       )}
@@ -61,7 +49,7 @@ export function WorkbenchMobile({
       {showTabs && (
         <div className="h-full">
           {activeTab === 'chat' ? (
-            <ChatContent loading={chatLoading} />
+            <ChatContent loading={loading} />
           ) : (
             <div className="h-full p-4">
               <ThemeEditorPanel />
@@ -75,7 +63,7 @@ export function WorkbenchMobile({
           <Button
             variant={activeTab === 'chat' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => onTabChange('chat')}
+            onClick={() => setActiveTab('chat')}
             className="bg-background/95 backdrop-blur-sm border shadow-sm"
           >
             Chat
@@ -83,7 +71,7 @@ export function WorkbenchMobile({
           <Button
             variant={activeTab === 'design' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => onTabChange('design')}
+            onClick={() => setActiveTab('design')}
             className="bg-background/95 backdrop-blur-sm border shadow-sm"
           >
             Design
