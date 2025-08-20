@@ -24,14 +24,17 @@ export function useShikiHighlighter({
 }: UseShikiHighlighterProps) {
   const [html, setHtml] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  const [isViewTransitioning, setIsViewTransitioning] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // View transition loading (non-negotiable)
+  // Fast view transition - only for theme/mode changes, not initial load
+  const [isViewTransitioning, setIsViewTransitioning] = useState(false);
   useEffect(() => {
-    setIsViewTransitioning(true);
-    const timer = setTimeout(() => setIsViewTransitioning(false), 300);
-    return () => clearTimeout(timer);
-  }, [themeVersion, currentMode]);
+    if (!isInitialLoad) {
+      setIsViewTransitioning(true);
+      const timer = setTimeout(() => setIsViewTransitioning(false), 100); // Reduced from 300ms
+      return () => clearTimeout(timer);
+    }
+  }, [themeVersion, currentMode, isInitialLoad]);
 
   // Memoize Shiki theme data
   const shikiThemeData = useMemo(() => {
@@ -59,13 +62,16 @@ export function useShikiHighlighter({
     };
   }, [themeSet, currentMode, themeVersion]);
 
-  // Debounced highlighting
+  // Fast highlighting - reduced debounce and smarter loading states
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     const highlightCode = async () => {
       try {
-        setLoading(true);
+        // Only show loading for initial load, not theme changes
+        if (isInitialLoad) {
+          setLoading(true);
+        }
 
         const result = await codeToHtml(template.code, {
           lang: template.language as any,
@@ -78,17 +84,26 @@ export function useShikiHighlighter({
           '<pre$1 style="view-transition-name: none;">'
         );
         setHtml(modifiedResult);
-        setLoading(false);
+        
+        if (isInitialLoad) {
+          setLoading(false);
+          setIsInitialLoad(false);
+        }
       } catch (error) {
         console.error("Failed to highlight code:", error);
         setHtml(`<pre><code>${template.code}</code></pre>`);
-        setLoading(false);
+        
+        if (isInitialLoad) {
+          setLoading(false);
+          setIsInitialLoad(false);
+        }
       }
     };
 
-    timeoutId = setTimeout(highlightCode, 150);
+    // Reduced debounce for faster response
+    timeoutId = setTimeout(highlightCode, isInitialLoad ? 0 : 50);
     return () => clearTimeout(timeoutId);
-  }, [template.code, template.language, shikiThemeData, themeVersion]);
+  }, [template.code, template.language, shikiThemeData, themeVersion, isInitialLoad]);
 
   return {
     html,

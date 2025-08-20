@@ -20,6 +20,7 @@ export function ShikiPreview({ themeSet, currentMode, template, themeVersion }: 
     themeVersion
   });
 
+  // Only show loading on initial load - theme changes are instant
   if (loading) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-muted backdrop-blur-sm text-muted-foreground">
@@ -30,13 +31,11 @@ export function ShikiPreview({ themeSet, currentMode, template, themeVersion }: 
 
   return (
     <div className="h-full w-full overflow-hidden relative">
-      {isViewTransitioning && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted">
-          <div className="text-sm text-muted-foreground">Applying theme...</div>
-        </div>
-      )}
+      {/* Subtle theme transition - no blocking overlay */}
       <div
-        className="h-full overflow-auto text-sm scrollbar-thin bg-background text-foreground !font-mono !text-[13px] !leading-[1.53] !break-words"
+        className={`h-full overflow-auto text-sm scrollbar-thin bg-background text-foreground !font-mono !text-[13px] !leading-[1.53] !break-words transition-opacity duration-100 ${
+          isViewTransitioning ? 'opacity-90' : 'opacity-100'
+        }`}
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>
