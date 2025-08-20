@@ -24,6 +24,7 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
 
   const monoFont = currentTokens['font-mono'] || 'monospace';
 
+  // Only show loading on initial load - theme changes are instant
   if (!isReady) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-background text-muted-foreground">
@@ -34,10 +35,9 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
 
   return (
     <div className="h-full w-full overflow-hidden relative">
+      {/* Smooth overlay to prevent theme flickering */}
       {isViewTransitioning && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted">
-          <div className="text-sm text-muted-foreground">Applying theme...</div>
-        </div>
+        <div className="absolute inset-0 z-10 bg-background/95 backdrop-blur-[2px] transition-opacity duration-150" />
       )}
       <Editor
         height="100%"
@@ -76,7 +76,7 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
           },
         }}
         theme={currentThemeName}
-      />
+        />
     </div>
   );
 }

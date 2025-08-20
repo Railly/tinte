@@ -26,16 +26,6 @@ export function useShikiHighlighter({
   const [loading, setLoading] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Fast view transition - only for theme/mode changes, not initial load
-  const [isViewTransitioning, setIsViewTransitioning] = useState(false);
-  useEffect(() => {
-    if (!isInitialLoad) {
-      setIsViewTransitioning(true);
-      const timer = setTimeout(() => setIsViewTransitioning(false), 100); // Reduced from 300ms
-      return () => clearTimeout(timer);
-    }
-  }, [themeVersion, currentMode, isInitialLoad]);
-
   // Memoize Shiki theme data
   const shikiThemeData = useMemo(() => {
     const currentTheme = themeSet[currentMode];
@@ -108,6 +98,5 @@ export function useShikiHighlighter({
   return {
     html,
     loading,
-    isViewTransitioning,
   };
 }

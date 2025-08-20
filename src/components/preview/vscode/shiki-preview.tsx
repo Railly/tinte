@@ -13,7 +13,7 @@ interface ShikiPreviewProps {
 }
 
 export function ShikiPreview({ themeSet, currentMode, template, themeVersion }: ShikiPreviewProps) {
-  const { html, loading, isViewTransitioning } = useShikiHighlighter({
+  const { html, loading } = useShikiHighlighter({
     themeSet,
     currentMode,
     template,
@@ -31,11 +31,9 @@ export function ShikiPreview({ themeSet, currentMode, template, themeVersion }: 
 
   return (
     <div className="h-full w-full overflow-hidden relative">
-      {/* Subtle theme transition - no blocking overlay */}
+      {/* No overlay needed - Shiki renders with correct colors directly */}
       <div
-        className={`h-full overflow-auto text-sm scrollbar-thin bg-background text-foreground !font-mono !text-[13px] !leading-[1.53] !break-words transition-opacity duration-100 ${
-          isViewTransitioning ? 'opacity-90' : 'opacity-100'
-        }`}
+        className="h-full overflow-auto text-sm scrollbar-thin bg-background text-foreground !font-mono !text-[13px] !leading-[1.53] !break-words"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

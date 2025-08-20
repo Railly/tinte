@@ -28,6 +28,7 @@ export function useMonacoEditor({
   const monacoRef = useRef<any>(null);
   const currentThemeVersionRef = useRef<number>(-1);
   const [isReady, setIsReady] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isViewTransitioning, setIsViewTransitioning] = useState(false);
 
   const themeNames = {
@@ -39,13 +40,14 @@ export function useMonacoEditor({
     return currentMode === "dark" ? themeNames.dark : themeNames.light;
   }, [currentMode]);
 
+  // View transition to prevent flickering during theme changes
   useEffect(() => {
-    if (isReady && editorRef.current) {
+    if (isReady && editorRef.current && !isInitialLoad) {
       setIsViewTransitioning(true);
-      const timer = setTimeout(() => setIsViewTransitioning(false), 300);
+      const timer = setTimeout(() => setIsViewTransitioning(false), 150); // Optimal for preventing flicker
       return () => clearTimeout(timer);
     }
-  }, [themeVersion, isReady]);
+  }, [themeVersion, isReady, isInitialLoad]);
 
   const createThemeData = useCallback(
     (mode: "light" | "dark") => {
@@ -152,22 +154,25 @@ export function useMonacoEditor({
 
       await initializeMonaco(monaco);
 
+      // Immediate theme application for initial load
       setTimeout(() => {
         applyTheme(editor, monaco);
-      }, 50);
+        setIsInitialLoad(false); // Mark initial load complete
+      }, isInitialLoad ? 0 : 50);
     },
-    [initializeMonaco, applyTheme]
+    [initializeMonaco, applyTheme, isInitialLoad]
   );
 
   useEffect(() => {
-    if (editorRef.current && monacoRef.current) {
+    if (editorRef.current && monacoRef.current && !isInitialLoad) {
       console.log("Monaco: Theme/mode changed, updating themes");
 
       initializeMonaco(monacoRef.current).then(() => {
+        // Faster theme application for subsequent changes
         setTimeout(() => {
           console.log("Monaco: Applying updated theme:", currentThemeName);
           applyTheme(editorRef.current, monacoRef.current);
-        }, 50);
+        }, 25); // Reduced from 50ms
       });
     }
   }, [
@@ -177,6 +182,7 @@ export function useMonacoEditor({
     initializeMonaco,
     applyTheme,
     isReady,
+    isInitialLoad,
   ]);
 
   useEffect(() => {
