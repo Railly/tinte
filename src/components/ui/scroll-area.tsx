@@ -21,11 +21,11 @@ function ScrollArea({
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollRef })
   
-  // Top indicator: invisible at start (0), visible when scrolling (0.1+)
-  const topOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1])
+  // Top indicator: invisible at start (0), visible when scrolling (0.1+) - more subtle
+  const topOpacity = useTransform(scrollYProgress, [0, 0.15], [0, 0.6])
   
-  // Bottom indicator: visible at start (1), invisible near end (0.9+)
-  const bottomOpacity = useTransform(scrollYProgress, [0.9, 1], [1, 0])
+  // Bottom indicator: visible at start (1), invisible near end (0.9+) - more subtle
+  const bottomOpacity = useTransform(scrollYProgress, [0.85, 1], [0.6, 0])
 
   return (
     <ScrollAreaPrimitive.Root
@@ -37,19 +37,19 @@ function ScrollArea({
         <>
           <motion.div 
             className={cn(
-              "absolute top-0 left-0 right-0 h-6 z-50 pointer-events-none",
-              indicatorType === "shadow" && "bg-gradient-to-b from-background via-background/60 to-transparent shadow-md",
-              indicatorType === "border" && "bg-gradient-to-b from-background/80 to-transparent border-b border-border/40",
-              indicatorType === "mask" && "bg-gradient-to-b from-background/90 to-transparent"
+              "absolute top-0 left-0 right-0 h-4 z-50 pointer-events-none",
+              indicatorType === "shadow" && "bg-gradient-to-b from-background via-background/40 to-transparent shadow-sm",
+              indicatorType === "border" && "bg-gradient-to-b from-background/60 to-transparent border-b border-border/20",
+              indicatorType === "mask" && "bg-gradient-to-b from-background/70 to-transparent"
             )}
             style={{ opacity: topOpacity }}
           />
           <motion.div 
             className={cn(
-              "absolute bottom-0 left-0 right-0 h-6 z-50 pointer-events-none",
-              indicatorType === "shadow" && "bg-gradient-to-t from-background via-background/60 to-transparent shadow-md",
-              indicatorType === "border" && "bg-gradient-to-t from-background/80 to-transparent border-t border-border/40",
-              indicatorType === "mask" && "bg-gradient-to-t from-background/90 to-transparent"
+              "absolute bottom-0 left-0 right-0 h-4 z-50 pointer-events-none",
+              indicatorType === "shadow" && "bg-gradient-to-t from-background via-background/40 to-transparent shadow-sm",
+              indicatorType === "border" && "bg-gradient-to-t from-background/60 to-transparent border-t border-border/20",
+              indicatorType === "mask" && "bg-gradient-to-t from-background/70 to-transparent"
             )}
             style={{ opacity: bottomOpacity }}
           />

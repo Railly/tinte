@@ -18,7 +18,7 @@ export function Showcase() {
   const { currentMode, isDark, handleThemeSelect } = useThemeContext();
 
   // Static theme data for showcase (no SSR issues)
-  const tweakcnThemes = extractTweakcnThemeData(false).map((themeData, index) => ({
+  const tweakcnThemes = extractTweakcnThemeData(isDark).map((themeData, index) => ({
     ...themeData,
     description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
     author: "tweakcn",
@@ -34,7 +34,7 @@ export function Showcase() {
     ],
   }));
 
-  const raysoThemes = extractRaysoThemeData(false).map((themeData, index) => ({
+  const raysoThemes = extractRaysoThemeData(isDark).map((themeData, index) => ({
     ...themeData,
     description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
     author: "ray.so",
@@ -45,7 +45,7 @@ export function Showcase() {
     tags: [themeData.name.toLowerCase(), "rayso", "modern", "community"],
   }));
 
-  const tinteThemes = extractTinteThemeData(false).map((themeData, index) => ({
+  const tinteThemes = extractTinteThemeData(isDark).map((themeData, index) => ({
     ...themeData,
     description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
     author: "tinte",

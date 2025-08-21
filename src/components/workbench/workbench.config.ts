@@ -1,19 +1,26 @@
 import { ChatContent } from './chat-content';
-import { ThemeEditorPanel } from '@/components/shared/theme-editor-panel';
+import { ColorsEditor } from './colors-editor';
+import { TokensEditor } from './tokens-editor';
 import type { WorkbenchTab } from '@/stores/workbench-store';
 
 // Simple, extensible tab configuration
 export const WORKBENCH_TABS = [
   { 
-    id: 'chat' as const, 
-    label: 'Chat',
+    id: 'agent' as const, 
+    label: 'Agent',
     component: ChatContent,
     requiresLoading: true,
   },
   { 
-    id: 'design' as const, 
-    label: 'Design',
-    component: ThemeEditorPanel,
+    id: 'colors' as const, 
+    label: 'Colors',
+    component: ColorsEditor,
+    requiresLoading: false,
+  },
+  { 
+    id: 'tokens' as const, 
+    label: 'Tokens',
+    component: TokensEditor,
     requiresLoading: false,
   },
 ] as const;
@@ -29,7 +36,7 @@ export function getTabConfig(tabId: WorkbenchTab): TabConfig | undefined {
 
 // App configuration
 export const WORKBENCH_CONFIG = {
-  DEFAULT_TAB: 'chat' as WorkbenchTab,
-  STATIC_TAB: 'design' as WorkbenchTab,
+  DEFAULT_TAB: 'agent' as WorkbenchTab,
+  STATIC_TAB: 'colors' as WorkbenchTab,
   CHAT_ID_DISPLAY_LENGTH: 8,
 } as const;

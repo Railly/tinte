@@ -4,7 +4,7 @@ import { popSeed } from "@/utils/anon-seed";
 import { CHAT_CONFIG } from "@/lib/chat-constants";
 import type { SeedPayload } from "@/utils/seed-mapper";
 
-export type WorkbenchTab = "chat" | "design" | "mapping";
+export type WorkbenchTab = "agent" | "colors" | "tokens";
 
 export interface WorkbenchState {
   chatId: string;
@@ -69,7 +69,6 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
       },
 
       initializeWorkbench: (chatId: string, isStatic = false) => {
-
         set(
           {
             chatId,
@@ -79,7 +78,7 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
             split: false,
           },
           false,
-          "initializeWorkbench"
+          "initializeWorkbench",
         );
 
         if (chatId) {
@@ -100,7 +99,7 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
         set(
           (state) => ({ drawerOpen: !state.drawerOpen }),
           false,
-          "toggleDrawer"
+          "toggleDrawer",
         );
       },
 
@@ -108,12 +107,12 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
         set(initialState, false, "reset");
       },
     })),
-    { name: "workbench-store" }
-  )
+    { name: "workbench-store" },
+  ),
 );
 
 export const useWorkbenchState = (
-  selector?: (state: WorkbenchStore) => any
+  selector?: (state: WorkbenchStore) => any,
 ) => {
   return useWorkbenchStore(selector || ((state) => state));
 };

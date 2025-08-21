@@ -18,3 +18,18 @@ export interface ThemeData {
   tags: string[];
   rawTheme?: any;
 }
+
+export interface ThemeColors {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  foreground: string;
+}
+
+export interface TinteThemeData extends ThemeData {
+  computedTokens?: {
+    light: ThemeColors;
+    dark?: ThemeColors;
+  };
+}

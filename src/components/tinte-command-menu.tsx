@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter } from "next/navigation"
-import { useThemeContext } from "@/providers/theme"
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { useThemeContext } from "@/providers/theme";
 import {
   Palette,
   Sun,
@@ -18,9 +18,9 @@ import {
   CornerDownLeft,
   Paintbrush,
   Layers,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandDialog,
@@ -30,11 +30,11 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-} from "@/components/ui/command"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { ALL_PROVIDERS } from "@/config/providers"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ALL_PROVIDERS } from "@/config/providers";
+import { cn } from "@/lib/utils";
 
 const NAVIGATION_ITEMS = [
   {
@@ -53,7 +53,7 @@ const NAVIGATION_ITEMS = [
     shortcut: "w",
     description: "Create and edit themes",
   },
-]
+];
 
 const THEME_ACTIONS = [
   {
@@ -62,73 +62,77 @@ const THEME_ACTIONS = [
     shortcut: "m",
     description: "Switch between light and dark mode",
   },
-]
+];
 
 interface TinteCommandMenuProps {
-  children?: React.ReactNode
-  className?: string
+  children?: React.ReactNode;
+  className?: string;
 }
 
-export function TinteCommandMenu({ children, className }: TinteCommandMenuProps) {
-  const [open, setOpen] = React.useState(false)
-  const [selectedType, setSelectedType] = React.useState<string | null>(null)
-  const router = useRouter()
-  const { theme, setTheme, handleThemeSelect, isDark, allThemes } = useThemeContext()
+export function TinteCommandMenu({
+  children,
+  className,
+}: TinteCommandMenuProps) {
+  const [open, setOpen] = React.useState(false);
+  const [selectedType, setSelectedType] = React.useState<string | null>(null);
+  const router = useRouter();
+  const { theme, setTheme, handleThemeSelect, isDark, allThemes } =
+    useThemeContext();
 
   const runCommand = React.useCallback((command: () => void) => {
-    setOpen(false)
-    command()
-  }, [])
+    setOpen(false);
+    command();
+  }, []);
 
   // Custom keyboard shortcuts handler
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Detect cmd key by checking metaKey (works on any keyboard layout)
-      if (!e.metaKey) return
+      if (!e.metaKey) return;
 
       // Check exact key characters for shortcuts
       switch (e.key.toLowerCase()) {
         case "k":
         case "/":
-          e.preventDefault()
-          setOpen((open) => !open)
-          break
+          e.preventDefault();
+          setOpen((open) => !open);
+          break;
         case "h":
-          e.preventDefault()
-          router.push("/")
-          break
+          e.preventDefault();
+          router.push("/");
+          break;
         case "w":
-          e.preventDefault()
-          router.push("/workbench")
-          break
+          e.preventDefault();
+          router.push("/workbench");
+          break;
         case "m":
           if (e.shiftKey) {
-            e.preventDefault()
-            setTheme(theme === "dark" ? "light" : "dark")
+            e.preventDefault();
+            setTheme(theme === "dark" ? "light" : "dark");
           }
-          break
+          break;
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [router, setTheme, theme])
-
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [router, setTheme, theme]);
 
   const getThemeIcon = () => {
-    return isDark ? Moon : Sun
-  }
+    return isDark ? Moon : Sun;
+  };
 
-  const ThemeIcon = getThemeIcon()
+  const ThemeIcon = getThemeIcon();
 
   return (
     <>
       {children || (
         <Button
           variant="outline"
+          size="sm"
           className={cn(
             "relative w-full max-w-sm justify-start text-sm text-muted-foreground sm:pr-12",
-            className
+            className,
           )}
           onClick={() => setOpen(true)}
         >
@@ -150,14 +154,14 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
             {/* Navigation */}
             <CommandGroup heading="Navigation">
               {NAVIGATION_ITEMS.map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
                 return (
                   <CommandItem
                     key={item.id}
                     value={`${item.title} ${item.description}`}
                     onSelect={() => {
-                      runCommand(() => router.push(item.path))
-                      setSelectedType("navigation")
+                      runCommand(() => router.push(item.path));
+                      setSelectedType("navigation");
                     }}
                     onMouseEnter={() => setSelectedType("navigation")}
                   >
@@ -168,9 +172,11 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
                         {item.description}
                       </span>
                     </div>
-                    <CommandShortcut>⌘{item.shortcut.toUpperCase()}</CommandShortcut>
+                    <CommandShortcut>
+                      ⌘{item.shortcut.toUpperCase()}
+                    </CommandShortcut>
                   </CommandItem>
-                )
+                );
               })}
             </CommandGroup>
 
@@ -179,8 +185,10 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
               <CommandItem
                 value="toggle theme mode light dark"
                 onSelect={() => {
-                  runCommand(() => setTheme(theme === "dark" ? "light" : "dark"))
-                  setSelectedType("theme")
+                  runCommand(() =>
+                    setTheme(theme === "dark" ? "light" : "dark"),
+                  );
+                  setSelectedType("theme");
                 }}
                 onMouseEnter={() => setSelectedType("theme")}
               >
@@ -193,7 +201,6 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
                 </div>
                 <CommandShortcut>⌘⇧M</CommandShortcut>
               </CommandItem>
-
             </CommandGroup>
 
             {/* Popular Themes */}
@@ -203,8 +210,8 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
                   key={themeData.id}
                   value={`${themeData.name} theme ${themeData.author}`}
                   onSelect={() => {
-                    runCommand(() => handleThemeSelect(themeData))
-                    setSelectedType("theme-select")
+                    runCommand(() => handleThemeSelect(themeData));
+                    setSelectedType("theme-select");
                   }}
                   onMouseEnter={() => setSelectedType("theme-select")}
                 >
@@ -232,7 +239,7 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
             {/* Export Providers */}
             <CommandGroup heading="Export Formats">
               {ALL_PROVIDERS.slice(0, 4).map((provider) => {
-                const Icon = provider.icon
+                const Icon = provider.icon;
                 return (
                   <CommandItem
                     key={provider.id}
@@ -240,9 +247,9 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
                     onSelect={() => {
                       runCommand(() => {
                         // Navigate to chat with provider focus
-                        router.push(`/workbench?provider=${provider.id}`)
-                      })
-                      setSelectedType("export")
+                        router.push(`/workbench?provider=${provider.id}`);
+                      });
+                      setSelectedType("export");
                     }}
                     onMouseEnter={() => setSelectedType("export")}
                   >
@@ -254,7 +261,7 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
                       </span>
                     </div>
                   </CommandItem>
-                )
+                );
               })}
             </CommandGroup>
           </CommandList>
@@ -282,5 +289,5 @@ export function TinteCommandMenu({ children, className }: TinteCommandMenuProps)
         </Command>
       </CommandDialog>
     </>
-  )
+  );
 }

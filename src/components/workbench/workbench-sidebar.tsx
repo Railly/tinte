@@ -22,7 +22,7 @@ export function WorkbenchSidebar({
 }: WorkbenchSidebarProps) {
   // Get own data - no prop drilling
   const loading = useWorkbenchStore((state) => state.loading);
-  const { activeTab, setActiveTab } = useWorkbenchUrlSync(defaultTab || (isStatic ? 'design' : 'chat'));
+  const { activeTab, setActiveTab } = useWorkbenchUrlSync(defaultTab || (isStatic ? 'colors' : 'agent'));
   const { allThemes, activeTheme, handleThemeSelect, navigateTheme } = useThemeContext();
   const activeId = activeTheme?.id || null;
 
@@ -88,7 +88,7 @@ export function WorkbenchSidebar({
             value={id}
             className={isStatic ? "flex-1 m-0 p-0" : "flex-1"}
           >
-            {requiresLoading ? (
+            {requiresLoading && !isStatic ? (
               <ChatContent loading={loading} />
             ) : (
               <Component />

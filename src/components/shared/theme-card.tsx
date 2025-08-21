@@ -5,7 +5,9 @@ import { Heart, Download, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TweakCNIcon from '@/components/shared/icons/tweakcn';
 import RaycastIcon from '@/components/shared/icons/raycast';
+import Logo from '@/components/shared/logo';
 import { ThemeData } from '@/lib/theme-tokens';
+import { extractThemeColors, formatNumber } from '@/utils/theme-card-helpers';
 
 interface ThemeCardProps {
   theme: ThemeData;
@@ -14,42 +16,13 @@ interface ThemeCardProps {
 }
 
 export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
-  const formatNumber = (num: number) => {
-    if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}k`;
-    }
-    return num.toString();
-  };
-
   const handleThemeClick = () => {
     if (onThemeSelect) {
       onThemeSelect(theme);
     }
   };
 
-  // Extract colors from computed tokens for preview
-  const getThemeColors = () => {
-    const computedTheme = theme as any;
-    if (computedTheme.computedTokens?.light) {
-      const tokens = computedTheme.computedTokens.light;
-      return {
-        primary: tokens.primary || '#000000',
-        secondary: tokens.secondary || '#666666',
-        accent: tokens.accent || '#0066cc',
-        background: tokens.background || '#ffffff',
-        foreground: tokens.foreground || '#000000',
-      };
-    }
-    return {
-      primary: '#000000',
-      secondary: '#666666',
-      accent: '#0066cc',
-      background: '#ffffff',
-      foreground: '#000000',
-    };
-  };
-
-  const colors = getThemeColors();
+  const colors = extractThemeColors(theme);
 
   return (
     <motion.div
@@ -145,8 +118,10 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
             <div className="flex items-center text-xs text-muted-foreground/70">
               {theme.author === 'tweakcn' ? (
                 <TweakCNIcon className="w-4 h-4" />
-              ) : theme.author === 'rayso' ? (
+              ) : theme.author === 'ray.so' ? (
                 <RaycastIcon className="w-4 h-4" />
+              ) : theme.author === 'tinte' ? (
+                <Logo size={16} />
               ) : (
                 theme.author
               )}

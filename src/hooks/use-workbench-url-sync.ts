@@ -3,7 +3,7 @@ import { type WorkbenchTab } from '@/stores/workbench-store';
 import { useThemeAdapters } from '@/lib/theme-utils';
 import { workbenchParsers } from '@/app/workbench/client-search-params';
 
-export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'chat') {
+export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = 'agent') {
   const { previewableProviders } = useThemeAdapters();
   
   // Use client parsers for consistency with server-side

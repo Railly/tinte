@@ -11,6 +11,7 @@ import { extractRaysoThemeData } from '@/utils/rayso-presets';
 import { extractTinteThemeData } from '@/utils/tinte-presets';
 import { convertTheme } from '@/lib/providers';
 import { ShadcnTheme } from '@/types/shadcn';
+import { shadcnToTinte } from '@/lib/shadcn-to-tinte';
 
 const THEME_STORAGE_KEY = 'tinte-selected-theme';
 const MODE_STORAGE_KEY = 'tinte-current-mode';
@@ -44,6 +45,7 @@ interface ThemeState {
   editToken: (key: string, value: string) => void;
   resetTokens: () => void;
   navigateTheme: (direction: 'prev' | 'next' | 'random') => void;
+  updateTinteTheme: (mode: ThemeMode, updates: Partial<TinteBlock>) => void;
 }
 
 // Utility functions
@@ -68,18 +70,26 @@ function computeThemeTokens(theme: ThemeData): { light: Record<string, string>; 
   let computedTokens: { light: any; dark: any };
 
   if (theme.author === 'tweakcn' && theme.rawTheme) {
+    // TweakCN themes already have shadcn-style tokens
     computedTokens = {
       light: theme.rawTheme.light,
       dark: theme.rawTheme.dark,
     };
   } else if (theme.rawTheme) {
     try {
-      const shadcnTheme = convertTheme('shadcn', theme.rawTheme) as ShadcnTheme;
-      computedTokens = {
-        light: shadcnTheme.light,
-        dark: shadcnTheme.dark,
-      };
-    } catch {
+      // For rayso/tinte themes: rawTheme is TinteTheme, convert to shadcn
+      const shadcnTheme = convertTheme('shadcn', theme.rawTheme as TinteTheme) as ShadcnTheme;
+      if (shadcnTheme && shadcnTheme.light && shadcnTheme.dark) {
+        computedTokens = {
+          light: shadcnTheme.light,
+          dark: shadcnTheme.dark,
+        };
+      } else {
+        console.warn('Failed to convert theme to shadcn:', theme.name, theme.author);
+        computedTokens = DEFAULT_THEME.computedTokens;
+      }
+    } catch (error) {
+      console.error('Error converting theme to shadcn:', theme.name, theme.author, error);
       computedTokens = DEFAULT_THEME.computedTokens;
     }
   } else {
@@ -250,13 +260,26 @@ export const useThemeStore = create<ThemeState>()(
           }
         }
 
-        // Extract TinteTheme
-        const tinteTheme = (theme?.rawTheme && 
-          typeof theme.rawTheme === 'object' && 
-          'light' in theme.rawTheme && 
-          'dark' in theme.rawTheme)
-          ? theme.rawTheme as TinteTheme
-          : DEFAULT_THEME.rawTheme as TinteTheme;
+        // Extract TinteTheme - convert through shadcnToTinte for consistency
+        let tinteTheme: TinteTheme;
+        if (theme?.rawTheme && typeof theme.rawTheme === 'object') {
+          if ('light' in theme.rawTheme && 'dark' in theme.rawTheme) {
+            // If already TinteTheme structure, use as-is
+            const possibleTinte = theme.rawTheme as TinteTheme;
+            if (possibleTinte.light.text && possibleTinte.light.interface) {
+              tinteTheme = possibleTinte;
+            } else {
+              // Convert shadcn-style theme to canonical TinteTheme
+              tinteTheme = shadcnToTinte(theme.rawTheme as ShadcnTheme);
+            }
+          } else {
+            // Convert shadcn-style theme to canonical TinteTheme
+            tinteTheme = shadcnToTinte(theme.rawTheme as ShadcnTheme);
+          }
+        } else {
+          tinteTheme = DEFAULT_THEME.rawTheme as TinteTheme;
+        }
+
 
         set({
           mounted: true,
@@ -343,12 +366,26 @@ export const useThemeStore = create<ThemeState>()(
             }
           }
 
-          const tinteTheme = (theme?.rawTheme && 
-            typeof theme.rawTheme === 'object' && 
-            'light' in theme.rawTheme && 
-            'dark' in theme.rawTheme)
-            ? theme.rawTheme as TinteTheme
-            : DEFAULT_THEME.rawTheme as TinteTheme;
+          // Extract TinteTheme - convert through shadcnToTinte for consistency
+          let tinteTheme: TinteTheme;
+          if (theme?.rawTheme && typeof theme.rawTheme === 'object') {
+            if ('light' in theme.rawTheme && 'dark' in theme.rawTheme) {
+              // If already TinteTheme structure, use as-is
+              const possibleTinte = theme.rawTheme as TinteTheme;
+              if (possibleTinte.light.text && possibleTinte.light.interface) {
+                tinteTheme = possibleTinte;
+              } else {
+                // Convert shadcn-style theme to canonical TinteTheme
+                tinteTheme = shadcnToTinte(theme.rawTheme as ShadcnTheme);
+              }
+            } else {
+              // Convert shadcn-style theme to canonical TinteTheme
+              tinteTheme = shadcnToTinte(theme.rawTheme as ShadcnTheme);
+            }
+          } else {
+            tinteTheme = DEFAULT_THEME.rawTheme as TinteTheme;
+          }
+
 
           return {
             activeTheme: theme,
@@ -405,6 +442,47 @@ export const useThemeStore = create<ThemeState>()(
 
         // Re-apply original theme
         applyThemeWithTransition(activeTheme, currentMode);
+      },
+
+      updateTinteTheme: (mode, updates) => {
+        set(state => {
+          const newTinteTheme = {
+            ...state.tinteTheme,
+            [mode]: {
+              ...state.tinteTheme[mode],
+              ...updates,
+            },
+          };
+
+          // Create updated theme data with new TinteTheme
+          const updatedTheme = {
+            ...state.activeTheme,
+            rawTheme: newTinteTheme,
+          };
+
+          // Recompute tokens
+          const computedTokens = computeThemeTokens(updatedTheme);
+          const baseTokens = computedTokens[state.currentMode];
+          const processedTokens: Record<string, string> = {};
+          
+          for (const [key, value] of Object.entries(baseTokens)) {
+            if (typeof value === 'string') {
+              processedTokens[key] = convertColorToHex(value);
+            }
+          }
+
+          return {
+            tinteTheme: newTinteTheme,
+            activeTheme: updatedTheme,
+            currentTokens: processedTokens,
+            hasEdits: true,
+          };
+        });
+
+        // Apply to DOM and save
+        const { activeTheme, currentMode } = get();
+        saveToStorage(activeTheme, currentMode);
+        applyThemeToDOM(activeTheme, currentMode);
       },
 
       navigateTheme: (direction) => {
