@@ -58,6 +58,7 @@ function Swatch({ hex, label }: { hex?: string; label?: string }) {
   const fg = L > 0.58 ? "#0b0b0b" : "#ffffff";
   return (
     <button
+      type="button"
       onClick={() => hex && copy(bg)}
       className="w-full h-8 rounded-md border text-[10px] leading-4 flex items-center justify-center"
       style={{ background: bg, color: fg, borderColor: "hsl(0 0% 50% / .2)" }}
@@ -124,6 +125,7 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
         <div className="text-sm opacity-70">Buttons</div>
         <div className="flex gap-2">
           <button
+            type="button"
             className="px-3 py-2 rounded-md text-sm"
             style={{
               background: tokens.primary,
@@ -133,6 +135,7 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
             Primary
           </button>
           <button
+            type="button"
             className="px-3 py-2 rounded-md text-sm border"
             style={{
               background: tokens.accent,
@@ -143,6 +146,7 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
             Accent
           </button>
           <button
+            type="button"
             className="px-3 py-2 rounded-md text-sm border"
             style={{
               background: tokens.secondary,
@@ -177,6 +181,7 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
         <div className="font-medium">Upgrade your plan</div>
         <div className="text-sm opacity-70">More features, more control.</div>
         <button
+          type="button"
           className="mt-2 px-3 py-2 rounded-md text-sm"
           style={{
             background: tokens.primary,
@@ -197,7 +202,7 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
               key={k}
               className="flex-1 rounded-md"
               style={{
-                background: (tokens as any)[k],
+                background: tokens[k as keyof ShadcnBlock],
                 height: `${40 + i * 12}px`,
               }}
             />
@@ -212,10 +217,11 @@ function MiniPreview({ tokens }: { tokens: ShadcnBlock }) {
 // Page
 // ─────────────────────────────────────────────
 export default function ComparePage() {
-  const { mounted, activeTheme, currentMode, currentTokens, tinteTheme } =
-    useThemeContext();
+  const { mounted, currentMode, currentTokens, tinteTheme } = useThemeContext();
   const [showAccentCharts, setShowAccentCharts] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState<any>(null);
+  const [selectedTheme, setSelectedTheme] = useState<{
+    rawTheme: TinteTheme;
+  } | null>(null);
   const [enablePoline, setEnablePoline] = useState(true);
   const [_polineConfig] = useState({
     numPoints: 11,
@@ -234,7 +240,7 @@ export default function ComparePage() {
   const currentTinteTheme: TinteTheme | null =
     selectedTheme?.rawTheme ?? tinteTheme;
 
-  const _handleThemeSelection = (theme: any) => {
+  const _handleThemeSelection = (theme: { rawTheme: TinteTheme }) => {
     setSelectedTheme(theme);
     // Also update the workbench state if needed
     // You might want to call handleThemeSelect here depending on your needs
@@ -347,6 +353,7 @@ export default function ComparePage() {
                   Poline ramp (from current Tinte)
                 </h3>
                 <button
+                  type="button"
                   onClick={() => copy(polineRamp.join(" "))}
                   className="text-xs underline underline-offset-2 text-neutral-600 dark:text-neutral-300"
                 >
@@ -373,6 +380,7 @@ export default function ComparePage() {
                 <h3 className="text-md font-medium">Charts comparison</h3>
                 <div className="flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => setShowAccentCharts(false)}
                     className={cx(
                       "text-xs px-2 py-1 rounded-md",
@@ -384,6 +392,7 @@ export default function ComparePage() {
                     Poline
                   </button>
                   <button
+                    type="button"
                     onClick={() => setShowAccentCharts(true)}
                     className={cx(
                       "text-xs px-2 py-1 rounded-md",
@@ -395,6 +404,7 @@ export default function ComparePage() {
                     Accents
                   </button>
                   <button
+                    type="button"
                     onClick={() => copy(JSON.stringify(realShadcn, null, 2))}
                     className="text-xs underline underline-offset-2 text-neutral-600 dark:text-neutral-300"
                   >
@@ -436,6 +446,7 @@ export default function ComparePage() {
               </h3>
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={() =>
                     downloadJSON(`real-shadcn-${mode}.json`, realShadcn)
                   }
@@ -444,6 +455,7 @@ export default function ComparePage() {
                   Export Real
                 </button>
                 <button
+                  type="button"
                   onClick={() =>
                     generatedShadcn &&
                     downloadJSON(
@@ -470,9 +482,7 @@ export default function ComparePage() {
                   <TokenRow
                     name={k}
                     real={realShadcn[k]}
-                    gen={
-                      generatedShadcn ? (generatedShadcn as any)[k] : undefined
-                    }
+                    gen={generatedShadcn ? generatedShadcn[k] : undefined}
                   />
                 </div>
               ))}
@@ -487,7 +497,7 @@ export default function ComparePage() {
                 <div className="text-sm opacity-70">
                   Real (Workbench tokens)
                 </div>
-                <MiniPreview tokens={realShadcn as any as ShadcnBlock} />
+                <MiniPreview tokens={realShadcn as ShadcnBlock} />
               </div>
               <div className="space-y-2">
                 <div className="text-sm opacity-70">

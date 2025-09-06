@@ -34,8 +34,8 @@ function getHueCategory(hue: number) {
   return null;
 }
 
-function isGrayscale(oklchColor: any) {
-  return !oklchColor.c || oklchColor.c < 0.02; // very low chroma = grayscale
+function isGrayscale(oklchColor: { c?: number } | undefined) {
+  return !oklchColor?.c || oklchColor.c < 0.02; // very low chroma = grayscale
 }
 
 function extractExistingColors(theme: TinteTheme, isDark: boolean) {
@@ -287,6 +287,7 @@ export default function PaletteGeneratorPage() {
         <h1 className="text-2xl font-bold">Palette Generator Test</h1>
         <div className="flex items-center gap-4">
           <button
+            type="button"
             onClick={() => setIsDark(!isDark)}
             className="px-3 py-1 rounded border text-sm"
           >

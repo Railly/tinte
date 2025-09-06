@@ -14,7 +14,10 @@ export function extractTweakcnThemeData(isDark = false) {
         background: themeMode.background,
         foreground: themeMode.foreground,
       },
-      createdAt: (preset as any).createdAt || "2025-01-01",
+      createdAt:
+        "createdAt" in preset
+          ? (preset as { createdAt?: string }).createdAt || "2025-01-01"
+          : "2025-01-01",
       rawTheme: {
         light: preset.styles.light as ShadcnBlock,
         dark: {

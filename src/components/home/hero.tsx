@@ -15,6 +15,7 @@ export function Hero() {
       <div className="flex flex-col items-center gap-2 md:gap-4 mb-8">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 backdrop-blur-sm">
           <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor">
+            <title>Star icon</title>
             <path d="M6 0l1.5 4.5L12 6l-4.5 1.5L6 12l-1.5-4.5L0 6l4.5-1.5L6 0z" />
           </svg>
           AI Theme Editor

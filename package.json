@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "fix": "biome check . --write --unsafe --max-diagnostics=10000"
   },
   "dependencies": {
     "@biomejs/biome": "2.2.0",

@@ -20,7 +20,7 @@ export default async function WorkbenchIdPage({
   const { id } = await params;
 
   // Parse search params server-side with nuqs
-  const { new: isNew, tab } = await workbenchCache.parse(searchParams);
+  const { new: isNew } = await workbenchCache.parse(searchParams);
   const isStatic = isNew;
 
   // For static mode, default to design tab; otherwise agent

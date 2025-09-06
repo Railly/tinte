@@ -15,7 +15,7 @@ import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
 
 export function Showcase() {
   const [activeTab, setActiveTab] = useState("tweakcn");
-  const { currentMode, isDark, handleThemeSelect } = useThemeContext();
+  const { isDark, handleThemeSelect } = useThemeContext();
 
   // Static theme data for showcase (no SSR issues)
   const tweakcnThemes = extractTweakcnThemeData(isDark).map(
