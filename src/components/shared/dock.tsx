@@ -1,13 +1,12 @@
-import { TinteTheme } from "@/types/tinte";
-import { exportTheme, getProvider } from "@/lib/providers";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { motion } from "motion/react";
-import { useDockState } from "@/hooks/use-dock-state";
-import { useDockActions } from "@/hooks/use-dock-actions";
 import { DockCollapsed } from "@/components/shared/dock/dock-collapsed";
 import { DockExpanded } from "@/components/shared/dock/dock-expanded";
 import { DockInfo } from "@/components/shared/dock/dock-info";
-import { useState } from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useDockActions } from "@/hooks/use-dock-actions";
+import { useDockState } from "@/hooks/use-dock-state";
+import { exportTheme, getProvider } from "@/lib/providers";
+import type { TinteTheme } from "@/types/tinte";
 
 interface DockProps {
   theme: TinteTheme;
@@ -31,7 +30,6 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     getPrimaryActionConfig,
   } = useDockActions({ theme, providerId, providerName, provider });
 
-
   const formatFileSize = (content: string) => {
     const bytes = new TextEncoder().encode(content).length;
     if (bytes < 1024) return `${bytes}B`;
@@ -43,18 +41,18 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const primaryActionConfig = getPrimaryActionConfig();
 
   const handleCopyCommandAction = async () => {
-    if (providerId === 'shadcn') {
+    if (providerId === "shadcn") {
       const command = "npx shadcn@latest add theme";
       await handleCopyCommand(command);
-    } else if (providerId === 'vscode') {
-      const vsixFilename = exportedTheme?.filename.replace('.json', '.vsix') || 'theme.vsix';
+    } else if (providerId === "vscode") {
+      const vsixFilename =
+        exportedTheme?.filename.replace(".json", ".vsix") || "theme.vsix";
       const command = `code --install-extension /path/to/${vsixFilename}`;
       await handleCopyCommand(command);
     } else {
       await handleCopyTheme();
     }
   };
-
 
   return (
     <TooltipProvider>
@@ -77,29 +75,39 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
           style={{ borderRadius: 32 }}
           className="flex items-center justify-center px-2 bg-black/90 backdrop-blur-sm border border-white/10 shadow-2xl"
           animate={{
-            width: dockState === 'collapsed' ? 280 : dockState === 'expanded' ? 210 : 300,
-            height: dockState === 'collapsed' ? 48 : dockState === 'expanded' ? 48 : 220,
+            width:
+              dockState === "collapsed"
+                ? 280
+                : dockState === "expanded"
+                  ? 210
+                  : 300,
+            height:
+              dockState === "collapsed"
+                ? 48
+                : dockState === "expanded"
+                  ? 48
+                  : 220,
           }}
         >
-          {dockState === 'collapsed' ? (
+          {dockState === "collapsed" ? (
             <DockCollapsed
               primaryActionConfig={primaryActionConfig}
               isExporting={isExporting}
               onPrimaryAction={handlePrimaryAction}
               onCopyCommand={handleCopyCommandAction}
               onShowInstallGuide={() => {}}
-              onExpand={() => setDockState('expanded')}
+              onExpand={() => setDockState("expanded")}
             />
-          ) : dockState === 'expanded' ? (
+          ) : dockState === "expanded" ? (
             <DockExpanded
               onShare={handleShare}
-              onShowInfo={() => setDockState('info')}
-              onCollapse={() => setDockState('collapsed')}
+              onShowInfo={() => setDockState("info")}
+              onCollapse={() => setDockState("collapsed")}
               isSharing={isSharing}
             />
           ) : (
             <DockInfo
-              onCollapse={() => setDockState('collapsed')}
+              onCollapse={() => setDockState("collapsed")}
               providerMetadata={providerMetadata}
               provider={provider}
               exportedTheme={exportedTheme || undefined}

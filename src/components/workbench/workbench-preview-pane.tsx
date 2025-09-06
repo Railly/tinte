@@ -1,9 +1,9 @@
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { UnifiedPreview } from '@/components/unified-preview';
-import { useThemeContext } from '@/providers/theme';
-import type { TinteTheme } from '@/types/tinte';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { UnifiedPreview } from "@/components/unified-preview";
+import { useThemeContext } from "@/providers/theme";
+import type { TinteTheme } from "@/types/tinte";
 
-interface WorkbenchPreviewPaneProps { }
+type WorkbenchPreviewPaneProps = {};
 
 function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
   return (
@@ -13,15 +13,13 @@ function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
       indicatorType="shadow"
     >
       <div className="h-full p-4">
-        <UnifiedPreview
-          theme={theme}
-        />
+        <UnifiedPreview theme={theme} />
       </div>
     </ScrollArea>
   );
 }
 
-export function WorkbenchPreviewPane({ }: WorkbenchPreviewPaneProps) {
+export function WorkbenchPreviewPane({}: WorkbenchPreviewPaneProps) {
   // Get own data - no prop drilling
   const { tinteTheme } = useThemeContext();
   return (

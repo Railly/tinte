@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Swatch, generateRamp } from "@/lib/input-detection";
+import { useMemo, useState } from "react";
+import { generateRamp } from "@/lib/input-detection";
 
 export function usePalette() {
   const [base, setBase] = useState("#657eab");

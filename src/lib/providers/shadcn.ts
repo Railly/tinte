@@ -1,16 +1,16 @@
-import { oklch, rgb, formatHex } from "culori";
-import { generateTailwindPalette } from "../palette-generator";
-import { TinteBlock, TinteTheme } from "@/types/tinte";
+import { formatHex, oklch, rgb } from "culori";
+import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
+import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import {
   DEFAULT_BASE,
   DEFAULT_FONTS,
   DEFAULT_SHADOWS,
-  ShadcnBlock,
-  ShadcnTheme,
+  type ShadcnBlock,
+  type ShadcnTheme,
 } from "@/types/shadcn";
-import { PreviewableProvider, ProviderOutput } from "./types";
-import { ShadcnIcon } from "@/components/shared/icons/shadcn";
-import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
+import type { TinteBlock, TinteTheme } from "@/types/tinte";
+import { generateTailwindPalette } from "../palette-generator";
+import type { PreviewableProvider, ProviderOutput } from "./types";
 
 type ThemeMode = "light" | "dark";
 
@@ -25,7 +25,7 @@ const L = (hex: string) => {
   const c = rgb(hex) as any;
   if (!c) return 0;
   const lin = (x: number) =>
-    x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+    x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
   return 0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b);
 };
 
@@ -55,12 +55,7 @@ const tweakL = (hex: string, dL: number) => {
 };
 
 function buildNeutralRamp(block: TinteBlock): string[] {
-  const seed =
-    block.interface ||
-    block.interface_2 ||
-    block.interface_3 ||
-    block.background ||
-    "#808080";
+  const seed = block.ui || block.ui_2 || block.ui_3 || block.bg || "#808080";
   return generateTailwindPalette(seed).map((s) => s.value);
 }
 
@@ -70,7 +65,7 @@ function buildRamp(seed?: string): string[] {
 
 const pick = (ramp: string[], step: number) => {
   const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(
-    step
+    step,
   );
   return ramp[Math.max(0, idx)];
 };
@@ -80,14 +75,12 @@ const surface = (bg: string, mode: ThemeMode, delta = 0.02) => {
 };
 
 function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
-  const bg = block.background || (mode === "light" ? "#ffffff" : "#0b0b0f");
-  const fg = block.text || bestTextFor(bg);
+  const bg = block.bg || (mode === "light" ? "#ffffff" : "#0b0b0f");
+  const fg = block.tx || bestTextFor(bg);
 
   const neutralRamp = buildNeutralRamp(block);
-  const primaryRamp = buildRamp(block.primary);
-  const accentRamp = buildRamp(
-    block.accent || block.accent_2 || block.secondary
-  );
+  const primaryRamp = buildRamp(block.sc);
+  const accentRamp = buildRamp(block.pr || block.ac_2 || block.sc);
 
   const A = ANCHORS[mode];
   const primary = pick(primaryRamp, A.primary);
@@ -101,7 +94,7 @@ function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
   const card = surface(bg, mode, 0.03);
   const popover = surface(bg, mode, 0.03);
 
-  const destructiveSeed = block.accent_3 || "#ef4444";
+  const destructiveSeed = block.ac_3 || "#ef4444";
   const destructiveRamp = buildRamp(destructiveSeed);
   const destructive = pick(destructiveRamp, mode === "light" ? 500 : 400);
 
@@ -201,8 +194,7 @@ export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
     mimeType: "text/css",
   }),
 
-  validate: (output: ShadcnTheme) =>
-    !!(output.light?.background && output.dark?.background),
+  validate: (output: ShadcnTheme) => !!(output.light && output.dark),
 
   preview: {
     component: ShadcnPreview,

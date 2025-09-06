@@ -1,7 +1,7 @@
-import { TinteTheme } from "@/types/tinte";
-import { getPreviewableProvider, convertTheme } from "@/lib/providers";
 import { useQueryState } from "nuqs";
+import { convertTheme, getPreviewableProvider } from "@/lib/providers";
 import { cn } from "@/lib/utils";
+import type { TinteTheme } from "@/types/tinte";
 import { Dock } from "./shared/dock";
 
 interface UnifiedPreviewProps {
@@ -10,8 +10,8 @@ interface UnifiedPreviewProps {
 }
 
 export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
-  const [provider] = useQueryState('provider', { defaultValue: 'shadcn' });
-  const currentProvider = getPreviewableProvider(provider || 'shadcn');
+  const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
+  const currentProvider = getPreviewableProvider(provider || "shadcn");
 
   if (!currentProvider) {
     return (
@@ -33,10 +33,13 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const PreviewComponent = currentProvider.preview.component;
 
   return (
-    <div className={cn("h-[calc(100dvh-var(--header-height)_-_2rem)] relative", className)}>
-      <PreviewComponent
-        theme={converted}
-      />
+    <div
+      className={cn(
+        "h-[calc(100dvh-var(--header-height)_-_2rem)] relative",
+        className,
+      )}
+    >
+      <PreviewComponent theme={converted} />
 
       <Dock
         theme={theme}

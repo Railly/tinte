@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import {
   Card,
@@ -8,13 +8,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
 const data = [
   {
@@ -52,7 +52,7 @@ const data = [
     today: 430,
     day: "Sunday",
   },
-]
+];
 
 const chartConfig = {
   today: {
@@ -63,7 +63,7 @@ const chartConfig = {
     label: "Average",
     color: "var(--primary)",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function CardsExerciseMinutes() {
   return (
@@ -125,5 +125,5 @@ export function CardsExerciseMinutes() {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

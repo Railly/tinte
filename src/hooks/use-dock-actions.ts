@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { TinteTheme } from "@/types/tinte";
-import { exportTheme } from "@/lib/providers";
 import { Download, Palette } from "lucide-react";
+import { useState } from "react";
+import { exportTheme } from "@/lib/providers";
+import type { TinteTheme } from "@/types/tinte";
 
 interface UseDockActionsProps {
   theme: TinteTheme;

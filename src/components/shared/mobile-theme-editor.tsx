@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion, stagger, useAnimate } from 'motion/react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { ColorPickerInput } from '@/components/ui/color-picker-input';
-import { useThemeContext } from '@/providers/theme';
+import { motion, stagger, useAnimate } from "motion/react";
+import * as React from "react";
+import { ColorPickerInput } from "@/components/ui/color-picker-input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useThemeContext } from "@/providers/theme";
 
 declare global {
   interface Window {
@@ -21,26 +21,60 @@ export function MobileThemeEditor() {
   const { currentTokens, handleTokenEdit, mounted } = useThemeContext();
 
   // List of known color tokens from shadcn.ts
-  const colorTokenKeys = React.useMemo(() => [
-    'accent', 'accent-foreground', 'background', 'border', 'card', 'card-foreground',
-    'chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5', 'destructive', 'destructive-foreground',
-    'foreground', 'input', 'muted', 'muted-foreground', 'popover', 'popover-foreground',
-    'primary', 'primary-foreground', 'ring', 'secondary', 'secondary-foreground',
-    'sidebar', 'sidebar-accent', 'sidebar-accent-foreground', 'sidebar-border',
-    'sidebar-foreground', 'sidebar-primary', 'sidebar-primary-foreground', 'sidebar-ring'
-  ], []);
+  const colorTokenKeys = React.useMemo(
+    () => [
+      "accent",
+      "accent-foreground",
+      "background",
+      "border",
+      "card",
+      "card-foreground",
+      "chart-1",
+      "chart-2",
+      "chart-3",
+      "chart-4",
+      "chart-5",
+      "destructive",
+      "destructive-foreground",
+      "foreground",
+      "input",
+      "muted",
+      "muted-foreground",
+      "popover",
+      "popover-foreground",
+      "primary",
+      "primary-foreground",
+      "ring",
+      "secondary",
+      "secondary-foreground",
+      "sidebar",
+      "sidebar-accent",
+      "sidebar-accent-foreground",
+      "sidebar-border",
+      "sidebar-foreground",
+      "sidebar-primary",
+      "sidebar-primary-foreground",
+      "sidebar-ring",
+    ],
+    [],
+  );
 
   // Filter only known color tokens
   const colorTokens = React.useMemo(() => {
     return Object.entries(currentTokens).filter(([key, value]) => {
-      return colorTokenKeys.includes(key) && typeof value === 'string' && value.startsWith('#');
+      return (
+        colorTokenKeys.includes(key) &&
+        typeof value === "string" &&
+        value.startsWith("#")
+      );
     });
   }, [currentTokens, colorTokenKeys]);
 
   const tokenEntries = colorTokens;
 
   // Check if we have immediate data available
-  const hasImmediateData = typeof window !== 'undefined' && window.__TINTE_THEME__ && mounted;
+  const hasImmediateData =
+    typeof window !== "undefined" && window.__TINTE_THEME__ && mounted;
 
   React.useEffect(() => {
     if (tokenEntries.length > 0) {
@@ -49,8 +83,8 @@ export function MobileThemeEditor() {
         { opacity: [0, 1], y: [8, 0] },
         {
           duration: 0.3,
-          delay: stagger(0.05, { startDelay: 0.1 })
-        }
+          delay: stagger(0.05, { startDelay: 0.1 }),
+        },
       );
     }
   }, [animate, tokenEntries.length]);
@@ -59,7 +93,9 @@ export function MobileThemeEditor() {
     <ScrollArea className="h-[70vh]">
       <div className="flex-1 min-h-0" ref={scope}>
         <div className="p-4 space-y-2">
-          <div className="text-xs font-medium text-muted-foreground mb-4">Color Tokens</div>
+          <div className="text-xs font-medium text-muted-foreground mb-4">
+            Color Tokens
+          </div>
           <div className="space-y-3">
             {tokenEntries.length === 0 && !hasImmediateData ? (
               <div className="space-y-3">
@@ -73,7 +109,7 @@ export function MobileThemeEditor() {
                       duration: 1.5,
                       delay: i * 0.1,
                       repeat: Infinity,
-                      ease: "easeInOut"
+                      ease: "easeInOut",
                     }}
                   >
                     <div className="h-3 bg-muted/50 rounded w-20"></div>
@@ -90,10 +126,12 @@ export function MobileThemeEditor() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
                     duration: 0.3,
-                    delay: index * 0.05 + 0.1
+                    delay: index * 0.05 + 0.1,
                   }}
                 >
-                  <div className="text-xs font-mono text-muted-foreground">{key}</div>
+                  <div className="text-xs font-mono text-muted-foreground">
+                    {key}
+                  </div>
                   <ColorPickerInput
                     color={value}
                     onChange={(newValue) => handleTokenEdit(key, newValue)}

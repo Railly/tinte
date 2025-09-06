@@ -1,28 +1,27 @@
-import { TinteTheme } from "@/types/tinte";
+import type { TinteTheme } from "@/types/tinte";
 
-export * from './types';
-export { ProviderRegistry } from './registry';
-export * from './shadcn';
-export * from './vscode';
-
+export { alacrittyProvider } from "./alacritty";
+export { gimpProvider } from "./gimp";
+export { kittyProvider } from "./kitty";
 // Export new Poline-based providers
-export * from './poline-base';
-export { alacrittyProvider } from './alacritty';
-export { kittyProvider } from './kitty';
-export { warpProvider } from './warp';
-export { windowsTerminalProvider } from './windows-terminal';
-export { gimpProvider } from './gimp';
-export { slackProvider } from './slack';
+export * from "./poline-base";
+export { ProviderRegistry } from "./registry";
+export * from "./shadcn";
+export { slackProvider } from "./slack";
+export * from "./types";
+export * from "./vscode";
+export { warpProvider } from "./warp";
+export { windowsTerminalProvider } from "./windows-terminal";
 
-import { ProviderRegistry } from './registry';
-import { shadcnProvider } from './shadcn';
-import { vscodeProvider } from './vscode';
-import { alacrittyProvider } from './alacritty';
-import { kittyProvider } from './kitty';
-import { warpProvider } from './warp';
-import { windowsTerminalProvider } from './windows-terminal';
-import { gimpProvider } from './gimp';
-import { slackProvider } from './slack';
+import { alacrittyProvider } from "./alacritty";
+import { gimpProvider } from "./gimp";
+import { kittyProvider } from "./kitty";
+import { ProviderRegistry } from "./registry";
+import { shadcnProvider } from "./shadcn";
+import { slackProvider } from "./slack";
+import { vscodeProvider } from "./vscode";
+import { warpProvider } from "./warp";
+import { windowsTerminalProvider } from "./windows-terminal";
 
 const registry = new ProviderRegistry();
 registry.registerPreviewable(shadcnProvider);
@@ -46,11 +45,18 @@ export function getProvidersByCategory(category: string) {
   return registry.getByCategory(category as any);
 }
 
-export function convertTheme<T>(providerId: string, theme: TinteTheme): T | null {
+export function convertTheme<T>(
+  providerId: string,
+  theme: TinteTheme,
+): T | null {
   return registry.convert<T>(providerId, theme);
 }
 
-export function exportTheme(providerId: string, theme: TinteTheme, filename?: string) {
+export function exportTheme(
+  providerId: string,
+  theme: TinteTheme,
+  filename?: string,
+) {
   return registry.export(providerId, theme, filename);
 }
 
@@ -77,4 +83,3 @@ export function hasProvider(providerId: string): boolean {
 export function hasPreviewableProvider(providerId: string): boolean {
   return registry.hasPreviewable(providerId);
 }
-

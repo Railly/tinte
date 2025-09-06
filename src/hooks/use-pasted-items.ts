@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import {
-  PastedItem,
-  Kind,
   detectKind,
   extractColors,
+  type Kind,
+  type PastedItem,
 } from "@/lib/input-detection";
 import { fetchUrlMetadata } from "@/lib/url-metadata";
 
@@ -34,8 +34,8 @@ export function usePastedItems() {
                   error: false,
                 },
               }
-            : item
-        )
+            : item,
+        ),
       );
     } catch (error) {
       console.error("Failed to fetch metadata:", error);
@@ -52,8 +52,8 @@ export function usePastedItems() {
                   error: true,
                 },
               }
-            : item
-        )
+            : item,
+        ),
       );
     } finally {
       setFetchingIds((prev) => {
@@ -64,7 +64,12 @@ export function usePastedItems() {
     }
   }
 
-  function addPastedItem(content: string, kind?: Kind, colors?: string[], imageData?: string) {
+  function addPastedItem(
+    content: string,
+    kind?: Kind,
+    colors?: string[],
+    imageData?: string,
+  ) {
     const detectedKind = kind || detectKind(content);
     // Allow prompts for longer text (called from handlePaste when > 200 chars)
     if (detectedKind === "prompt" && !kind) return;
@@ -121,46 +126,51 @@ export function usePastedItems() {
               kind: kind || item.kind,
               colors: extractColors(content),
               // Reset metadata if it's a URL to refetch
-              ...(kind === 'url' && {
-                metadata: content.includes('://') ? (() => {
-                  try {
-                    const domain = new URL(content).hostname.replace('www.', '');
-                    return {
-                      title: domain,
-                      description: '',
-                      favicon: '',
-                      loading: true,
-                      error: false,
-                    };
-                  } catch {
-                    return {
-                      title: 'Invalid URL',
-                      description: 'Please enter a valid URL',
-                      favicon: '',
+              ...(kind === "url" && {
+                metadata: content.includes("://")
+                  ? (() => {
+                      try {
+                        const domain = new URL(content).hostname.replace(
+                          "www.",
+                          "",
+                        );
+                        return {
+                          title: domain,
+                          description: "",
+                          favicon: "",
+                          loading: true,
+                          error: false,
+                        };
+                      } catch {
+                        return {
+                          title: "Invalid URL",
+                          description: "Please enter a valid URL",
+                          favicon: "",
+                          loading: false,
+                          error: true,
+                        };
+                      }
+                    })()
+                  : {
+                      title: "Invalid URL",
+                      description: "Please enter a valid URL",
+                      favicon: "",
                       loading: false,
                       error: true,
-                    };
-                  }
-                })() : {
-                  title: 'Invalid URL',
-                  description: 'Please enter a valid URL',
-                  favicon: '',
-                  loading: false,
-                  error: true,
-                },
+                    },
               }),
             }
-          : item
-      )
+          : item,
+      ),
     );
 
     // If it's a URL, fetch new metadata
-    if (kind === 'url' && content.includes('://')) {
+    if (kind === "url" && content.includes("://")) {
       try {
         new URL(content); // Validate URL first
         handleUrlMetadataFetch(content, id);
       } catch (error) {
-        console.error('Invalid URL or failed to fetch metadata:', error);
+        console.error("Invalid URL or failed to fetch metadata:", error);
       }
     }
   }

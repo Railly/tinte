@@ -1,20 +1,16 @@
-"use client"
+"use client";
 
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -22,12 +18,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
 const teamMembers = [
   {
@@ -48,7 +44,7 @@ const teamMembers = [
     avatar: "/avatars/03.png",
     role: "Billing",
   },
-]
+];
 
 const roles = [
   {
@@ -67,7 +63,7 @@ const roles = [
     name: "Owner",
     description: "Admin-level access to all resources.",
   },
-]
+];
 
 export function CardsTeamMembers() {
   return (
@@ -131,5 +127,5 @@ export function CardsTeamMembers() {
         ))}
       </CardContent>
     </Card>
-  )
+  );
 }

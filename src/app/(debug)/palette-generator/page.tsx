@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { generateTailwindPalette } from '@/lib/palette-generator';
-import { ThemeSelector } from '@/components/shared/theme-selector';
-import { extractTinteThemeData } from '@/utils/tinte-presets';
-import { ThemeData } from '@/lib/theme-tokens';
-import { TinteTheme } from '@/types/tinte';
-import { oklch, formatHex } from 'culori';
+import { formatHex, oklch } from "culori";
+import { useMemo, useState } from "react";
+import { ThemeSelector } from "@/components/shared/theme-selector";
+import { generateTailwindPalette } from "@/lib/palette-generator";
+import type { ThemeData } from "@/lib/theme-tokens";
+import type { TinteTheme } from "@/types/tinte";
+import { extractTinteThemeData } from "@/utils/tinte-presets";
 
 const colorCategories = [
-  { name: 'red', hueRange: [355, 10] },    // narrower red range: 355-360, 0-10
-  { name: 'orange', hueRange: [10, 50] },  // wider orange range to catch 45°
-  { name: 'yellow', hueRange: [50, 80] },  // narrower yellow
-  { name: 'green', hueRange: [80, 165] },
-  { name: 'cyan', hueRange: [165, 200] },
-  { name: 'blue', hueRange: [200, 260] },  // wider blue range to catch 255°
-  { name: 'purple', hueRange: [260, 300] },
-  { name: 'magenta', hueRange: [300, 355] }  // wider magenta to catch 350°
+  { name: "red", hueRange: [355, 10] }, // narrower red range: 355-360, 0-10
+  { name: "orange", hueRange: [10, 50] }, // wider orange range to catch 45°
+  { name: "yellow", hueRange: [50, 80] }, // narrower yellow
+  { name: "green", hueRange: [80, 165] },
+  { name: "cyan", hueRange: [165, 200] },
+  { name: "blue", hueRange: [200, 260] }, // wider blue range to catch 255°
+  { name: "purple", hueRange: [260, 300] },
+  { name: "magenta", hueRange: [300, 355] }, // wider magenta to catch 350°
 ];
 
 function getHueCategory(hue: number) {
@@ -24,7 +24,8 @@ function getHueCategory(hue: number) {
 
   for (const category of colorCategories) {
     const [min, max] = category.hueRange;
-    if (min > max) { // wraps around (red case: 350-10)
+    if (min > max) {
+      // wraps around (red case: 350-10)
       if (hue >= min || hue <= max) return category.name;
     } else {
       if (hue >= min && hue < max) return category.name; // use < instead of <= to avoid overlap
@@ -40,15 +41,18 @@ function isGrayscale(oklchColor: any) {
 function extractExistingColors(theme: TinteTheme, isDark: boolean) {
   const mode = isDark ? theme.dark : theme.light;
   const relevantColors = [
-    { key: 'primary', color: mode.primary },
-    { key: 'accent', color: mode.accent },
-    { key: 'accent_2', color: mode.accent_2 },
-    { key: 'accent_3', color: mode.accent_3 },
-    { key: 'secondary', color: mode.secondary }
+    { key: "primary", color: mode.sc },
+    { key: "accent", color: mode.pr },
+    { key: "accent_2", color: mode.ac_2 },
+    { key: "accent_3", color: mode.ac_3 },
+    { key: "secondary", color: mode.ac_1 },
   ];
 
   // First pass: collect all colors by category
-  const colorsByCategory = new Map<string, { color: string, chroma: number, lightness: number, key: string }[]>();
+  const colorsByCategory = new Map<
+    string,
+    { color: string; chroma: number; lightness: number; key: string }[]
+  >();
 
   for (const { key, color } of relevantColors) {
     const oklchColor = oklch(color);
@@ -61,16 +65,19 @@ function extractExistingColors(theme: TinteTheme, isDark: boolean) {
       colorsByCategory.set(category, []);
     }
 
-    colorsByCategory.get(category)!.push({
+    colorsByCategory.get(category)?.push({
       color,
       chroma: oklchColor.c,
       lightness: oklchColor.l,
-      key
+      key,
     });
   }
 
   // Second pass: select the best color for each category
-  const finalColors = new Map<string, { color: string, chroma: number, lightness: number }>();
+  const finalColors = new Map<
+    string,
+    { color: string; chroma: number; lightness: number }
+  >();
 
   for (const [category, colors] of colorsByCategory) {
     if (colors.length === 1) {
@@ -79,11 +86,17 @@ function extractExistingColors(theme: TinteTheme, isDark: boolean) {
       finalColors.set(category, {
         color: color.color,
         chroma: color.chroma,
-        lightness: color.lightness
+        lightness: color.lightness,
       });
     } else {
       // Multiple colors in same category - prioritize by key importance, then chroma
-      const priorityOrder = ['primary', 'accent', 'secondary', 'accent_2', 'accent_3'];
+      const priorityOrder = [
+        "primary",
+        "accent",
+        "secondary",
+        "accent_2",
+        "accent_3",
+      ];
 
       // Sort by priority first, then by chroma
       colors.sort((a, b) => {
@@ -92,7 +105,10 @@ function extractExistingColors(theme: TinteTheme, isDark: boolean) {
 
         // If different priorities, use priority
         if (aPriority !== bPriority) {
-          return (aPriority === -1 ? 999 : aPriority) - (bPriority === -1 ? 999 : bPriority);
+          return (
+            (aPriority === -1 ? 999 : aPriority) -
+            (bPriority === -1 ? 999 : bPriority)
+          );
         }
 
         // Same priority, use chroma
@@ -103,7 +119,7 @@ function extractExistingColors(theme: TinteTheme, isDark: boolean) {
       finalColors.set(category, {
         color: bestColor.color,
         chroma: bestColor.chroma,
-        lightness: bestColor.lightness
+        lightness: bestColor.lightness,
       });
     }
   }
@@ -111,9 +127,13 @@ function extractExistingColors(theme: TinteTheme, isDark: boolean) {
   return finalColors;
 }
 
-function createIntelligentColorRamp(targetHue: number, theme: TinteTheme, isDark: boolean) {
+function createIntelligentColorRamp(
+  targetHue: number,
+  theme: TinteTheme,
+  isDark: boolean,
+) {
   const mode = isDark ? theme.dark : theme.light;
-  const allColors = [mode.primary, mode.accent, mode.accent_2, mode.accent_3, mode.secondary];
+  const allColors = [mode.sc, mode.pr, mode.ac_2, mode.ac_3, mode.ac_1];
 
   // Find the most chromatic color to use as chroma reference
   let bestChroma = 0.05; // minimum chroma for visible color
@@ -126,10 +146,10 @@ function createIntelligentColorRamp(targetHue: number, theme: TinteTheme, isDark
 
   // Create a color at the target hue with appropriate chroma and lightness
   const baseColor = formatHex({
-    mode: 'oklch',
+    mode: "oklch",
     l: 0.55, // Start at 600 equivalent
     c: Math.min(0.15, bestChroma * 0.8), // Use theme's chroma intensity but capped
-    h: targetHue
+    h: targetHue,
   });
 
   return baseColor;
@@ -140,7 +160,7 @@ function generateColorPalette(theme: TinteTheme, isDark: boolean) {
   const mode = isDark ? theme.dark : theme.light;
 
   // Calculate best chroma and average lightness from theme
-  const allColors = [mode.primary, mode.accent, mode.accent_2, mode.accent_3, mode.secondary];
+  const allColors = [mode.sc, mode.pr, mode.ac_2, mode.ac_3, mode.ac_1];
   let bestChroma = 0.05;
   let totalLightness = 0;
   let lightColorsCount = 0;
@@ -155,7 +175,8 @@ function generateColorPalette(theme: TinteTheme, isDark: boolean) {
   }
 
   // Use average lightness from existing colors, fallback to standard values
-  const avgLightness = lightColorsCount > 0 ? totalLightness / lightColorsCount : 0.55;
+  const avgLightness =
+    lightColorsCount > 0 ? totalLightness / lightColorsCount : 0.55;
   const lightness600 = avgLightness;
   const lightness400 = Math.min(0.85, avgLightness + 0.15); // slightly lighter for 400
 
@@ -169,30 +190,40 @@ function generateColorPalette(theme: TinteTheme, isDark: boolean) {
         // Fallback to intelligent ramp if invalid color
         const targetHue = hueRange[0] + (hueRange[1] - hueRange[0]) / 2;
         const rampBase = createIntelligentColorRamp(targetHue, theme, isDark);
-        const color600 = formatHex({ mode: 'oklch', l: 0.55, c: 0.1, h: targetHue });
-        const color400 = formatHex({ mode: 'oklch', l: 0.70, c: 0.08, h: targetHue });
+        const color600 = formatHex({
+          mode: "oklch",
+          l: 0.55,
+          c: 0.1,
+          h: targetHue,
+        });
+        const color400 = formatHex({
+          mode: "oklch",
+          l: 0.7,
+          c: 0.08,
+          h: targetHue,
+        });
         return {
           name,
           light: color600,
           dark: color400,
           palette: generateTailwindPalette(rampBase),
-          source: 'ramp'
+          source: "ramp",
         };
       }
 
       // Keep original lightness for existing colors, just normalize the structure
       const color600 = formatHex({
-        mode: 'oklch',
+        mode: "oklch",
         l: existingOklch.l, // preserve original lightness
         c: existingOklch.c,
-        h: existingOklch.h
+        h: existingOklch.h,
       });
 
       const color400 = formatHex({
-        mode: 'oklch',
+        mode: "oklch",
         l: Math.min(0.9, existingOklch.l + 0.15), // slightly lighter version
         c: existingOklch.c * 0.9,
-        h: existingOklch.h
+        h: existingOklch.h,
       });
 
       return {
@@ -200,27 +231,29 @@ function generateColorPalette(theme: TinteTheme, isDark: boolean) {
         light: color600,
         dark: color400,
         palette: generateTailwindPalette(existing.color),
-        source: 'existing'
+        source: "existing",
       };
     } else {
       // Create color ramp for missing colors using specific hue
       // Calculate target hue (handle wrap-around for red)
-      const targetHue = hueRange[0] > hueRange[1] ?
-        (hueRange[0] + hueRange[1] + 360) / 2 % 360 : // red case: (355 + 10 + 360) / 2 % 360 = 2.5°
-        (hueRange[0] + hueRange[1]) / 2;
+      const targetHue =
+        hueRange[0] > hueRange[1]
+          ? ((hueRange[0] + hueRange[1] + 360) / 2) % 360
+          : // red case: (355 + 10 + 360) / 2 % 360 = 2.5°
+            (hueRange[0] + hueRange[1]) / 2;
 
       const color600 = formatHex({
-        mode: 'oklch',
+        mode: "oklch",
         l: lightness600, // use theme's average lightness
         c: Math.min(0.12, bestChroma * 0.8),
-        h: targetHue
+        h: targetHue,
       });
 
       const color400 = formatHex({
-        mode: 'oklch',
+        mode: "oklch",
         l: lightness400, // use theme's lighter variant
-        c: Math.min(0.10, bestChroma * 0.7),
-        h: targetHue
+        c: Math.min(0.1, bestChroma * 0.7),
+        h: targetHue,
       });
 
       return {
@@ -228,7 +261,7 @@ function generateColorPalette(theme: TinteTheme, isDark: boolean) {
         light: color600,
         dark: color400,
         palette: generateTailwindPalette(color600),
-        source: 'ramp'
+        source: "ramp",
       };
     }
   });
@@ -241,9 +274,9 @@ export default function PaletteGeneratorPage() {
 
   const themeColors = selectedTheme.rawTheme as TinteTheme;
 
-  const colorPalette = useMemo(() =>
-    generateColorPalette(themeColors, isDark),
-    [themeColors, isDark]
+  const colorPalette = useMemo(
+    () => generateColorPalette(themeColors, isDark),
+    [themeColors, isDark],
   );
 
   if (!colorPalette) return <div>Error generating colors</div>;
@@ -257,7 +290,7 @@ export default function PaletteGeneratorPage() {
             onClick={() => setIsDark(!isDark)}
             className="px-3 py-1 rounded border text-sm"
           >
-            {isDark ? 'Dark' : 'Light'} Mode
+            {isDark ? "Dark" : "Light"} Mode
           </button>
           <ThemeSelector
             themes={themes}
@@ -269,27 +302,30 @@ export default function PaletteGeneratorPage() {
 
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold mb-3">Extracted Color Palette</h2>
+          <h2 className="text-lg font-semibold mb-3">
+            Extracted Color Palette
+          </h2>
 
           {/* Debug info */}
           <div className="mb-4 p-3 bg-gray-50 rounded text-xs">
             <div className="font-semibold mb-2">Theme Analysis:</div>
             <div className="grid grid-cols-1 gap-2 mb-3">
               {(() => {
-                const mode = themeColors[isDark ? 'dark' : 'light'];
+                const mode = themeColors[isDark ? "dark" : "light"];
                 const colors = [
-                  { key: 'Primary', color: mode.primary },
-                  { key: 'Accent', color: mode.accent },
-                  { key: 'Accent 2', color: mode.accent_2 },
-                  { key: 'Accent 3', color: mode.accent_3 },
-                  { key: 'Secondary', color: mode.secondary }
+                  { key: "Primary", color: mode.sc },
+                  { key: "Accent", color: mode.pr },
+                  { key: "Accent 2", color: mode.ac_2 },
+                  { key: "Accent 3", color: mode.ac_3 },
+                  { key: "Secondary", color: mode.ac_1 },
                 ];
 
                 return colors.map(({ key, color }) => {
                   const oklchColor = oklch(color);
                   const hue = oklchColor?.h;
                   const chroma = oklchColor?.c;
-                  const category = hue !== undefined ? getHueCategory(hue) : 'N/A';
+                  const category =
+                    hue !== undefined ? getHueCategory(hue) : "N/A";
                   const isGray = oklchColor ? isGrayscale(oklchColor) : true;
 
                   return (
@@ -301,10 +337,10 @@ export default function PaletteGeneratorPage() {
                       <span className="font-medium">{key}:</span>
                       <span>{color}</span>
                       <span className="text-gray-600">
-                        H:{hue?.toFixed(0) || 'N/A'}°
-                        L:{oklchColor?.l?.toFixed(2) || 'N/A'}
-                        C:{chroma?.toFixed(2) || 'N/A'}
-                        → {isGray ? 'GRAY' : category || 'NONE'}
+                        H:{hue?.toFixed(0) || "N/A"}° L:
+                        {oklchColor?.l?.toFixed(2) || "N/A"}
+                        C:{chroma?.toFixed(2) || "N/A"}→{" "}
+                        {isGray ? "GRAY" : category || "NONE"}
                       </span>
                     </div>
                   );
@@ -314,8 +350,14 @@ export default function PaletteGeneratorPage() {
             <div className="mt-3 pt-2 border-t text-xs text-gray-600">
               <strong>Calculated Values:</strong>
               Avg Lightness: {(() => {
-                const mode = themeColors[isDark ? 'dark' : 'light'];
-                const allColors = [mode.primary, mode.accent, mode.accent_2, mode.accent_3, mode.secondary];
+                const mode = themeColors[isDark ? "dark" : "light"];
+                const allColors = [
+                  mode.sc,
+                  mode.pr,
+                  mode.ac_2,
+                  mode.ac_3,
+                  mode.ac_1,
+                ];
                 let totalLightness = 0;
                 let lightColorsCount = 0;
 
@@ -327,12 +369,20 @@ export default function PaletteGeneratorPage() {
                   }
                 }
 
-                const avgLightness = lightColorsCount > 0 ? totalLightness / lightColorsCount : 0.55;
+                const avgLightness =
+                  lightColorsCount > 0
+                    ? totalLightness / lightColorsCount
+                    : 0.55;
                 return avgLightness.toFixed(2);
-              })()}
-              | Best Chroma: {(() => {
-                const mode = themeColors[isDark ? 'dark' : 'light'];
-                const allColors = [mode.primary, mode.accent, mode.accent_2, mode.accent_3, mode.secondary];
+              })()}| Best Chroma: {(() => {
+                const mode = themeColors[isDark ? "dark" : "light"];
+                const allColors = [
+                  mode.sc,
+                  mode.pr,
+                  mode.ac_2,
+                  mode.ac_3,
+                  mode.ac_1,
+                ];
                 let bestChroma = 0.05;
 
                 for (const color of allColors) {

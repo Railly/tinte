@@ -6,9 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "biome check",
+    "format": "biome format --write"
   },
   "dependencies": {
+    "@biomejs/biome": "2.2.0",
     "@hookform/resolvers": "^5.2.0",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-accordion": "^1.2.11",

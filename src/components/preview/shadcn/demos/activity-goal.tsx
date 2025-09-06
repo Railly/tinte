@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { MinusIcon, PlusIcon } from "lucide-react"
-import { Bar, BarChart } from "recharts"
+import { MinusIcon, PlusIcon } from "lucide-react";
+import * as React from "react";
+import { Bar, BarChart } from "recharts";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,8 +12,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+} from "@/components/ui/card";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const data = [
   {
@@ -55,20 +55,20 @@ const data = [
   {
     goal: 349,
   },
-]
+];
 
 const chartConfig = {
   goal: {
     label: "Goal",
     color: "var(--primary)",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function CardsActivityGoal() {
-  const [goal, setGoal] = React.useState(350)
+  const [goal, setGoal] = React.useState(350);
 
   function onClick(adjustment: number) {
-    setGoal(Math.max(200, Math.min(400, goal + adjustment)))
+    setGoal(Math.max(200, Math.min(400, goal + adjustment)));
   }
 
   return (
@@ -125,5 +125,5 @@ export function CardsActivityGoal() {
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

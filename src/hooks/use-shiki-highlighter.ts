@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { codeToHtml } from "shiki";
-import { VSCodeTheme } from "@/lib/providers/vscode";
+import type { VSCodeTheme } from "@/lib/providers/vscode";
 
 interface CodeTemplate {
   name: string;
@@ -50,7 +50,7 @@ export function useShikiHighlighter({
         },
       })),
     };
-  }, [themeSet, currentMode, themeVersion]);
+  }, [themeSet, currentMode]);
 
   // Fast highlighting - reduced debounce and smarter loading states
   useEffect(() => {
@@ -71,10 +71,10 @@ export function useShikiHighlighter({
         // Exclude from view transitions
         const modifiedResult = result.replace(
           /<pre([^>]*)>/g,
-          '<pre$1 style="view-transition-name: none;">'
+          '<pre$1 style="view-transition-name: none;">',
         );
         setHtml(modifiedResult);
-        
+
         if (isInitialLoad) {
           setLoading(false);
           setIsInitialLoad(false);
@@ -82,7 +82,7 @@ export function useShikiHighlighter({
       } catch (error) {
         console.error("Failed to highlight code:", error);
         setHtml(`<pre><code>${template.code}</code></pre>`);
-        
+
         if (isInitialLoad) {
           setLoading(false);
           setIsInitialLoad(false);
@@ -93,7 +93,7 @@ export function useShikiHighlighter({
     // Reduced debounce for faster response
     timeoutId = setTimeout(highlightCode, isInitialLoad ? 0 : 50);
     return () => clearTimeout(timeoutId);
-  }, [template.code, template.language, shikiThemeData, themeVersion, isInitialLoad]);
+  }, [template.code, template.language, shikiThemeData, isInitialLoad]);
 
   return {
     html,

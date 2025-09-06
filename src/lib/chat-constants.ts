@@ -4,11 +4,11 @@ export const CHAT_CONFIG = {
   ANIMATION: {
     SPRING: {
       stiffness: 240,
-      damping: 32
+      damping: 32,
     },
     PREVIEW_SPRING: {
       stiffness: 220,
-      damping: 28
-    }
-  }
+      damping: 28,
+    },
+  },
 } as const;

@@ -1,4 +1,4 @@
-import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
+import type { ShadcnBlock } from "@/types/shadcn";
 
 // Extract themes for theme showcase
 export function extractTweakcnThemeData(isDark = false) {

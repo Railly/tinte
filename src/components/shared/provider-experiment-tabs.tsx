@@ -1,15 +1,25 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Copy, Download, ExternalLink } from 'lucide-react';
-import { TinteTheme } from '@/types/tinte';
-import { getAvailableProviders, getPreviewableProviders, convertTheme, exportTheme } from '@/lib/providers';
-import { buildShadcnFromTinte, makePolineFromTinte, polineRampHex } from '@/lib/ice-theme';
-import { cn } from '@/lib/utils';
+import { Copy, Download, ExternalLink } from "lucide-react";
+import * as React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { makePolineFromTinte, polineRampHex } from "@/lib/ice-theme";
+import {
+  exportTheme,
+  getAvailableProviders,
+  getPreviewableProviders,
+} from "@/lib/providers";
+import { cn } from "@/lib/utils";
+import type { TinteTheme } from "@/types/tinte";
 
 interface ProviderExperimentTabsProps {
   theme: TinteTheme | null;
@@ -20,14 +30,14 @@ async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
   } catch (error) {
-    console.error('Failed to copy to clipboard:', error);
+    console.error("Failed to copy to clipboard:", error);
   }
 }
 
 function downloadFile(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   a.click();
@@ -40,7 +50,11 @@ interface ProviderOutputDisplayProps {
   className?: string;
 }
 
-function ProviderOutputDisplay({ providerId, theme, className }: ProviderOutputDisplayProps) {
+function ProviderOutputDisplay({
+  providerId,
+  theme,
+  className,
+}: ProviderOutputDisplayProps) {
   const [output, setOutput] = React.useState<any>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -48,13 +62,13 @@ function ProviderOutputDisplay({ providerId, theme, className }: ProviderOutputD
   React.useEffect(() => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Use export format for preview to show the actual output users will get
       const exported = exportTheme(providerId, theme);
       setOutput(exported?.content || null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Conversion failed');
+      setError(err instanceof Error ? err.message : "Conversion failed");
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +76,8 @@ function ProviderOutputDisplay({ providerId, theme, className }: ProviderOutputD
 
   const handleCopy = () => {
     if (output) {
-      const content = typeof output === 'string' ? output : JSON.stringify(output, null, 2);
+      const content =
+        typeof output === "string" ? output : JSON.stringify(output, null, 2);
       copyToClipboard(content);
     }
   };
@@ -72,10 +87,14 @@ function ProviderOutputDisplay({ providerId, theme, className }: ProviderOutputD
       try {
         const exportResult = exportTheme(providerId, theme);
         if (exportResult) {
-          downloadFile(exportResult.content, exportResult.filename, exportResult.mimeType);
+          downloadFile(
+            exportResult.content,
+            exportResult.filename,
+            exportResult.mimeType,
+          );
         }
       } catch (err) {
-        console.error('Export failed:', err);
+        console.error("Export failed:", err);
       }
     }
   };
@@ -104,9 +123,8 @@ function ProviderOutputDisplay({ providerId, theme, className }: ProviderOutputD
     );
   }
 
-  const displayContent = typeof output === 'string' 
-    ? output 
-    : JSON.stringify(output, null, 2);
+  const displayContent =
+    typeof output === "string" ? output : JSON.stringify(output, null, 2);
 
   return (
     <div className={cn("space-y-3", className)}>
@@ -130,7 +148,7 @@ function ProviderOutputDisplay({ providerId, theme, className }: ProviderOutputD
           Download
         </Button>
       </div>
-      
+
       <div className="bg-muted rounded-lg p-3 overflow-auto max-h-[400px]">
         <pre className="text-xs font-mono whitespace-pre-wrap">
           {displayContent}
@@ -140,14 +158,17 @@ function ProviderOutputDisplay({ providerId, theme, className }: ProviderOutputD
   );
 }
 
-export function ProviderExperimentTabs({ theme, className }: ProviderExperimentTabsProps) {
+export function ProviderExperimentTabs({
+  theme,
+  className,
+}: ProviderExperimentTabsProps) {
   const availableProviders = getAvailableProviders();
   const previewableProviders = getPreviewableProviders();
-  
+
   // Group providers by category
   const providersByCategory = React.useMemo(() => {
     const categories: Record<string, any[]> = {};
-    
+
     availableProviders.forEach((provider: any) => {
       const category = provider.meta.category;
       if (!categories[category]) {
@@ -155,12 +176,14 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
       }
       categories[category].push(provider);
     });
-    
+
     return categories;
   }, [availableProviders]);
 
-  const categoryOrder = ['ui', 'editor', 'terminal', 'design', 'other'];
-  const orderedCategories = categoryOrder.filter(cat => providersByCategory[cat]);
+  const categoryOrder = ["ui", "editor", "terminal", "design", "other"];
+  const orderedCategories = categoryOrder.filter(
+    (cat) => providersByCategory[cat],
+  );
 
   if (!theme) {
     return (
@@ -173,24 +196,36 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
   return (
     <div className={cn("space-y-4", className)}>
       <div className="text-sm text-muted-foreground">
-        Experimenting with theme transformations across {availableProviders.length} providers
+        Experimenting with theme transformations across{" "}
+        {availableProviders.length} providers
       </div>
-      
+
       <Tabs defaultValue={orderedCategories[0]} className="w-full">
-        <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${orderedCategories.length}, 1fr)` }}>
-          {orderedCategories.map(category => (
-            <TabsTrigger key={category} value={category} className="text-xs capitalize">
+        <TabsList
+          className="grid w-full"
+          style={{
+            gridTemplateColumns: `repeat(${orderedCategories.length}, 1fr)`,
+          }}
+        >
+          {orderedCategories.map((category) => (
+            <TabsTrigger
+              key={category}
+              value={category}
+              className="text-xs capitalize"
+            >
               {category} ({providersByCategory[category].length})
             </TabsTrigger>
           ))}
         </TabsList>
-        
-        {orderedCategories.map(category => (
+
+        {orderedCategories.map((category) => (
           <TabsContent key={category} value={category} className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {providersByCategory[category].map((provider: any) => {
-                const isPreviewable = previewableProviders.some((p: any) => p.meta.id === provider.meta.id);
-                
+                const isPreviewable = previewableProviders.some(
+                  (p: any) => p.meta.id === provider.meta.id,
+                );
+
                 return (
                   <Card key={provider.meta.id} className="h-fit">
                     <CardHeader className="pb-3">
@@ -198,7 +233,9 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
                         {provider.meta.icon && (
                           <provider.meta.icon className="h-4 w-4" />
                         )}
-                        <CardTitle className="text-sm">{provider.meta.name}</CardTitle>
+                        <CardTitle className="text-sm">
+                          {provider.meta.name}
+                        </CardTitle>
                         {isPreviewable && (
                           <Badge variant="secondary" className="text-xs">
                             Preview
@@ -212,7 +249,11 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
                       )}
                       <div className="flex flex-wrap gap-1">
                         {provider.meta.tags.map((tag: string) => (
-                          <Badge key={tag} variant="outline" className="text-[10px] h-5">
+                          <Badge
+                            key={tag}
+                            variant="outline"
+                            className="text-[10px] h-5"
+                          >
                             {tag}
                           </Badge>
                         ))}
@@ -223,7 +264,7 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
                         providerId={provider.metadata.id}
                         theme={theme}
                       />
-                      
+
                       {provider.metadata.website && (
                         <div className="mt-3 pt-3 border-t">
                           <Button
@@ -232,9 +273,9 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
                             asChild
                             className="h-7 px-2 text-xs"
                           >
-                            <a 
-                              href={provider.metadata.website} 
-                              target="_blank" 
+                            <a
+                              href={provider.metadata.website}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-1"
                             >
@@ -252,7 +293,7 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
           </TabsContent>
         ))}
       </Tabs>
-      
+
       {/* Special Poline Section */}
       <Card className="border-dashed">
         <CardHeader>
@@ -265,14 +306,16 @@ export function ProviderExperimentTabs({ theme, className }: ProviderExperimentT
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {['light', 'dark'].map(mode => {
+            {["light", "dark"].map((mode) => {
               const block = theme[mode as keyof TinteTheme];
               const poline = makePolineFromTinte(block as any);
               const ramp = polineRampHex(poline);
-              
+
               return (
                 <div key={mode} className="space-y-2">
-                  <div className="text-xs font-medium capitalize">{mode} Mode</div>
+                  <div className="text-xs font-medium capitalize">
+                    {mode} Mode
+                  </div>
                   <div className="grid grid-cols-11 gap-1">
                     {ramp.map((color, i) => (
                       <div

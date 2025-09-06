@@ -1,13 +1,19 @@
-'use client';
+"use client";
 
-import { useMemo, useEffect, useRef } from 'react';
-import { motion, useAnimationControls } from 'motion/react';
-import { X } from 'lucide-react';
-import { Globe, Palette, MessageSquare, Image, FileCode } from 'lucide-react';
-import { CSSIcon } from '@/components/shared/icons/css';
-import { TailwindIcon } from '@/components/shared/icons/tailwind';
-import { PastedItem, Kind, generatePreview } from '@/lib/input-detection';
-import { ColorBadge } from './color-badge';
+import {
+  FileCode,
+  Globe,
+  Image,
+  MessageSquare,
+  Palette,
+  X,
+} from "lucide-react";
+import { motion, useAnimationControls } from "motion/react";
+import { useEffect, useMemo, useRef } from "react";
+import { CSSIcon } from "@/components/shared/icons/css";
+import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { generatePreview, type PastedItem } from "@/lib/input-detection";
+import { ColorBadge } from "./color-badge";
 
 const kindIcons = {
   url: Globe,
@@ -16,7 +22,7 @@ const kindIcons = {
   tailwind: TailwindIcon,
   palette: Palette,
   prompt: MessageSquare,
-  image: Image
+  image: Image,
 };
 
 interface PastedItemCardProps {
@@ -25,16 +31,23 @@ interface PastedItemCardProps {
   onEdit?: (item: PastedItem) => void;
 }
 
-export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) {
+export function PastedItemCard({
+  item,
+  onRemove,
+  onEdit,
+}: PastedItemCardProps) {
   const Icon = kindIcons[item.kind];
-  const preview = useMemo(() => generatePreview(item.content, item.kind), [item.content, item.kind]);
+  const preview = useMemo(
+    () => generatePreview(item.content, item.kind),
+    [item.content, item.kind],
+  );
 
   const displayTitle = item.metadata?.title || preview.title;
   const displaySubtitle = item.metadata?.description || preview.subtitle;
   const favicon = item.metadata?.favicon;
-  const canEdit = ['url', 'tailwind', 'cssvars', 'palette'].includes(item.kind);
+  const canEdit = ["url", "tailwind", "cssvars", "palette"].includes(item.kind);
   const hasError = item.metadata?.error;
-  const isLoading = item.metadata?.loading;
+  const _isLoading = item.metadata?.loading;
   const controls = useAnimationControls();
   const hasTriggeredError = useRef(false);
 
@@ -45,7 +58,7 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
 
   // Trigger shake animation when error occurs
   useEffect(() => {
-    if (hasError && item.kind === 'url' && !hasTriggeredError.current) {
+    if (hasError && item.kind === "url" && !hasTriggeredError.current) {
       hasTriggeredError.current = true;
 
       // Trigger device vibration if available
@@ -60,8 +73,8 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
           rotateZ: [0, -2, 2, -2, 2, -1.5, 1.5, -0.5, 0.5, 0],
           transition: {
             duration: 0.6,
-            ease: "easeInOut"
-          }
+            ease: "easeInOut",
+          },
         });
       };
 
@@ -87,8 +100,8 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       rotateZ: [0, -2, 2, -2, 2, -1.5, 1.5, -0.5, 0.5, 0],
       transition: {
         duration: 0.6,
-        ease: "easeInOut"
-      }
+        ease: "easeInOut",
+      },
     });
   };
 
@@ -99,16 +112,17 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{
         opacity: { duration: 0.2 },
-        scale: { duration: 0.2 }
+        scale: { duration: 0.2 },
       }}
       layout
       onClick={handleClick}
       onDoubleClick={hasError ? triggerShake : undefined}
-      className={`group relative rounded-lg overflow-visible ${hasError
-        ? 'border border-red-200 bg-red-50 hover:border-red-300 hover:shadow-md shadow-red-100/20'
-        : 'border border-border/40 bg-background/80 hover:border-border/60 hover:shadow-md shadow-black/5'
-        } ${canEdit ? 'cursor-pointer' : 'cursor-default'}`}
-      style={{ width: '120px', height: '120px', minWidth: '120px' }}
+      className={`group relative rounded-lg overflow-visible ${
+        hasError
+          ? "border border-red-200 bg-red-50 hover:border-red-300 hover:shadow-md shadow-red-100/20"
+          : "border border-border/40 bg-background/80 hover:border-border/60 hover:shadow-md shadow-black/5"
+      } ${canEdit ? "cursor-pointer" : "cursor-default"}`}
+      style={{ width: "120px", height: "120px", minWidth: "120px" }}
     >
       {/* Close button */}
       <button
@@ -123,13 +137,16 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
 
       {/* Content area with mask */}
       <div className="relative flex flex-col gap-1 h-full">
-        <div className={`max-w-full overflow-hidden absolute ${item.kind === 'image'
-          ? 'inset-0 p-0'
-          : item.kind === 'palette'
-            ? 'h-[90px] p-2.5'
-            : 'h-[90px] p-2.5 mask-b-from-40% mask-b-to-100%'
-          }`}>
-          {item.kind === 'image' && item.imageData ? (
+        <div
+          className={`max-w-full overflow-hidden absolute ${
+            item.kind === "image"
+              ? "inset-0 p-0"
+              : item.kind === "palette"
+                ? "h-[90px] p-2.5"
+                : "h-[90px] p-2.5 mask-b-from-40% mask-b-to-100%"
+          }`}
+        >
+          {item.kind === "image" && item.imageData ? (
             <div className="w-full h-full">
               <img
                 src={item.imageData}
@@ -137,30 +154,38 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
                 className="w-full h-full object-cover rounded-lg"
               />
             </div>
-          ) : item.kind === 'url' && favicon ? (
+          ) : item.kind === "url" && favicon ? (
             <div className="flex items-start gap-2 mb-2">
               <img
                 src={favicon}
                 alt="favicon"
                 className="w-4 h-4 flex-shrink-0 mt-0.5"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
               />
               <div className="min-w-0">
-                <p className={`text-[8px] font-medium break-words leading-tight mb-1 ${hasError ? 'text-red-700' : 'text-foreground'
-                  }`}>
+                <p
+                  className={`text-[8px] font-medium break-words leading-tight mb-1 ${
+                    hasError ? "text-red-700" : "text-foreground"
+                  }`}
+                >
                   {displayTitle}
                 </p>
                 {displaySubtitle && (
-                  <p className={`text-[8px] break-words leading-tight ${hasError ? 'text-red-600' : 'text-muted-foreground'
-                    }`}>
+                  <p
+                    className={`text-[8px] break-words leading-tight ${
+                      hasError ? "text-red-600" : "text-muted-foreground"
+                    }`}
+                  >
                     {displaySubtitle}
                   </p>
                 )}
               </div>
             </div>
-          ) : item.kind === 'palette' ? (
+          ) : item.kind === "palette" ? (
             <div className="flex flex-wrap gap-1 p-1">
-              {item.colors && item.colors.slice(0, 11).map((color) => (
+              {item.colors?.slice(0, 11).map((color) => (
                 <div
                   key={color}
                   className="w-4 h-4 rounded border cursor-pointer hover:scale-110"
@@ -192,8 +217,11 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
               </div>
             </div>
           ) : (
-            <p className={`text-[8px] break-words leading-tight ${hasError ? 'text-red-600' : 'text-muted-foreground'
-              }`}>
+            <p
+              className={`text-[8px] break-words leading-tight ${
+                hasError ? "text-red-600" : "text-muted-foreground"
+              }`}
+            >
               {item.content}
             </p>
           )}
@@ -204,15 +232,28 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       <div className="absolute bottom-2 left-2.5 right-2.5">
         <div className="relative flex flex-row items-center gap-1 justify-between">
           <div className="flex flex-row gap-1 shrink min-w-0">
-            <div className={`min-w-0 h-[18px] flex flex-row items-center justify-center gap-1 px-1 border shadow-sm rounded backdrop-blur-sm font-medium ${hasError
-              ? 'border-red-200 bg-red-100/80'
-              : 'border-border/25 bg-muted/80'
-              }`}>
-              <Icon className={`h-3 w-3 flex-shrink-0 ${hasError ? 'text-red-600' : 'text-muted-foreground'
-                }`} />
-              <p className={`uppercase truncate text-[11px] leading-[13px] ${hasError ? 'text-red-600' : 'text-muted-foreground'
-                }`}>
-                {hasError ? 'error' : item.kind === 'palette' ? 'added' : 'pasted'}
+            <div
+              className={`min-w-0 h-[18px] flex flex-row items-center justify-center gap-1 px-1 border shadow-sm rounded backdrop-blur-sm font-medium ${
+                hasError
+                  ? "border-red-200 bg-red-100/80"
+                  : "border-border/25 bg-muted/80"
+              }`}
+            >
+              <Icon
+                className={`h-3 w-3 flex-shrink-0 ${
+                  hasError ? "text-red-600" : "text-muted-foreground"
+                }`}
+              />
+              <p
+                className={`uppercase truncate text-[11px] leading-[13px] ${
+                  hasError ? "text-red-600" : "text-muted-foreground"
+                }`}
+              >
+                {hasError
+                  ? "error"
+                  : item.kind === "palette"
+                    ? "added"
+                    : "pasted"}
               </p>
             </div>
           </div>
@@ -220,4 +261,4 @@ export function PastedItemCard({ item, onRemove, onEdit }: PastedItemCardProps) 
       </div>
     </motion.div>
   );
-} 
+}

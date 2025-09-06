@@ -1,15 +1,19 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { ThemeEditorPanel } from '@/components/shared/theme-editor-panel';
-import { MobileThemeControls } from '@/components/shared/mobile-theme-controls';
-import { MobileThemeEditor } from '@/components/shared/mobile-theme-editor';
-import { WorkbenchPreviewPane } from './workbench-preview-pane';
-import { ChatContent } from './chat-content';
-import { useWorkbenchStore } from '@/stores/workbench-store';
-import { useWorkbenchUrlSync } from '@/hooks/use-workbench-url-sync';
+import { MobileThemeControls } from "@/components/shared/mobile-theme-controls";
+import { MobileThemeEditor } from "@/components/shared/mobile-theme-editor";
+import { ThemeEditorPanel } from "@/components/shared/theme-editor-panel";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { useWorkbenchUrlSync } from "@/hooks/use-workbench-url-sync";
+import { useWorkbenchStore } from "@/stores/workbench-store";
+import { ChatContent } from "./chat-content";
+import { WorkbenchPreviewPane } from "./workbench-preview-pane";
 
 interface WorkbenchMobileProps {
   chatId: string;
@@ -27,10 +31,12 @@ export function WorkbenchMobile({
   const loading = useWorkbenchStore((state) => state.loading);
   const drawerOpen = useWorkbenchStore((state) => state.drawerOpen);
   const setDrawerOpen = useWorkbenchStore((state) => state.setDrawerOpen);
-  
+
   // URL state
-  const { activeTab, setActiveTab } = useWorkbenchUrlSync(defaultTab || (isStatic ? 'design' : 'chat'));
-  
+  const { activeTab, setActiveTab } = useWorkbenchUrlSync(
+    defaultTab || (isStatic ? "design" : "chat"),
+  );
+
   // Theme context (only what this component needs)
   // Export functions are handled by WorkbenchPreviewPane itself
 
@@ -50,7 +56,7 @@ export function WorkbenchMobile({
 
       {showTabs && (
         <div className="h-full">
-          {activeTab === 'chat' ? (
+          {activeTab === "chat" ? (
             <ChatContent loading={loading} />
           ) : (
             <div className="h-full p-4">
@@ -63,17 +69,17 @@ export function WorkbenchMobile({
       {showTabs && (
         <div className="absolute bottom-4 right-4 z-10 flex gap-2">
           <Button
-            variant={activeTab === 'chat' ? 'default' : 'outline'}
+            variant={activeTab === "chat" ? "default" : "outline"}
             size="sm"
-            onClick={() => setActiveTab('chat')}
+            onClick={() => setActiveTab("chat")}
             className="bg-background/95 backdrop-blur-sm border shadow-sm"
           >
             Chat
           </Button>
           <Button
-            variant={activeTab === 'design' ? 'default' : 'outline'}
+            variant={activeTab === "design" ? "default" : "outline"}
             size="sm"
-            onClick={() => setActiveTab('design')}
+            onClick={() => setActiveTab("design")}
             className="bg-background/95 backdrop-blur-sm border shadow-sm"
           >
             Design

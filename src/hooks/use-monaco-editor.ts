@@ -1,7 +1,7 @@
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { createHighlighter } from "shiki";
 import { shikiToMonaco } from "@shikijs/monaco";
-import { VSCodeTheme } from "@/lib/providers/vscode";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createHighlighter } from "shiki";
+import type { VSCodeTheme } from "@/lib/providers/vscode";
 
 interface CodeTemplate {
   name: string;
@@ -47,7 +47,7 @@ export function useMonacoEditor({
       const timer = setTimeout(() => setIsViewTransitioning(false), 150); // Optimal for preventing flicker
       return () => clearTimeout(timer);
     }
-  }, [themeVersion, isReady, isInitialLoad]);
+  }, [isReady, isInitialLoad]);
 
   const createThemeData = useCallback(
     (mode: "light" | "dark") => {
@@ -74,7 +74,7 @@ export function useMonacoEditor({
         })),
       };
     },
-    [themeSet]
+    [themeSet],
   );
 
   const initializeMonaco = useCallback(
@@ -84,7 +84,7 @@ export function useMonacoEditor({
         currentThemeVersionRef.current === themeVersion
       ) {
         console.log(
-          "Monaco: Themes already up to date, skipping initialization"
+          "Monaco: Themes already up to date, skipping initialization",
         );
         return;
       }
@@ -122,7 +122,7 @@ export function useMonacoEditor({
         console.error("Monaco: Failed to initialize Shiki:", error);
       }
     },
-    [createThemeData, themeVersion]
+    [createThemeData, themeVersion],
   );
 
   const applyTheme = useCallback(
@@ -144,7 +144,7 @@ export function useMonacoEditor({
         });
       }
     },
-    [currentThemeName, template, currentMode]
+    [currentThemeName, template],
   );
 
   const handleEditorDidMount = useCallback(
@@ -155,12 +155,15 @@ export function useMonacoEditor({
       await initializeMonaco(monaco);
 
       // Immediate theme application for initial load
-      setTimeout(() => {
-        applyTheme(editor, monaco);
-        setIsInitialLoad(false); // Mark initial load complete
-      }, isInitialLoad ? 0 : 50);
+      setTimeout(
+        () => {
+          applyTheme(editor, monaco);
+          setIsInitialLoad(false); // Mark initial load complete
+        },
+        isInitialLoad ? 0 : 50,
+      );
     },
-    [initializeMonaco, applyTheme, isInitialLoad]
+    [initializeMonaco, applyTheme, isInitialLoad],
   );
 
   useEffect(() => {
@@ -175,15 +178,7 @@ export function useMonacoEditor({
         }, 25); // Reduced from 50ms
       });
     }
-  }, [
-    currentMode,
-    themeVersion,
-    currentThemeName,
-    initializeMonaco,
-    applyTheme,
-    isReady,
-    isInitialLoad,
-  ]);
+  }, [currentThemeName, initializeMonaco, applyTheme, isInitialLoad]);
 
   useEffect(() => {
     setIsReady(true);

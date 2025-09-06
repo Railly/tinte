@@ -1,8 +1,8 @@
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useWorkbenchStore } from '@/stores/workbench-store';
-import { AttachmentBubble } from './attachment-bubble';
-import { ChatInput } from './chat-input';
-import type { PastedItem } from '@/lib/input-detection';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { PastedItem } from "@/lib/input-detection";
+import { useWorkbenchStore } from "@/stores/workbench-store";
+import { AttachmentBubble } from "./attachment-bubble";
+import { ChatInput } from "./chat-input";
 
 interface ChatContentProps {
   loading: boolean;
@@ -13,19 +13,16 @@ export function ChatContent({ loading }: ChatContentProps) {
 
   const handleChatSubmit = (content: string, attachments: PastedItem[]) => {
     // TODO: Implement actual chat functionality
-    console.log('Sending chat message:', {
+    console.log("Sending chat message:", {
       content,
       attachments: attachments.length,
-      attachmentTypes: attachments.map(a => a.kind)
+      attachmentTypes: attachments.map((a) => a.kind),
     });
   };
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-var(--header-height)_-_6.5rem)]">
-      <ScrollArea
-        className="flex-1 min-h-0"
-        showScrollIndicators={true}
-      >
+    <div className="flex flex-col h-[50vh]">
+      <ScrollArea className="flex-1 min-h-0" showScrollIndicators={true}>
         <div className="p-4">
           {loading ? (
             <div className="flex items-center justify-center h-32">
@@ -78,22 +75,30 @@ export function ChatContent({ loading }: ChatContentProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-sm">
                 <button className="p-3 text-left rounded-lg border border-border/50 hover:border-border hover:bg-accent/50 transition-colors">
                   <div className="text-sm font-medium">Generate a theme</div>
-                  <div className="text-xs text-muted-foreground">Create custom colors</div>
+                  <div className="text-xs text-muted-foreground">
+                    Create custom colors
+                  </div>
                 </button>
 
                 <button className="p-3 text-left rounded-lg border border-border/50 hover:border-border hover:bg-accent/50 transition-colors">
                   <div className="text-sm font-medium">Convert themes</div>
-                  <div className="text-xs text-muted-foreground">Between formats</div>
+                  <div className="text-xs text-muted-foreground">
+                    Between formats
+                  </div>
                 </button>
 
                 <button className="p-3 text-left rounded-lg border border-border/50 hover:border-border hover:bg-accent/50 transition-colors">
                   <div className="text-sm font-medium">Dark mode theme</div>
-                  <div className="text-xs text-muted-foreground">Eye-friendly colors</div>
+                  <div className="text-xs text-muted-foreground">
+                    Eye-friendly colors
+                  </div>
                 </button>
 
                 <button className="p-3 text-left rounded-lg border border-border/50 hover:border-border hover:bg-accent/50 transition-colors">
                   <div className="text-sm font-medium">Improve existing</div>
-                  <div className="text-xs text-muted-foreground">Enhance your theme</div>
+                  <div className="text-xs text-muted-foreground">
+                    Enhance your theme
+                  </div>
                 </button>
               </div>
 

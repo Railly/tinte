@@ -1,13 +1,13 @@
-import { TinteTheme } from "@/types/tinte";
-import { ProviderOutput, PreviewableProvider } from "./types";
-import { WarpIcon } from "@/components/shared/icons/warp";
 import { WarpPreview } from "@/components/preview/warp/warp-preview";
+import { WarpIcon } from "@/components/shared/icons/warp";
+import type { TinteTheme } from "@/types/tinte";
 import {
   createPolineColorMapping,
-  toYAML,
-  getThemeName,
   getDisplayName,
+  getThemeName,
+  toYAML,
 } from "./poline-base";
+import type { PreviewableProvider, ProviderOutput } from "./types";
 
 export interface WarpTheme {
   accent: string;
@@ -40,7 +40,7 @@ export interface WarpTheme {
 
 function generateWarpTheme(
   theme: TinteTheme,
-  mode: "light" | "dark"
+  mode: "light" | "dark",
 ): WarpTheme {
   const block = theme[mode];
   const colorMapping = createPolineColorMapping(block);
@@ -79,7 +79,10 @@ function generateWarpTheme(
   };
 }
 
-export const warpProvider: PreviewableProvider<{ light: WarpTheme; dark: WarpTheme }> = {
+export const warpProvider: PreviewableProvider<{
+  light: WarpTheme;
+  dark: WarpTheme;
+}> = {
   metadata: {
     id: "warp",
     name: "Warp",
@@ -107,7 +110,7 @@ export const warpProvider: PreviewableProvider<{ light: WarpTheme; dark: WarpThe
     const warpTheme = converted.dark;
 
     // Add metadata to the theme
-    const themeWithMetadata = {
+    const _themeWithMetadata = {
       // Metadata (as YAML comments would be ideal, but we'll use a structure that works)
       name: getDisplayName("Tinte Theme"),
       generator: "Tinte Theme Converter with Poline",

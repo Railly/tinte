@@ -1,6 +1,6 @@
-import { GIMPPalette } from '@/lib/providers/gimp';
-import { useThemeContext } from '@/providers/theme';
-import { rgbToHex } from '@uiw/color-convert';
+import { rgbToHex } from "@uiw/color-convert";
+import type { GIMPPalette } from "@/lib/providers/gimp";
+import { useThemeContext } from "@/providers/theme";
 
 interface GimpPreviewProps {
   theme: { light: GIMPPalette; dark: GIMPPalette };
@@ -9,17 +9,19 @@ interface GimpPreviewProps {
 
 export function GimpPreview({ theme, className }: GimpPreviewProps) {
   const { currentMode } = useThemeContext();
-  const currentPalette = currentMode === 'dark' ? theme.dark : theme.light;
+  const currentPalette = currentMode === "dark" ? theme.dark : theme.light;
 
   // GIMP palette preview showing color swatches
   return (
     <div
-      className={`rounded-lg border overflow-hidden bg-card ${className || ''}`}
+      className={`rounded-lg border overflow-hidden bg-card ${className || ""}`}
     >
       {/* GIMP header */}
       <div className="px-4 py-3 border-b bg-muted flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="text-sm font-medium text-foreground">GIMP Palette</div>
+          <div className="text-sm font-medium text-foreground">
+            GIMP Palette
+          </div>
         </div>
         <div className="text-xs text-muted-foreground">
           {currentPalette.colors.length} colors • {currentMode} mode
@@ -30,7 +32,11 @@ export function GimpPreview({ theme, className }: GimpPreviewProps) {
       <div className="p-4">
         <div className="grid grid-cols-8 gap-2 mb-4">
           {currentPalette.colors.map((color, index) => {
-            const hex = rgbToHex({ r: color.red, g: color.green, b: color.blue });
+            const hex = rgbToHex({
+              r: color.red,
+              g: color.green,
+              b: color.blue,
+            });
             return (
               <div
                 key={index}
@@ -44,9 +50,7 @@ export function GimpPreview({ theme, className }: GimpPreviewProps) {
 
         {/* Palette info */}
         <div className="bg-background rounded border p-3 text-xs font-mono">
-          <div className="text-foreground mb-2">
-            # GIMP Palette
-          </div>
+          <div className="text-foreground mb-2"># GIMP Palette</div>
           <div className="text-muted-foreground mb-2">
             # Name: {currentPalette.name}
           </div>
@@ -56,7 +60,9 @@ export function GimpPreview({ theme, className }: GimpPreviewProps) {
           <div className="space-y-1">
             {currentPalette.colors.slice(0, 6).map((color, index) => (
               <div key={index} className="text-foreground">
-                {color.red.toString().padStart(3)} {color.green.toString().padStart(3)} {color.blue.toString().padStart(3)} {color.name}
+                {color.red.toString().padStart(3)}{" "}
+                {color.green.toString().padStart(3)}{" "}
+                {color.blue.toString().padStart(3)} {color.name}
               </div>
             ))}
             {currentPalette.colors.length > 6 && (
@@ -86,14 +92,30 @@ export function GimpPreview({ theme, className }: GimpPreviewProps) {
           <div className="flex items-center gap-1">
             <div
               className="w-4 h-4 rounded border-2 border-border"
-              style={{ backgroundColor: currentPalette.colors[0] ? rgbToHex({ r: currentPalette.colors[0].red, g: currentPalette.colors[0].green, b: currentPalette.colors[0].blue }) : '#000000' }}
+              style={{
+                backgroundColor: currentPalette.colors[0]
+                  ? rgbToHex({
+                      r: currentPalette.colors[0].red,
+                      g: currentPalette.colors[0].green,
+                      b: currentPalette.colors[0].blue,
+                    })
+                  : "#000000",
+              }}
             ></div>
             <span>FG</span>
           </div>
           <div className="flex items-center gap-1">
             <div
               className="w-4 h-4 rounded border-2 border-border"
-              style={{ backgroundColor: currentPalette.colors[1] ? rgbToHex({ r: currentPalette.colors[1].red, g: currentPalette.colors[1].green, b: currentPalette.colors[1].blue }) : '#ffffff' }}
+              style={{
+                backgroundColor: currentPalette.colors[1]
+                  ? rgbToHex({
+                      r: currentPalette.colors[1].red,
+                      g: currentPalette.colors[1].green,
+                      b: currentPalette.colors[1].blue,
+                    })
+                  : "#ffffff",
+              }}
             ></div>
             <span>BG</span>
           </div>

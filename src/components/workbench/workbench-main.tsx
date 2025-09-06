@@ -1,24 +1,30 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import { useWorkbenchStore } from '@/stores/workbench-store';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { WorkbenchSidebar } from './workbench-sidebar';
-import { WorkbenchPreviewPane } from './workbench-preview-pane';
-import { WorkbenchMobile } from './workbench-mobile';
-import { CHAT_CONFIG } from '@/lib/chat-constants';
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { CHAT_CONFIG } from "@/lib/chat-constants";
+import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
+import { WorkbenchMobile } from "./workbench-mobile";
+import { WorkbenchPreviewPane } from "./workbench-preview-pane";
+import { WorkbenchSidebar } from "./workbench-sidebar";
 
 interface WorkbenchMainProps {
   chatId: string;
   isStatic?: boolean;
-  defaultTab?: string;
+  defaultTab?: WorkbenchTab;
 }
 
-export function WorkbenchMain({ chatId, isStatic = false, defaultTab }: WorkbenchMainProps) {
+export function WorkbenchMain({
+  chatId,
+  isStatic = false,
+  defaultTab,
+}: WorkbenchMainProps) {
   // Only what THIS component needs for layout decisions
   const split = useWorkbenchStore((state) => state.split);
-  const initializeWorkbench = useWorkbenchStore((state) => state.initializeWorkbench);
+  const initializeWorkbench = useWorkbenchStore(
+    (state) => state.initializeWorkbench,
+  );
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -45,7 +51,7 @@ export function WorkbenchMain({ chatId, isStatic = false, defaultTab }: Workbenc
           className="border-r bg-background flex flex-col flex-shrink-0"
           style={{ width: CHAT_CONFIG.SIDEBAR_WIDTH }}
         >
-          <WorkbenchSidebar isStatic defaultTab={defaultTab} />
+          <WorkbenchSidebar defaultTab={defaultTab} isStatic />
         </aside>
         <WorkbenchPreviewPane />
       </div>
@@ -56,18 +62,16 @@ export function WorkbenchMain({ chatId, isStatic = false, defaultTab }: Workbenc
   return (
     <div className="h-[calc(100dvh-var(--header-height))] w-full overflow-hidden flex">
       <motion.aside
-        initial={{ width: '100%' }}
-        animate={{ width: split ? CHAT_CONFIG.SIDEBAR_WIDTH : '100%' }}
-        transition={{ type: 'spring', ...CHAT_CONFIG.ANIMATION.SPRING }}
+        initial={{ width: "100%" }}
+        animate={{ width: split ? CHAT_CONFIG.SIDEBAR_WIDTH : "100%" }}
+        transition={{ type: "spring", ...CHAT_CONFIG.ANIMATION.SPRING }}
         className="border-r bg-background flex flex-col flex-shrink-0"
-        style={{ willChange: 'width' }}
+        style={{ willChange: "width" }}
       >
         <WorkbenchSidebar split={split} defaultTab={defaultTab} />
       </motion.aside>
 
-      <AnimatePresence>
-        {split && <WorkbenchPreviewPane />}
-      </AnimatePresence>
+      <AnimatePresence>{split && <WorkbenchPreviewPane />}</AnimatePresence>
     </div>
   );
 }

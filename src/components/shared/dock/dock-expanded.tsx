@@ -1,7 +1,6 @@
-import * as React from "react";
+import { ArrowLeft, Info, Share } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { Copy, Share, Info, X, Palette, Code, ChevronLeft, ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 interface DockExpandedProps {

@@ -1,8 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
+import { Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ThemeCodePreviewProps {
   code: string;
@@ -11,9 +10,14 @@ interface ThemeCodePreviewProps {
   onCopy: () => void;
 }
 
-export function ThemeCodePreview({ code, language, filename, onCopy }: ThemeCodePreviewProps) {
+export function ThemeCodePreview({
+  code,
+  language,
+  filename,
+  onCopy,
+}: ThemeCodePreviewProps) {
   const formatCode = (code: string, language: string) => {
-    if (language === 'json') {
+    if (language === "json") {
       try {
         return JSON.stringify(JSON.parse(code), null, 2);
       } catch {
@@ -24,7 +28,7 @@ export function ThemeCodePreview({ code, language, filename, onCopy }: ThemeCode
   };
 
   const formattedCode = formatCode(code, language);
-  const lines = formattedCode.split('\n');
+  const lines = formattedCode.split("\n");
   const maxLines = 12;
   const displayLines = lines.slice(0, maxLines);
   const hasMore = lines.length > maxLines;
@@ -38,18 +42,15 @@ export function ThemeCodePreview({ code, language, filename, onCopy }: ThemeCode
             <div className="w-2 h-2 rounded-full bg-yellow-500/60"></div>
             <div className="w-2 h-2 rounded-full bg-green-500/60"></div>
           </div>
-          <code className="text-xs text-muted-foreground font-mono">{filename}</code>
+          <code className="text-xs text-muted-foreground font-mono">
+            {filename}
+          </code>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 px-2"
-          onClick={onCopy}
-        >
+        <Button variant="ghost" size="sm" className="h-6 px-2" onClick={onCopy}>
           <Copy className="w-3 h-3" />
         </Button>
       </div>
-      
+
       <div className="relative">
         <pre className="text-xs font-mono leading-relaxed p-3 overflow-x-auto max-h-64 overflow-y-auto">
           <code className="text-foreground">

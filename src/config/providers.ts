@@ -1,19 +1,20 @@
 // Import removed to fix circular dependency
-import { ShadcnIcon } from "@/components/shared/icons/shadcn";
-import { VSCodeIcon } from "@/components/shared/icons/vscode";
-import { WarpIcon } from "@/components/shared/icons/warp";
+
 import { AlacrittyIcon } from "@/components/shared/icons/alacritty";
-import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
-import { KittyIcon } from "@/components/shared/icons/kitty";
-import { GhosttyIcon } from "@/components/shared/icons/ghostty";
 import { CursorIcon } from "@/components/shared/icons/cursor";
+import { GhosttyIcon } from "@/components/shared/icons/ghostty";
+import { GIMPIcon } from "@/components/shared/icons/gimp";
 import { JetBrainsIcon } from "@/components/shared/icons/jetbrains";
-import { SlackIcon } from "@/components/shared/icons/slack";
-import { ZedIcon } from "@/components/shared/icons/zed";
-import { ReplitIcon } from "@/components/shared/icons/replit";
+import { KittyIcon } from "@/components/shared/icons/kitty";
 import { NeovimIcon } from "@/components/shared/icons/neovim";
 import { ObsidianIcon } from "@/components/shared/icons/obsidian";
-import { GIMPIcon } from "@/components/shared/icons/gimp";
+import { ReplitIcon } from "@/components/shared/icons/replit";
+import { ShadcnIcon } from "@/components/shared/icons/shadcn";
+import { SlackIcon } from "@/components/shared/icons/slack";
+import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import { WarpIcon } from "@/components/shared/icons/warp";
+import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
+import { ZedIcon } from "@/components/shared/icons/zed";
 
 export function getAvailableProviders() {
   return [];
@@ -23,7 +24,7 @@ export function getPreviewableProviders() {
   return [];
 }
 
-export function getProvidersByCategory(category: string) {
+export function getProvidersByCategory(_category: string) {
   return [];
 }
 
@@ -71,7 +72,12 @@ export const LEGACY_PROVIDER_ICONS: Record<
 export const PLANNED_PROVIDERS = [
   { id: "zed", name: "Zed", icon: ZedIcon, category: "editor" },
   { id: "warp", name: "Warp", icon: WarpIcon, category: "terminal" },
-  { id: "alacritty", name: "Alacritty", icon: AlacrittyIcon, category: "terminal" },
+  {
+    id: "alacritty",
+    name: "Alacritty",
+    icon: AlacrittyIcon,
+    category: "terminal",
+  },
   { id: "slack", name: "Slack", icon: SlackIcon, category: "other" },
   { id: "kitty", name: "Kitty", icon: KittyIcon, category: "terminal" },
   { id: "ghostty", name: "Ghostty", icon: GhosttyIcon, category: "terminal" },
@@ -82,7 +88,12 @@ export const PLANNED_PROVIDERS = [
     icon: WindowsTerminalIcon,
     category: "terminal",
   },
-  { id: "jetbrains", name: "JetBrains", icon: JetBrainsIcon, category: "editor" },
+  {
+    id: "jetbrains",
+    name: "JetBrains",
+    icon: JetBrainsIcon,
+    category: "editor",
+  },
   { id: "replit", name: "Replit", icon: ReplitIcon, category: "editor" },
   { id: "neovim", name: "Neovim", icon: NeovimIcon, category: "editor" },
   { id: "cursor", name: "Cursor", icon: CursorIcon, category: "editor" },

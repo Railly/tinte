@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { motion } from 'motion/react';
-import { Heart, Download, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import TweakCNIcon from '@/components/shared/icons/tweakcn';
-import RaycastIcon from '@/components/shared/icons/raycast';
-import Logo from '@/components/shared/logo';
-import { ThemeData } from '@/lib/theme-tokens';
-import { extractThemeColors, formatNumber } from '@/utils/theme-card-helpers';
+import { Download, Heart, Sparkles } from "lucide-react";
+import { motion } from "motion/react";
+import RaycastIcon from "@/components/shared/icons/raycast";
+import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import Logo from "@/components/shared/logo";
+import { Button } from "@/components/ui/button";
+import type { ThemeData } from "@/lib/theme-tokens";
+import { extractThemeColors, formatNumber } from "@/utils/theme-card-helpers";
 
 interface ThemeCardProps {
   theme: ThemeData;
@@ -31,7 +31,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
       onClick={handleThemeClick}
       style={{
         /* Disable transitions during view transitions */
-        willChange: 'auto'
+        willChange: "auto",
       }}
     >
       {/* Gradient background based on primary color */}
@@ -39,7 +39,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
         className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity"
         style={{
           background: `linear-gradient(135deg, ${colors.primary}22, ${colors.accent}11)`,
-          willChange: 'auto'
+          willChange: "auto",
         }}
       />
 
@@ -51,7 +51,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
             className="w-2.5 h-2.5 rounded-full border border-white/20 shadow-sm"
             style={{
               backgroundColor: color,
-              willChange: 'auto'
+              willChange: "auto",
             }}
             whileHover={{ scale: 1.2 }}
             transition={{ duration: 0.2, delay: i * 0.02 }}
@@ -99,7 +99,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
               className="flex items-center gap-1.5"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
-              style={{ willChange: 'auto' }}
+              style={{ willChange: "auto" }}
             >
               <Heart className="w-3 h-3" />
               {formatNumber(theme.likes)}
@@ -108,7 +108,7 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
               className="flex items-center gap-1.5"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
-              style={{ willChange: 'auto' }}
+              style={{ willChange: "auto" }}
             >
               <Download className="w-3 h-3" />
               {formatNumber(theme.downloads)}
@@ -116,11 +116,11 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
           </div>
           {theme.author && (
             <div className="flex items-center text-xs text-muted-foreground/70">
-              {theme.author === 'tweakcn' ? (
+              {theme.author === "tweakcn" ? (
                 <TweakCNIcon className="w-4 h-4" />
-              ) : theme.author === 'ray.so' ? (
+              ) : theme.author === "ray.so" ? (
                 <RaycastIcon className="w-4 h-4" />
-              ) : theme.author === 'tinte' ? (
+              ) : theme.author === "tinte" ? (
                 <Logo size={16} />
               ) : (
                 theme.author
@@ -130,13 +130,20 @@ export function ThemeCard({ theme, onThemeSelect }: ThemeCardProps) {
         </div>
 
         {/* Action on hover */}
-        <div className="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{ willChange: 'auto' }}>
+        <div
+          className="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ willChange: "auto" }}
+        >
           <div className="flex gap-2">
             <Button size="sm" className="flex-1 h-8 text-xs">
               <Sparkles className="w-3 h-3 mr-1.5" />
               Open in Tinte
             </Button>
-            <Button size="sm" variant="outline" className="h-8 px-2 text-xs !bg-secondary hover:brightness-110">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 px-2 text-xs !bg-secondary hover:brightness-110"
+            >
               View Details
             </Button>
           </div>

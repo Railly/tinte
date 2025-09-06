@@ -1,11 +1,10 @@
 "use client";
-import * as React from "react";
-import useMeasure from "react-use-measure";
 import { AnimatePresence, motion } from "motion/react";
+import useMeasure from "react-use-measure";
+import { PromptInput } from "@/components/home/prompt-input";
 import { PROVIDER_ICONS } from "@/config/providers";
 import { useLoop } from "@/hooks/use-loop";
 import { mergeRefs } from "@/utils/merge-refs";
-import { PromptInput } from "@/components/home/prompt-input";
 
 export function Hero() {
   const [ref, bounds] = useMeasure();

@@ -1,18 +1,44 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { ChevronsUpDown, Check, Loader2, FunnelX } from 'lucide-react';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
-import { FontInfo } from '@/types/fonts';
-import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
-import { FilterFontCategory, useFontSearch } from '@/hooks/use-font-search';
-import { buildFontFamily, getDefaultWeights, waitForFont, loadGoogleFont, FALLBACK_FONTS } from '@/utils/fonts';
-import { TooltipWrapper } from '@/components/ui/tooltip-wrapper';
+import { Check, ChevronsUpDown, FunnelX, Loader2 } from "lucide-react";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { TooltipWrapper } from "@/components/ui/tooltip-wrapper";
+import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import {
+  type FilterFontCategory,
+  useFontSearch,
+} from "@/hooks/use-font-search";
+import { cn } from "@/lib/utils";
+import type { FontInfo } from "@/types/fonts";
+import {
+  buildFontFamily,
+  FALLBACK_FONTS,
+  getDefaultWeights,
+  loadGoogleFont,
+  waitForFont,
+} from "@/utils/fonts";
 
 interface FontSelectorProps {
   value?: string;
@@ -26,13 +52,14 @@ export function FontSelector({
   value,
   category,
   onSelect,
-  placeholder = 'Search fonts...',
+  placeholder = "Search fonts...",
   className,
 }: FontSelectorProps) {
   const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState('');
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [selectedCategory, setSelectedCategory] = React.useState<FilterFontCategory>(category || 'all');
+  const [inputValue, setInputValue] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [selectedCategory, setSelectedCategory] =
+    React.useState<FilterFontCategory>(category || "all");
   const [loadingFont, setLoadingFont] = React.useState<string | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
@@ -58,14 +85,14 @@ export function FontSelector({
   React.useEffect(() => {
     if (!open) return;
     scrollRef.current?.scrollTo({ top: 0 });
-  }, [selectedCategory, searchQuery, open]);
+  }, [open]);
 
   React.useEffect(() => {
     if (open && fontQuery.data && !hasScrolledToSelectedFont.current) {
       requestAnimationFrame(() => {
         selectedFontRef.current?.scrollIntoView({
-          block: 'center',
-          inline: 'nearest',
+          block: "center",
+          inline: "nearest",
         });
       });
       hasScrolledToSelectedFont.current = true;
@@ -78,16 +105,24 @@ export function FontSelector({
   const allFonts = React.useMemo(() => {
     if (!fontQuery.data || fontQuery.error) {
       // Use fallback fonts if API fails
-      return fallbackFonts.filter(font => {
-        if (selectedCategory === 'all') return true;
-        return font.category === selectedCategory;
-      }).filter(font => {
-        if (!searchQuery.trim()) return true;
-        return font.family.toLowerCase().includes(searchQuery.toLowerCase());
-      });
+      return fallbackFonts
+        .filter((font) => {
+          if (selectedCategory === "all") return true;
+          return font.category === selectedCategory;
+        })
+        .filter((font) => {
+          if (!searchQuery.trim()) return true;
+          return font.family.toLowerCase().includes(searchQuery.toLowerCase());
+        });
     }
     return fontQuery.data.pages.flatMap((page) => page.fonts);
-  }, [fontQuery.data, fontQuery.error, fallbackFonts, selectedCategory, searchQuery]);
+  }, [
+    fontQuery.data,
+    fontQuery.error,
+    fallbackFonts,
+    selectedCategory,
+    searchQuery,
+  ]);
 
   // Intersection Observer ref callback for infinite scroll
   const loadMoreRefCallback = React.useCallback(
@@ -97,21 +132,29 @@ export function FontSelector({
       const observer = new IntersectionObserver(
         (entries) => {
           const entry = entries[0];
-          if (entry.isIntersecting && fontQuery.hasNextPage && !fontQuery.isFetchingNextPage) {
+          if (
+            entry.isIntersecting &&
+            fontQuery.hasNextPage &&
+            !fontQuery.isFetchingNextPage
+          ) {
             fontQuery.fetchNextPage();
           }
         },
         {
           root: scrollRef.current,
-          rootMargin: '100px',
+          rootMargin: "100px",
           threshold: 0,
-        }
+        },
       );
 
       observer.observe(node);
       return () => observer.unobserve(node);
     },
-    [fontQuery.hasNextPage, fontQuery.isFetchingNextPage, fontQuery.fetchNextPage]
+    [
+      fontQuery.hasNextPage,
+      fontQuery.isFetchingNextPage,
+      fontQuery.fetchNextPage,
+    ],
   );
 
   const handleFontSelect = React.useCallback(
@@ -130,7 +173,7 @@ export function FontSelector({
       onSelect(font);
       setOpen(false);
     },
-    [onSelect]
+    [onSelect],
   );
 
   // Get current font info for display
@@ -143,12 +186,12 @@ export function FontSelector({
 
     // If not found in search results, create a fallback FontInfo object
     // This happens when a font is selected and then the search changes
-    const extractedFontName = value.split(',')[0].trim().replace(/['"]/g, '');
+    const extractedFontName = value.split(",")[0].trim().replace(/['"]/g, "");
 
     return {
       family: extractedFontName,
-      category: category || 'sans-serif',
-      variants: ['400'],
+      category: category || "sans-serif",
+      variants: ["400"],
       variable: false,
     } as FontInfo;
   }, [value, allFonts, category]);
@@ -161,20 +204,28 @@ export function FontSelector({
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={cn('bg-input/25 w-full justify-between gap-2 md:h-auto md:py-2', className)}
+          className={cn(
+            "bg-input/25 w-full justify-between gap-2 md:h-auto md:py-2",
+            className,
+          )}
         >
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {currentFont ? (
               <span
                 className="truncate"
                 style={{
-                  fontFamily: buildFontFamily(currentFont.family, currentFont.category),
+                  fontFamily: buildFontFamily(
+                    currentFont.family,
+                    currentFont.category,
+                  ),
                 }}
               >
                 {currentFont.family}
               </span>
             ) : (
-              <span className="text-muted-foreground truncate">{placeholder}</span>
+              <span className="text-muted-foreground truncate">
+                {placeholder}
+              </span>
             )}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 md:h-3 md:w-3 shrink-0 opacity-50" />
@@ -197,7 +248,7 @@ export function FontSelector({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setInputValue('')}
+                    onClick={() => setInputValue("")}
                     className="absolute top-2 right-2 size-6"
                   >
                     <FunnelX className="size-4" />
@@ -209,7 +260,9 @@ export function FontSelector({
             <div className="px-2 py-1">
               <Select
                 value={selectedCategory}
-                onValueChange={(value) => setSelectedCategory(value as FilterFontCategory)}
+                onValueChange={(value) =>
+                  setSelectedCategory(value as FilterFontCategory)
+                }
               >
                 <SelectTrigger className="focus bg-input/25 h-8 px-2 text-xs outline-none">
                   <SelectValue />
@@ -232,20 +285,28 @@ export function FontSelector({
             {fontQuery.isLoading && !fontQuery.error ? (
               <div className="absolute inset-0 flex size-full items-center justify-center gap-2 text-center">
                 <Loader2 className="size-4 animate-spin" />
-                <span className="text-muted-foreground text-sm">Loading fonts...</span>
+                <span className="text-muted-foreground text-sm">
+                  Loading fonts...
+                </span>
               </div>
             ) : allFonts.length === 0 ? (
               <CommandEmpty>No fonts found.</CommandEmpty>
             ) : (
-              <CommandList className="scrollbar-thin size-full p-1" ref={scrollRef}>
+              <CommandList
+                className="scrollbar-thin size-full p-1"
+                ref={scrollRef}
+              >
                 <CommandGroup>
                   {allFonts.map((font: FontInfo) => {
                     const isSelected = font.family === value;
                     const isLoading = loadingFont === font.family;
-                    const fontFamily = buildFontFamily(font.family, font.category);
+                    const fontFamily = buildFontFamily(
+                      font.family,
+                      font.category,
+                    );
 
                     const handlePreloadOnHover = () => {
-                      loadGoogleFont(font.family, ['400']);
+                      loadGoogleFont(font.family, ["400"]);
                     };
 
                     return (
@@ -263,7 +324,9 @@ export function FontSelector({
                             style={{ fontFamily }}
                           >
                             {font.family}
-                            {isLoading && <Loader2 className="size-3 animate-spin" />}
+                            {isLoading && (
+                              <Loader2 className="size-3 animate-spin" />
+                            )}
                           </span>
 
                           <div className="flex items-center gap-1 text-xs font-normal opacity-70">
@@ -277,19 +340,25 @@ export function FontSelector({
                             )}
                           </div>
                         </div>
-                        {isSelected && <Check className="size-4 shrink-0 opacity-70" />}
+                        {isSelected && (
+                          <Check className="size-4 shrink-0 opacity-70" />
+                        )}
                       </CommandItem>
                     );
                   })}
 
                   {/* Load more trigger element */}
-                  {fontQuery.hasNextPage && <div ref={loadMoreRefCallback} className="h-2 w-full" />}
+                  {fontQuery.hasNextPage && (
+                    <div ref={loadMoreRefCallback} className="h-2 w-full" />
+                  )}
 
                   {/* Loading indicator for infinite scroll */}
                   {fontQuery.isFetchingNextPage && (
                     <div className="flex items-center justify-center gap-2 p-2">
                       <Loader2 className="size-4 animate-spin" />
-                      <span className="text-muted-foreground text-sm">Loading more fonts...</span>
+                      <span className="text-muted-foreground text-sm">
+                        Loading more fonts...
+                      </span>
                     </div>
                   )}
                 </CommandGroup>

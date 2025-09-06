@@ -1,7 +1,7 @@
-import * as React from "react";
+import type * as React from "react";
 
 export function mergeRefs<T = any>(
-  refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>
+  refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>,
 ): React.RefCallback<T> {
   return (value) => {
     refs.forEach((ref) => {

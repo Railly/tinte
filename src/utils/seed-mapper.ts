@@ -17,7 +17,7 @@ export type SeedPayload = {
 
 export function mapPastedToAttachments(
   items: PastedItem[],
-  cap = 300_000
+  cap = 300_000,
 ): Attachment[] {
   return items.map(({ id, kind, content, colors, imageData }) => ({
     id,

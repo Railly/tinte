@@ -1,12 +1,12 @@
-import { CardsActivityGoal } from "./demos/activity-goal"
-import { CardsCalendar } from "./demos/calendar"
-import { CardsCookieSettings } from "./demos/cookie-settings"
-import { CardsExerciseMinutes } from "./demos/exercise-minutes"
-import { CardsForms } from "./demos/forms"
-import { CardsPayments } from "./demos/payments"
-import { CardsShare } from "./demos/share"
-import { CardsStats } from "./demos/stats"
-import { CardsTeamMembers } from "./demos/team-members"
+import { CardsActivityGoal } from "./demos/activity-goal";
+import { CardsCalendar } from "./demos/calendar";
+import { CardsCookieSettings } from "./demos/cookie-settings";
+import { CardsExerciseMinutes } from "./demos/exercise-minutes";
+import { CardsForms } from "./demos/forms";
+import { CardsPayments } from "./demos/payments";
+import { CardsShare } from "./demos/share";
+import { CardsStats } from "./demos/stats";
+import { CardsTeamMembers } from "./demos/team-members";
 
 export function ShadcnPreview() {
   return (
@@ -42,5 +42,5 @@ export function ShadcnPreview() {
         </div>
       </div>
     </div>
-  )
+  );
 }

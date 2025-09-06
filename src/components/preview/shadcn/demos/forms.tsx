@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,15 +8,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 
 const plans = [
   {
@@ -31,7 +28,7 @@ const plans = [
     description: "More features and storage.",
     price: "$20",
   },
-] as const
+] as const;
 
 export function CardsForms() {
   return (
@@ -123,5 +120,5 @@ export function CardsForms() {
         <Button size="sm">Upgrade Plan</Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

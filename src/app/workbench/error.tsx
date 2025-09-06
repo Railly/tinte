@@ -1,19 +1,19 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function WorkbenchError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Chat error:', error)
-  }, [error])
+    console.error("Chat error:", error);
+  }, [error]);
 
   return (
     <div className="flex h-[calc(100dvh-var(--header-height))] flex-col items-center justify-center space-y-4">
@@ -29,5 +29,5 @@ export default function WorkbenchError({
         Try again
       </Button>
     </div>
-  )
+  );
 }

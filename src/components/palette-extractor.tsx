@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { generateTailwindPalette, type PaletteColor } from "@/lib/palette-generator";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
 import { ThemeSwitcher } from "@/components/shared/theme-switcher";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  generateTailwindPalette,
+  type PaletteColor,
+} from "@/lib/palette-generator";
 
 export function PaletteExtractor() {
   const [baseColor, setBaseColor] = useState("#3b82f6");
@@ -35,7 +38,7 @@ export function PaletteExtractor() {
     if (hasInitialPalette) {
       generatePalette(baseColor);
     }
-  }, [baseColor, hasInitialPalette]);
+  }, [baseColor, hasInitialPalette, generatePalette]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -64,7 +67,10 @@ export function PaletteExtractor() {
                     placeholder="#3b82f6"
                     className="font-mono flex-1"
                   />
-                  <div className="w-12 h-10 rounded border" style={{ backgroundColor: baseColor }} />
+                  <div
+                    className="w-12 h-10 rounded border"
+                    style={{ backgroundColor: baseColor }}
+                  />
                 </div>
               </div>
             </div>
@@ -98,7 +104,9 @@ export function PaletteExtractor() {
                         style={{ backgroundColor: color.value }}
                       />
                       <div className="mt-2 text-center">
-                        <div className="text-xs font-medium text-muted-foreground">{color.name}</div>
+                        <div className="text-xs font-medium text-muted-foreground">
+                          {color.name}
+                        </div>
                         <code className="text-xs font-mono text-foreground block mt-1">
                           {color.value}
                         </code>
@@ -115,7 +123,9 @@ export function PaletteExtractor() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-white border border-gray-300 rounded" />
-                  <CardTitle className="text-lg">Light Mode Suitability</CardTitle>
+                  <CardTitle className="text-lg">
+                    Light Mode Suitability
+                  </CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -131,16 +141,24 @@ export function PaletteExtractor() {
                       />
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-900">{color.name}</span>
+                          <span className="text-sm font-medium text-gray-900">
+                            {color.name}
+                          </span>
                           <Badge
-                            variant={color.accessibility.textOnWhite ? 'default' : 'destructive'}
+                            variant={
+                              color.accessibility.textOnWhite
+                                ? "default"
+                                : "destructive"
+                            }
                             className="text-xs"
                           >
                             {color.contrast.white.toFixed(1)}:1
                           </Badge>
                         </div>
                         <div className="text-xs text-gray-600">
-                          {color.accessibility.textOnWhite ? 'Good for text' : 'Poor readability'}
+                          {color.accessibility.textOnWhite
+                            ? "Good for text"
+                            : "Poor readability"}
                         </div>
                       </div>
                     </div>
@@ -153,7 +171,9 @@ export function PaletteExtractor() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-gray-900 border border-gray-600 rounded" />
-                  <CardTitle className="text-lg">Dark Mode Suitability</CardTitle>
+                  <CardTitle className="text-lg">
+                    Dark Mode Suitability
+                  </CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -169,16 +189,24 @@ export function PaletteExtractor() {
                       />
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-100">{color.name}</span>
+                          <span className="text-sm font-medium text-gray-100">
+                            {color.name}
+                          </span>
                           <Badge
-                            variant={color.accessibility.textOnBlack ? 'default' : 'destructive'}
+                            variant={
+                              color.accessibility.textOnBlack
+                                ? "default"
+                                : "destructive"
+                            }
                             className="text-xs"
                           >
                             {color.contrast.black.toFixed(1)}:1
                           </Badge>
                         </div>
                         <div className="text-xs text-gray-400">
-                          {color.accessibility.textOnBlack ? 'Good for text' : 'Poor readability'}
+                          {color.accessibility.textOnBlack
+                            ? "Good for text"
+                            : "Poor readability"}
                         </div>
                       </div>
                     </div>
@@ -201,14 +229,26 @@ export function PaletteExtractor() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-sm">{color.name}</span>
-                      <Badge variant={color.accessibility.level === 'AAA' ? 'default' : color.accessibility.level === 'AA' ? 'secondary' : 'destructive'}>
+                      <Badge
+                        variant={
+                          color.accessibility.level === "AAA"
+                            ? "default"
+                            : color.accessibility.level === "AA"
+                              ? "secondary"
+                              : "destructive"
+                        }
+                      >
                         {color.accessibility.level}
                       </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground space-y-1">
                       <div>Luminance: {color.luminance.toFixed(3)}</div>
-                      <div>Contrast vs White: {color.contrast.white.toFixed(2)}</div>
-                      <div>Contrast vs Black: {color.contrast.black.toFixed(2)}</div>
+                      <div>
+                        Contrast vs White: {color.contrast.white.toFixed(2)}
+                      </div>
+                      <div>
+                        Contrast vs Black: {color.contrast.black.toFixed(2)}
+                      </div>
                     </div>
                   </div>
                 ))}

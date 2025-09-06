@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { DEFAULT_THEME } from '@/utils/tinte-presets';
+import { DEFAULT_THEME } from "@/utils/tinte-presets";
 
 export function TinteThemeScript() {
   const scriptContent = `(function() {
@@ -49,9 +49,9 @@ export function TinteThemeScript() {
   })();`;
 
   return (
-    <script 
-      dangerouslySetInnerHTML={{ __html: scriptContent }} 
-      suppressHydrationWarning 
+    <script
+      dangerouslySetInnerHTML={{ __html: scriptContent }}
+      suppressHydrationWarning
     />
   );
 }

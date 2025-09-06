@@ -1,8 +1,8 @@
-import { TinteTheme, TinteBlock } from "@/types/tinte";
-import { PreviewableProvider, ProviderOutput } from "./types";
-import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import { VSCodePreview } from "@/components/preview/vscode/vscode-preview";
+import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import type { TinteBlock, TinteTheme } from "@/types/tinte";
 import { shadcnToTinte } from "../shadcn-to-tinte";
+import type { PreviewableProvider, ProviderOutput } from "./types";
 
 export interface CodeTemplate {
   name: string;
@@ -161,7 +161,7 @@ console.log('User deleted:', deleted);`,
 
 export function convertThemeToVSCode(
   activeTheme: any,
-  fallbackTheme: { light: VSCodeTheme; dark: VSCodeTheme }
+  fallbackTheme: { light: VSCodeTheme; dark: VSCodeTheme },
 ) {
   if (!activeTheme?.rawTheme) return fallbackTheme;
 
@@ -255,46 +255,46 @@ export type SemanticToken =
 export type TokenColorMap = Record<SemanticToken, keyof TinteBlock>;
 
 const defaultTokenColorMap: TokenColorMap = {
-  plain: "text",
-  classes: "accent",
-  interfaces: "accent",
-  structs: "accent",
-  enums: "accent",
-  keys: "text",
-  methods: "secondary",
-  functions: "accent",
-  variables: "text",
-  variablesOther: "secondary",
-  globalVariables: "accent_2",
-  localVariables: "text",
-  parameters: "text",
-  properties: "text",
-  strings: "accent_2",
-  stringEscapeSequences: "text",
-  keywords: "primary",
-  keywordsControl: "primary",
-  storageModifiers: "primary",
-  comments: "text_3",
-  docComments: "text_3",
-  numbers: "accent_3",
-  booleans: "accent_3",
-  operators: "primary",
-  macros: "secondary",
-  preprocessor: "accent_2",
-  urls: "secondary",
-  tags: "primary",
-  jsxTags: "secondary",
-  attributes: "accent",
-  types: "secondary",
-  constants: "secondary",
-  labels: "accent_2",
-  namespaces: "accent",
-  modules: "primary",
-  typeParameters: "accent",
-  exceptions: "primary",
-  decorators: "accent",
-  calls: "text",
-  punctuation: "text_2",
+  plain: "tx",
+  classes: "pr",
+  interfaces: "pr",
+  structs: "pr",
+  enums: "pr",
+  keys: "tx",
+  methods: "sc",
+  functions: "pr",
+  variables: "tx",
+  variablesOther: "sc",
+  globalVariables: "ac_2",
+  localVariables: "tx",
+  parameters: "tx",
+  properties: "tx",
+  strings: "ac_2",
+  stringEscapeSequences: "tx",
+  keywords: "sc",
+  keywordsControl: "sc",
+  storageModifiers: "sc",
+  comments: "tx_3",
+  docComments: "tx_3",
+  numbers: "ac_3",
+  booleans: "ac_3",
+  operators: "sc",
+  macros: "sc",
+  preprocessor: "ac_2",
+  urls: "sc",
+  tags: "sc",
+  jsxTags: "sc",
+  attributes: "pr",
+  types: "sc",
+  constants: "sc",
+  labels: "ac_2",
+  namespaces: "pr",
+  modules: "sc",
+  typeParameters: "pr",
+  exceptions: "sc",
+  decorators: "pr",
+  calls: "tx",
+  punctuation: "tx_2",
 };
 
 const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
@@ -372,142 +372,142 @@ const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
 };
 
 const editorColorMap = {
-  "editor.background": "background",
-  "editor.foreground": "text",
-  "editor.hoverHighlightBackground": "interface_2",
-  "editor.lineHighlightBackground": "background_2",
-  "editor.selectionBackground": "interface_3",
-  "editor.selectionHighlightBackground": "text_3",
-  "editor.wordHighlightBackground": "interface_2",
-  "editor.wordHighlightStrongBackground": "interface",
-  "editor.findMatchBackground": "accent",
-  "editor.findMatchHighlightBackground": "accent",
-  "editor.findRangeHighlightBackground": "background_2",
-  "editor.inactiveSelectionBackground": "interface_3",
-  "editor.lineHighlightBorder": "interface",
-  "editor.rangeHighlightBackground": "background_2",
-  "editorWhitespace.foreground": "interface",
-  "editorIndentGuide.background1": "interface_2",
-  "editorHoverWidget.background": "interface",
-  "editorLineNumber.activeForeground": "text",
-  "editorLineNumber.foreground": "interface_3",
-  "editorGutter.background": "background",
-  "editorGutter.modifiedBackground": "accent_2",
-  "editorGutter.addedBackground": "accent_2",
-  "editorGutter.deletedBackground": "primary",
-  "editorBracketMatch.background": "interface",
-  "editorBracketMatch.border": "interface_2",
-  "editorGroupHeader.tabsBackground": "background",
-  "editorGroup.border": "interface_2",
-  "tab.activeBackground": "background",
-  "tab.inactiveBackground": "background_2",
-  "tab.inactiveForeground": "text_2",
-  "tab.activeForeground": "text",
-  "tab.hoverBackground": "interface_2",
-  "tab.unfocusedHoverBackground": "interface_2",
-  "tab.border": "interface_2",
-  "tab.activeModifiedBorder": "accent",
-  "tab.inactiveModifiedBorder": "secondary",
-  "editorWidget.background": "background_2",
-  "editorWidget.border": "interface_2",
-  "editorSuggestWidget.background": "background",
-  "editorSuggestWidget.border": "interface_2",
-  "editorSuggestWidget.foreground": "text",
-  "editorSuggestWidget.highlightForeground": "text_2",
-  "editorSuggestWidget.selectedBackground": "interface_2",
-  "panel.background": "background",
-  "panel.border": "interface_2",
-  "panelTitle.activeBorder": "interface_3",
-  "panelTitle.activeForeground": "text",
-  "panelTitle.inactiveForeground": "text_2",
-  "statusBar.background": "background",
-  "statusBar.foreground": "text",
-  "statusBar.border": "interface_2",
-  "statusBar.debuggingBackground": "primary",
-  "statusBar.debuggingForeground": "text",
-  "titleBar.activeBackground": "background",
-  "titleBar.activeForeground": "text",
-  "titleBar.inactiveBackground": "background_2",
-  "titleBar.inactiveForeground": "text_2",
-  "titleBar.border": "interface_2",
-  "menu.foreground": "text",
-  "menu.background": "background",
-  "menu.selectionForeground": "text",
-  "menu.selectionBackground": "interface_2",
-  "menu.border": "interface_2",
-  "terminal.foreground": "text",
-  "terminal.background": "background",
-  "terminalCursor.foreground": "text",
-  "terminalCursor.background": "background",
-  "terminal.ansiRed": "primary",
-  "terminal.ansiGreen": "accent_2",
-  "terminal.ansiYellow": "accent",
-  "terminal.ansiBlue": "secondary",
-  "terminal.ansiMagenta": "accent_2",
-  "terminal.ansiCyan": "accent_2",
-  "activityBar.background": "background",
-  "activityBar.foreground": "text",
-  "activityBar.inactiveForeground": "text_2",
-  "activityBar.activeBorder": "text",
-  "activityBar.border": "interface_2",
-  "sideBar.background": "background",
-  "sideBar.foreground": "text",
-  "sideBar.border": "interface_2",
-  "sideBarTitle.foreground": "text",
-  "sideBarSectionHeader.background": "background_2",
-  "sideBarSectionHeader.foreground": "text",
-  "sideBarSectionHeader.border": "interface_2",
-  "list.foreground": "text",
-  "list.inactiveSelectionBackground": "interface_2",
-  "list.activeSelectionBackground": "interface_3",
-  "list.inactiveSelectionForeground": "text",
-  "list.activeSelectionForeground": "text",
-  "list.focusOutline": "accent",
-  "list.hoverForeground": "text",
-  "list.hoverBackground": "interface_2",
-  "input.background": "background_2",
-  "input.foreground": "text",
-  "input.border": "interface_2",
-  "input.placeholderForeground": "text_2",
-  "dropdown.background": "background_2",
-  "dropdown.foreground": "text",
-  "dropdown.border": "interface_2",
-  "dropdown.listBackground": "background",
-  "badge.background": "secondary",
-  "activityBarBadge.background": "secondary",
-  "button.background": "secondary",
-  "button.foreground": "background",
-  "badge.foreground": "background",
-  "activityBarBadge.foreground": "background",
+  "editor.background": "bg",
+  "editor.foreground": "tx",
+  "editor.hoverHighlightBackground": "ui_2",
+  "editor.lineHighlightBackground": "bg_2",
+  "editor.selectionBackground": "ui_3",
+  "editor.selectionHighlightBackground": "tx_3",
+  "editor.wordHighlightBackground": "ui_2",
+  "editor.wordHighlightStrongBackground": "ui",
+  "editor.findMatchBackground": "pr",
+  "editor.findMatchHighlightBackground": "pr",
+  "editor.findRangeHighlightBackground": "bg_2",
+  "editor.inactiveSelectionBackground": "ui_3",
+  "editor.lineHighlightBorder": "ui",
+  "editor.rangeHighlightBackground": "bg_2",
+  "editorWhitespace.foreground": "ui",
+  "editorIndentGuide.background1": "ui_2",
+  "editorHoverWidget.background": "ui",
+  "editorLineNumber.activeForeground": "tx",
+  "editorLineNumber.foreground": "ui_3",
+  "editorGutter.background": "bg",
+  "editorGutter.modifiedBackground": "ac_2",
+  "editorGutter.addedBackground": "ac_2",
+  "editorGutter.deletedBackground": "sc",
+  "editorBracketMatch.background": "ui",
+  "editorBracketMatch.border": "ui_2",
+  "editorGroupHeader.tabsBackground": "bg",
+  "editorGroup.border": "ui_2",
+  "tab.activeBackground": "bg",
+  "tab.inactiveBackground": "bg_2",
+  "tab.inactiveForeground": "tx_2",
+  "tab.activeForeground": "tx",
+  "tab.hoverBackground": "ui_2",
+  "tab.unfocusedHoverBackground": "ui_2",
+  "tab.border": "ui_2",
+  "tab.activeModifiedBorder": "pr",
+  "tab.inactiveModifiedBorder": "sc",
+  "editorWidget.background": "bg_2",
+  "editorWidget.border": "ui_2",
+  "editorSuggestWidget.background": "bg",
+  "editorSuggestWidget.border": "ui_2",
+  "editorSuggestWidget.foreground": "tx",
+  "editorSuggestWidget.highlightForeground": "tx_2",
+  "editorSuggestWidget.selectedBackground": "ui_2",
+  "panel.background": "bg",
+  "panel.border": "ui_2",
+  "panelTitle.activeBorder": "ui_3",
+  "panelTitle.activeForeground": "tx",
+  "panelTitle.inactiveForeground": "tx_2",
+  "statusBar.background": "bg",
+  "statusBar.foreground": "tx",
+  "statusBar.border": "ui_2",
+  "statusBar.debuggingBackground": "sc",
+  "statusBar.debuggingForeground": "tx",
+  "titleBar.activeBackground": "bg",
+  "titleBar.activeForeground": "tx",
+  "titleBar.inactiveBackground": "bg_2",
+  "titleBar.inactiveForeground": "tx_2",
+  "titleBar.border": "ui_2",
+  "menu.foreground": "tx",
+  "menu.background": "bg",
+  "menu.selectionForeground": "tx",
+  "menu.selectionBackground": "ui_2",
+  "menu.border": "ui_2",
+  "terminal.foreground": "tx",
+  "terminal.background": "bg",
+  "terminalCursor.foreground": "tx",
+  "terminalCursor.background": "bg",
+  "terminal.ansiRed": "sc",
+  "terminal.ansiGreen": "ac_2",
+  "terminal.ansiYellow": "pr",
+  "terminal.ansiBlue": "sc",
+  "terminal.ansiMagenta": "ac_2",
+  "terminal.ansiCyan": "ac_2",
+  "activityBar.background": "bg",
+  "activityBar.foreground": "tx",
+  "activityBar.inactiveForeground": "tx_2",
+  "activityBar.activeBorder": "tx",
+  "activityBar.border": "ui_2",
+  "sideBar.background": "bg",
+  "sideBar.foreground": "tx",
+  "sideBar.border": "ui_2",
+  "sideBarTitle.foreground": "tx",
+  "sideBarSectionHeader.background": "bg_2",
+  "sideBarSectionHeader.foreground": "tx",
+  "sideBarSectionHeader.border": "ui_2",
+  "list.foreground": "tx",
+  "list.inactiveSelectionBackground": "ui_2",
+  "list.activeSelectionBackground": "ui_3",
+  "list.inactiveSelectionForeground": "tx",
+  "list.activeSelectionForeground": "tx",
+  "list.focusOutline": "pr",
+  "list.hoverForeground": "tx",
+  "list.hoverBackground": "ui_2",
+  "input.background": "bg_2",
+  "input.foreground": "tx",
+  "input.border": "ui_2",
+  "input.placeholderForeground": "tx_2",
+  "dropdown.background": "bg_2",
+  "dropdown.foreground": "tx",
+  "dropdown.border": "ui_2",
+  "dropdown.listBackground": "bg",
+  "badge.background": "sc",
+  "activityBarBadge.background": "sc",
+  "button.background": "sc",
+  "button.foreground": "bg",
+  "badge.foreground": "bg",
+  "activityBarBadge.foreground": "bg",
 } as const;
 
 const applyCustomizations = (
   color: string,
   token: string,
-  mode: "light" | "dark"
+  mode: "light" | "dark",
 ) => {
   switch (token) {
     case "editor.findMatchBackground":
-      return mode === "light" ? color + "55" : color + "66";
+      return mode === "light" ? `${color}55` : `${color}66`;
     case "editor.findMatchHighlightBackground":
-      return mode === "light" ? color + "44" : color + "55";
+      return mode === "light" ? `${color}44` : `${color}55`;
     case "editor.findRangeHighlightBackground":
-      return mode === "light" ? color + "cc" : color + "cc";
+      return mode === "light" ? `${color}cc` : `${color}cc`;
     case "editor.hoverHighlightBackground":
     case "editor.inactiveSelectionBackground":
-      return mode === "light" ? color + "55" : color + "66";
+      return mode === "light" ? `${color}55` : `${color}66`;
     case "editor.rangeHighlightBackground":
-      return mode === "light" ? color + "33" : color + "44";
+      return mode === "light" ? `${color}33` : `${color}44`;
     case "editor.selectionBackground":
-      return mode === "light" ? color + "66" : color + "77";
+      return mode === "light" ? `${color}66` : `${color}77`;
     case "editor.selectionHighlightBackground":
     case "editor.wordHighlightBackground":
-      return mode === "light" ? color + "22" : color + "11";
+      return mode === "light" ? `${color}22` : `${color}11`;
     case "editor.wordHighlightStrongBackground":
-      return mode === "light" ? color + "33" : color + "22";
+      return mode === "light" ? `${color}33` : `${color}22`;
     case "diffEditor.insertedTextBackground":
     case "diffEditor.removedTextBackground":
-      return mode === "light" ? color + "22" : color + "44";
+      return mode === "light" ? `${color}22` : `${color}44`;
     default:
       return color;
   }
@@ -526,7 +526,7 @@ function getVSCodeColors(palette: TinteBlock, mode: "light" | "dark") {
 
 function generateTokenColors(
   palette: TinteBlock,
-  tokenColors: TokenColorMap = defaultTokenColorMap
+  tokenColors: TokenColorMap = defaultTokenColorMap,
 ): VSCodeTokenColor[] {
   return Object.entries(tokenColors).map(([token, colorKey]) => ({
     name: token,
@@ -539,7 +539,7 @@ function generateTokenColors(
 
 function convertTinteToVSCode(
   tinteTheme: TinteTheme,
-  name: string = "Tinte Theme"
+  name: string = "Tinte Theme",
 ): { light: VSCodeTheme; dark: VSCodeTheme } {
   const lightTheme: VSCodeTheme = {
     name: `${name} Light`,
@@ -581,7 +581,7 @@ function generateVSCodeThemeFile(themes: {
       ],
     },
     null,
-    2
+    2,
   );
 }
 

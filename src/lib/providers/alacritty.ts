@@ -1,14 +1,12 @@
-import { TinteTheme } from '@/types/tinte';
-import { PreviewableProvider, ProviderOutput } from './types';
-import { AlacrittyIcon } from '@/components/shared/icons/alacritty';
-import { 
-  createPolineColorMapping, 
-  processPaletteHexToInt, 
-  toYAML, 
-  getThemeName, 
+import { AlacrittyIcon } from "@/components/shared/icons/alacritty";
+import type { TinteTheme } from "@/types/tinte";
+import {
+  createPolineColorMapping,
   getDisplayName,
-  hexToInt 
-} from './poline-base';
+  getThemeName,
+  toYAML,
+} from "./poline-base";
+import type { PreviewableProvider, ProviderOutput } from "./types";
 
 export interface AlacrittyTheme {
   colors: {
@@ -55,14 +53,17 @@ export interface AlacrittyTheme {
   };
 }
 
-function generateAlacrittyTheme(theme: TinteTheme, mode: 'light' | 'dark'): AlacrittyTheme {
+function generateAlacrittyTheme(
+  theme: TinteTheme,
+  mode: "light" | "dark",
+): AlacrittyTheme {
   const block = theme[mode];
   const colorMapping = createPolineColorMapping(block);
-  
+
   // Use opposite mode for some contrast colors
-  const oppositeBlock = theme[mode === 'light' ? 'dark' : 'light'];
+  const oppositeBlock = theme[mode === "light" ? "dark" : "light"];
   const oppositeMapping = createPolineColorMapping(oppositeBlock);
-  
+
   return {
     colors: {
       primary: {
@@ -109,37 +110,41 @@ function generateAlacrittyTheme(theme: TinteTheme, mode: 'light' | 'dark'): Alac
   };
 }
 
-import { AlacrittyPreview } from '@/components/preview/alacritty/alacritty-preview';
+import { AlacrittyPreview } from "@/components/preview/alacritty/alacritty-preview";
 
-export const alacrittyProvider: PreviewableProvider<{ light: AlacrittyTheme; dark: AlacrittyTheme }> = {
+export const alacrittyProvider: PreviewableProvider<{
+  light: AlacrittyTheme;
+  dark: AlacrittyTheme;
+}> = {
   metadata: {
-    id: 'alacritty',
-    name: 'Alacritty',
-    description: 'Cross-platform, OpenGL terminal emulator',
-    category: 'terminal',
-    tags: ['terminal', 'opengl', 'cross-platform'],
+    id: "alacritty",
+    name: "Alacritty",
+    description: "Cross-platform, OpenGL terminal emulator",
+    category: "terminal",
+    tags: ["terminal", "opengl", "cross-platform"],
     icon: AlacrittyIcon,
-    website: 'https://alacritty.org/',
-    documentation: 'https://alacritty.org/config.html',
+    website: "https://alacritty.org/",
+    documentation: "https://alacritty.org/config.html",
   },
 
-  fileExtension: 'yml',
-  mimeType: 'application/x-yaml',
+  fileExtension: "yml",
+  mimeType: "application/x-yaml",
 
   convert: (theme: TinteTheme) => ({
-    light: generateAlacrittyTheme(theme, 'light'),
-    dark: generateAlacrittyTheme(theme, 'dark'),
+    light: generateAlacrittyTheme(theme, "light"),
+    dark: generateAlacrittyTheme(theme, "dark"),
   }),
 
   export: (theme: TinteTheme, filename?: string): ProviderOutput => {
     const converted = alacrittyProvider.convert(theme);
-    const themeName = filename || getThemeName('tinte-theme');
-    
+    const themeName = filename || getThemeName("tinte-theme");
+
     const output = {
       ...converted.dark,
-      '# Theme': getDisplayName('Tinte Theme'),
-      '# Generator': 'Tinte Theme Converter',
-      '# Light mode available': 'Switch colors.primary.background and colors.primary.foreground',
+      "# Theme": getDisplayName("Tinte Theme"),
+      "# Generator": "Tinte Theme Converter",
+      "# Light mode available":
+        "Switch colors.primary.background and colors.primary.foreground",
     };
 
     return {
@@ -150,12 +155,13 @@ export const alacrittyProvider: PreviewableProvider<{ light: AlacrittyTheme; dar
   },
 
   validate: (output) => {
-    const validateTheme = (theme: AlacrittyTheme) => !!(
-      theme.colors?.primary?.background &&
-      theme.colors?.primary?.foreground &&
-      theme.colors?.normal?.red &&
-      theme.colors?.bright?.blue
-    );
+    const validateTheme = (theme: AlacrittyTheme) =>
+      !!(
+        theme.colors?.primary?.background &&
+        theme.colors?.primary?.foreground &&
+        theme.colors?.normal?.red &&
+        theme.colors?.bright?.blue
+      );
 
     return validateTheme(output.light) && validateTheme(output.dark);
   },

@@ -1,8 +1,8 @@
-import { Hero } from "@/components/home/hero";
-import { Showcase } from "@/components/home/showcase";
-import { Header } from "@/components/home/header";
-import { Roadmap } from "@/components/home/roadmap";
 import { FAQ } from "@/components/home/faq";
+import { Header } from "@/components/home/header";
+import { Hero } from "@/components/home/hero";
+import { Roadmap } from "@/components/home/roadmap";
+import { Showcase } from "@/components/home/showcase";
 import { Footer } from "@/components/shared/footer";
 
 export default async function Home() {

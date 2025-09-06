@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
 import { ChevronsUpDown } from "lucide-react";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
+import * as React from "react";
+import RaycastIcon from "@/components/shared/icons/raycast";
+import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import Logo from "@/components/shared/logo";
+import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -15,15 +15,15 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ThemeData } from "@/lib/theme-tokens";
-import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
-import { useThemeContext } from "@/providers/theme";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import type { ThemeData } from "@/lib/theme-tokens";
 import { extractThemeColors } from "@/lib/theme-utils";
-import TweakCNIcon from "@/components/shared/icons/tweakcn";
-import RaycastIcon from "@/components/shared/icons/raycast";
-import Logo from "@/components/shared/logo";
+import { cn } from "@/lib/utils";
+import { useThemeContext } from "@/providers/theme";
 
 export function ThemeSelector({
   themes,

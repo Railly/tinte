@@ -1,7 +1,8 @@
 // Only need generateTailwindPalette - no complex color manipulation needed
+
+import type { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
+import type { TinteBlock, TinteTheme } from "@/types/tinte";
 import { generateTailwindPalette } from "./palette-generator";
-import { TinteTheme, TinteBlock } from "@/types/tinte";
-import { ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
 
 // Similar to rayso-to-shadcn's buildRamp approach
 function buildNeutralRamp(block: ShadcnBlock): string[] {
@@ -17,7 +18,7 @@ function buildRamp(seed?: string): string[] {
 // Direct mapping similar to rayso-to-shadcn's pick function
 const pick = (ramp: string[], step: number) => {
   const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(
-    step
+    step,
   );
   return ramp[Math.max(0, idx)];
 };
@@ -57,7 +58,7 @@ function mapToTinte(block: ShadcnBlock, mode: "light" | "dark"): TinteBlock {
 
   // Build accent ramp from chart colors or fallbacks (same priority as rayso-to-shadcn)
   const accentRamp = buildRamp(
-    block["chart-2"] || block.accent || block.secondary || primary
+    block["chart-2"] || block.accent || block.secondary || primary,
   );
 
   // Get anchors for current mode
@@ -77,21 +78,21 @@ function mapToTinte(block: ShadcnBlock, mode: "light" | "dark"): TinteBlock {
 
   return {
     // Flexoki continuous scale using direct token mapping
-    background: bg,
-    background_2: block.card || block.popover || pick(neutralRamp, A.bg2),
-    interface: block.border || pick(neutralRamp, A.ui),
-    interface_2: pick(neutralRamp, A.ui2),
-    interface_3: block.input || pick(neutralRamp, A.ui3),
-    text_3: pick(neutralRamp, A.tx3),
-    text_2: block["muted-foreground"] || pick(neutralRamp, A.tx2),
-    text: fg,
+    bg: bg,
+    bg_2: block.card || block.popover || pick(neutralRamp, A.bg2),
+    ui: block.border || pick(neutralRamp, A.ui),
+    ui_2: pick(neutralRamp, A.ui2),
+    ui_3: block.input || pick(neutralRamp, A.ui3),
+    tx_3: pick(neutralRamp, A.tx3),
+    tx_2: block["muted-foreground"] || pick(neutralRamp, A.tx2),
+    tx: fg,
 
     // Accent system - now uses ramp-generated colors like rayso-to-shadcn
-    primary: pick(primaryRamp, mode === "light" ? 600 : 400), // Match rayso-to-shadcn anchors
-    accent, // Generated from accentRamp
-    accent_2, // chart-4 or generated
-    accent_3, // chart-3 or generated
-    secondary, // Generated from accentRamp (NOT original token!)
+    sc: pick(primaryRamp, mode === "light" ? 600 : 400), // Match rayso-to-shadcn anchors
+    pr: accent, // Generated from accentRamp
+    ac_2: accent_2, // chart-4 or generated
+    ac_3: accent_3, // chart-3 or generated
+    ac_1: secondary, // Generated from accentRamp (NOT original token!)
   };
 }
 

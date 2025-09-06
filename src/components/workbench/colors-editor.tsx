@@ -1,40 +1,34 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { useThemeContext } from "@/providers/theme";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
 
 const COLOR_GROUPS = [
   {
     label: "Text",
-    keys: ["text", "text_2", "text_3"] as (keyof TinteBlock)[],
+    keys: ["tx", "tx_2", "tx_3"] as (keyof TinteBlock)[],
   },
   {
     label: "Interface",
-    keys: ["interface", "interface_2", "interface_3"] as (keyof TinteBlock)[],
+    keys: ["ui", "ui_2", "ui_3"] as (keyof TinteBlock)[],
   },
   {
     label: "Background",
-    keys: ["background", "background_2"] as (keyof TinteBlock)[],
+    keys: ["bg", "bg_2"] as (keyof TinteBlock)[],
   },
   {
     label: "Accents",
-    keys: [
-      "primary",
-      "secondary",
-      "accent",
-      "accent_2",
-      "accent_3",
-    ] as (keyof TinteBlock)[],
+    keys: ["pr", "sc", "ac_1", "ac_2", "ac_3"] as (keyof TinteBlock)[],
   },
 ] as const;
 
@@ -80,7 +74,7 @@ export function ColorsEditor() {
       </div>
 
       <ScrollArea
-        className="flex-1 max-h-[77dvh] px-3"
+        className="flex-1 max-h-[50vh] px-3"
         showScrollIndicators={true}
         indicatorType="shadow"
       >

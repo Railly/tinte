@@ -2,8 +2,8 @@
 // One-file drop-in: Tinte "Ice" → Poline ramp → shadcn theme (light/dark).
 // Dependencies: `poline` and `culori`
 
+import { converter, formatHex, type Hsl, oklch, rgb } from "culori";
 import { Poline, positionFunctions } from "poline";
-import { converter, formatHex, oklch, rgb, type Hsl } from "culori";
 
 /* ──────────────────────────────────────────────────────────────────────────────
    Types
@@ -61,34 +61,34 @@ export type ShadcnTheme = {
 export const ICE_TINTE: TinteTheme = {
   name: "Ice" as any, // optional
   light: {
-    text: "#1C1B29",
-    accent: "#1E3C78",
-    text_2: "#25778e",
-    text_3: "#49b3d0",
-    primary: "#81909D",
-    accent_2: "#7CBCD8",
-    accent_3: "#00B0E9",
-    interface: "#d6f7ff",
-    secondary: "#00B0E9",
-    background: "#fafeff",
-    interface_2: "#c2f3ff",
-    interface_3: "#9ed7e6",
-    background_2: "#ebfbff",
+    tx: "#1C1B29",
+    pr: "#1E3C78",
+    tx_2: "#25778e",
+    tx_3: "#49b3d0",
+    sc: "#81909D",
+    ac_2: "#7CBCD8",
+    ac_3: "#00B0E9",
+    ui: "#d6f7ff",
+    ac_1: "#00B0E9",
+    bg: "#fafeff",
+    ui_2: "#c2f3ff",
+    ui_3: "#9ed7e6",
+    bg_2: "#ebfbff",
   },
   dark: {
-    text: "#FFFFFF",
-    accent: "#778CB7",
-    text_2: "#A3A3A3",
-    text_3: "#8F8F8F",
-    primary: "#BFC4C8",
-    accent_2: "#89C3DC",
-    accent_3: "#00B0E9",
-    interface: "#30353b",
-    secondary: "#92DEF6",
-    background: "#1F2427",
-    interface_2: "#394047",
-    interface_3: "#515a61",
-    background_2: "#272c30",
+    tx: "#FFFFFF",
+    pr: "#778CB7",
+    tx_2: "#A3A3A3",
+    tx_3: "#8F8F8F",
+    sc: "#BFC4C8",
+    ac_2: "#89C3DC",
+    ac_3: "#00B0E9",
+    ui: "#30353b",
+    ac_1: "#92DEF6",
+    bg: "#1F2427",
+    ui_2: "#394047",
+    ui_3: "#515a61",
+    bg_2: "#272c30",
   },
 } as const as TinteTheme;
 
@@ -134,7 +134,7 @@ const sRGBLum = (hex: string) => {
   }
   const { r, g, b } = color;
   const lin = (v: number) =>
-    v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
   const rl = lin(r),
     gl = lin(g),
     bl = lin(b);
@@ -245,10 +245,10 @@ export function makePolineFromTinte(block: TinteBlock) {
     positionFunctionY: positionFunctions.quadraticPosition,
     positionFunctionZ: positionFunctions.linearPosition,
     anchorColors: [
-      hex2hsl(block.accent),
-      hex2hsl(block.secondary),
-      hex2hsl(block.primary),
-      hex2hsl(block.interface_3),
+      hex2hsl(block.pr),
+      hex2hsl(block.sc),
+      hex2hsl(block.ac_1),
+      hex2hsl(block.ui_3),
     ],
   });
 }
@@ -277,7 +277,7 @@ const adjustL = (hex: string, dL: number) => {
 const ratio = (a: string, b: string) => {
   const L1 = sRGBLum(a),
     L2 = sRGBLum(b);
-  if (!isFinite(L1) || !isFinite(L2)) {
+  if (!Number.isFinite(L1) || !Number.isFinite(L2)) {
     return 1; // contraste mínimo si hay colores inválidos
   }
   const hi = Math.max(L1, L2),
@@ -287,7 +287,7 @@ const ratio = (a: string, b: string) => {
 
 // Dedup por hue (grados OKLCH) para no meter colores casi iguales
 const hueDiff = (a: number, b: number) => {
-  let d = Math.abs(a - b);
+  const d = Math.abs(a - b);
   return d > 180 ? 360 - d : d;
 };
 function dedupByHue(colors: string[], tol = 8) {
@@ -324,12 +324,12 @@ function ensureContrast(hex: string, bg: string, min = 2.6, step = 0.02) {
  * [accent, accent_2, accent_3, accent±ΔL, accent_2∓ΔL]
  */
 export function chartColorsFromAccents(
-  t: { accent: string; accent_2: string; accent_3: string },
+  t: { pr: string; ac_2: string; ac_3: string },
   mode: "light" | "dark",
-  bg: string
+  bg: string,
 ): string[] {
-  const base = dedupByHue([t.accent, t.accent_2, t.accent_3].filter(Boolean));
-  while (base.length < 3) base.push(base[base.length - 1] || t.accent);
+  const base = dedupByHue([t.pr, t.ac_2, t.ac_3].filter(Boolean));
+  while (base.length < 3) base.push(base[base.length - 1] || t.pr);
 
   const dlA = mode === "light" ? -0.12 : +0.12;
   const dlB = mode === "light" ? +0.1 : -0.1;
@@ -357,7 +357,7 @@ const tone = (hex: string, dL: number) => {
 };
 const pickStop = <T extends { value: string } | string>(
   ramp: T[],
-  stop: (typeof STOPS)[number]
+  stop: (typeof STOPS)[number],
 ) => {
   const idx = {
     50: 0,
@@ -388,8 +388,8 @@ function buildShadcnBlock(t: TinteBlock, mode: "light" | "dark"): ShadcnBlock {
   const isLight = mode === "light";
 
   // Primary / Neutral ramps from OKLCH (brand-coherent)
-  const primaryRamp = generateTailwindPalette(t.primary);
-  const neutralRamp = generateTailwindPalette(t.interface_2);
+  const primaryRamp = generateTailwindPalette(t.sc);
+  const neutralRamp = generateTailwindPalette(t.ui_2);
 
   const primary = pickStop(primaryRamp, isLight ? 600 : 400);
   const border = pickStop(neutralRamp, isLight ? 200 : 800);
@@ -398,18 +398,18 @@ function buildShadcnBlock(t: TinteBlock, mode: "light" | "dark"): ShadcnBlock {
   // Accent / Secondary from Poline (expressive)
   const poly = makePolineFromTinte(t);
   const polyHex = polineRampHex(poly);
-  const accent = polyHex[isLight ? 3 : 7] || t.accent;
-  const secondary = polyHex[isLight ? 5 : 4] || t.secondary;
+  const accent = polyHex[isLight ? 3 : 7] || t.pr;
+  const secondary = polyHex[isLight ? 5 : 4] || t.sc;
 
-  const bg = t.background;
+  const bg = t.bg;
   const card = tone(bg, isLight ? +0.02 : -0.02);
   const pop = tone(bg, isLight ? +0.02 : -0.02);
 
   // Charts: usa accents + variantes, con contraste vs background
   const charts = chartColorsFromAccents(
-    { accent: t.accent, accent_2: t.accent_2, accent_3: t.accent_3 },
+    { pr: t.pr, ac_2: t.ac_2, ac_3: t.ac_3 },
     mode,
-    t.background
+    t.bg,
   );
 
   return {
@@ -472,10 +472,10 @@ export function buildShadcnFromTinte(theme: TinteTheme): ShadcnTheme {
 ────────────────────────────────────────────────────────────────────────────── */
 
 export const ICE_POLINE_RAMP_LIGHT = polineRampHex(
-  makePolineFromTinte(ICE_TINTE.light)
+  makePolineFromTinte(ICE_TINTE.light),
 );
 export const ICE_POLINE_RAMP_DARK = polineRampHex(
-  makePolineFromTinte(ICE_TINTE.dark)
+  makePolineFromTinte(ICE_TINTE.dark),
 );
 
 export const ICE_SHADCN: ShadcnTheme = buildShadcnFromTinte(ICE_TINTE);

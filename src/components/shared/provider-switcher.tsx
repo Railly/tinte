@@ -1,14 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { ChevronsUpDown, CheckCircle, Clock } from "lucide-react";
+import { ChevronsUpDown, Clock } from "lucide-react";
 import { useQueryState } from "nuqs";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -17,9 +12,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Button } from "@/components/ui/button";
-import { getAvailableProviders } from "@/lib/providers";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { PLANNED_PROVIDERS } from "@/config/providers";
+import { getAvailableProviders } from "@/lib/providers";
 
 interface ProviderSwitcherProps {
   className?: string;
@@ -64,7 +63,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={`justify-between ${className} hover:text-muted-foreground w-[20ch]`}
+          className={`justify-between ${className} hover:text-muted-foreground w-[18ch]`}
         >
           <div className="flex items-center gap-2 min-w-0">
             {activeProvider.icon && (

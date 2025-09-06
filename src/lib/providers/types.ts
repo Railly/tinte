@@ -1,4 +1,4 @@
-import { TinteTheme } from "@/types/tinte";
+import type { TinteTheme } from "@/types/tinte";
 
 export interface ProviderOutput {
   content: string;

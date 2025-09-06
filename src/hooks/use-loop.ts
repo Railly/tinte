@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from "react";
 import { useInView } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { PROVIDERS, type Provider } from "@/config/providers";
 
 export function useLoop(): [Provider, React.RefObject<HTMLDivElement | null>] {

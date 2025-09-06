@@ -1,1 +1,1 @@
-export { WorkbenchMain as Workbench } from './workbench-main';
+export { WorkbenchMain as Workbench } from "./workbench-main";

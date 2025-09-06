@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { AnimatePresence, motion } from 'motion/react';
-import { PastedItem } from '@/lib/input-detection';
-import { PastedItemCard } from './pasted-item-card';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import type { PastedItem } from "@/lib/input-detection";
+import { PastedItemCard } from "./pasted-item-card";
 
 interface PastedItemsListProps {
   pastedItems: PastedItem[];
@@ -14,13 +14,18 @@ interface PastedItemsListProps {
   onClearAll?: () => void;
 }
 
-export function PastedItemsList({ pastedItems, onRemoveItem, onEditItem, onClearAll }: PastedItemsListProps) {
+export function PastedItemsList({
+  pastedItems,
+  onRemoveItem,
+  onEditItem,
+  onClearAll,
+}: PastedItemsListProps) {
   return (
     <AnimatePresence>
       {pastedItems.length > 0 && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
+          animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           className="p-3 relative"
         >
@@ -39,14 +44,17 @@ export function PastedItemsList({ pastedItems, onRemoveItem, onEditItem, onClear
 
           <ScrollArea className="w-full overflow-visible">
             <div className="flex gap-2 p-4">
-              {pastedItems.slice().reverse().map((item) => (
-                <PastedItemCard
-                  key={item.id}
-                  item={item}
-                  onRemove={onRemoveItem}
-                  onEdit={onEditItem}
-                />
-              ))}
+              {pastedItems
+                .slice()
+                .reverse()
+                .map((item) => (
+                  <PastedItemCard
+                    key={item.id}
+                    item={item}
+                    onRemove={onRemoveItem}
+                    onEdit={onEditItem}
+                  />
+                ))}
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
@@ -54,4 +62,4 @@ export function PastedItemsList({ pastedItems, onRemoveItem, onEditItem, onClear
       )}
     </AnimatePresence>
   );
-} 
+}

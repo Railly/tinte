@@ -1,5 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { FontInfo, GoogleFont, GoogleFontsAPIResponse } from "@/types/fonts";
+import { type NextRequest, NextResponse } from "next/server";
+import type {
+  FontInfo,
+  GoogleFont,
+  GoogleFontsAPIResponse,
+} from "@/types/fonts";
 import { FALLBACK_FONTS } from "@/utils/fonts";
 
 const GOOGLE_FONTS_API_URL = "https://www.googleapis.com/webfonts/v1/webfonts";
@@ -12,7 +16,7 @@ const CACHE_DURATION = 1000 * 60 * 60 * 24; // 24 hours
 async function fetchGoogleFonts(): Promise<FontInfo[]> {
   // Check if we have valid cached data
   const now = Date.now();
-  if (cachedFonts && (now - cacheTimestamp) < CACHE_DURATION) {
+  if (cachedFonts && now - cacheTimestamp < CACHE_DURATION) {
     return cachedFonts;
   }
 
@@ -22,8 +26,10 @@ async function fetchGoogleFonts(): Promise<FontInfo[]> {
       throw new Error("Google Fonts API key is required");
     }
 
-    const response = await fetch(`${GOOGLE_FONTS_API_URL}?key=${apiKey}&sort=popularity`);
-    
+    const response = await fetch(
+      `${GOOGLE_FONTS_API_URL}?key=${apiKey}&sort=popularity`,
+    );
+
     if (!response.ok) {
       throw new Error(`Google Fonts API error: ${response.status}`);
     }
@@ -36,7 +42,8 @@ async function fetchGoogleFonts(): Promise<FontInfo[]> {
       category: font.category,
       variants: font.variants,
       variable: font.variants.some(
-        (variant: string) => variant.includes("wght") || variant.includes("ital,wght")
+        (variant: string) =>
+          variant.includes("wght") || variant.includes("ital,wght"),
       ),
     }));
 
@@ -53,19 +60,23 @@ async function fetchGoogleFonts(): Promise<FontInfo[]> {
   }
 }
 
-function filterFonts(fonts: FontInfo[], query: string, category?: string): FontInfo[] {
+function filterFonts(
+  fonts: FontInfo[],
+  query: string,
+  category?: string,
+): FontInfo[] {
   let filtered = fonts;
 
   // Filter by category
   if (category && category !== "all") {
-    filtered = filtered.filter(font => font.category === category);
+    filtered = filtered.filter((font) => font.category === category);
   }
 
   // Filter by search query
   if (query.trim()) {
     const lowerQuery = query.toLowerCase();
-    filtered = filtered.filter(font =>
-      font.family.toLowerCase().includes(lowerQuery)
+    filtered = filtered.filter((font) =>
+      font.family.toLowerCase().includes(lowerQuery),
     );
   }
 
@@ -77,19 +88,22 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q") || "";
     const category = searchParams.get("category") || "all";
-    const limit = parseInt(searchParams.get("limit") || "20");
-    const offset = parseInt(searchParams.get("offset") || "0");
+    const limit = parseInt(searchParams.get("limit") || "20", 10);
+    const offset = parseInt(searchParams.get("offset") || "0", 10);
 
     // Fetch all fonts (from cache or API)
     const allFonts = await fetchGoogleFonts();
-    
+
     if (allFonts.length === 0) {
       // Fallback to local fonts if API fails
       console.log("🔄 Using fallback fonts due to API failure");
       const filteredFallbacks = filterFonts(FALLBACK_FONTS, query, category);
-      const paginatedFallbacks = filteredFallbacks.slice(offset, offset + limit);
+      const paginatedFallbacks = filteredFallbacks.slice(
+        offset,
+        offset + limit,
+      );
       const hasMore = offset + limit < filteredFallbacks.length;
-      
+
       return NextResponse.json({
         fonts: paginatedFallbacks,
         total: filteredFallbacks.length,
@@ -117,7 +131,7 @@ export async function GET(request: NextRequest) {
     console.error("Google Fonts API route error:", error);
     return NextResponse.json(
       { error: "Failed to fetch fonts" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

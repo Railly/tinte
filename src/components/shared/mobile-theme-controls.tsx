@@ -1,17 +1,19 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { ChevronLeft, ChevronRight, Shuffle, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ThemeSelector } from './theme-selector';
-import { useThemeContext } from '@/providers/theme';
+import { ChevronLeft, ChevronRight, Settings, Shuffle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useThemeContext } from "@/providers/theme";
+import { ThemeSelector } from "./theme-selector";
 
 interface MobileThemeControlsProps {
   onThemeEditorOpen: () => void;
 }
 
-export function MobileThemeControls({ onThemeEditorOpen }: MobileThemeControlsProps) {
-  const { allThemes, activeTheme, handleThemeSelect, navigateTheme } = useThemeContext();
+export function MobileThemeControls({
+  onThemeEditorOpen,
+}: MobileThemeControlsProps) {
+  const { allThemes, activeTheme, handleThemeSelect, navigateTheme } =
+    useThemeContext();
   const activeId = activeTheme?.id || null;
 
   return (
@@ -28,7 +30,7 @@ export function MobileThemeControls({ onThemeEditorOpen }: MobileThemeControlsPr
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigateTheme('prev')}
+            onClick={() => navigateTheme("prev")}
             className="px-2 h-8"
             title="Previous theme"
           >
@@ -37,7 +39,7 @@ export function MobileThemeControls({ onThemeEditorOpen }: MobileThemeControlsPr
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigateTheme('next')}
+            onClick={() => navigateTheme("next")}
             className="px-2 h-8"
             title="Next theme"
           >
@@ -46,7 +48,7 @@ export function MobileThemeControls({ onThemeEditorOpen }: MobileThemeControlsPr
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigateTheme('random')}
+            onClick={() => navigateTheme("random")}
             className="px-2 h-8"
             title="Random theme"
           >
@@ -54,7 +56,7 @@ export function MobileThemeControls({ onThemeEditorOpen }: MobileThemeControlsPr
           </Button>
         </div>
       </div>
-      
+
       <Button
         variant="outline"
         size="sm"

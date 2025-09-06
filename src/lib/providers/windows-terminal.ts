@@ -1,13 +1,13 @@
-import { TinteTheme } from "@/types/tinte";
-import { PreviewableProvider, ProviderOutput } from "./types";
-import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
 import { WindowsTerminalPreview } from "@/components/preview/windows-terminal/windows-terminal-preview";
+import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
+import type { TinteTheme } from "@/types/tinte";
 import {
   createPolineColorMapping,
-  toJSON,
-  getThemeName,
   getDisplayName,
+  getThemeName,
+  toJSON,
 } from "./poline-base";
+import type { PreviewableProvider, ProviderOutput } from "./types";
 
 export interface WindowsTerminalTheme {
   name: string;
@@ -43,7 +43,7 @@ export interface WindowsTerminalTheme {
 
 function generateWindowsTerminalTheme(
   theme: TinteTheme,
-  mode: "light" | "dark"
+  mode: "light" | "dark",
 ): WindowsTerminalTheme {
   const block = theme[mode];
   const colorMapping = createPolineColorMapping(block);
@@ -85,7 +85,10 @@ function generateWindowsTerminalTheme(
   };
 }
 
-export const windowsTerminalProvider: PreviewableProvider<{ light: WindowsTerminalTheme; dark: WindowsTerminalTheme }> = {
+export const windowsTerminalProvider: PreviewableProvider<{
+  light: WindowsTerminalTheme;
+  dark: WindowsTerminalTheme;
+}> = {
   metadata: {
     id: "windows-terminal",
     name: "Windows Terminal",
@@ -94,7 +97,8 @@ export const windowsTerminalProvider: PreviewableProvider<{ light: WindowsTermin
     tags: ["terminal", "windows", "microsoft", "powershell"],
     icon: WindowsTerminalIcon,
     website: "https://aka.ms/terminal",
-    documentation: "https://docs.microsoft.com/en-us/windows/terminal/customize-settings/color-schemes",
+    documentation:
+      "https://docs.microsoft.com/en-us/windows/terminal/customize-settings/color-schemes",
   },
 
   fileExtension: "json",
@@ -135,20 +139,24 @@ export const windowsTerminalProvider: PreviewableProvider<{ light: WindowsTermin
     };
   },
 
-  validate: (output: { light: WindowsTerminalTheme; dark: WindowsTerminalTheme }) => {
-    const validateTheme = (theme: WindowsTerminalTheme) => !!(
-      theme.name &&
-      theme.background &&
-      theme.foreground &&
-      theme.black &&
-      theme.white &&
-      theme.red &&
-      theme.green &&
-      theme.blue &&
-      theme.brightRed &&
-      theme.brightGreen &&
-      theme.brightBlue
-    );
+  validate: (output: {
+    light: WindowsTerminalTheme;
+    dark: WindowsTerminalTheme;
+  }) => {
+    const validateTheme = (theme: WindowsTerminalTheme) =>
+      !!(
+        theme.name &&
+        theme.background &&
+        theme.foreground &&
+        theme.black &&
+        theme.white &&
+        theme.red &&
+        theme.green &&
+        theme.blue &&
+        theme.brightRed &&
+        theme.brightGreen &&
+        theme.brightBlue
+      );
 
     return validateTheme(output.light) && validateTheme(output.dark);
   },

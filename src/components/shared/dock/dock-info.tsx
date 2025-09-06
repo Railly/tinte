@@ -1,8 +1,8 @@
-import * as React from "react";
-import { motion } from "motion/react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { motion } from "motion/react";
+import * as React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface DockInfoProps {
   onCollapse: () => void;
@@ -49,10 +49,13 @@ export function DockInfo({
       {providerMetadata && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            {providerMetadata.icon && (
-              React.createElement(providerMetadata.icon, { className: "w-5 h-5 text-white" })
-            )}
-            <h3 className="text-white font-medium text-sm">{providerMetadata.name}</h3>
+            {providerMetadata.icon &&
+              React.createElement(providerMetadata.icon, {
+                className: "w-5 h-5 text-white",
+              })}
+            <h3 className="text-white font-medium text-sm">
+              {providerMetadata.name}
+            </h3>
           </div>
 
           {providerMetadata.description && (
@@ -62,11 +65,18 @@ export function DockInfo({
           )}
 
           <div className="flex flex-wrap gap-1">
-            <Badge variant="secondary" className="text-xs bg-white/10 text-white/80 border-white/20">
+            <Badge
+              variant="secondary"
+              className="text-xs bg-white/10 text-white/80 border-white/20"
+            >
               {providerMetadata.category}
             </Badge>
-            {providerMetadata.tags.slice(0, 2).map(tag => (
-              <Badge key={tag} variant="outline" className="text-xs bg-transparent text-white/60 border-white/20">
+            {providerMetadata.tags.slice(0, 2).map((tag) => (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="text-xs bg-transparent text-white/60 border-white/20"
+              >
                 {tag}
               </Badge>
             ))}
@@ -76,11 +86,15 @@ export function DockInfo({
             <div className="bg-white/5 rounded-lg p-2 space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="text-white/60">Format:</span>
-                <code className="text-white/80">.{provider?.fileExtension}</code>
+                <code className="text-white/80">
+                  .{provider?.fileExtension}
+                </code>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-white/60">Size:</span>
-                <span className="text-white/80">{formatFileSize(exportedTheme.content)}</span>
+                <span className="text-white/80">
+                  {formatFileSize(exportedTheme.content)}
+                </span>
               </div>
             </div>
           )}

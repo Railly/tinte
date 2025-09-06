@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useTheme } from '@/hooks/use-theme';
+import { useTheme } from "@/hooks/use-theme";
 
 export function useThemeContext() {
   return useTheme();

@@ -1,23 +1,26 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { VSCodeTheme } from '@/lib/providers/vscode';
-import { useShikiHighlighter } from '@/hooks/use-shiki-highlighter';
-import { CodeTemplate } from '@/lib/providers/vscode';
+import { useShikiHighlighter } from "@/hooks/use-shiki-highlighter";
+import type { CodeTemplate, VSCodeTheme } from "@/lib/providers/vscode";
 
 interface ShikiPreviewProps {
   themeSet: { light: VSCodeTheme; dark: VSCodeTheme };
-  currentMode: 'light' | 'dark';
+  currentMode: "light" | "dark";
   template: CodeTemplate;
   themeVersion: number;
 }
 
-export function ShikiPreview({ themeSet, currentMode, template, themeVersion }: ShikiPreviewProps) {
+export function ShikiPreview({
+  themeSet,
+  currentMode,
+  template,
+  themeVersion,
+}: ShikiPreviewProps) {
   const { html, loading } = useShikiHighlighter({
     themeSet,
     currentMode,
     template,
-    themeVersion
+    themeVersion,
   });
 
   // Only show loading on initial load - theme changes are instant

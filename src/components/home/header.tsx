@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import { Menu } from 'lucide-react';
-import GithubIcon from '@/components/shared/icons/github';
-import TwitterIcon from '@/components/shared/icons/twitter';
-import Logo from '@/components/shared/logo';
-import { Button } from '@/components/ui/button';
-import { ThemeSwitcher } from '@/components/shared/theme-switcher';
-import { siteConfig } from '@/config/site';
+import { Menu } from "lucide-react";
+import Link from "next/link";
+import GithubIcon from "@/components/shared/icons/github";
+import TwitterIcon from "@/components/shared/icons/twitter";
+import Logo from "@/components/shared/logo";
+import { ThemeSwitcher } from "@/components/shared/theme-switcher";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetClose
-} from '@/components/ui/sheet';
-import Link from 'next/link';
+} from "@/components/ui/sheet";
+import { siteConfig } from "@/config/site";
 
 export function Header() {
   const navigation = [
-    { name: 'Features', href: '#features' },
-    { name: 'Roadmap', href: '#roadmap' },
-    { name: 'FAQ', href: '#faq' },
-    { name: 'Docs', href: '#docs' },
+    { name: "Features", href: "#features" },
+    { name: "Roadmap", href: "#roadmap" },
+    { name: "FAQ", href: "#faq" },
+    { name: "Docs", href: "#docs" },
   ];
 
   return (
@@ -52,19 +52,25 @@ export function Header() {
           <div className="hidden md:flex items-center gap-3">
             <ThemeSwitcher />
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-              <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
+              <a
+                href={siteConfig.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <GithubIcon className="h-4 w-4" />
               </a>
             </Button>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-              <a href={siteConfig.links.twitter} target="_blank" rel="noopener noreferrer">
+              <a
+                href={siteConfig.links.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <TwitterIcon className="h-4 w-4" />
               </a>
             </Button>
             <Button size="sm" className="h-7 px-3 text-xs" asChild>
-              <Link href="/workbench">
-                Get Started
-              </Link>
+              <Link href="/workbench">Get Started</Link>
             </Button>
           </div>
 
@@ -100,19 +106,40 @@ export function Header() {
                 <div className="mt-auto flex flex-col gap-6">
                   <div className="flex items-center justify-center gap-6">
                     <ThemeSwitcher />
-                    <Button variant="ghost" size="sm" className="h-12 w-12 p-0" asChild>
-                      <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-12 w-12 p-0"
+                      asChild
+                    >
+                      <a
+                        href={siteConfig.links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <GithubIcon className="h-8 w-8" />
                       </a>
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-12 w-12 p-0" asChild>
-                      <a href={siteConfig.links.twitter} target="_blank" rel="noopener noreferrer">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-12 w-12 p-0"
+                      asChild
+                    >
+                      <a
+                        href={siteConfig.links.twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <TwitterIcon className="h-8 w-8" />
                       </a>
                     </Button>
                   </div>
                   <Link href="/workbench">
-                    <Button size="lg" className="h-12 px-8 text-base w-full font-medium">
+                    <Button
+                      size="lg"
+                      className="h-12 px-8 text-base w-full font-medium"
+                    >
                       Get Started
                     </Button>
                   </Link>

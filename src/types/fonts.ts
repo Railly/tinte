@@ -1,4 +1,9 @@
-export type FontCategory = "sans-serif" | "serif" | "display" | "handwriting" | "monospace";
+export type FontCategory =
+  | "sans-serif"
+  | "serif"
+  | "display"
+  | "handwriting"
+  | "monospace";
 
 // Google Fonts API response types
 export type GoogleFontAxis = {

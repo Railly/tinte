@@ -1,19 +1,25 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Kind } from '@/lib/input-detection';
-import { Globe, Palette } from 'lucide-react';
-import { TailwindIcon } from '@/components/shared/icons/tailwind';
-import { CSSIcon } from '@/components/shared/icons/css';
+import { Globe, Palette } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CSSIcon } from "@/components/shared/icons/css";
+import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import type { Kind } from "@/lib/input-detection";
 
 interface PasteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  type: 'url' | 'tailwind' | 'cssvars' | 'palette';
+  type: "url" | "tailwind" | "cssvars" | "palette";
   onSubmit: (content: string, kind: Kind) => void;
   editMode?: boolean;
   initialContent?: string;
@@ -21,17 +27,17 @@ interface PasteDialogProps {
 
 const typeConfig = {
   url: {
-    title: 'Add Web Page',
+    title: "Add Web Page",
     icon: Globe,
-    placeholder: 'https://example.com',
-    defaultContent: 'https://',
+    placeholder: "https://example.com",
+    defaultContent: "https://",
     isTextarea: false,
-    kind: 'url' as Kind
+    kind: "url" as Kind,
   },
   tailwind: {
-    title: 'Add Tailwind Config',
+    title: "Add Tailwind Config",
     icon: TailwindIcon,
-    placeholder: 'Paste your Tailwind configuration...',
+    placeholder: "Paste your Tailwind configuration...",
     defaultContent: `module.exports = {
   theme: {
     colors: {
@@ -40,12 +46,12 @@ const typeConfig = {
   }
 }`,
     isTextarea: true,
-    kind: 'tailwind' as Kind
+    kind: "tailwind" as Kind,
   },
   cssvars: {
-    title: 'Add CSS Variables',
+    title: "Add CSS Variables",
     icon: CSSIcon,
-    placeholder: 'Paste your CSS custom properties...',
+    placeholder: "Paste your CSS custom properties...",
     defaultContent: `:root {
   /* CSS custom properties */
   --primary: #000;
@@ -55,26 +61,33 @@ const typeConfig = {
   --foreground: #000;
 }`,
     isTextarea: true,
-    kind: 'cssvars' as Kind
+    kind: "cssvars" as Kind,
   },
   palette: {
-    title: 'Edit Color Palette',
+    title: "Edit Color Palette",
     icon: Palette,
-    placeholder: '#3b82f6',
-    defaultContent: '#3b82f6',
+    placeholder: "#3b82f6",
+    defaultContent: "#3b82f6",
     isTextarea: false,
-    kind: 'palette' as Kind
-  }
+    kind: "palette" as Kind,
+  },
 };
 
-export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = false, initialContent }: PasteDialogProps) {
+export function PasteDialog({
+  open,
+  onOpenChange,
+  type,
+  onSubmit,
+  editMode = false,
+  initialContent,
+}: PasteDialogProps) {
   const config = typeConfig[type];
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const [hasUserInput, setHasUserInput] = useState(false);
 
   // Initialize content properly for palette editing
   useEffect(() => {
-    if (type === 'palette' && initialContent) {
+    if (type === "palette" && initialContent) {
       // Extract the first hex color from the palette content for editing
       const colorMatch = initialContent.match(/#[0-9a-f]{6}/i);
       setContent(colorMatch ? colorMatch[0] : config.defaultContent);
@@ -86,7 +99,7 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
   }, [initialContent, type, config.defaultContent]);
 
   useEffect(() => {
-    if (open && !editMode && type !== 'palette') {
+    if (open && !editMode && type !== "palette") {
       setContent(config.defaultContent);
       setHasUserInput(false);
     }
@@ -94,7 +107,7 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
 
   function handlePaste(e: React.ClipboardEvent) {
     if (!editMode) {
-      const pastedText = e.clipboardData.getData('text');
+      const pastedText = e.clipboardData.getData("text");
       if (pastedText.trim()) {
         setContent(pastedText);
         setHasUserInput(true);
@@ -119,9 +132,8 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
     }
   }
 
-
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       handleSubmit();
     }
@@ -147,7 +159,7 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
             {config.title}
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           {config.isTextarea ? (
             <Textarea
@@ -165,7 +177,7 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
               onChange={(e) => handleChange(e.target.value)}
               onPaste={handlePaste}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   e.preventDefault();
                   handleSubmit();
                 }
@@ -174,7 +186,7 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
               className="font-mono"
             />
           )}
-          
+
           {!editMode && !hasUserInput && (
             <p className="text-sm text-muted-foreground">
               Paste your content above and it will be added automatically.
@@ -188,7 +200,7 @@ export function PasteDialog({ open, onOpenChange, type, onSubmit, editMode = fal
               Cancel
             </Button>
             <Button onClick={handleSubmit}>
-              {editMode ? 'Update' : 'Add'}
+              {editMode ? "Update" : "Add"}
             </Button>
           </DialogFooter>
         )}

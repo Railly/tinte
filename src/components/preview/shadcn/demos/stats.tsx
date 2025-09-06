@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { Area, AreaChart, Line, LineChart } from "recharts"
+import { Area, AreaChart, Line, LineChart } from "recharts";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -10,8 +10,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+} from "@/components/ui/card";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const data = [
   {
@@ -46,7 +46,7 @@ const data = [
     revenue: 26475,
     subscription: 89,
   },
-]
+];
 
 const chartConfig = {
   revenue: {
@@ -57,7 +57,7 @@ const chartConfig = {
     label: "Subscriptions",
     color: "var(--primary)",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function CardsStats() {
   return (
@@ -125,5 +125,5 @@ export function CardsStats() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

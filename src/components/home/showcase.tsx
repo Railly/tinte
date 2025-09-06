@@ -1,38 +1,40 @@
-'use client';
+"use client";
 
-import { ArrowRight } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { ThemeCard } from '@/components/shared/theme-card';
-import TweakCNIcon from '@/components/shared/icons/tweakcn';
-import RaycastIcon from '@/components/shared/icons/raycast';
-import Logo from '@/components/shared/logo';
-import { useState } from 'react';
-import { extractTweakcnThemeData } from '@/utils/tweakcn-presets';
-import { extractRaysoThemeData } from '@/utils/rayso-presets';
-import { extractTinteThemeData } from '@/utils/tinte-presets';
-import { useThemeContext } from '@/providers/theme';
+import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+import RaycastIcon from "@/components/shared/icons/raycast";
+import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import Logo from "@/components/shared/logo";
+import { ThemeCard } from "@/components/shared/theme-card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useThemeContext } from "@/providers/theme";
+import { extractRaysoThemeData } from "@/utils/rayso-presets";
+import { extractTinteThemeData } from "@/utils/tinte-presets";
+import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
 
 export function Showcase() {
-  const [activeTab, setActiveTab] = useState('tweakcn');
+  const [activeTab, setActiveTab] = useState("tweakcn");
   const { currentMode, isDark, handleThemeSelect } = useThemeContext();
 
   // Static theme data for showcase (no SSR issues)
-  const tweakcnThemes = extractTweakcnThemeData(isDark).map((themeData, index) => ({
-    ...themeData,
-    description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
-    author: "tweakcn",
-    provider: "tweakcn" as const,
-    downloads: 8000 + index * 500,
-    likes: 400 + index * 50,
-    views: 15000 + index * 2000,
-    tags: [
-      themeData.name.split(" ")[0].toLowerCase(),
-      "modern",
-      "preset",
-      "community",
-    ],
-  }));
+  const tweakcnThemes = extractTweakcnThemeData(isDark).map(
+    (themeData, index) => ({
+      ...themeData,
+      description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
+      author: "tweakcn",
+      provider: "tweakcn" as const,
+      downloads: 8000 + index * 500,
+      likes: 400 + index * 50,
+      views: 15000 + index * 2000,
+      tags: [
+        themeData.name.split(" ")[0].toLowerCase(),
+        "modern",
+        "preset",
+        "community",
+      ],
+    }),
+  );
 
   const raysoThemes = extractRaysoThemeData(isDark).map((themeData, index) => ({
     ...themeData,
@@ -61,8 +63,6 @@ export function Showcase() {
     ],
   }));
 
-
-
   return (
     <div className="w-full space-y-8 p-4 max-w-7xl mx-auto">
       {/* Header */}
@@ -81,7 +81,11 @@ export function Showcase() {
               Explore what the community is crafting with Tinte.
             </p>
           </div>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full sm:w-auto"
+          >
             <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm w-full sm:w-auto">
               <TabsTrigger
                 value="tweakcn"
@@ -111,7 +115,7 @@ export function Showcase() {
 
       {/* Provider Content */}
       <div>
-        {activeTab === 'tweakcn' && (
+        {activeTab === "tweakcn" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {tweakcnThemes.slice(0, 8).map((theme, index) => (
               <ThemeCard
@@ -124,18 +128,28 @@ export function Showcase() {
           </div>
         )}
 
-        {activeTab === 'rayso' && (
+        {activeTab === "rayso" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {raysoThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard key={theme.id} theme={theme} index={index} onThemeSelect={handleThemeSelect} />
+              <ThemeCard
+                key={theme.id}
+                theme={theme}
+                index={index}
+                onThemeSelect={handleThemeSelect}
+              />
             ))}
           </div>
         )}
 
-        {activeTab === 'tinte' && (
+        {activeTab === "tinte" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {tinteThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard key={theme.id} theme={theme} index={index} onThemeSelect={handleThemeSelect} />
+              <ThemeCard
+                key={theme.id}
+                theme={theme}
+                index={index}
+                onThemeSelect={handleThemeSelect}
+              />
             ))}
           </div>
         )}
@@ -146,7 +160,7 @@ export function Showcase() {
         <Button
           variant="outline"
           className="gap-2 h-10 px-6"
-          onClick={() => console.log('Browse all themes')}
+          onClick={() => console.log("Browse all themes")}
         >
           Browse All Themes
           <ArrowRight className="w-4 h-4" />

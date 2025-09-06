@@ -1,3 +1,10 @@
+import { hexToHsva, hsvaToHex } from "@uiw/color-convert";
+import { Colorful } from "@uiw/react-color";
+import { hsl as culoriHsl, formatHex, lch, oklch, rgb } from "culori";
+import { ChevronDown } from "lucide-react";
+import type React from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,13 +15,6 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { formatHex, hsl as culoriHsl, lch, oklch, rgb } from "culori";
-import { hexToHsva, hsvaToHex } from "@uiw/color-convert";
-import { Colorful } from "@uiw/react-color";
-import { ChevronDown } from "lucide-react";
-import type React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 
 interface ColorPickerInputProps {
   color: string;
@@ -31,7 +31,6 @@ const getContrastColor = (hexColor: string): string => {
   return brightness > 128 ? "#000000" : "#ffffff";
 };
 
-
 export function ColorPickerInput({
   color,
   onChange,
@@ -47,21 +46,25 @@ export function ColorPickerInput({
   }, [color]);
 
   const contrastColor = useMemo(() => {
-    if (!color || typeof color !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(color)) {
+    if (
+      !color ||
+      typeof color !== "string" ||
+      !/^#[0-9A-Fa-f]{6}$/.test(color)
+    ) {
       return "#000000";
     }
     return getContrastColor(color);
   }, [color]);
 
   const colorValues = useMemo(() => {
-    if (!color || typeof color !== 'string') {
-      console.warn('ColorPickerInput: Invalid color prop:', color);
+    if (!color || typeof color !== "string") {
+      console.warn("ColorPickerInput: Invalid color prop:", color);
       toast.error(`Invalid color prop: ${JSON.stringify(color)}`, {
-        description: 'Color must be a string',
+        description: "Color must be a string",
         duration: 5000,
       });
       return {
-        hex: '#000000',
+        hex: "#000000",
         rgb: { r: 0, g: 0, b: 0 },
         hsl: { h: 0, s: 0, l: 0 },
         oklch: { l: 0, c: 0, h: 0 },
@@ -70,13 +73,13 @@ export function ColorPickerInput({
     }
 
     if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
-      console.warn('ColorPickerInput: Invalid hex color format:', color);
+      console.warn("ColorPickerInput: Invalid hex color format:", color);
       toast.error(`Invalid hex color format: ${color}`, {
-        description: 'Expected format: #RRGGBB',
+        description: "Expected format: #RRGGBB",
         duration: 5000,
       });
       return {
-        hex: '#000000',
+        hex: "#000000",
         rgb: { r: 0, g: 0, b: 0 },
         hsl: { h: 0, s: 0, l: 0 },
         oklch: { l: 0, c: 0, h: 0 },
@@ -91,10 +94,34 @@ export function ColorPickerInput({
 
     return {
       hex: color,
-      rgb: rgbColor ? { r: Math.round(rgbColor.r * 255), g: Math.round(rgbColor.g * 255), b: Math.round(rgbColor.b * 255) } : { r: 0, g: 0, b: 0 },
-      hsl: hslColor ? { h: Math.round(hslColor.h || 0), s: Math.round((hslColor.s || 0) * 100), l: Math.round((hslColor.l || 0) * 100) } : { h: 0, s: 0, l: 0 },
-      oklch: oklchColor ? { l: Math.round((oklchColor.l || 0) * 100), c: Math.round((oklchColor.c || 0) * 100), h: Math.round(oklchColor.h || 0) } : { l: 0, c: 0, h: 0 },
-      lch: lchColor ? { l: Math.round(lchColor.l || 0), c: Math.round(lchColor.c || 0), h: Math.round(lchColor.h || 0) } : { l: 0, c: 0, h: 0 },
+      rgb: rgbColor
+        ? {
+            r: Math.round(rgbColor.r * 255),
+            g: Math.round(rgbColor.g * 255),
+            b: Math.round(rgbColor.b * 255),
+          }
+        : { r: 0, g: 0, b: 0 },
+      hsl: hslColor
+        ? {
+            h: Math.round(hslColor.h || 0),
+            s: Math.round((hslColor.s || 0) * 100),
+            l: Math.round((hslColor.l || 0) * 100),
+          }
+        : { h: 0, s: 0, l: 0 },
+      oklch: oklchColor
+        ? {
+            l: Math.round((oklchColor.l || 0) * 100),
+            c: Math.round((oklchColor.c || 0) * 100),
+            h: Math.round(oklchColor.h || 0),
+          }
+        : { l: 0, c: 0, h: 0 },
+      lch: lchColor
+        ? {
+            l: Math.round(lchColor.l || 0),
+            c: Math.round(lchColor.c || 0),
+            h: Math.round(lchColor.h || 0),
+          }
+        : { l: 0, c: 0, h: 0 },
     };
   }, [color]);
 
@@ -135,24 +162,47 @@ export function ColorPickerInput({
   const handleColorSpaceChange = useCallback(
     (values: Record<string, number>, colorSpace: string) => {
       let hexColor: string | undefined;
-      
+
       switch (colorSpace) {
         case "rgb":
-          hexColor = formatHex(rgb({ mode: "rgb", r: values.r / 255, g: values.g / 255, b: values.b / 255 }));
+          hexColor = formatHex(
+            rgb({
+              mode: "rgb",
+              r: values.r / 255,
+              g: values.g / 255,
+              b: values.b / 255,
+            }),
+          );
           break;
         case "hsl":
-          hexColor = formatHex(culoriHsl({ mode: "hsl", h: values.h, s: values.s / 100, l: values.l / 100 }));
+          hexColor = formatHex(
+            culoriHsl({
+              mode: "hsl",
+              h: values.h,
+              s: values.s / 100,
+              l: values.l / 100,
+            }),
+          );
           break;
         case "oklch":
-          hexColor = formatHex(oklch({ mode: "oklch", l: values.l / 100, c: values.c / 100, h: values.h }));
+          hexColor = formatHex(
+            oklch({
+              mode: "oklch",
+              l: values.l / 100,
+              c: values.c / 100,
+              h: values.h,
+            }),
+          );
           break;
         case "lch":
-          hexColor = formatHex(lch({ mode: "lch", l: values.l, c: values.c, h: values.h }));
+          hexColor = formatHex(
+            lch({ mode: "lch", l: values.l, c: values.c, h: values.h }),
+          );
           break;
         default:
           return;
       }
-      
+
       if (hexColor && /^#[0-9A-Fa-f]{6}$/.test(hexColor)) {
         setInputValue(hexColor);
         onChange(hexColor);
@@ -162,7 +212,11 @@ export function ColorPickerInput({
   );
 
   const hsvaColor = useMemo(() => {
-    if (!color || typeof color !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(color)) {
+    if (
+      !color ||
+      typeof color !== "string" ||
+      !/^#[0-9A-Fa-f]{6}$/.test(color)
+    ) {
       return { h: 0, s: 0, v: 0, a: 1 };
     }
     return hexToHsva(color);
@@ -170,8 +224,14 @@ export function ColorPickerInput({
 
   const quickColors = useMemo(
     () => [
-      "#000000", "#ffffff", "#ef4444", "#22c55e", 
-      "#3b82f6", "#f59e0b", "#a855f7", "#ec4899",
+      "#000000",
+      "#ffffff",
+      "#ef4444",
+      "#22c55e",
+      "#3b82f6",
+      "#f59e0b",
+      "#a855f7",
+      "#ec4899",
     ],
     [],
   );
@@ -216,7 +276,7 @@ export function ColorPickerInput({
               <TabsTrigger value="oklch">OKLCH</TabsTrigger>
               <TabsTrigger value="lch">LCH</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="hex" className="space-y-2">
               <Input
                 value={inputValue}
@@ -227,7 +287,7 @@ export function ColorPickerInput({
                 disabled={disabled}
               />
             </TabsContent>
-            
+
             <TabsContent value="rgb" className="space-y-2">
               <div className="grid grid-cols-3 gap-2">
                 <div>
@@ -235,7 +295,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.rgb.r}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.rgb, r: Number(e.target.value) }, "rgb")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.rgb, r: Number(e.target.value) },
+                        "rgb",
+                      )
+                    }
                     min="0"
                     max="255"
                     className="text-xs"
@@ -246,7 +311,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.rgb.g}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.rgb, g: Number(e.target.value) }, "rgb")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.rgb, g: Number(e.target.value) },
+                        "rgb",
+                      )
+                    }
                     min="0"
                     max="255"
                     className="text-xs"
@@ -257,7 +327,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.rgb.b}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.rgb, b: Number(e.target.value) }, "rgb")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.rgb, b: Number(e.target.value) },
+                        "rgb",
+                      )
+                    }
                     min="0"
                     max="255"
                     className="text-xs"
@@ -265,7 +340,7 @@ export function ColorPickerInput({
                 </div>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="hsl" className="space-y-2">
               <div className="grid grid-cols-3 gap-2">
                 <div>
@@ -273,7 +348,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.hsl.h}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.hsl, h: Number(e.target.value) }, "hsl")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.hsl, h: Number(e.target.value) },
+                        "hsl",
+                      )
+                    }
                     min="0"
                     max="360"
                     className="text-xs"
@@ -284,7 +364,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.hsl.s}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.hsl, s: Number(e.target.value) }, "hsl")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.hsl, s: Number(e.target.value) },
+                        "hsl",
+                      )
+                    }
                     min="0"
                     max="100"
                     className="text-xs"
@@ -295,7 +380,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.hsl.l}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.hsl, l: Number(e.target.value) }, "hsl")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.hsl, l: Number(e.target.value) },
+                        "hsl",
+                      )
+                    }
                     min="0"
                     max="100"
                     className="text-xs"
@@ -303,7 +393,7 @@ export function ColorPickerInput({
                 </div>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="oklch" className="space-y-2">
               <div className="grid grid-cols-3 gap-2">
                 <div>
@@ -311,7 +401,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.oklch.l}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.oklch, l: Number(e.target.value) }, "oklch")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.oklch, l: Number(e.target.value) },
+                        "oklch",
+                      )
+                    }
                     min="0"
                     max="100"
                     step="0.1"
@@ -323,7 +418,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.oklch.c}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.oklch, c: Number(e.target.value) }, "oklch")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.oklch, c: Number(e.target.value) },
+                        "oklch",
+                      )
+                    }
                     min="0"
                     max="100"
                     step="0.1"
@@ -335,7 +435,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.oklch.h}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.oklch, h: Number(e.target.value) }, "oklch")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.oklch, h: Number(e.target.value) },
+                        "oklch",
+                      )
+                    }
                     min="0"
                     max="360"
                     className="text-xs"
@@ -343,7 +448,7 @@ export function ColorPickerInput({
                 </div>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="lch" className="space-y-2">
               <div className="grid grid-cols-3 gap-2">
                 <div>
@@ -351,7 +456,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.lch.l}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.lch, l: Number(e.target.value) }, "lch")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.lch, l: Number(e.target.value) },
+                        "lch",
+                      )
+                    }
                     min="0"
                     max="100"
                     className="text-xs"
@@ -362,7 +472,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.lch.c}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.lch, c: Number(e.target.value) }, "lch")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.lch, c: Number(e.target.value) },
+                        "lch",
+                      )
+                    }
                     min="0"
                     max="150"
                     className="text-xs"
@@ -373,7 +488,12 @@ export function ColorPickerInput({
                   <Input
                     type="number"
                     value={colorValues.lch.h}
-                    onChange={(e) => handleColorSpaceChange({ ...colorValues.lch, h: Number(e.target.value) }, "lch")}
+                    onChange={(e) =>
+                      handleColorSpaceChange(
+                        { ...colorValues.lch, h: Number(e.target.value) },
+                        "lch",
+                      )
+                    }
                     min="0"
                     max="360"
                     className="text-xs"

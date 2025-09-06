@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useThemeStore } from '@/stores/theme-store';
-import { useThemeExport } from '@/lib/theme-utils';
+import { useEffect } from "react";
+import { useThemeExport } from "@/lib/theme-utils";
+import { useThemeStore } from "@/stores/theme-store";
 
 export function useTheme() {
   const store = useThemeStore();
   const themeExport = useThemeExport(store.tinteTheme);
-  
+
   useEffect(() => {
     if (!store.mounted) {
       store.initialize();
@@ -17,10 +17,10 @@ export function useTheme() {
   return {
     // Core state
     ...store,
-    
+
     // Export functionality
     ...themeExport,
-    
+
     // Legacy compatibility
     theme: store.currentMode,
     setTheme: store.setMode,
@@ -29,5 +29,7 @@ export function useTheme() {
     handleThemeSelect: store.selectTheme,
     handleTokenEdit: store.editToken,
     resetTokens: store.resetTokens,
+    addTheme: store.addTheme,
+    navigateTheme: store.navigateTheme,
   };
 }

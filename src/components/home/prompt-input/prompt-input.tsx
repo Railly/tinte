@@ -1,31 +1,39 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Plus, ArrowUp, Globe, Image, Palette } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Kind, PastedItem, detectKind } from '@/lib/input-detection';
-import { usePastedItems } from '@/hooks/use-pasted-items';
-import { usePalette } from '@/hooks/use-palette';
-import { PastedItemsList } from './pasted-items-list';
-import { PasteDialog } from './paste-dialog';
-import { TailwindIcon } from '@/components/shared/icons/tailwind';
-import { CSSIcon } from '@/components/shared/icons/css';
-import { generateTailwindPalette } from '@/lib/palette-generator';
-import { cn } from '@/lib';
-import { Button } from '../../ui/button';
-import { Search } from 'lucide-react';
-import { useThemeContext } from '@/providers/theme';
-import TweakCNIcon from '@/components/shared/icons/tweakcn';
-import RaycastIcon from '@/components/shared/icons/raycast';
-import Logo from '@/components/shared/logo';
-import { useRouter } from 'next/navigation';
-import { nanoid } from 'nanoid';
-import { writeSeed } from '@/utils/anon-seed';
-import { mapPastedToAttachments } from '@/utils/seed-mapper';
+import { ArrowUp, Globe, Image, Palette, Plus, Search } from "lucide-react";
+import { motion } from "motion/react";
+import { nanoid } from "nanoid";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { CSSIcon } from "@/components/shared/icons/css";
+import RaycastIcon from "@/components/shared/icons/raycast";
+import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import Logo from "@/components/shared/logo";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { usePalette } from "@/hooks/use-palette";
+import { usePastedItems } from "@/hooks/use-pasted-items";
+import { cn } from "@/lib";
+import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
+import { generateTailwindPalette } from "@/lib/palette-generator";
+import { useThemeContext } from "@/providers/theme";
+import { writeSeed } from "@/utils/anon-seed";
+import { mapPastedToAttachments } from "@/utils/seed-mapper";
+import { Button } from "../../ui/button";
+import { PasteDialog } from "./paste-dialog";
+import { PastedItemsList } from "./pasted-items-list";
 
 interface PromptInputProps {
   onSubmit?: (kind: Kind, raw: string) => void;
@@ -40,7 +48,7 @@ interface PalettePreset {
 interface ThemePreset {
   id: string;
   name: string;
-  provider: 'tweakcn' | 'rayso' | 'tinte';
+  provider: "tweakcn" | "rayso" | "tinte";
   colors: {
     primary: string;
     secondary: string;
@@ -50,10 +58,8 @@ interface ThemePreset {
   };
 }
 
-export default function PromptInput({
-  onSubmit,
-}: PromptInputProps) {
-  const [prompt, setPrompt] = useState('');
+export default function PromptInput({ onSubmit }: PromptInputProps) {
+  const [prompt, setPrompt] = useState("");
   const router = useRouter();
 
   const presets = [
@@ -63,7 +69,8 @@ export default function PromptInput({
       primaryColor: "#1e40af",
       neutralColor: "#64748b",
       backgroundColor: "#ffffff",
-      prompt: "Create a professional corporate theme with trustworthy blue tones. Focus on accessibility, clean typography, and a business-appropriate aesthetic. Use blues ranging from navy to lighter shades, with neutral grays for balance. Ensure high contrast for readability and a polished, enterprise-ready appearance."
+      prompt:
+        "Create a professional corporate theme with trustworthy blue tones. Focus on accessibility, clean typography, and a business-appropriate aesthetic. Use blues ranging from navy to lighter shades, with neutral grays for balance. Ensure high contrast for readability and a polished, enterprise-ready appearance.",
     },
     {
       icon: "🌅",
@@ -71,7 +78,8 @@ export default function PromptInput({
       primaryColor: "#f97316",
       neutralColor: "#a3a3a3",
       backgroundColor: "#fefefe",
-      prompt: "Design a warm, inviting theme inspired by golden hour sunsets. Use rich oranges, warm yellows, and soft coral tones. Create a cozy, energetic feeling with gradients that evoke the beauty of a sunset sky. Include complementary warm neutrals and ensure the palette feels optimistic and welcoming."
+      prompt:
+        "Design a warm, inviting theme inspired by golden hour sunsets. Use rich oranges, warm yellows, and soft coral tones. Create a cozy, energetic feeling with gradients that evoke the beauty of a sunset sky. Include complementary warm neutrals and ensure the palette feels optimistic and welcoming.",
     },
     {
       icon: "🌙",
@@ -79,7 +87,8 @@ export default function PromptInput({
       primaryColor: "#6366f1",
       neutralColor: "#71717a",
       backgroundColor: "#0f0f23",
-      prompt: "Create an elegant, minimal dark theme with sophisticated gray tones. Focus on reducing eye strain with carefully balanced contrast ratios. Use deep grays as the foundation with subtle blue or purple undertones. Emphasize clean lines, ample whitespace, and a modern, sleek aesthetic perfect for extended use."
+      prompt:
+        "Create an elegant, minimal dark theme with sophisticated gray tones. Focus on reducing eye strain with carefully balanced contrast ratios. Use deep grays as the foundation with subtle blue or purple undertones. Emphasize clean lines, ample whitespace, and a modern, sleek aesthetic perfect for extended use.",
     },
     {
       icon: "⚡",
@@ -87,7 +96,8 @@ export default function PromptInput({
       primaryColor: "#8b5cf6",
       neutralColor: "#737373",
       backgroundColor: "#0a0a0a",
-      prompt: "Design an energetic, modern theme with vibrant neon-inspired colors. Use electric purples, bright magentas, and cyber-punk aesthetics. Create high-impact visuals with bold contrasts and glowing effects. Balance the intensity with darker backgrounds to make the neon colors pop while maintaining usability."
+      prompt:
+        "Design an energetic, modern theme with vibrant neon-inspired colors. Use electric purples, bright magentas, and cyber-punk aesthetics. Create high-impact visuals with bold contrasts and glowing effects. Balance the intensity with darker backgrounds to make the neon colors pop while maintaining usability.",
     },
     {
       icon: "🌿",
@@ -95,8 +105,9 @@ export default function PromptInput({
       primaryColor: "#10b981",
       neutralColor: "#78716c",
       backgroundColor: "#fafaf9",
-      prompt: "Create a calming, nature-inspired theme with organic green tones. Use forest greens, sage, and mint colors that evoke growth, harmony, and sustainability. Include earthy neutrals and natural textures. Design for a peaceful, eco-friendly aesthetic that promotes focus and well-being."
-    }
+      prompt:
+        "Create a calming, nature-inspired theme with organic green tones. Use forest greens, sage, and mint colors that evoke growth, harmony, and sustainability. Include earthy neutrals and natural textures. Design for a peaceful, eco-friendly aesthetic that promotes focus and well-being.",
+    },
   ];
 
   const palettePresets: PalettePreset[] = [
@@ -108,22 +119,29 @@ export default function PromptInput({
     { name: "Red", baseColor: "#ef4444", description: "Bold red" },
     { name: "Yellow", baseColor: "#eab308", description: "Sunny yellow" },
     { name: "Teal", baseColor: "#14b8a6", description: "Cool teal" },
-    { name: "Gray", baseColor: "#6b7280", description: "Neutral gray" }
+    { name: "Gray", baseColor: "#6b7280", description: "Neutral gray" },
   ];
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState<'url' | 'tailwind' | 'cssvars' | 'palette'>('url');
+  const [dialogType, setDialogType] = useState<
+    "url" | "tailwind" | "cssvars" | "palette"
+  >("url");
   const [editingItem, setEditingItem] = useState<PastedItem | null>(null);
-  const [customColor, setCustomColor] = useState('');
+  const [customColor, setCustomColor] = useState("");
   const [paletteDropdownOpen, setPaletteDropdownOpen] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
-  const [themeSearchQuery, setThemeSearchQuery] = useState('');
+  const [themeSearchQuery, setThemeSearchQuery] = useState("");
   const colorInputRef = useRef<HTMLInputElement>(null);
   const themeSearchRef = useRef<HTMLInputElement>(null);
-  const { pastedItems, addPastedItem, removePastedItem, updatePastedItem, clearPastedItems } = usePastedItems();
+  const {
+    pastedItems,
+    addPastedItem,
+    removePastedItem,
+    updatePastedItem,
+    clearPastedItems,
+  } = usePastedItems();
   const { setBase } = usePalette();
   const { allThemes } = useThemeContext();
-
 
   useEffect(() => {
     if (paletteDropdownOpen) {
@@ -145,9 +163,10 @@ export default function PromptInput({
   const allThemePresets = allThemes;
 
   // Filter themes based on search query
-  const filteredThemes = allThemePresets.filter(theme =>
-    theme.name.toLowerCase().includes(themeSearchQuery.toLowerCase()) ||
-    theme.provider.toLowerCase().includes(themeSearchQuery.toLowerCase())
+  const filteredThemes = allThemePresets.filter(
+    (theme) =>
+      theme.name.toLowerCase().includes(themeSearchQuery.toLowerCase()) ||
+      theme.provider.toLowerCase().includes(themeSearchQuery.toLowerCase()),
   );
 
   function handlePaste(e: React.ClipboardEvent) {
@@ -155,7 +174,7 @@ export default function PromptInput({
 
     // Check for images first
     const items = Array.from(clipboardData.items);
-    const imageItem = items.find(item => item.type.startsWith('image/'));
+    const imageItem = items.find((item) => item.type.startsWith("image/"));
 
     if (imageItem) {
       const file = imageItem.getAsFile();
@@ -163,7 +182,7 @@ export default function PromptInput({
         const reader = new FileReader();
         reader.onload = (event) => {
           const imageData = event.target?.result as string;
-          addPastedItem('Image', 'image', undefined, imageData);
+          addPastedItem("Image", "image", undefined, imageData);
         };
         reader.readAsDataURL(file);
         e.preventDefault();
@@ -172,14 +191,14 @@ export default function PromptInput({
     }
 
     // Handle text
-    const pastedText = clipboardData.getData('text');
+    const pastedText = clipboardData.getData("text");
     if (!pastedText.trim()) return;
 
     // Detect the kind of content
     const detectedKind = detectKind(pastedText);
 
     // If it's a URL, CSS vars, Tailwind config, or palette, create a paste item
-    if (['url', 'cssvars', 'tailwind', 'palette'].includes(detectedKind)) {
+    if (["url", "cssvars", "tailwind", "palette"].includes(detectedKind)) {
       addPastedItem(pastedText, detectedKind);
       e.preventDefault();
       return;
@@ -187,7 +206,7 @@ export default function PromptInput({
 
     // If text is long (over 200 chars), add as pasted item
     if (pastedText.length >= 200) {
-      addPastedItem(pastedText, 'prompt');
+      addPastedItem(pastedText, "prompt");
       e.preventDefault();
       return;
     }
@@ -197,9 +216,11 @@ export default function PromptInput({
 
   function submit() {
     const allContent = [
-      ...pastedItems.map(item => item.content),
-      prompt.trim()
-    ].filter(Boolean).join('\n\n');
+      ...pastedItems.map((item) => item.content),
+      prompt.trim(),
+    ]
+      .filter(Boolean)
+      .join("\n\n");
 
     if (!allContent && pastedItems.length === 0) return;
 
@@ -213,25 +234,25 @@ export default function PromptInput({
     });
 
     router.push(`/workbench/${chatId}`);
-    onSubmit?.('prompt', allContent);
+    onSubmit?.("prompt", allContent);
   }
 
-  function openDialog(type: 'url' | 'tailwind' | 'cssvars' | 'palette') {
+  function openDialog(type: "url" | "tailwind" | "cssvars" | "palette") {
     setDialogType(type);
     setDialogOpen(true);
   }
 
   function handleImageUpload() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = (event) => {
           const imageData = event.target?.result as string;
-          addPastedItem(file.name, 'image', undefined, imageData);
+          addPastedItem(file.name, "image", undefined, imageData);
         };
         reader.readAsDataURL(file);
       }
@@ -241,23 +262,27 @@ export default function PromptInput({
 
   function handleDialogSubmit(content: string, kind: Kind) {
     if (editingItem) {
-      if (kind === 'palette') {
+      if (kind === "palette") {
         // For palette editing, regenerate the palette with new base color
         setBase(content);
         const paletteColors = generateTailwindPalette(content);
-        const colorsString = paletteColors.map(c => c.value).join(' ');
+        const colorsString = paletteColors.map((c) => c.value).join(" ");
         updatePastedItem(editingItem.id, `Custom: ${colorsString}`, kind);
       } else {
         updatePastedItem(editingItem.id, content, kind);
       }
       setEditingItem(null);
     } else {
-      if (kind === 'palette') {
+      if (kind === "palette") {
         // For new palette items
         setBase(content);
         const paletteColors = generateTailwindPalette(content);
-        const colorsString = paletteColors.map(c => c.value).join(' ');
-        addPastedItem(`Custom: ${colorsString}`, kind, paletteColors.map(c => c.value));
+        const colorsString = paletteColors.map((c) => c.value).join(" ");
+        addPastedItem(
+          `Custom: ${colorsString}`,
+          kind,
+          paletteColors.map((c) => c.value),
+        );
       } else {
         addPastedItem(content, kind);
       }
@@ -265,9 +290,9 @@ export default function PromptInput({
   }
 
   function handleEditItem(item: PastedItem) {
-    if (['url', 'tailwind', 'cssvars', 'palette'].includes(item.kind)) {
+    if (["url", "tailwind", "cssvars", "palette"].includes(item.kind)) {
       setEditingItem(item);
-      setDialogType(item.kind as 'url' | 'tailwind' | 'cssvars' | 'palette');
+      setDialogType(item.kind as "url" | "tailwind" | "cssvars" | "palette");
       setDialogOpen(true);
     }
   }
@@ -280,18 +305,24 @@ export default function PromptInput({
   function handlePaletteSelect(preset: PalettePreset) {
     setBase(preset.baseColor);
     const paletteColors = generateTailwindPalette(preset.baseColor);
-    const colorsString = paletteColors.map(c => c.value).join(' ');
-    addPastedItem(`${preset.name}: ${colorsString}`, 'palette', paletteColors.map(c => c.value));
+    const colorsString = paletteColors.map((c) => c.value).join(" ");
+    addPastedItem(
+      `${preset.name}: ${colorsString}`,
+      "palette",
+      paletteColors.map((c) => c.value),
+    );
     setPaletteDropdownOpen(false);
   }
 
   function handleThemeSelect(theme: ThemePreset) {
     // Clear existing palette items and replace with new theme colors
-    const nonPaletteItems = pastedItems.filter(item => item.kind !== 'palette');
+    const nonPaletteItems = pastedItems.filter(
+      (item) => item.kind !== "palette",
+    );
     clearPastedItems();
 
     // Re-add non-palette items
-    nonPaletteItems.forEach(item => {
+    nonPaletteItems.forEach((item) => {
       addPastedItem(item.content, item.kind, item.colors, item.imageData);
     });
 
@@ -299,19 +330,19 @@ export default function PromptInput({
     const colors = Object.entries(theme.colors);
 
     colors.forEach(([colorName, colorValue]) => {
-      if (colorValue && colorValue.startsWith('#')) {
+      if (colorValue?.startsWith("#")) {
         const paletteColors = generateTailwindPalette(colorValue);
-        const colorsString = paletteColors.map(c => c.value).join(' ');
+        const colorsString = paletteColors.map((c) => c.value).join(" ");
         addPastedItem(
           `${theme.name} ${colorName}: ${colorsString}`,
-          'palette',
-          paletteColors.map(c => c.value)
+          "palette",
+          paletteColors.map((c) => c.value),
         );
       }
     });
 
     setThemeDropdownOpen(false);
-    setThemeSearchQuery('');
+    setThemeSearchQuery("");
   }
 
   function handleCustomColorSubmit() {
@@ -319,9 +350,13 @@ export default function PromptInput({
 
     setBase(customColor);
     const paletteColors = generateTailwindPalette(customColor);
-    const colorsString = paletteColors.map(c => c.value).join(' ');
-    addPastedItem(`Custom: ${colorsString}`, 'palette', paletteColors.map(c => c.value));
-    setCustomColor('');
+    const colorsString = paletteColors.map((c) => c.value).join(" ");
+    addPastedItem(
+      `Custom: ${colorsString}`,
+      "palette",
+      paletteColors.map((c) => c.value),
+    );
+    setCustomColor("");
     setPaletteDropdownOpen(false);
   }
 
@@ -329,13 +364,15 @@ export default function PromptInput({
     return /^#[0-9a-f]{3,8}$/i.test(color);
   }
 
-  function handlePresetClick(preset: typeof presets[0]) {
+  function handlePresetClick(preset: (typeof presets)[0]) {
     setPrompt(preset.prompt);
     // Clear existing palette items and replace with new ones
-    const nonPaletteItems = pastedItems.filter(item => item.kind !== 'palette');
+    const nonPaletteItems = pastedItems.filter(
+      (item) => item.kind !== "palette",
+    );
     clearPastedItems();
     // Re-add non-palette items
-    nonPaletteItems.forEach(item => {
+    nonPaletteItems.forEach((item) => {
       addPastedItem(item.content, item.kind, item.colors, item.imageData);
     });
     // Add ramped colors for each base color
@@ -343,9 +380,21 @@ export default function PromptInput({
     const neutralColors = generateTailwindPalette(preset.neutralColor);
     const backgroundColors = generateTailwindPalette(preset.backgroundColor);
 
-    addPastedItem(`${primaryColors.map(c => c.value).join(' ')}`, 'palette', primaryColors.map(c => c.value));
-    addPastedItem(`${neutralColors.map(c => c.value).join(' ')}`, 'palette', neutralColors.map(c => c.value));
-    addPastedItem(`${backgroundColors.map(c => c.value).join(' ')}`, 'palette', backgroundColors.map(c => c.value));
+    addPastedItem(
+      `${primaryColors.map((c) => c.value).join(" ")}`,
+      "palette",
+      primaryColors.map((c) => c.value),
+    );
+    addPastedItem(
+      `${neutralColors.map((c) => c.value).join(" ")}`,
+      "palette",
+      neutralColors.map((c) => c.value),
+    );
+    addPastedItem(
+      `${backgroundColors.map((c) => c.value).join(" ")}`,
+      "palette",
+      backgroundColors.map((c) => c.value),
+    );
   }
 
   function CustomColorPreview({ color }: { color: string }) {
@@ -398,7 +447,9 @@ export default function PromptInput({
   }
 
   function ThemeColorPreview({ theme }: { theme: ThemePreset }) {
-    const colorEntries = Object.entries(theme.colors).filter(([_, value]) => value && value.startsWith('#'));
+    const colorEntries = Object.entries(theme.colors).filter(([_, value]) =>
+      value?.startsWith("#"),
+    );
     const displayColors = colorEntries.slice(0, 5); // Show up to 5 colors
 
     return (
@@ -415,30 +466,30 @@ export default function PromptInput({
     );
   }
 
-  function getProviderIcon(provider: 'tweakcn' | 'rayso' | 'tinte') {
+  function getProviderIcon(provider: "tweakcn" | "rayso" | "tinte") {
     switch (provider) {
-      case 'tweakcn':
+      case "tweakcn":
         return <TweakCNIcon className="w-3 h-3" />;
-      case 'rayso':
+      case "rayso":
         return <RaycastIcon className="w-3 h-3" />;
-      case 'tinte':
+      case "tinte":
         return <Logo size={12} />;
       default:
         return null;
     }
   }
 
-
   return (
-
     <>
       <div className="relative">
-
         {/* Unified container for textarea and pasted items */}
-        <div className={cn(
-          "relative",
-          pastedItems.length > 0 && "rounded-lg border border-border/70 focus-within:border-border/90 focus-within:shadow-sm"
-        )}>
+        <div
+          className={cn(
+            "relative",
+            pastedItems.length > 0 &&
+              "rounded-lg border border-border/70 focus-within:border-border/90 focus-within:shadow-sm",
+          )}
+        >
           {/* Textarea container with controls */}
           <div className="relative">
             <Textarea
@@ -447,7 +498,7 @@ export default function PromptInput({
               onChange={(e) => setPrompt(e.target.value)}
               onPaste={handlePaste}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   submit();
                 }
@@ -456,7 +507,7 @@ export default function PromptInput({
                 "w-full resize-none pt-3 pb-14 pr-12 focus-visible:ring-0",
                 pastedItems.length > 0
                   ? "rounded-b-none border-0 focus-visible:border-0"
-                  : "border border-border/70 rounded-md focus-visible:border-border/90 focus-visible:shadow-sm"
+                  : "border border-border/70 rounded-md focus-visible:border-border/90 focus-visible:shadow-sm",
               )}
               placeholder={
                 pastedItems.length > 0
@@ -470,7 +521,10 @@ export default function PromptInput({
 
             {/* Controls positioned absolutely over the textarea only */}
             <div className="absolute bottom-3 left-3 flex items-center gap-2 z-10">
-              <DropdownMenu open={paletteDropdownOpen} onOpenChange={setPaletteDropdownOpen}>
+              <DropdownMenu
+                open={paletteDropdownOpen}
+                onOpenChange={setPaletteDropdownOpen}
+              >
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Palette className="size-4" />
@@ -488,7 +542,7 @@ export default function PromptInput({
                           value={customColor}
                           onChange={(e) => setCustomColor(e.target.value)}
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === "Enter") {
                               handleCustomColorSubmit();
                             }
                           }}
@@ -520,7 +574,10 @@ export default function PromptInput({
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Popover open={themeDropdownOpen} onOpenChange={setThemeDropdownOpen}>
+              <Popover
+                open={themeDropdownOpen}
+                onOpenChange={setThemeDropdownOpen}
+              >
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Search className="size-4" />
@@ -540,8 +597,11 @@ export default function PromptInput({
                   <div
                     className="overflow-y-auto"
                     style={{
-                      maxHeight: '320px',
-                      height: filteredThemes.length === 0 ? '64px' : `${Math.min(filteredThemes.length * 50 + (filteredThemes.length - 1) * 4 + 8, 320)}px`
+                      maxHeight: "320px",
+                      height:
+                        filteredThemes.length === 0
+                          ? "64px"
+                          : `${Math.min(filteredThemes.length * 50 + (filteredThemes.length - 1) * 4 + 8, 320)}px`,
                     }}
                   >
                     <div className="flex flex-col gap-1 p-1">
@@ -553,10 +613,14 @@ export default function PromptInput({
                         >
                           <ThemeColorPreview theme={theme} />
                           <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                            <div className="text-xs font-medium truncate">{theme.name}</div>
+                            <div className="text-xs font-medium truncate">
+                              {theme.name}
+                            </div>
                             <div className="flex items-center gap-1">
                               {getProviderIcon(theme.provider)}
-                              <span className="text-xs text-muted-foreground capitalize">{theme.provider}</span>
+                              <span className="text-xs text-muted-foreground capitalize">
+                                {theme.provider}
+                              </span>
                             </div>
                           </div>
                         </button>
@@ -582,19 +646,31 @@ export default function PromptInput({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={() => openDialog('url')} className="flex items-center gap-2">
+                  <DropdownMenuItem
+                    onClick={() => openDialog("url")}
+                    className="flex items-center gap-2"
+                  >
                     <Globe className="size-4" />
                     Add web page
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleImageUpload} className="flex items-center gap-2">
+                  <DropdownMenuItem
+                    onClick={handleImageUpload}
+                    className="flex items-center gap-2"
+                  >
                     <Image className="size-4" />
                     Add image
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => openDialog('tailwind')} className="flex items-center gap-2">
+                  <DropdownMenuItem
+                    onClick={() => openDialog("tailwind")}
+                    className="flex items-center gap-2"
+                  >
                     <TailwindIcon className="size-4" />
                     Add Tailwind config
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => openDialog('cssvars')} className="flex items-center gap-2">
+                  <DropdownMenuItem
+                    onClick={() => openDialog("cssvars")}
+                    className="flex items-center gap-2"
+                  >
                     <CSSIcon className="size-4" />
                     Add globals.css
                   </DropdownMenuItem>
@@ -610,9 +686,9 @@ export default function PromptInput({
               whileTap={{ scale: 0.95 }}
               className={cn(
                 "absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg",
-                (prompt.trim() || pastedItems.length > 0)
+                prompt.trim() || pastedItems.length > 0
                   ? "bg-primary text-primary-foreground cursor-pointer"
-                  : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed"
+                  : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
               )}
             >
               <ArrowUp className="size-4" />
@@ -632,7 +708,6 @@ export default function PromptInput({
           )}
         </div>
       </div>
-
 
       {/* Preset buttons */}
       <div className="mt-6">

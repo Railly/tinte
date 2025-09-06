@@ -1,7 +1,7 @@
-import * as React from "react";
+import { Code, Copy, MoreHorizontal } from "lucide-react";
 import { motion } from "motion/react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Copy, Code } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 interface DockCollapsedProps {

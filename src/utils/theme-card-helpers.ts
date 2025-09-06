@@ -1,4 +1,8 @@
-import { ThemeData, ThemeColors, TinteThemeData } from "@/lib/theme-tokens";
+import type {
+  ThemeColors,
+  ThemeData,
+  TinteThemeData,
+} from "@/lib/theme-tokens";
 
 export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {
   const tinteTheme = theme as TinteThemeData;

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools, subscribeWithSelector } from "zustand/middleware";
-import { popSeed } from "@/utils/anon-seed";
 import { CHAT_CONFIG } from "@/lib/chat-constants";
+import { popSeed } from "@/utils/anon-seed";
 import type { SeedPayload } from "@/utils/seed-mapper";
 
 export type WorkbenchTab = "agent" | "colors" | "tokens";

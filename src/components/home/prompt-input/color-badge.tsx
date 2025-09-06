@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import { motion } from 'motion/react';
+import { motion } from "motion/react";
 
 interface ColorBadgeProps {
   color: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   showHex?: boolean;
   className?: string;
 }
 
 export function ColorBadge({
   color,
-  size = 'md',
+  size = "md",
   showHex = true,
-  className = ''
+  className = "",
 }: ColorBadgeProps) {
   const sizeClasses = {
-    sm: 'w-3 h-3',
-    md: 'w-4 h-4',
-    lg: 'w-6 h-6'
+    sm: "w-3 h-3",
+    md: "w-4 h-4",
+    lg: "w-6 h-6",
   };
 
   const textSizes = {
-    sm: 'text-[8px]',
-    md: 'text-[10px]',
-    lg: 'text-xs'
+    sm: "text-[8px]",
+    md: "text-[10px]",
+    lg: "text-xs",
   };
 
   return (
@@ -47,4 +47,4 @@ export function ColorBadge({
       )}
     </motion.div>
   );
-} 
+}

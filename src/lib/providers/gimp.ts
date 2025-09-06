@@ -1,14 +1,14 @@
-import { TinteTheme } from "@/types/tinte";
-import { PreviewableProvider, ProviderOutput } from "./types";
-import { GIMPIcon } from "@/components/shared/icons/gimp";
 import { GimpPreview } from "@/components/preview/gimp/gimp-preview";
+import { GIMPIcon } from "@/components/shared/icons/gimp";
+import { makePolineFromTinte, polineRampHex } from "@/lib/ice-theme";
+import type { TinteTheme } from "@/types/tinte";
 import {
   createPolineColorMapping,
-  hexToInt,
-  getThemeName,
   getDisplayName,
+  getThemeName,
+  hexToInt,
 } from "./poline-base";
-import { makePolineFromTinte, polineRampHex } from "@/lib/ice-theme";
+import type { PreviewableProvider, ProviderOutput } from "./types";
 
 export interface GIMPPalette {
   name: string;
@@ -59,7 +59,7 @@ function formatAbbreviationToSemantic(key: string): string {
 
 function generateGIMPPalette(
   theme: TinteTheme,
-  mode: "light" | "dark"
+  mode: "light" | "dark",
 ): GIMPPalette {
   const block = theme[mode];
   const colorMapping = createPolineColorMapping(block);
@@ -103,7 +103,10 @@ function generateGIMPPalette(
   };
 }
 
-export const gimpProvider: PreviewableProvider<{ light: GIMPPalette; dark: GIMPPalette }> = {
+export const gimpProvider: PreviewableProvider<{
+  light: GIMPPalette;
+  dark: GIMPPalette;
+}> = {
   metadata: {
     id: "gimp",
     name: "GIMP",
@@ -162,24 +165,25 @@ export const gimpProvider: PreviewableProvider<{ light: GIMPPalette; dark: GIMPP
   },
 
   validate: (output: { light: GIMPPalette; dark: GIMPPalette }) => {
-    const validatePalette = (palette: GIMPPalette) => !!(
-      palette.name &&
-      palette.colors &&
-      palette.colors.length > 0 &&
-      palette.colors.every(
-        (color) =>
-          typeof color.red === "number" &&
-          typeof color.green === "number" &&
-          typeof color.blue === "number" &&
-          typeof color.name === "string" &&
-          color.red >= 0 &&
-          color.red <= 255 &&
-          color.green >= 0 &&
-          color.green <= 255 &&
-          color.blue >= 0 &&
-          color.blue <= 255
-      )
-    );
+    const validatePalette = (palette: GIMPPalette) =>
+      !!(
+        palette.name &&
+        palette.colors &&
+        palette.colors.length > 0 &&
+        palette.colors.every(
+          (color) =>
+            typeof color.red === "number" &&
+            typeof color.green === "number" &&
+            typeof color.blue === "number" &&
+            typeof color.name === "string" &&
+            color.red >= 0 &&
+            color.red <= 255 &&
+            color.green >= 0 &&
+            color.green <= 255 &&
+            color.blue >= 0 &&
+            color.blue <= 255,
+        )
+      );
 
     return validatePalette(output.light) && validatePalette(output.dark);
   },

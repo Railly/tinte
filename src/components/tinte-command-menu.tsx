@@ -1,24 +1,16 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import { useThemeContext } from "@/providers/theme";
 import {
-  Palette,
-  Sun,
-  Moon,
+  CornerDownLeft,
   Home,
   MessageSquare,
-  Code2,
-  Shuffle,
-  Download,
-  Settings,
-  Zap,
+  Moon,
   Search,
-  CornerDownLeft,
-  Paintbrush,
-  Layers,
+  Sun,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { Badge } from "@/components/ui/badge";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,10 +23,10 @@ import {
   CommandList,
   CommandShortcut,
 } from "@/components/ui/command";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ALL_PROVIDERS } from "@/config/providers";
 import { cn } from "@/lib/utils";
+import { useThemeContext } from "@/providers/theme";
 
 const NAVIGATION_ITEMS = [
   {
@@ -55,7 +47,7 @@ const NAVIGATION_ITEMS = [
   },
 ];
 
-const THEME_ACTIONS = [
+const _THEME_ACTIONS = [
   {
     id: "toggle-mode",
     title: "Toggle Theme Mode",

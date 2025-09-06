@@ -51,12 +51,12 @@ export function generatePreview(content: string, kind: Kind) {
           title: domain,
           subtitle: isHomepage
             ? "Homepage"
-            : path || url.search?.slice(0, 50) + "..." || "",
+            : path || `${url.search?.slice(0, 50)}...` || "",
           colors: [],
         };
       } catch {
         return {
-          title: content.slice(0, 40) + "...",
+          title: `${content.slice(0, 40)}...`,
           subtitle: "Invalid URL",
           colors: [],
         };
@@ -76,15 +76,15 @@ export function generatePreview(content: string, kind: Kind) {
           colors: [],
         };
       } catch {
-        const firstLine = content.split("\n")[0]?.slice(0, 50) + "...";
+        const firstLine = `${content.split("\n")[0]?.slice(0, 50)}...`;
         return { title: "JSON Configuration", subtitle: firstLine, colors: [] };
       }
 
-    case "cssvars":
+    case "cssvars": {
       const vars = content.match(/--[\w-]+\s*:\s*([^;]+)/g) || [];
       const colorVars = vars
         .filter(
-          (v) => v.includes("#") || v.includes("rgb") || v.includes("hsl")
+          (v) => v.includes("#") || v.includes("rgb") || v.includes("hsl"),
         )
         .slice(0, 4);
       const varNames = content.match(/--[\w-]+/g) || [];
@@ -98,8 +98,9 @@ export function generatePreview(content: string, kind: Kind) {
           .filter((c): c is string => Boolean(c))
           .slice(0, 4),
       };
+    }
 
-    case "tailwind":
+    case "tailwind": {
       const hasTheme = content.includes("theme:");
       const hasColors = content.includes("colors:");
       const configType = hasTheme ? "theme" : hasColors ? "colors" : "general";
@@ -109,8 +110,9 @@ export function generatePreview(content: string, kind: Kind) {
         subtitle: `${configType} configuration detected`,
         colors: [],
       };
+    }
 
-    case "palette":
+    case "palette": {
       const colorMatches = content.match(/#[0-9a-f]{3,8}/gi) || [];
       const uniqueColors = [...new Set(colorMatches)];
 
@@ -122,8 +124,9 @@ export function generatePreview(content: string, kind: Kind) {
             : "Single color detected",
         colors: uniqueColors.slice(0, 8),
       };
+    }
 
-    default:
+    default: {
       const lines = content.split("\n").filter((line) => line.trim());
       const firstLine = lines[0] || "";
       const secondLine = lines[1] || "";
@@ -136,6 +139,7 @@ export function generatePreview(content: string, kind: Kind) {
           secondLine.slice(0, 80) + (secondLine.length > 80 ? "..." : "") || "",
         colors: [],
       };
+    }
   }
 }
 
@@ -153,7 +157,7 @@ export function generateRamp(baseHex: string): Swatch[] {
         [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950][index] || 500,
       hex: color.value,
     }));
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }

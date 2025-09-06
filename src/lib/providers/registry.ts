@@ -1,5 +1,10 @@
-import { TinteTheme } from "@/types/tinte";
-import { ThemeProvider, PreviewableProvider, ProviderOutput, ProviderMetadata } from "./types";
+import type { TinteTheme } from "@/types/tinte";
+import type {
+  PreviewableProvider,
+  ProviderMetadata,
+  ProviderOutput,
+  ThemeProvider,
+} from "./types";
 
 export class ProviderRegistry {
   private providers = new Map<string, ThemeProvider>();
@@ -30,40 +35,48 @@ export class ProviderRegistry {
     return Array.from(this.previewableProviders.values());
   }
 
-  getByCategory(category: ProviderMetadata['category']): ThemeProvider[] {
-    return this.getAll().filter(provider => provider.metadata.category === category);
+  getByCategory(category: ProviderMetadata["category"]): ThemeProvider[] {
+    return this.getAll().filter(
+      (provider) => provider.metadata.category === category,
+    );
   }
 
   getByTag(tag: string): ThemeProvider[] {
-    return this.getAll().filter(provider => 
-      provider.metadata.tags.includes(tag)
+    return this.getAll().filter((provider) =>
+      provider.metadata.tags.includes(tag),
     );
   }
 
   convert<T>(providerId: string, theme: TinteTheme): T | null {
     const provider = this.get(providerId);
     if (!provider) return null;
-    
+
     try {
       return provider.convert(theme) as T;
     } catch (error) {
-      console.error(`Error converting theme with provider ${providerId}:`, error);
+      console.error(
+        `Error converting theme with provider ${providerId}:`,
+        error,
+      );
       return null;
     }
   }
 
   export(
-    providerId: string, 
-    theme: TinteTheme, 
-    filename?: string
+    providerId: string,
+    theme: TinteTheme,
+    filename?: string,
   ): ProviderOutput | null {
     const provider = this.get(providerId);
     if (!provider) return null;
-    
+
     try {
       return provider.export(theme, filename);
     } catch (error) {
-      console.error(`Error exporting theme with provider ${providerId}:`, error);
+      console.error(
+        `Error exporting theme with provider ${providerId}:`,
+        error,
+      );
       return null;
     }
   }
@@ -71,11 +84,14 @@ export class ProviderRegistry {
   validate<T>(providerId: string, output: T): boolean {
     const provider = this.get(providerId);
     if (!provider?.validate) return true;
-    
+
     try {
       return provider.validate(output);
     } catch (error) {
-      console.error(`Error validating output with provider ${providerId}:`, error);
+      console.error(
+        `Error validating output with provider ${providerId}:`,
+        error,
+      );
       return false;
     }
   }
@@ -90,27 +106,27 @@ export class ProviderRegistry {
 
   convertAll(theme: TinteTheme): Record<string, any> {
     const results: Record<string, any> = {};
-    
+
     for (const provider of this.providers.values()) {
       const converted = this.convert(provider.metadata.id, theme);
       if (converted !== null) {
         results[provider.metadata.id] = converted;
       }
     }
-    
+
     return results;
   }
 
   exportAll(theme: TinteTheme): Record<string, ProviderOutput> {
     const results: Record<string, ProviderOutput> = {};
-    
+
     for (const provider of this.providers.values()) {
       const exported = this.export(provider.metadata.id, theme);
       if (exported) {
         results[provider.metadata.id] = exported;
       }
     }
-    
+
     return results;
   }
 }

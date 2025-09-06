@@ -1,28 +1,37 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { CodeTemplate, VSCodeTheme } from '@/lib/providers/vscode';
-import Editor from '@monaco-editor/react';
-import { useMonacoEditor } from '@/hooks/use-monaco-editor';
-import { useThemeContext } from '@/providers/theme';
+import Editor from "@monaco-editor/react";
+import { useMonacoEditor } from "@/hooks/use-monaco-editor";
+import type { CodeTemplate, VSCodeTheme } from "@/lib/providers/vscode";
+import { useThemeContext } from "@/providers/theme";
 
 interface MonacoPreviewProps {
   themeSet: { light: VSCodeTheme; dark: VSCodeTheme };
-  currentMode: 'light' | 'dark';
+  currentMode: "light" | "dark";
   template: CodeTemplate;
   themeVersion: number;
 }
 
-export function MonacoPreview({ themeSet, currentMode, template, themeVersion }: MonacoPreviewProps) {
+export function MonacoPreview({
+  themeSet,
+  currentMode,
+  template,
+  themeVersion,
+}: MonacoPreviewProps) {
   const { currentTokens } = useThemeContext();
-  const { isReady, isViewTransitioning, currentThemeName, handleEditorDidMount } = useMonacoEditor({
+  const {
+    isReady,
+    isViewTransitioning,
+    currentThemeName,
+    handleEditorDidMount,
+  } = useMonacoEditor({
     themeSet,
     currentMode,
     template,
-    themeVersion
+    themeVersion,
   });
 
-  const monoFont = currentTokens['font-mono'] || 'monospace';
+  const monoFont = currentTokens["font-mono"] || "monospace";
 
   // Only show loading on initial load - theme changes are instant
   if (!isReady) {
@@ -51,23 +60,23 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
           fontSize: 13,
-          lineNumbers: 'on',
+          lineNumbers: "on",
           lineHeight: 1.5,
           glyphMargin: false,
           folding: false,
           lineDecorationsWidth: 20,
           lineNumbersMinChars: 3,
-          renderLineHighlight: 'none',
+          renderLineHighlight: "none",
           automaticLayout: false,
-          wordWrap: 'on',
+          wordWrap: "on",
           wordWrapColumn: 50,
           overviewRulerLanes: 0,
           hideCursorInOverviewRuler: true,
           overviewRulerBorder: false,
           fontFamily: monoFont,
           scrollbar: {
-            vertical: 'auto',
-            horizontal: 'hidden',
+            vertical: "auto",
+            horizontal: "hidden",
             useShadows: false,
             verticalHasArrows: false,
             horizontalHasArrows: false,
@@ -76,7 +85,7 @@ export function MonacoPreview({ themeSet, currentMode, template, themeVersion }:
           },
         }}
         theme={currentThemeName}
-        />
+      />
     </div>
   );
 }
