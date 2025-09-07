@@ -2,7 +2,6 @@
 
 import { MobileThemeControls } from "@/components/shared/mobile-theme-controls";
 import { MobileThemeEditor } from "@/components/shared/mobile-theme-editor";
-import { ThemeEditorPanel } from "@/components/shared/theme-editor-panel";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -12,7 +11,6 @@ import {
 } from "@/components/ui/drawer";
 import { useWorkbenchUrlSync } from "@/hooks/use-workbench-url-sync";
 import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
-import { ChatContent } from "./chat-content";
 import { WorkbenchPreviewPane } from "./workbench-preview-pane";
 
 interface WorkbenchMobileProps {
