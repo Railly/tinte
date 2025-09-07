@@ -7,7 +7,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Input } from "@/components/ui/input";
+import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
@@ -93,28 +93,34 @@ export function CanonicalTab() {
               </CollapsibleTrigger>
               <CollapsibleContent className="border border-t-0 border-border rounded-b-md bg-muted/20">
                 <div className="p-3 space-y-3">
-                  {keys.map((key) => (
-                    <div key={key} className="flex items-center gap-3">
-                      <div
-                        className="w-6 h-6 rounded border border-border flex-shrink-0"
-                        style={{ backgroundColor: currentColors[key] }}
-                      />
-                      <div className="flex-1 space-y-1">
-                        <Label htmlFor={key} className="text-xs font-medium">
+                  {keys.map((key, tokenIndex) => {
+                    // Calculate the color number based on position across all color groups
+                    const previousColorGroups = COLOR_GROUPS
+                      .slice(0, COLOR_GROUPS.findIndex(g => g.label === label))
+                      .filter(g => g.keys.length > 0);
+                    const previousColorCount = previousColorGroups.reduce(
+                      (sum, g) => sum + g.keys.length, 
+                      0
+                    );
+                    const colorNumber = previousColorCount + tokenIndex + 1;
+                    
+                    return (
+                      <div key={key} className="space-y-1">
+                        <Label htmlFor={key} className="text-xs font-medium flex items-center gap-1">
                           {key.replace(/_/g, "-")}
+                          <sup className="text-[10px] text-muted-foreground/60 font-mono">
+                            {colorNumber}
+                          </sup>
                         </Label>
-                        <Input
-                          id={key}
-                          value={currentColors[key]}
-                          onChange={(e) =>
-                            handleColorChange(key, e.target.value)
+                        <ColorPickerInput
+                          color={currentColors[key]}
+                          onChange={(newValue) =>
+                            handleColorChange(key, newValue)
                           }
-                          className="h-7 text-xs font-mono"
-                          placeholder="#000000"
                         />
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CollapsibleContent>
             </Collapsible>
