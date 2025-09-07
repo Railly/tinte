@@ -8,7 +8,6 @@ export type WorkbenchTab = "agent" | "colors" | "tokens";
 
 export interface WorkbenchState {
   chatId: string;
-  split: boolean;
   loading: boolean;
   seed: SeedPayload | null;
   drawerOpen: boolean;
@@ -16,7 +15,6 @@ export interface WorkbenchState {
 
 export interface WorkbenchActions {
   setChatId: (chatId: string) => void;
-  setSplit: (split: boolean) => void;
   setLoading: (loading: boolean) => void;
   setSeed: (seed: SeedPayload | null) => void;
   setDrawerOpen: (open: boolean) => void;
@@ -30,7 +28,6 @@ export type WorkbenchStore = WorkbenchState & WorkbenchActions;
 
 const initialState: WorkbenchState = {
   chatId: "",
-  split: false,
   loading: true,
   seed: null,
   drawerOpen: false,
@@ -45,10 +42,6 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
         set({ chatId }, false, "setChatId");
       },
 
-
-      setSplit: (split: boolean) => {
-        set({ split }, false, "setSplit");
-      },
 
       setLoading: (loading: boolean) => {
         set({ loading }, false, "setLoading");
@@ -68,7 +61,6 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
             chatId,
             loading: true,
             seed: null,
-            split: false,
           },
           false,
           "initializeWorkbench",
@@ -78,12 +70,6 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
           const seed = popSeed(chatId);
           set({ seed, loading: false }, false, "initializeWorkbench/setSeed");
         }
-
-        const timer = setTimeout(() => {
-          set({ split: true }, false, "initializeWorkbench/setSplit");
-        }, CHAT_CONFIG.SPLIT_DELAY);
-
-        return () => clearTimeout(timer);
       },
 
       toggleDrawer: () => {

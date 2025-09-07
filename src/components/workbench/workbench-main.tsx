@@ -18,16 +18,13 @@ export function WorkbenchMain({
   chatId,
   defaultTab,
 }: WorkbenchMainProps) {
-  // Only what THIS component needs for layout decisions
-  const split = useWorkbenchStore((state) => state.split);
   const initializeWorkbench = useWorkbenchStore(
     (state) => state.initializeWorkbench,
   );
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const cleanup = initializeWorkbench(chatId);
-    return cleanup;
+    initializeWorkbench(chatId);
   }, [chatId, initializeWorkbench]);
 
   // Mobile layout
@@ -49,7 +46,7 @@ export function WorkbenchMain({
           <WorkbenchSidebar defaultTab={defaultTab} />
           <SidebarInset className="flex flex-col">
             <div className="flex-1">
-              {split && <WorkbenchPreviewPane />}
+              <WorkbenchPreviewPane />
             </div>
           </SidebarInset>
         </div>
