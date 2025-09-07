@@ -1,27 +1,24 @@
 import type { WorkbenchTab } from "@/stores/workbench-store";
-import { ChatContent } from "./chat-content";
-import { ColorsEditor } from "./colors-editor";
-import { TokensEditor } from "./tokens-editor";
+import { AgentTab } from "./tabs/agent-tab";
+import { ColorsTab } from "./tabs/colors-tab";
+import { TokensTab } from "./tabs/tokens-tab";
 
 // Simple, extensible tab configuration
 export const WORKBENCH_TABS = [
   {
     id: "agent" as const,
     label: "Agent",
-    component: ChatContent,
-    requiresLoading: true,
+    component: AgentTab,
   },
   {
     id: "colors" as const,
     label: "Colors",
-    component: ColorsEditor,
-    requiresLoading: false,
+    component: ColorsTab,
   },
   {
     id: "tokens" as const,
     label: "Tokens",
-    component: TokensEditor,
-    requiresLoading: false,
+    component: TokensTab,
   },
 ] as const;
 

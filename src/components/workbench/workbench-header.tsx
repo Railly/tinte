@@ -66,7 +66,7 @@ export function WorkbenchHeader({ chatId }: WorkbenchHeaderProps) {
   }, [chatId, allThemes, addTheme, handleThemeSelect]);
 
   return (
-    <header className="sticky px-3 md:px-4 flex items-center justify-between h-[var(--header-height)] top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+    <header className="sticky px-3 md:px-4 flex items-center justify-between h-[var(--header-height)] top-0 z-50 w-full border-b bg-background/95 backdrop-blur shrink-0">
       <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
         <Link href="/">
           <Logo size={24} />
@@ -92,7 +92,6 @@ export function WorkbenchHeader({ chatId }: WorkbenchHeaderProps) {
         </div>
         <Slash className="w-4 h-4 text-border -rotate-[15deg] hidden sm:block" />
         <ProviderSwitcher />
-        <Separator orientation="vertical" className="!h-8 hidden md:block" />
       </div>
 
       <div className="flex h-full items-center gap-1 md:gap-2">

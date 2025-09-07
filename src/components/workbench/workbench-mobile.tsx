@@ -17,13 +17,11 @@ import { WorkbenchPreviewPane } from "./workbench-preview-pane";
 
 interface WorkbenchMobileProps {
   chatId: string;
-  isStatic: boolean;
   defaultTab?: WorkbenchTab;
 }
 
 export function WorkbenchMobile({
   chatId: _chatId,
-  isStatic,
   defaultTab,
 }: WorkbenchMobileProps) {
   // Direct store access
@@ -34,14 +32,14 @@ export function WorkbenchMobile({
 
   // URL state
   const { activeTab, setActiveTab } = useWorkbenchUrlSync(
-    defaultTab || (isStatic ? "colors" : "agent"),
+    defaultTab || "colors",
   );
 
   // Theme context (only what this component needs)
   // Export functions are handled by WorkbenchPreviewPane itself
 
-  const showPreview = isStatic || split;
-  const showTabs = !isStatic && !split;
+  const showPreview = split;
+  const showTabs = !split;
 
   return (
     <div className="h-[calc(100dvh-var(--header-height))] w-full flex flex-col">

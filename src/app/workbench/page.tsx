@@ -10,7 +10,7 @@ export default function WorkbenchPage() {
 
   useEffect(() => {
     const chatId = nanoid();
-    router.replace(`/workbench/${chatId}?new=true`);
+    router.replace(`/workbench/${chatId}`);
   }, [router]);
 
   // Reuse the same loading structure as loading.tsx to prevent layout shift

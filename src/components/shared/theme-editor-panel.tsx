@@ -163,7 +163,7 @@ export function ThemeEditorPanel() {
   const _activeId = activeTheme?.id || null;
 
   return (
-    <ScrollArea className="h-[50vh]" showScrollIndicators={true}>
+    <ScrollArea className="h-[50vh]" showScrollIndicators={false}>
       <div className="flex-1 min-h-0 pb-8" ref={scope}>
         <div className="p-3 space-y-4">
           <div className="text-xs font-medium text-muted-foreground">

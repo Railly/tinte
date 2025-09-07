@@ -1,23 +1,21 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
 import { useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { CHAT_CONFIG } from "@/lib/chat-constants";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
+import { WorkbenchHeader } from "./workbench-header";
 import { WorkbenchMobile } from "./workbench-mobile";
 import { WorkbenchPreviewPane } from "./workbench-preview-pane";
 import { WorkbenchSidebar } from "./workbench-sidebar";
 
 interface WorkbenchMainProps {
   chatId: string;
-  isStatic?: boolean;
   defaultTab?: WorkbenchTab;
 }
 
 export function WorkbenchMain({
   chatId,
-  isStatic = false,
   defaultTab,
 }: WorkbenchMainProps) {
   // Only what THIS component needs for layout decisions
@@ -28,50 +26,34 @@ export function WorkbenchMain({
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const cleanup = initializeWorkbench(chatId, isStatic);
+    const cleanup = initializeWorkbench(chatId);
     return cleanup;
-  }, [chatId, isStatic, initializeWorkbench]);
+  }, [chatId, initializeWorkbench]);
 
   // Mobile layout
   if (isMobile) {
     return (
       <WorkbenchMobile
         chatId={chatId}
-        isStatic={isStatic}
         defaultTab={defaultTab}
       />
     );
   }
 
-  // Static layout (design mode)
-  if (isStatic) {
-    return (
-      <div className="h-[calc(100dvh-var(--header-height))] w-full overflow-hidden flex">
-        <aside
-          className="border-r bg-background flex flex-col flex-shrink-0"
-          style={{ width: CHAT_CONFIG.SIDEBAR_WIDTH }}
-        >
-          <WorkbenchSidebar defaultTab={defaultTab} isStatic />
-        </aside>
-        <WorkbenchPreviewPane />
-      </div>
-    );
-  }
-
-  // Dynamic layout (default)
+  // Desktop layout with SidebarProvider
   return (
-    <div className="h-[calc(100dvh-var(--header-height))] w-full overflow-hidden flex">
-      <motion.aside
-        initial={{ width: "100%" }}
-        animate={{ width: split ? CHAT_CONFIG.SIDEBAR_WIDTH : "100%" }}
-        transition={{ type: "spring", ...CHAT_CONFIG.ANIMATION.SPRING }}
-        className="border-r bg-background flex flex-col flex-shrink-0"
-        style={{ willChange: "width" }}
-      >
-        <WorkbenchSidebar split={split} defaultTab={defaultTab} />
-      </motion.aside>
-
-      <AnimatePresence>{split && <WorkbenchPreviewPane />}</AnimatePresence>
-    </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="h-screen w-full flex flex-col">
+        <WorkbenchHeader chatId={chatId} />
+        <div className="flex flex-1">
+          <WorkbenchSidebar defaultTab={defaultTab} />
+          <SidebarInset className="flex flex-col">
+            <div className="flex-1">
+              {split && <WorkbenchPreviewPane />}
+            </div>
+          </SidebarInset>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 }

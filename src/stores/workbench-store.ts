@@ -8,7 +8,6 @@ export type WorkbenchTab = "agent" | "colors" | "tokens";
 
 export interface WorkbenchState {
   chatId: string;
-  isStatic: boolean;
   split: boolean;
   loading: boolean;
   seed: SeedPayload | null;
@@ -17,13 +16,12 @@ export interface WorkbenchState {
 
 export interface WorkbenchActions {
   setChatId: (chatId: string) => void;
-  setIsStatic: (isStatic: boolean) => void;
   setSplit: (split: boolean) => void;
   setLoading: (loading: boolean) => void;
   setSeed: (seed: SeedPayload | null) => void;
   setDrawerOpen: (open: boolean) => void;
 
-  initializeWorkbench: (chatId: string, isStatic?: boolean) => void;
+  initializeWorkbench: (chatId: string) => void;
   toggleDrawer: () => void;
   reset: () => void;
 }
@@ -32,7 +30,6 @@ export type WorkbenchStore = WorkbenchState & WorkbenchActions;
 
 const initialState: WorkbenchState = {
   chatId: "",
-  isStatic: false,
   split: false,
   loading: true,
   seed: null,
@@ -48,9 +45,6 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
         set({ chatId }, false, "setChatId");
       },
 
-      setIsStatic: (isStatic: boolean) => {
-        set({ isStatic }, false, "setIsStatic");
-      },
 
       setSplit: (split: boolean) => {
         set({ split }, false, "setSplit");
@@ -68,11 +62,10 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
         set({ drawerOpen }, false, "setDrawerOpen");
       },
 
-      initializeWorkbench: (chatId: string, isStatic = false) => {
+      initializeWorkbench: (chatId: string) => {
         set(
           {
             chatId,
-            isStatic,
             loading: true,
             seed: null,
             split: false,
@@ -86,13 +79,11 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
           set({ seed, loading: false }, false, "initializeWorkbench/setSeed");
         }
 
-        if (!isStatic) {
-          const timer = setTimeout(() => {
-            set({ split: true }, false, "initializeWorkbench/setSplit");
-          }, CHAT_CONFIG.SPLIT_DELAY);
+        const timer = setTimeout(() => {
+          set({ split: true }, false, "initializeWorkbench/setSplit");
+        }, CHAT_CONFIG.SPLIT_DELAY);
 
-          return () => clearTimeout(timer);
-        }
+        return () => clearTimeout(timer);
       },
 
       toggleDrawer: () => {
