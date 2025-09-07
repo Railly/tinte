@@ -55,16 +55,14 @@ export type FontToken = "font-sans" | "font-mono" | "font-serif";
 // Base vars that produce computed tokens in your @theme inline block
 export type BaseVarToken = "radius" | "letter-spacing";
 
-// Shadows are direct vars (you may compute them elsewhere if you want)
-export type ShadowToken =
-  | "shadow-2xs"
-  | "shadow-xs"
-  | "shadow-sm"
-  | "shadow"
-  | "shadow-md"
-  | "shadow-lg"
-  | "shadow-xl"
-  | "shadow-2xl";
+// Shadow properties (replacing old shadow tokens)
+export type ShadowToken = 
+  | "shadow-color"
+  | "shadow-opacity"
+  | "shadow-blur"
+  | "shadow-spread"
+  | "shadow-offset-x"
+  | "shadow-offset-y";
 
 // Read-only computed names (shown in UI, not stored)
 export type RadiusComputed =
@@ -108,32 +106,44 @@ export type ShadcnTheme = {
 // Token groups for UI organization
 export const TOKEN_GROUPS = [
   {
-    label: "Surface",
+    label: "Background & Text",
     keys: [
       "background",
       "foreground",
+      "muted",
+      "muted-foreground",
+    ] as ColorToken[],
+  },
+  {
+    label: "Surfaces",
+    keys: [
       "card",
       "card-foreground",
       "popover",
       "popover-foreground",
-      "border",
-      "input",
-      "ring",
     ] as ColorToken[],
   },
-  { label: "Primary", keys: ["primary", "primary-foreground"] as ColorToken[] },
   {
-    label: "Secondary",
+    label: "Interactive",
     keys: [
+      "primary",
+      "primary-foreground",
       "secondary",
       "secondary-foreground",
       "accent",
       "accent-foreground",
+    ] as ColorToken[],
+  },
+  {
+    label: "Forms & States",
+    keys: [
+      "border",
+      "input",
+      "ring",
       "destructive",
       "destructive-foreground",
     ] as ColorToken[],
   },
-  { label: "Text", keys: ["muted", "muted-foreground"] as ColorToken[] },
   {
     label: "Charts",
     keys: [
@@ -171,14 +181,12 @@ export const NON_COLOR_GROUPS = {
     ] as RadiusComputed[],
   },
   Shadows: [
-    "shadow-2xs",
-    "shadow-xs",
-    "shadow-sm",
-    "shadow",
-    "shadow-md",
-    "shadow-lg",
-    "shadow-xl",
-    "shadow-2xl",
+    "shadow-color",
+    "shadow-opacity", 
+    "shadow-blur",
+    "shadow-spread",
+    "shadow-offset-x",
+    "shadow-offset-y",
   ] as ShadowToken[],
   Tracking: {
     editable: ["letter-spacing" as const],
@@ -206,12 +214,10 @@ export const DEFAULT_BASE: BaseVars = {
 };
 
 export const DEFAULT_SHADOWS: ShadowBlock = {
-  "shadow-2xs": "0 1px 1px rgba(0,0,0,.05)",
-  "shadow-xs": "0 1px 2px rgba(0,0,0,.06)",
-  "shadow-sm": "0 1px 3px rgba(0,0,0,.1)",
-  shadow: "0 1px 4px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.08)",
-  "shadow-md": "0 2px 8px rgba(0,0,0,.15)",
-  "shadow-lg": "0 4px 16px rgba(0,0,0,.18)",
-  "shadow-xl": "0 8px 24px rgba(0,0,0,.22)",
-  "shadow-2xl": "0 12px 40px rgba(0,0,0,.28)",
+  "shadow-color": "hsl(0 0% 0%)",
+  "shadow-opacity": "0.1",
+  "shadow-blur": "4px",
+  "shadow-spread": "0px",
+  "shadow-offset-x": "0px",
+  "shadow-offset-y": "2px",
 };

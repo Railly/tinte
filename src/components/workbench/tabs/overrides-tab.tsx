@@ -1,7 +1,7 @@
 import { ThemeEditorPanel } from "@/components/shared/theme-editor-panel";
 import { useQueryState } from "nuqs";
 
-export function TokensTab() {
+export function OverridesTab() {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
 
   if (provider !== "shadcn") {

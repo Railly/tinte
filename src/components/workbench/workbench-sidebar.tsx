@@ -27,7 +27,7 @@ export function WorkbenchSidebar({
         <Tabs
           value={activeTab}
           onValueChange={(value) => setActiveTab(value as WorkbenchTab)}
-          className="flex flex-col h-full"
+          className="flex gap-1 flex-col h-full"
         >
           <div className="flex-shrink-0 bg-muted/30 border-b border-border mt-[3.5rem]">
             <TabsList className="grid w-full grid-cols-3 gap-2">

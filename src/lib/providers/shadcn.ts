@@ -1,4 +1,4 @@
-import { formatHex, oklch, rgb } from "culori";
+import { formatHex, formatHsl, oklch, parse, rgb } from "culori";
 import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import {
@@ -153,12 +153,60 @@ function convertTinteToShadcn(tinte: TinteTheme): ShadcnTheme {
   };
 }
 
+export function computeShadowVars(tokens: Record<string, string>): Record<string, string> {
+  const shadowColor = tokens["shadow-color"] || "hsl(0 0% 0%)";
+  const opacity = parseFloat(tokens["shadow-opacity"] || "0.1");
+  const offsetX = tokens["shadow-offset-x"] || "0px";
+  const offsetY = tokens["shadow-offset-y"] || "2px";
+  const blur = tokens["shadow-blur"] || "4px";
+  const spread = tokens["shadow-spread"] || "0px";
+
+  // Convert color to HSL format if needed
+  let hslColor = shadowColor;
+  if (shadowColor.startsWith("#")) {
+    // Convert hex to HSL using culori
+    const parsed = parse(shadowColor);
+    if (parsed) {
+      const hslString = formatHsl(parsed);
+      // Extract just the values from "hsl(240, 100%, 50%)" -> "240 100% 50%"
+      hslColor = hslString.replace(/hsl\(|\)|\s+/g, "").replace(/,/g, " ");
+    } else {
+      hslColor = "0 0% 0%";
+    }
+  } else if (shadowColor.startsWith("hsl(")) {
+    hslColor = shadowColor.replace(/hsl\(|\)/g, "").replace(/,/g, " ");
+  }
+
+  const colorWithOpacity = (opacityMultiplier: number) =>
+    `hsl(${hslColor} / ${(opacity * opacityMultiplier).toFixed(2)})`;
+
+  const secondLayer = (fixedOffsetY: string, fixedBlur: string): string => {
+    const spread2 = (parseFloat(spread.replace("px", "") || "0") - 1).toString() + "px";
+    return `${offsetX} ${fixedOffsetY} ${fixedBlur} ${spread2} ${colorWithOpacity(1.0)}`;
+  };
+
+  return {
+    "shadow-2xs": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(0.5)}`,
+    "shadow-xs": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(0.5)}`,
+    "shadow-sm": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("1px", "2px")}`,
+    "shadow": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("1px", "2px")}`,
+    "shadow-md": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("2px", "4px")}`,
+    "shadow-lg": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("4px", "6px")}`,
+    "shadow-xl": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("8px", "10px")}`,
+    "shadow-2xl": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(2.5)}`,
+  };
+}
+
 function generateCSSVariables(theme: ShadcnTheme): string {
-  const lightVars = Object.entries(theme.light)
+  // Compute shadow vars for both modes
+  const lightShadowVars = computeShadowVars(theme.light);
+  const darkShadowVars = computeShadowVars(theme.dark);
+
+  const lightVars = Object.entries({ ...theme.light, ...lightShadowVars })
     .map(([key, value]) => `    --${key}: ${value};`)
     .join("\n");
 
-  const darkVars = Object.entries(theme.dark)
+  const darkVars = Object.entries({ ...theme.dark, ...darkShadowVars })
     .map(([key, value]) => `    --${key}: ${value};`)
     .join("\n");
 

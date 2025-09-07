@@ -1483,6 +1483,12 @@ export const defaultPresets = {
         "font-sans": "Montserrat, sans-serif",
         "font-serif": "Merriweather, serif",
         "font-mono": "Source Code Pro, monospace",
+        "shadow-color": "hsl(0 0% 0%)",
+        "shadow-opacity": "0.1",
+        "shadow-blur": "3px",
+        "shadow-spread": "0px",
+        "shadow-offset-x": "0px",
+        "shadow-offset-y": "1px",
       },
       dark: {
         background: "#1c2a1f",

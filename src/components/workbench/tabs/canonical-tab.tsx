@@ -64,7 +64,7 @@ export function CanonicalTab() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-4 pb-3">
+      <div className="px-1 pb-3">
         <h3 className="text-sm font-medium">
           Canonical Colors ({currentMode})
         </h3>
@@ -74,18 +74,18 @@ export function CanonicalTab() {
       </div>
 
       <ScrollArea
-        className="flex-1 min-h-0 px-3"
+        className="flex-1 min-h-0 pl-1 pr-3"
         showScrollIndicators={true}
         indicatorType="shadow"
       >
-        <div className="space-y-3 pb-3">
+        <div className="space-y-4 pb-2">
           {COLOR_GROUPS.map(({ label, keys }) => (
             <Collapsible
               key={label}
               open={openGroups[label]}
               onOpenChange={() => toggleGroup(label)}
             >
-              <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors">
+              <CollapsibleTrigger className="flex w-full items-center justify-between uppercase rounded-t-md border border-border px-3 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground transition-colors">
                 <span>{label}</span>
                 <ChevronDown
                   className={`h-4 w-4 transition-transform ${openGroups[label] ? "rotate-180" : ""}`}
