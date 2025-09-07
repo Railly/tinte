@@ -31,7 +31,7 @@ export function WorkbenchMobile({
 
   // URL state
   const { activeTab, setActiveTab } = useWorkbenchUrlSync(
-    defaultTab || "colors",
+    defaultTab || "canonical",
   );
 
   return (
@@ -51,12 +51,12 @@ export function WorkbenchMobile({
           Agent
         </Button>
         <Button
-          variant={activeTab === "colors" ? "default" : "outline"}
+          variant={activeTab === "canonical" ? "default" : "outline"}
           size="sm"
-          onClick={() => setActiveTab("colors")}
+          onClick={() => setActiveTab("canonical")}
           className="bg-background/95 backdrop-blur-sm border shadow-sm"
         >
-          Colors
+          Canonical
         </Button>
       </div>
 

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
 
@@ -63,7 +64,7 @@ export function ColorsEditor() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-1 pb-3">
+      <div className="px-4 pb-3">
         <h3 className="text-sm font-medium">
           Canonical Colors ({currentMode})
         </h3>
@@ -71,7 +72,13 @@ export function ColorsEditor() {
           Edit the source colors that generate all theme variants
         </p>
       </div>
-      <div className="space-y-3 pb-3">
+
+      <ScrollArea
+        className="flex-1 px-3"
+        showScrollIndicators={true}
+        indicatorType="shadow"
+      >
+        <div className="space-y-3 pb-3">
         {COLOR_GROUPS.map(({ label, keys }) => (
           <Collapsible
             key={label}
@@ -112,7 +119,9 @@ export function ColorsEditor() {
             </CollapsibleContent>
           </Collapsible>
         ))}
-      </div>
+        </div>
+        <ScrollBar />
+      </ScrollArea>
     </div>
   );
 }

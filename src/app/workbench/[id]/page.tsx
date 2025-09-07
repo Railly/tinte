@@ -14,7 +14,7 @@ export default async function WorkbenchIdPage({
 }) {
   const { id } = await params;
 
-  const defaultTab = "colors";
+  const defaultTab = "canonical";
 
   return (
     <WorkbenchMain chatId={id} defaultTab={defaultTab} />

@@ -5,7 +5,6 @@ import {
   SidebarGroupContent,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWorkbenchUrlSync } from "@/hooks/use-workbench-url-sync";
 import type { WorkbenchTab } from "@/stores/workbench-store";
@@ -41,20 +40,15 @@ export function WorkbenchSidebar({
           </div>
           <SidebarGroup className="flex-1 min-h-0">
             <SidebarGroupContent className="h-full">
-              <ScrollArea
-                className="max-h-[calc(100vh-100px)] h-full"
-              >
-                {WORKBENCH_TABS.map(({ id, component: Component }) => (
-                  <TabsContent
-                    key={id}
-                    value={id}
-                    className="h-full mt-0"
-                  >
-                    <Component />
-                  </TabsContent>
-                ))}
-                <ScrollBar />
-              </ScrollArea>
+              {WORKBENCH_TABS.map(({ id, component: Component }) => (
+                <TabsContent
+                  key={id}
+                  value={id}
+                  className="h-full mt-0"
+                >
+                  <Component />
+                </TabsContent>
+              ))}
             </SidebarGroupContent>
           </SidebarGroup>
         </Tabs>

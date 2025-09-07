@@ -1,4 +1,4 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { PastedItem } from "@/lib/input-detection";
 import { useWorkbenchStore } from "@/stores/workbench-store";
 import { AttachmentBubble } from "./attachment-bubble";
@@ -21,8 +21,12 @@ export function ChatContent({ loading }: ChatContentProps) {
   };
 
   return (
-    <div className="flex flex-col h-[50vh]">
-      <ScrollArea className="flex-1 min-h-0" showScrollIndicators={true}>
+    <div className="flex flex-col h-full">
+      <ScrollArea 
+        className="flex-1 min-h-0" 
+        showScrollIndicators={true}
+        indicatorType="shadow"
+      >
         <div className="p-4">
           {loading ? (
             <div className="flex items-center justify-center h-32">
@@ -109,13 +113,16 @@ export function ChatContent({ loading }: ChatContentProps) {
             </div>
           )}
         </div>
+        <ScrollBar />
       </ScrollArea>
 
-      <ChatInput
-        onSubmit={handleChatSubmit}
-        placeholder="Type a message..."
-        disabled={loading}
-      />
+      <div className="flex-shrink-0 border-t border-border bg-background">
+        <ChatInput
+          onSubmit={handleChatSubmit}
+          placeholder="Type a message..."
+          disabled={loading}
+        />
+      </div>
     </div>
   );
 }

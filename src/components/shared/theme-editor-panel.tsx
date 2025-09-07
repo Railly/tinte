@@ -1,10 +1,9 @@
 "use client";
 
-import { motion, stagger, useAnimate } from "motion/react";
 import * as React from "react";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
 import {
@@ -31,10 +30,8 @@ declare global {
 }
 
 export function ThemeEditorPanel() {
-  const [scope, animate] = useAnimate();
 
-  const { currentTokens, activeTheme, handleTokenEdit, mounted } =
-    useThemeContext();
+  const { currentTokens, handleTokenEdit, mounted } = useThemeContext();
 
   const handleFontSelect = React.useCallback(
     (key: string, font: FontInfo) => {
@@ -148,23 +145,14 @@ export function ThemeEditorPanel() {
   const hasImmediateData =
     typeof window !== "undefined" && window.__TINTE_THEME__ && mounted;
 
-  React.useEffect(() => {
-    if (totalTokens > 0) {
-      animate(
-        ".token-item",
-        { opacity: [0, 1], y: [8, 0] },
-        {
-          duration: 0.3,
-          delay: stagger(0.05, { startDelay: 0.1 }),
-        },
-      );
-    }
-  }, [animate, totalTokens]);
-  const _activeId = activeTheme?.id || null;
 
   return (
-    <ScrollArea className="h-[50vh]" showScrollIndicators={false}>
-      <div className="flex-1 min-h-0 pb-8" ref={scope}>
+    <ScrollArea 
+      className="h-full" 
+      showScrollIndicators={true}
+      indicatorType="shadow"
+    >
+      <div className="flex-1 min-h-0 pb-8">
         <div className="p-3 space-y-4">
           <div className="text-xs font-medium text-muted-foreground">
             Tokens
@@ -177,21 +165,13 @@ export function ThemeEditorPanel() {
                   <div className="h-4 bg-muted/50 rounded w-16"></div>
                   <div className="space-y-2">
                     {Array.from({ length: 4 }).map((_, tokenIndex) => (
-                      <motion.div
+                      <div
                         key={`skeleton-${groupIndex}-${tokenIndex}`}
                         className="space-y-1"
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: [0.3, 0.6, 0.3] }}
-                        transition={{
-                          duration: 1.5,
-                          delay: (groupIndex * 4 + tokenIndex) * 0.1,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
                       >
                         <div className="h-3 bg-muted/50 rounded w-20"></div>
                         <div className="h-9 bg-muted/30 rounded"></div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -199,30 +179,15 @@ export function ThemeEditorPanel() {
             </div>
           ) : (
             <div className="space-y-6">
-              {organizedTokens.map((group, groupIndex) => (
+              {organizedTokens.map((group) => (
                 <div key={group.label} className="space-y-3">
                   <div className="text-xs uppercase font-medium text-foreground border-b border-border pb-1">
                     {group.label}
                   </div>
                   <div className="space-y-2">
-                    {group.tokens.map(([key, value], tokenIndex) => {
-                      const globalIndex =
-                        organizedTokens
-                          .slice(0, groupIndex)
-                          .reduce((sum, g) => sum + g.tokens.length, 0) +
-                        tokenIndex;
-
+                    {group.tokens.map(([key, value]) => {
                       return (
-                        <motion.div
-                          key={key}
-                          className="token-item space-y-1"
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: 0.3,
-                            delay: globalIndex * 0.02 + 0.1,
-                          }}
-                        >
+                        <div key={key} className="space-y-1">
                           <div className="text-xs font-mono text-muted-foreground">
                             {key}
                           </div>
@@ -268,7 +233,7 @@ export function ThemeEditorPanel() {
                               }
                             />
                           )}
-                        </motion.div>
+                        </div>
                       );
                     })}
                   </div>
@@ -278,6 +243,7 @@ export function ThemeEditorPanel() {
           )}
         </div>
       </div>
+      <ScrollBar />
     </ScrollArea>
   );
 }
