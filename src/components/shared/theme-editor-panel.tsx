@@ -30,7 +30,6 @@ declare global {
 }
 
 export function ThemeEditorPanel() {
-
   const { currentTokens, handleTokenEdit, mounted } = useThemeContext();
 
   const handleFontSelect = React.useCallback(
@@ -147,8 +146,8 @@ export function ThemeEditorPanel() {
 
 
   return (
-    <ScrollArea 
-      className="h-full" 
+    <ScrollArea
+      className="h-full"
       showScrollIndicators={true}
       indicatorType="shadow"
     >
