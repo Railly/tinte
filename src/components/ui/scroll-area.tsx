@@ -40,11 +40,11 @@ function ScrollArea({
             className={cn(
               "absolute top-0 left-0 right-0 h-4 z-50 pointer-events-none",
               indicatorType === "shadow" &&
-                "bg-gradient-to-b from-background via-background/40 to-transparent shadow-sm",
+              "bg-gradient-to-b from-background via-background/40 to-transparent shadow-sm",
               indicatorType === "border" &&
-                "bg-gradient-to-b from-background/60 to-transparent border-b border-border/20",
+              "bg-gradient-to-b from-background/60 to-transparent border-b border-border/20",
               indicatorType === "mask" &&
-                "bg-gradient-to-b from-background/70 to-transparent",
+              "bg-gradient-to-b from-background/70 to-transparent",
             )}
             style={{ opacity: topOpacity }}
           />
@@ -52,11 +52,11 @@ function ScrollArea({
             className={cn(
               "absolute bottom-0 left-0 right-0 h-4 z-50 pointer-events-none",
               indicatorType === "shadow" &&
-                "bg-gradient-to-t from-background via-background/40 to-transparent shadow-sm",
+              "bg-gradient-to-t from-background via-background/40 to-transparent shadow-sm",
               indicatorType === "border" &&
-                "bg-gradient-to-t from-background/60 to-transparent border-t border-border/20",
+              "bg-gradient-to-t from-background/60 to-transparent border-t border-border/20",
               indicatorType === "mask" &&
-                "bg-gradient-to-t from-background/70 to-transparent",
+              "bg-gradient-to-t from-background/70 to-transparent",
             )}
             style={{ opacity: bottomOpacity }}
           />
@@ -87,9 +87,9 @@ function ScrollBar({
       className={cn(
         "flex touch-none p-px transition-colors select-none",
         orientation === "vertical" &&
-          "h-full w-2.5 border-l border-l-transparent",
+        "h-full w-2.5 border-l border-l-transparent",
         orientation === "horizontal" &&
-          "h-2.5 flex-col border-t border-t-transparent",
+        "h-2.5 flex-col border-t border-t-transparent",
         className,
       )}
       {...props}

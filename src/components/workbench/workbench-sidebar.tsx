@@ -5,6 +5,7 @@ import {
   SidebarGroupContent,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWorkbenchUrlSync } from "@/hooks/use-workbench-url-sync";
 import type { WorkbenchTab } from "@/stores/workbench-store";
@@ -23,37 +24,40 @@ export function WorkbenchSidebar({
 
   return (
     <Sidebar>
-      <SidebarContent>
-        <SidebarGroup className="mt-16">
-          <SidebarGroupContent>
-            <Tabs
-              value={activeTab}
-              onValueChange={(value) => setActiveTab(value as WorkbenchTab)}
-              className="flex w-full flex-col h-full"
-            >
-              <TabsList className="grid w-full grid-cols-3 mb-2">
-                {WORKBENCH_TABS.map(({ id, label }) => (
-                  <TabsTrigger key={id} value={id}>
-                    {label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              <div className="flex-1 overflow-hidden">
+      <SidebarContent className="flex flex-col h-full overflow-hidden">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as WorkbenchTab)}
+          className="flex flex-col h-full"
+        >
+          <div className="flex-shrink-0 bg-muted/30 border-b border-border mt-[3.5rem]">
+            <TabsList className="grid w-full grid-cols-3 gap-2">
+              {WORKBENCH_TABS.map(({ id, label }) => (
+                <TabsTrigger key={id} value={id}>
+                  {label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+          <SidebarGroup className="flex-1 min-h-0">
+            <SidebarGroupContent className="h-full">
+              <ScrollArea
+                className="max-h-[calc(100vh-100px)] h-full"
+              >
                 {WORKBENCH_TABS.map(({ id, component: Component }) => (
                   <TabsContent
                     key={id}
                     value={id}
-                    className="h-full overflow-hidden mt-0"
+                    className="h-full mt-0"
                   >
-                    <div className="h-full">
-                      <Component />
-                    </div>
+                    <Component />
                   </TabsContent>
                 ))}
-              </div>
-            </Tabs>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                <ScrollBar />
+              </ScrollArea>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </Tabs>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
