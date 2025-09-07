@@ -1,55 +1,32 @@
 "use client";
 
+import * as React from "react";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
-
-const COLOR_GROUPS = [
-  {
-    label: "Text",
-    keys: ["tx", "tx_2", "tx_3"] as (keyof TinteBlock)[],
-  },
-  {
-    label: "Interface",
-    keys: ["ui", "ui_2", "ui_3"] as (keyof TinteBlock)[],
-  },
-  {
-    label: "Background",
-    keys: ["bg", "bg_2"] as (keyof TinteBlock)[],
-  },
-  {
-    label: "Accents",
-    keys: ["pr", "sc", "ac_1", "ac_2", "ac_3"] as (keyof TinteBlock)[],
-  },
-] as const;
+import {
+  COLOR_GROUPS,
+  createCanonicalSkeletons,
+  createInitialCanonicalGroups,
+  hasValidTinteColors,
+} from "@/lib/canonical-utils";
+import { CanonicalColorInput } from "@/components/shared/canonical-color-input";
 
 export function CanonicalTab() {
-  const { tinteTheme, updateTinteTheme, currentMode } = useThemeContext();
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    Text: true,
-    Interface: true,
-    Background: true,
-    Accents: true,
-  });
+  const { tinteTheme, updateTinteTheme, currentMode, mounted } = useThemeContext();
+  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(createInitialCanonicalGroups);
 
-  if (!tinteTheme) {
-    return (
-      <div className="p-4 text-center text-muted-foreground">
-        No theme selected
-      </div>
-    );
-  }
-
-  const currentColors = tinteTheme[currentMode];
+  // Determine if we should show skeletons or real data
+  const currentColors = tinteTheme?.[currentMode];
+  const shouldShowSkeletons = !mounted || !hasValidTinteColors(currentColors);
+  const groupsToRender = shouldShowSkeletons ? createCanonicalSkeletons() : COLOR_GROUPS;
 
   const handleColorChange = (key: keyof TinteBlock, value: string) => {
     updateTinteTheme(currentMode, { [key]: value });
@@ -79,24 +56,24 @@ export function CanonicalTab() {
         indicatorType="shadow"
       >
         <div className="space-y-4 pb-2">
-          {COLOR_GROUPS.map(({ label, keys }) => (
+          {groupsToRender.map((group) => (
             <Collapsible
-              key={label}
-              open={openGroups[label]}
-              onOpenChange={() => toggleGroup(label)}
+              key={group.label}
+              open={openGroups[group.label]}
+              onOpenChange={() => toggleGroup(group.label)}
             >
-              <CollapsibleTrigger className="flex w-full items-center justify-between uppercase rounded-t-md border border-border px-3 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground transition-colors">
-                <span>{label}</span>
+              <CollapsibleTrigger className={`flex w-full items-center justify-between uppercase ${openGroups[group.label] ? "rounded-t-md" : "rounded-md"} border border-border px-3 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground transition-colors`}>
+                <span>{group.label}</span>
                 <ChevronDown
-                  className={`h-4 w-4 transition-transform ${openGroups[label] ? "rotate-180" : ""}`}
+                  className={`h-4 w-4 transition-transform ${openGroups[group.label] ? "rotate-180" : ""}`}
                 />
               </CollapsibleTrigger>
               <CollapsibleContent className="border border-t-0 border-border rounded-b-md bg-muted/20">
                 <div className="p-3 space-y-3">
-                  {keys.map((key, tokenIndex) => {
+                  {group.keys.map((key, tokenIndex) => {
                     // Calculate the color number based on position across all color groups
                     const previousColorGroups = COLOR_GROUPS
-                      .slice(0, COLOR_GROUPS.findIndex(g => g.label === label))
+                      .slice(0, COLOR_GROUPS.findIndex(g => g.label === group.label))
                       .filter(g => g.keys.length > 0);
                     const previousColorCount = previousColorGroups.reduce(
                       (sum, g) => sum + g.keys.length, 
@@ -112,11 +89,11 @@ export function CanonicalTab() {
                             {colorNumber}
                           </sup>
                         </Label>
-                        <ColorPickerInput
-                          color={currentColors[key]}
-                          onChange={(newValue) =>
-                            handleColorChange(key, newValue)
-                          }
+                        <CanonicalColorInput
+                          group={group}
+                          colorKey={key}
+                          value={currentColors?.[key]}
+                          onChange={handleColorChange}
                         />
                       </div>
                     );

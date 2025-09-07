@@ -38,7 +38,7 @@ export function WorkbenchSidebar({
               ))}
             </TabsList>
           </div>
-          <SidebarGroup className="flex-1 min-h-0">
+          <SidebarGroup className="flex-1 pr-0 min-h-0">
             <SidebarGroupContent className="h-full">
               {WORKBENCH_TABS.map(({ id, component: Component }) => (
                 <TabsContent

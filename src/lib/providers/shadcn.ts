@@ -65,7 +65,7 @@ function buildRamp(seed?: string): string[] {
 
 const pick = (ramp: string[], step: number) => {
   const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(
-    step,
+    step
   );
   return ramp[Math.max(0, idx)];
 };
@@ -125,7 +125,7 @@ function mapBlock(block: TinteBlock, mode: ThemeMode): ShadcnBlock {
     destructive,
     "destructive-foreground": ensureFg(destructive),
     border,
-    input: border,
+    input: tweakL(border, mode === "light" ? -0.1 : +0.1),
     ring,
     "chart-1": chart1,
     "chart-2": chart2,
@@ -153,7 +153,9 @@ function convertTinteToShadcn(tinte: TinteTheme): ShadcnTheme {
   };
 }
 
-export function computeShadowVars(tokens: Record<string, string>): Record<string, string> {
+export function computeShadowVars(
+  tokens: Record<string, string>
+): Record<string, string> {
   const shadowColor = tokens["shadow-color"] || "hsl(0 0% 0%)";
   const opacity = parseFloat(tokens["shadow-opacity"] || "0.1");
   const offsetX = tokens["shadow-offset-x"] || "0px";
@@ -181,19 +183,38 @@ export function computeShadowVars(tokens: Record<string, string>): Record<string
     `hsl(${hslColor} / ${(opacity * opacityMultiplier).toFixed(2)})`;
 
   const secondLayer = (fixedOffsetY: string, fixedBlur: string): string => {
-    const spread2 = (parseFloat(spread.replace("px", "") || "0") - 1).toString() + "px";
-    return `${offsetX} ${fixedOffsetY} ${fixedBlur} ${spread2} ${colorWithOpacity(1.0)}`;
+    const spread2 =
+      (parseFloat(spread.replace("px", "") || "0") - 1).toString() + "px";
+    return `${offsetX} ${fixedOffsetY} ${fixedBlur} ${spread2} ${colorWithOpacity(
+      1.0
+    )}`;
   };
 
   return {
-    "shadow-2xs": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(0.5)}`,
-    "shadow-xs": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(0.5)}`,
-    "shadow-sm": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("1px", "2px")}`,
-    "shadow": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("1px", "2px")}`,
-    "shadow-md": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("2px", "4px")}`,
-    "shadow-lg": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("4px", "6px")}`,
-    "shadow-xl": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(1.0)}, ${secondLayer("8px", "10px")}`,
-    "shadow-2xl": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(2.5)}`,
+    "shadow-2xs": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
+      0.5
+    )}`,
+    "shadow-xs": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
+      0.5
+    )}`,
+    "shadow-sm": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
+      1.0
+    )}, ${secondLayer("1px", "2px")}`,
+    shadow: `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
+      1.0
+    )}, ${secondLayer("1px", "2px")}`,
+    "shadow-md": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
+      1.0
+    )}, ${secondLayer("2px", "4px")}`,
+    "shadow-lg": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
+      1.0
+    )}, ${secondLayer("4px", "6px")}`,
+    "shadow-xl": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
+      1.0
+    )}, ${secondLayer("8px", "10px")}`,
+    "shadow-2xl": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
+      2.5
+    )}`,
   };
 }
 
