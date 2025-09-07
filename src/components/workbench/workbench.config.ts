@@ -1,6 +1,6 @@
 import type { WorkbenchTab } from "@/stores/workbench-store";
 import { AgentTab } from "./tabs/agent-tab";
-import { ColorsTab } from "./tabs/colors-tab";
+import { CanonicalTab } from "./tabs/canonical-tab";
 import { TokensTab } from "./tabs/tokens-tab";
 
 // Simple, extensible tab configuration
@@ -8,7 +8,7 @@ export const WORKBENCH_TABS = [
   {
     id: "canonical" as const,
     label: "Canonical",
-    component: ColorsTab,
+    component: CanonicalTab,
   },
   {
     id: "overrides" as const,

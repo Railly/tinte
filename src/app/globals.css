@@ -137,6 +137,7 @@
 * {
   color-scheme: light dark;
   border-color: var(--color-border);
+  overscroll-behavior: none;
 }
 
 body {

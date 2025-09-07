@@ -32,7 +32,7 @@ const COLOR_GROUPS = [
   },
 ] as const;
 
-export function ColorsTab() {
+export function CanonicalTab() {
   const { tinteTheme, updateTinteTheme, currentMode } = useThemeContext();
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     Text: true,
@@ -74,7 +74,7 @@ export function ColorsTab() {
       </div>
 
       <ScrollArea
-        className="flex-1 px-3"
+        className="flex-1 min-h-0 px-3"
         showScrollIndicators={true}
         indicatorType="shadow"
       >

@@ -146,16 +146,23 @@ export function ThemeEditorPanel() {
 
 
   return (
-    <ScrollArea
-      className="h-full"
-      showScrollIndicators={true}
-      indicatorType="shadow"
-    >
-      <div className="flex-1 min-h-0 pb-8">
-        <div className="p-3 space-y-4">
-          <div className="text-xs font-medium text-muted-foreground">
-            Tokens
-          </div>
+    <div className="flex flex-col h-full">
+      <div className="px-4 pb-3">
+        <h3 className="text-sm font-medium">
+          Token Overrides
+        </h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          Override specific design tokens for custom styling
+        </p>
+      </div>
+
+      <ScrollArea
+        className="flex-1 min-h-0"
+        showScrollIndicators={true}
+        indicatorType="shadow"
+      >
+        <div className="flex-1 min-h-0 pb-8">
+          <div className="p-3 space-y-4">
 
           {totalTokens === 0 && !hasImmediateData ? (
             <div className="space-y-4">
@@ -244,5 +251,6 @@ export function ThemeEditorPanel() {
       </div>
       <ScrollBar />
     </ScrollArea>
+    </div>
   );
 }
