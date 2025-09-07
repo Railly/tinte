@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { SearchParams } from "nuqs/server";
-import { Workbench } from "@/components/workbench/workbench";
+import { WorkbenchMain } from "@/components/workbench/workbench-main";
 import { WorkbenchHeader } from "@/components/workbench/workbench-header";
 import { workbenchCache } from "../search-params";
 
@@ -29,7 +29,7 @@ export default async function WorkbenchIdPage({
   return (
     <div className="flex flex-col min-h-screen">
       <WorkbenchHeader chatId={id} />
-      <Workbench chatId={id} isStatic={isStatic} defaultTab={defaultTab} />
+      <WorkbenchMain chatId={id} isStatic={isStatic} defaultTab={defaultTab} />
     </div>
   );
 }

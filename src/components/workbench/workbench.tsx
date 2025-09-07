@@ -1,1 +1,0 @@
-export { WorkbenchMain as Workbench } from "./workbench-main";
