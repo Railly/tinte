@@ -11,14 +11,14 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useWorkbenchUrlSync } from "@/hooks/use-workbench-url-sync";
-import { useWorkbenchStore } from "@/stores/workbench-store";
+import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
 import { ChatContent } from "./chat-content";
 import { WorkbenchPreviewPane } from "./workbench-preview-pane";
 
 interface WorkbenchMobileProps {
   chatId: string;
   isStatic: boolean;
-  defaultTab?: string;
+  defaultTab?: WorkbenchTab;
 }
 
 export function WorkbenchMobile({
@@ -34,7 +34,7 @@ export function WorkbenchMobile({
 
   // URL state
   const { activeTab, setActiveTab } = useWorkbenchUrlSync(
-    defaultTab || (isStatic ? "design" : "chat"),
+    defaultTab || (isStatic ? "colors" : "agent"),
   );
 
   // Theme context (only what this component needs)
@@ -56,7 +56,7 @@ export function WorkbenchMobile({
 
       {showTabs && (
         <div className="h-full">
-          {activeTab === "chat" ? (
+          {activeTab === "agent" ? (
             <ChatContent loading={loading} />
           ) : (
             <div className="h-full p-4">
@@ -69,20 +69,20 @@ export function WorkbenchMobile({
       {showTabs && (
         <div className="absolute bottom-4 right-4 z-10 flex gap-2">
           <Button
-            variant={activeTab === "chat" ? "default" : "outline"}
+            variant={activeTab === "agent" ? "default" : "outline"}
             size="sm"
-            onClick={() => setActiveTab("chat")}
+            onClick={() => setActiveTab("agent")}
             className="bg-background/95 backdrop-blur-sm border shadow-sm"
           >
-            Chat
+            Agent
           </Button>
           <Button
-            variant={activeTab === "design" ? "default" : "outline"}
+            variant={activeTab === "colors" ? "default" : "outline"}
             size="sm"
-            onClick={() => setActiveTab("design")}
+            onClick={() => setActiveTab("colors")}
             className="bg-background/95 backdrop-blur-sm border shadow-sm"
           >
-            Design
+            Colors
           </Button>
         </div>
       )}
