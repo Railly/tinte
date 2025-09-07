@@ -16,7 +16,5 @@ export default async function WorkbenchIdPage({
 
   const defaultTab = "canonical";
 
-  return (
-    <WorkbenchMain chatId={id} defaultTab={defaultTab} />
-  );
+  return <WorkbenchMain chatId={id} defaultTab={defaultTab} />;
 }

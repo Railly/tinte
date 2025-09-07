@@ -107,7 +107,11 @@ export function AttachmentBubble({ att }: AttachmentBubbleProps) {
           <div className="flex items-center gap-1">
             <Icon className="h-3 w-3 text-primary-foreground/70" />
             <span className="text-[10px] font-medium text-primary-foreground/70 uppercase">
-              {att.kind === "tailwind" ? "Tailwind" : att.kind === "json" ? "JSON" : "CSS Vars"}
+              {att.kind === "tailwind"
+                ? "Tailwind"
+                : att.kind === "json"
+                  ? "JSON"
+                  : "CSS Vars"}
             </span>
           </div>
         </div>

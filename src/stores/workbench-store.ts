@@ -42,7 +42,6 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
         set({ chatId }, false, "setChatId");
       },
 
-
       setLoading: (loading: boolean) => {
         set({ loading }, false, "setLoading");
       },

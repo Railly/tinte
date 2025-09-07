@@ -40,10 +40,12 @@ export function ShadowPropertiesEditor({
 
     // Handle RGBA colors
     if (colorValue.startsWith("rgba(")) {
-      const match = colorValue.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/);
+      const match = colorValue.match(
+        /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/,
+      );
       if (match) {
         const [, r, g, b] = match;
-        return `#${parseInt(r).toString(16).padStart(2, '0')}${parseInt(g).toString(16).padStart(2, '0')}${parseInt(b).toString(16).padStart(2, '0')}`;
+        return `#${parseInt(r).toString(16).padStart(2, "0")}${parseInt(g).toString(16).padStart(2, "0")}${parseInt(b).toString(16).padStart(2, "0")}`;
       }
     }
 

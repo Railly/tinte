@@ -56,7 +56,7 @@ export type FontToken = "font-sans" | "font-mono" | "font-serif";
 export type BaseVarToken = "radius" | "letter-spacing";
 
 // Shadow properties (replacing old shadow tokens)
-export type ShadowToken = 
+export type ShadowToken =
   | "shadow-color"
   | "shadow-opacity"
   | "shadow-blur"
@@ -182,7 +182,7 @@ export const NON_COLOR_GROUPS = {
   },
   Shadows: [
     "shadow-color",
-    "shadow-opacity", 
+    "shadow-opacity",
     "shadow-blur",
     "shadow-spread",
     "shadow-offset-x",

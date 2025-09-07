@@ -12,7 +12,7 @@ export const COLOR_GROUPS: CanonicalGroup[] = [
     keys: ["tx", "tx_2", "tx_3"] as (keyof TinteBlock)[],
   },
   {
-    label: "Interface", 
+    label: "Interface",
     keys: ["ui", "ui_2", "ui_3"] as (keyof TinteBlock)[],
   },
   {
@@ -35,18 +35,23 @@ export const createInitialCanonicalGroups = (): Record<string, boolean> => {
 };
 
 // Check if we have valid tinte colors loaded
-export const hasValidTinteColors = (colors: TinteBlock | undefined): boolean => {
+export const hasValidTinteColors = (
+  colors: TinteBlock | undefined,
+): boolean => {
   if (!colors) return false;
-  return COLOR_GROUPS.some(group => 
-    group.keys.some(key => 
-      colors[key] && typeof colors[key] === "string" && colors[key].startsWith("#")
-    )
+  return COLOR_GROUPS.some((group) =>
+    group.keys.some(
+      (key) =>
+        colors[key] &&
+        typeof colors[key] === "string" &&
+        colors[key].startsWith("#"),
+    ),
   );
 };
 
 // Create skeleton structure for canonical colors
 export const createCanonicalSkeletons = (): CanonicalGroup[] => {
-  return COLOR_GROUPS.map(group => ({
+  return COLOR_GROUPS.map((group) => ({
     ...group,
     skeleton: true,
   }));

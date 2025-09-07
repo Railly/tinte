@@ -23,7 +23,7 @@ export function WorkbenchMobile({
   defaultTab,
 }: WorkbenchMobileProps) {
   // Direct store access
-  const loading = useWorkbenchStore((state) => state.loading);
+  const _loading = useWorkbenchStore((state) => state.loading);
   const drawerOpen = useWorkbenchStore((state) => state.drawerOpen);
   const setDrawerOpen = useWorkbenchStore((state) => state.setDrawerOpen);
 

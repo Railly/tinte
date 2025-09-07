@@ -474,19 +474,25 @@ export const useThemeStore = create<ThemeState>()(
           // If it's a shadow property, recompute and apply shadow vars
           if (key.startsWith("shadow-")) {
             const { activeTheme, currentMode, editedTokens } = get();
-            const updatedEditedTokens = { ...editedTokens, [key]: processedValue };
-            
+            const updatedEditedTokens = {
+              ...editedTokens,
+              [key]: processedValue,
+            };
+
             // Get base tokens and merge with updated edited tokens
             const computedTokens = computeThemeTokens(activeTheme);
             const baseTokens = computedTokens[currentMode];
             const finalTokens = { ...baseTokens, ...updatedEditedTokens };
-            
+
             // Compute shadow vars using imported function
             const shadowVars = computeShadowVars(finalTokens);
-            
+
             // Apply all shadow vars
             Object.entries(shadowVars).forEach(([shadowKey, shadowValue]) => {
-              document.documentElement.style.setProperty(`--${shadowKey}`, shadowValue);
+              document.documentElement.style.setProperty(
+                `--${shadowKey}`,
+                shadowValue,
+              );
             });
           }
         }

@@ -1,10 +1,10 @@
 import {
+  type BaseVarToken,
   DEFAULT_BASE,
   DEFAULT_FONTS,
+  type FontToken,
   NON_COLOR_GROUPS,
   TOKEN_GROUPS,
-  type BaseVarToken,
-  type FontToken,
 } from "@/types/shadcn";
 
 export interface TokenGroup {
@@ -27,11 +27,16 @@ export const createInitialOpenGroups = (): Record<string, boolean> => {
 };
 
 // Check if we have valid color tokens loaded
-export const hasValidColorTokens = (tokens: Record<string, string>): boolean => {
-  return TOKEN_GROUPS.some(group => 
-    group.keys.some(key => 
-      tokens[key] && typeof tokens[key] === "string" && tokens[key].startsWith("#")
-    )
+export const hasValidColorTokens = (
+  tokens: Record<string, string>,
+): boolean => {
+  return TOKEN_GROUPS.some((group) =>
+    group.keys.some(
+      (key) =>
+        tokens[key] &&
+        typeof tokens[key] === "string" &&
+        tokens[key].startsWith("#"),
+    ),
   );
 };
 
@@ -55,7 +60,7 @@ export const createSkeletonGroups = (): TokenGroup[] => {
       if (groupName === "Shadows") {
         groups.push({
           label: groupName,
-          tokens: [["shadow-properties", "shadow-editor"]], 
+          tokens: [["shadow-properties", "shadow-editor"]],
           type: "shadow-properties",
           skeleton: true,
         });
@@ -81,14 +86,18 @@ export const createSkeletonGroups = (): TokenGroup[] => {
 };
 
 // Organize real tokens into groups
-export const organizeRealTokens = (currentTokens: Record<string, string>): TokenGroup[] => {
+export const organizeRealTokens = (
+  currentTokens: Record<string, string>,
+): TokenGroup[] => {
   const groups: TokenGroup[] = [];
 
   // Color token groups
   TOKEN_GROUPS.forEach((group) => {
     const tokens = group.keys
       .map((key) => [key, currentTokens[key]] as [string, string])
-      .filter(([_, value]) => typeof value === "string" && value.startsWith("#"));
+      .filter(
+        ([_, value]) => typeof value === "string" && value.startsWith("#"),
+      );
 
     if (tokens.length > 0) {
       groups.push({
@@ -103,8 +112,11 @@ export const organizeRealTokens = (currentTokens: Record<string, string>): Token
   Object.entries(NON_COLOR_GROUPS).forEach(([groupName, groupData]) => {
     if (Array.isArray(groupData)) {
       if (groupName === "Shadows") {
-        const hasValidShadowData = groupData.some(key =>
-          currentTokens[key] && typeof currentTokens[key] === "string" && currentTokens[key].trim().length > 0
+        const hasValidShadowData = groupData.some(
+          (key) =>
+            currentTokens[key] &&
+            typeof currentTokens[key] === "string" &&
+            currentTokens[key].trim().length > 0,
         );
 
         if (hasValidShadowData) {
@@ -125,7 +137,10 @@ export const organizeRealTokens = (currentTokens: Record<string, string>): Token
             }
             return [key, value] as [string, string];
           })
-          .filter(([_, value]) => typeof value === "string" && value.trim().length > 0);
+          .filter(
+            ([_, value]) =>
+              typeof value === "string" && value.trim().length > 0,
+          );
 
         if (tokens.length > 0) {
           groups.push({
@@ -144,7 +159,9 @@ export const organizeRealTokens = (currentTokens: Record<string, string>): Token
           }
           return [key, value] as [string, string];
         })
-        .filter(([_, value]) => typeof value === "string" && value.trim().length > 0);
+        .filter(
+          ([_, value]) => typeof value === "string" && value.trim().length > 0,
+        );
 
       if (tokens.length > 0) {
         groups.push({

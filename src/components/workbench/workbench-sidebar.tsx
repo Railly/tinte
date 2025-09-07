@@ -14,9 +14,7 @@ interface WorkbenchSidebarProps {
   defaultTab?: WorkbenchTab;
 }
 
-export function WorkbenchSidebar({
-  defaultTab,
-}: WorkbenchSidebarProps) {
+export function WorkbenchSidebar({ defaultTab }: WorkbenchSidebarProps) {
   const { activeTab, setActiveTab } = useWorkbenchUrlSync(
     defaultTab || WORKBENCH_CONFIG.DEFAULT_TAB,
   );
@@ -41,11 +39,7 @@ export function WorkbenchSidebar({
           <SidebarGroup className="flex-1 pr-0 min-h-0">
             <SidebarGroupContent className="h-full">
               {WORKBENCH_TABS.map(({ id, component: Component }) => (
-                <TabsContent
-                  key={id}
-                  value={id}
-                  className="h-full mt-0"
-                >
+                <TabsContent key={id} value={id} className="h-full mt-0">
                   <Component />
                 </TabsContent>
               ))}

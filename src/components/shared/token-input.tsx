@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
+import type * as React from "react";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import { Input } from "@/components/ui/input";
 import { NumberSlider } from "@/components/ui/number-slider";
 import { ShadowPropertiesEditor } from "@/components/ui/shadow-properties-editor";
-import type { FontInfo } from "@/types/fonts";
 import type { TokenGroup } from "@/lib/theme-editor-utils";
+import type { FontInfo } from "@/types/fonts";
 import { FontSelector } from "./font-selector";
 
 interface TokenInputProps {
@@ -24,19 +24,26 @@ export const TokenInput: React.FC<TokenInputProps> = ({
   value,
   currentTokens,
   onEdit,
-  onFontSelect
+  onFontSelect,
 }) => {
   if (group.skeleton) {
     if (group.type === "shadow-properties") {
       return (
         <div className="space-y-2">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-8 bg-muted/30 rounded animate-pulse"></div>
+            <div
+              key={i}
+              className="h-8 bg-muted/30 rounded animate-pulse"
+            ></div>
           ))}
         </div>
       );
     }
-    return <div className={`${group.type === "color" ? "h-10" : "h-8"} bg-muted/30 rounded animate-pulse`}></div>;
+    return (
+      <div
+        className={`${group.type === "color" ? "h-10" : "h-8"} bg-muted/30 rounded animate-pulse`}
+      ></div>
+    );
   }
 
   if (group.type === "color") {
@@ -53,9 +60,13 @@ export const TokenInput: React.FC<TokenInputProps> = ({
       <FontSelector
         value={value.split(",")[0].trim().replace(/['"]/g, "")}
         category={
-          tokenKey.includes("sans") ? "sans-serif" :
-            tokenKey.includes("serif") ? "serif" :
-              tokenKey.includes("mono") ? "monospace" : "sans-serif"
+          tokenKey.includes("sans")
+            ? "sans-serif"
+            : tokenKey.includes("serif")
+              ? "serif"
+              : tokenKey.includes("mono")
+                ? "monospace"
+                : "sans-serif"
         }
         onSelect={(font) => onFontSelect(tokenKey, font)}
         placeholder="Select font..."
@@ -116,8 +127,11 @@ export const TokenInput: React.FC<TokenInputProps> = ({
       onChange={(e) => onEdit(tokenKey, e.target.value)}
       className="h-7 text-xs font-mono"
       placeholder={
-        group.type === "shadow" ? "Box shadow..." :
-          group.type === "base" ? "CSS value..." : "Value..."
+        group.type === "shadow"
+          ? "Box shadow..."
+          : group.type === "base"
+            ? "CSS value..."
+            : "Value..."
       }
     />
   );

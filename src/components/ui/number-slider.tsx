@@ -2,8 +2,8 @@
 
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { Button, Group, Input, NumberField } from "react-aria-components";
-import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 interface NumberSliderProps {
@@ -38,11 +38,7 @@ export function NumberSlider({
 
   return (
     <div className={cn("space-y-2", className)}>
-      {label && (
-        <Label className="text-xs font-medium">
-          {label}
-        </Label>
-      )}
+      {label && <Label className="text-xs font-medium">{label}</Label>}
 
       <div className="space-y-3">
         {/* Slider */}

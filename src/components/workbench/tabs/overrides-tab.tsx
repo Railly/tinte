@@ -1,5 +1,5 @@
-import { ThemeEditorPanel } from "@/components/shared/theme-editor-panel";
 import { useQueryState } from "nuqs";
+import { ThemeEditorPanel } from "@/components/shared/theme-editor-panel";
 
 export function OverridesTab() {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });

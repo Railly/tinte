@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
 import { WorkbenchHeader } from "./workbench-header";
 import { WorkbenchMobile } from "./workbench-mobile";
@@ -14,10 +14,7 @@ interface WorkbenchMainProps {
   defaultTab?: WorkbenchTab;
 }
 
-export function WorkbenchMain({
-  chatId,
-  defaultTab,
-}: WorkbenchMainProps) {
+export function WorkbenchMain({ chatId, defaultTab }: WorkbenchMainProps) {
   const initializeWorkbench = useWorkbenchStore(
     (state) => state.initializeWorkbench,
   );
@@ -29,12 +26,7 @@ export function WorkbenchMain({
 
   // Mobile layout
   if (isMobile) {
-    return (
-      <WorkbenchMobile
-        chatId={chatId}
-        defaultTab={defaultTab}
-      />
-    );
+    return <WorkbenchMobile chatId={chatId} defaultTab={defaultTab} />;
   }
 
   // Desktop layout with SidebarProvider
