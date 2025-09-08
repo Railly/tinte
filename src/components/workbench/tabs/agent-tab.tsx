@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useThemeContext } from "@/providers/theme";
@@ -8,376 +8,147 @@ import {
   ChatContainerContent,
   ChatContainerRoot,
 } from "@/components/ui/chat-container";
-import { DotsLoader } from "@/components/ui/loader";
-import {
-  Message,
-  MessageAction,
-  MessageActions,
-  MessageContent,
-} from "@/components/ui/message";
-import {
-  PromptInput,
-  PromptInputActions,
-  PromptInputTextarea,
-} from "@/components/ui/prompt-input";
+import { Message, MessageContent } from "@/components/ui/message";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { UIMessage } from "ai";
 import {
-  AlertTriangle,
-  ArrowUp,
   Copy,
   Palette,
   Sparkles,
-  ThumbsDown,
-  ThumbsUp,
 } from "lucide-react";
-import { useState } from "react";
+import { ChatInput } from "@/components/workbench/chat-input";
+import type { PastedItem } from "@/lib/input-detection";
 import type { ThemeData } from "@/lib/theme-tokens";
-import { AttachmentBubble } from "@/components/workbench/attachment-bubble";
-
-type MessageComponentProps = {
-  message: UIMessage;
-  isLastMessage: boolean;
-};
-
-const ThemePreview = memo(({ themeData }: { themeData: any }) => {
-  if (!themeData?.theme) return null;
-
-  const { light, dark } = themeData.theme;
-  const { colorStory, accessibility } = themeData;
-
-  return (
-    <div className="mt-3 rounded-xl border border-border bg-card p-4 shadow-sm">
-      <div className="flex items-center gap-2 mb-4">
-        <Palette className="h-5 w-5 text-primary" />
-        <span className="text-sm font-semibold">Generated Theme</span>
-        {accessibility?.contrastRatio && (
-          <span className="text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-full">
-            {accessibility.contrastRatio}
-          </span>
-        )}
-      </div>
-      
-      {colorStory && (
-        <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-          <p className="text-xs text-muted-foreground italic leading-relaxed">
-            {colorStory}
-          </p>
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <div>
-          <div className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Light Mode</div>
-          <div className="grid grid-cols-4 gap-2">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded-md border border-border shadow-sm"
-                style={{ backgroundColor: light.bg }}
-              />
-              <span className="text-xs font-medium">BG</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded-md border border-border shadow-sm"
-                style={{ backgroundColor: light.tx }}
-              />
-              <span className="text-xs font-medium">Text</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded-md border border-border shadow-sm"
-                style={{ backgroundColor: light.pr }}
-              />
-              <span className="text-xs font-medium">Primary</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded-md border border-border shadow-sm"
-                style={{ backgroundColor: light.ac_1 }}
-              />
-              <span className="text-xs font-medium">Accent</span>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Dark Mode</div>
-          <div className="grid grid-cols-4 gap-2">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded-md border border-border shadow-sm"
-                style={{ backgroundColor: dark.bg }}
-              />
-              <span className="text-xs font-medium">BG</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded-md border border-border shadow-sm"
-                style={{ backgroundColor: dark.tx }}
-              />
-              <span className="text-xs font-medium">Text</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded-md border border-border shadow-sm"
-                style={{ backgroundColor: dark.pr }}
-              />
-              <span className="text-xs font-medium">Primary</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded-md border border-border shadow-sm"
-                style={{ backgroundColor: dark.ac_1 }}
-              />
-              <span className="text-xs font-medium">Accent</span>
-            </div>
-          </div>
-        </div>
-
-        {accessibility?.colorBlindSafe && (
-          <div className="flex items-center gap-2 pt-2 border-t border-border/50">
-            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-            <span className="text-xs text-muted-foreground">Color-blind friendly</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-});
-
-ThemePreview.displayName = "ThemePreview";
-
-export const MessageComponent = memo(
-  ({ message, isLastMessage }: MessageComponentProps) => {
-    const isAssistant = message.role === "assistant";
-    const { addTheme, handleThemeSelect } = useThemeContext();
-
-    const handleApplyTheme = useCallback((toolResult: any) => {
-      if (!toolResult?.theme) return;
-
-      const themeData: ThemeData = {
-        id: `ai-generated-${Date.now()}`,
-        name: toolResult.concept ? toolResult.concept.slice(0, 30) + (toolResult.concept.length > 30 ? "..." : "") : "AI Generated Theme",
-        description: `AI-generated theme: ${toolResult.concept || "Custom theme"}`,
-        author: "AI Assistant",
-        provider: "tinte",
-        downloads: 0,
-        likes: 0,
-        views: 1,
-        createdAt: new Date().toISOString(),
-        colors: {
-          primary: toolResult.theme.light.pr,
-          secondary: toolResult.theme.light.sc,
-          accent: toolResult.theme.light.ac_1,
-          background: toolResult.theme.light.bg,
-          foreground: toolResult.theme.light.tx,
-        },
-        tags: ["ai-generated", "custom"],
-        rawTheme: toolResult.theme,
-      };
-
-      addTheme(themeData);
-      handleThemeSelect(themeData);
-    }, [addTheme, handleThemeSelect]);
-
-    return (
-      <Message
-        className={cn(
-          "mx-auto flex w-full max-w-3xl flex-col gap-2 px-2 md:px-10",
-          isAssistant ? "items-start" : "items-end"
-        )}
-      >
-        {isAssistant ? (
-          <div className="group flex w-full flex-col gap-0">
-            <MessageContent
-              className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0"
-              markdown
-            >
-              {message.parts
-                .filter(part => part.type === "text")
-                .map(part => part.type === "text" ? part.text : "")
-                .join("")}
-            </MessageContent>
-
-            {message.parts
-              .filter(part => part.type === "tool-generateTheme")
-              .map((part, index) => {
-                if (part.type !== "tool-generateTheme" || !("output" in part) || !part.output) return null;
-                return (
-                  <div key={index}>
-                    <ThemePreview themeData={part.output} />
-                    <div className="mt-2 flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleApplyTheme(part.output)}
-                        className="h-7"
-                      >
-                        <Sparkles className="h-3 w-3 mr-1" />
-                        Apply Theme
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-
-            <MessageActions
-              className={cn(
-                "-ml-2.5 flex gap-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100",
-                isLastMessage && "opacity-100"
-              )}
-            >
-              <MessageAction tooltip="Copy" delayDuration={100}>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </MessageAction>
-              <MessageAction tooltip="Upvote" delayDuration={100}>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <ThumbsUp className="h-4 w-4" />
-                </Button>
-              </MessageAction>
-              <MessageAction tooltip="Downvote" delayDuration={100}>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <ThumbsDown className="h-4 w-4" />
-                </Button>
-              </MessageAction>
-            </MessageActions>
-          </div>
-        ) : (
-          <div className="group flex w-full flex-col items-end gap-1">
-            <MessageContent className="bg-primary text-primary-foreground max-w-[85%] rounded-3xl px-5 py-2.5 whitespace-pre-wrap sm:max-w-[75%]">
-              {message.parts
-                .filter(part => part.type === "text")
-                .map(part => part.type === "text" ? part.text : "")
-                .join("")}
-            </MessageContent>
-
-            {/* Show attachments if available */}
-            {(message as any).experimental_attachments && (message as any).experimental_attachments.length > 0 && (
-              <div className="space-y-2 mt-3 max-w-[85%] sm:max-w-[75%]">
-                {(message as any).experimental_attachments.map((attachment: any, index: number) => (
-                  <AttachmentBubble
-                    key={index}
-                    att={{
-                      kind: attachment.contentType?.startsWith('image/') ? 'image' : 'prompt',
-                      content: attachment.name || 'Attachment',
-                      imageData: attachment.contentType?.startsWith('image/') ? attachment.url : undefined,
-                      id: `att-${index}`
-                    } as any}
-                  />
-                ))}
-              </div>
-            )}
-
-            <MessageActions
-              className={cn(
-                "flex gap-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-              )}
-            >
-              <MessageAction tooltip="Copy" delayDuration={100}>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </MessageAction>
-            </MessageActions>
-          </div>
-        )}
-      </Message>
-    );
-  }
-);
-
-MessageComponent.displayName = "MessageComponent";
-
-const LoadingMessage = memo(() => (
-  <Message className="mx-auto flex w-full max-w-3xl flex-col items-start gap-2 px-0 md:px-10">
-    <div className="group flex w-full flex-col gap-0">
-      <div className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0">
-        <DotsLoader />
-      </div>
-    </div>
-  </Message>
-));
-
-LoadingMessage.displayName = "LoadingMessage";
-
-const ErrorMessage = memo(({ error }: { error: Error }) => (
-  <Message className="not-prose mx-auto flex w-full max-w-3xl flex-col items-start gap-2 px-0 md:px-10">
-    <div className="group flex w-full flex-col items-start gap-0">
-      <div className="text-primary flex min-w-0 flex-1 flex-row items-center gap-2 rounded-lg border-2 border-red-300 bg-red-300/20 px-2 py-1">
-        <AlertTriangle size={16} className="text-red-500" />
-        <p className="text-red-500">{error.message}</p>
-      </div>
-    </div>
-  </Message>
-));
-
-ErrorMessage.displayName = "ErrorMessage";
+import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
+import { extractThemeColors } from "@/lib/theme-utils";
 
 const suggestions = [
   "Ocean sunset theme with warm oranges and cool blues",
-  "Dark cyberpunk theme with neon accents",
+  "Dark cyberpunk theme with neon accents", 
   "Forest morning theme with natural greens",
   "Minimalist theme with subtle grays",
 ];
 
 export function AgentTab() {
-  const [input, setInput] = useState("");
-  const [attachments, setAttachments] = useState<Array<{ file: File; url: string }>>([]);
-
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/generate-theme",
     }),
   });
 
-  const handleSubmit = useCallback(() => {
-    if (!input.trim() && attachments.length === 0) return;
+  const { addTheme, handleThemeSelect } = useThemeContext();
 
-    const message: any = { text: input };
-    
-    // Add attachments if any
-    if (attachments.length > 0) {
-      message.experimental_attachments = attachments.map((att, index) => ({
-        name: att.file.name,
-        contentType: att.file.type,
-        url: att.url,
-        id: `attachment-${index}`
-      }));
-    }
+  const handleApplyTheme = useCallback((toolResult: any) => {
+    if (!toolResult?.theme) return;
 
-    sendMessage(message);
-    setInput("");
-    setAttachments([]);
-  }, [input, attachments, sendMessage]);
+    const themeData: ThemeData = {
+      id: `ai-generated-${Date.now()}`,
+      name: toolResult.concept ? toolResult.concept.slice(0, 30) + (toolResult.concept.length > 30 ? "..." : "") : "AI Generated Theme",
+      description: `AI-generated theme: ${toolResult.concept || "Custom theme"}`,
+      author: "AI Assistant",
+      provider: "tinte",
+      downloads: 0,
+      likes: 0,
+      views: 1,
+      createdAt: new Date().toISOString(),
+      colors: {
+        primary: toolResult.theme.light.pr,
+        secondary: toolResult.theme.light.sc,
+        accent: toolResult.theme.light.ac_1,
+        background: toolResult.theme.light.bg,
+        foreground: toolResult.theme.light.tx,
+      },
+      tags: ["ai-generated", "custom"],
+      rawTheme: toolResult.theme,
+    };
 
-  const handleFileUpload = useCallback((files: FileList) => {
-    const newAttachments: Array<{ file: File; url: string }> = [];
-    
-    Array.from(files).forEach((file) => {
-      if (file.type.startsWith('image/')) {
-        const url = URL.createObjectURL(file);
-        newAttachments.push({ file, url });
+    addTheme(themeData);
+    handleThemeSelect(themeData);
+  }, [addTheme, handleThemeSelect]);
+
+
+  const handleSubmit = useCallback((content: string, attachments: PastedItem[]) => {
+    if (!content.trim() && attachments.length === 0) return;
+
+    // Convert PastedItems to AI SDK files format
+    const files: any[] = [];
+    attachments.forEach((item) => {
+      if (item.kind === 'image' && item.imageData) {
+        // Detect media type from data URL
+        const mediaType = item.imageData.startsWith('data:image/') 
+          ? item.imageData.substring(5, item.imageData.indexOf(';'))
+          : 'image/png';
+        
+        files.push({
+          type: 'file',
+          mediaType,
+          url: item.imageData,
+          filename: item.content || `image.${mediaType.split('/')[1]}`
+        });
       }
     });
-    
-    setAttachments(prev => [...prev, ...newAttachments]);
-  }, []);
 
-  const removeAttachment = useCallback((index: number) => {
-    setAttachments(prev => {
-      const newAttachments = [...prev];
-      URL.revokeObjectURL(newAttachments[index].url);
-      newAttachments.splice(index, 1);
-      return newAttachments;
+    sendMessage({
+      text: content,
+      files: files.length > 0 ? files : undefined
     });
-  }, []);
+  }, [sendMessage]);
 
   const handleSuggestionClick = useCallback((suggestion: string) => {
-    setInput(suggestion);
-  }, []);
+    handleSubmit(suggestion, []);
+  }, [handleSubmit]);
+
+  // Simple loading check
+  const isLoading = useMemo(() => {
+    return status === "submitted" || status === "streaming";
+  }, [status]);
+
+  // Timer and shimmer text for theme generation
+  const [craftingTimer, setCraftingTimer] = useState(0);
+  const [craftingText, setCraftingText] = useState("Crafting your theme...");
+
+  // Shimmer text array
+  const craftingSteps = [
+    "Crafting your theme...",
+    "Analyzing color harmony...", 
+    "Generating light mode...",
+    "Creating dark variant...",
+    "Perfecting contrasts...",
+    "Almost ready..."
+  ];
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (isLoading) {
+      setCraftingTimer(0);
+      setCraftingText(craftingSteps[0]);
+      
+      interval = setInterval(() => {
+        setCraftingTimer(prev => {
+          const newTime = prev + 1;
+          
+          // Change text every few seconds
+          const stepIndex = Math.floor(newTime / 3) % craftingSteps.length;
+          setCraftingText(craftingSteps[stepIndex]);
+          
+          return newTime;
+        });
+      }, 1000);
+    } else {
+      setCraftingTimer(0);
+      setCraftingText(craftingSteps[0]);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isLoading]);
+
+  // Memoize chat input disabled state
+  const isChatDisabled = useMemo(() => {
+    return status !== "ready" && status !== "error";
+  }, [status]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -405,124 +176,234 @@ export function AgentTab() {
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
                 <div className="w-2 h-2 rounded-full bg-emerald-500/50"></div>
-                <span>Powered by GPT-4 • Instant generation</span>
+                <span>Powered by GPT-4 • Generative UI</span>
               </div>
             </div>
           )}
 
-          {messages.map((message, index) => {
-            const isLastMessage = index === messages.length - 1;
+          {messages.map((message) => (
+            <Message
+              key={message.id}
+              className={cn(
+                "mx-auto flex w-full max-w-3xl flex-col gap-2 px-2 md:px-10",
+                message.role === "user" ? "items-end" : "items-start"
+              )}
+            >
+              {message.role === "user" ? (
+                <div className="group flex w-full flex-col items-end gap-1">
+                  <MessageContent className="bg-primary text-primary-foreground max-w-[85%] rounded-3xl px-5 py-2.5 whitespace-pre-wrap sm:max-w-[75%]">
+                    {message.parts
+                      .filter(part => part.type === "text")
+                      .map(part => part.type === "text" ? part.text : "")
+                      .join("")}
+                  </MessageContent>
+                </div>
+              ) : (
+                <div className="group flex w-full flex-col gap-3">
+                  {/* Text content - Regular chat text */}
+                  {message.parts.some(part => part.type === "text") && (
+                    <div className="w-full max-w-2xl">
+                      <MessageContent className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">
+                        {message.parts
+                          .filter(part => part.type === "text")
+                          .map(part => part.type === "text" ? part.text : "")
+                          .join("")}
+                      </MessageContent>
+                    </div>
+                  )}
 
-            return (
-              <MessageComponent
-                key={message.id}
-                message={message}
-                isLastMessage={isLastMessage}
-              />
-            );
-          })}
+                  {/* Tool calls - Enhanced with better state handling */}
+                  {message.parts
+                    .filter(part => part.type === "tool-generateTheme")
+                    .map((part, index) => {
+                      if (part.type !== "tool-generateTheme") return null;
+                      
+                      switch (part.state) {
+                        case 'input-available':
+                          return (
+                            <div key={index} className="w-full max-w-md space-y-3">
+                              <div className="flex items-center gap-2 text-sm text-violet-600 dark:text-violet-400">
+                                <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                                <span>Crafting your perfect theme...</span>
+                              </div>
+                              <div className="p-4 border border-violet-200 dark:border-violet-800 rounded-lg bg-violet-50/50 dark:bg-violet-900/20 relative overflow-hidden">
+                                <div className="text-xs text-violet-600 dark:text-violet-400 mb-3 font-medium">
+                                  🎨 Generating OKLCH color harmonies
+                                </div>
+                                
+                                {/* Animated color bars */}
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></div>
+                                    <div className="h-2 bg-gradient-to-r from-violet-200 to-violet-400 rounded-full flex-1 animate-pulse"></div>
+                                    <span className="text-xs text-violet-600/70">Light mode</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse delay-100"></div>
+                                    <div className="h-2 bg-gradient-to-r from-violet-600 to-violet-800 rounded-full flex-1 animate-pulse delay-100"></div>
+                                    <span className="text-xs text-violet-600/70">Dark mode</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-violet-600 animate-pulse delay-200"></div>
+                                    <div className="h-2 bg-gradient-to-r from-violet-300 to-violet-500 rounded-full flex-1 animate-pulse delay-200"></div>
+                                    <span className="text-xs text-violet-600/70">Accessibility</span>
+                                  </div>
+                                </div>
 
-          {status === "submitted" && <LoadingMessage />}
-          {status === "error" && error && <ErrorMessage error={error} />}
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite] pointer-events-none"></div>
+                              </div>
+                            </div>
+                          );
+                        case 'output-available':
+                          const themeOutput = part.output as any;
+                          return (
+                            <div key={index} className="w-full max-w-lg space-y-4">
+                              <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                <span>Crafted in {craftingTimer}s ✨</span>
+                              </div>
+                              
+                              {/* Theme Details */}
+                              <div className="p-4 rounded-lg border border-border/30 bg-muted/10 space-y-3">
+                                <div className="flex items-center gap-2">
+                                  <Palette className="h-4 w-4 text-primary" />
+                                  <span className="font-medium text-sm">
+                                    {themeOutput.concept || "Custom Theme"}
+                                  </span>
+                                  {themeOutput.accessibility?.contrastRatio && (
+                                    <span className="px-2 py-1 text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full">
+                                      {themeOutput.accessibility.contrastRatio}
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                {themeOutput.colorStory && (
+                                  <p className="text-xs text-muted-foreground leading-relaxed">
+                                    {themeOutput.colorStory}
+                                  </p>
+                                )}
+                                
+                                {/* Color Palette Display */}
+                                {themeOutput.theme && (
+                                  <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-medium text-muted-foreground">Light Mode</span>
+                                      <ThemeColorPreview 
+                                        colors={themeOutput.theme.light || {}} 
+                                        size="sm" 
+                                        maxColors={8}
+                                      />
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-medium text-muted-foreground">Dark Mode</span>
+                                      <ThemeColorPreview 
+                                        colors={themeOutput.theme.dark || {}} 
+                                        size="sm" 
+                                        maxColors={8}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+
+                                {themeOutput.accessibility?.colorBlindSafe && (
+                                  <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                    <span>Color-blind safe</span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Single Apply Button */}
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleApplyTheme(themeOutput)}
+                                  className="h-8 px-3"
+                                >
+                                  <Sparkles className="h-3 w-3 mr-1.5" />
+                                  Apply Theme
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(JSON.stringify(themeOutput, null, 2));
+                                  }}
+                                  className="h-8 px-3"
+                                >
+                                  <Copy className="h-3 w-3 mr-1.5" />
+                                  Copy JSON
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        case 'output-error':
+                          return (
+                            <div key={index} className="w-full max-w-md">
+                              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg space-y-2">
+                                <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                                  <div className="w-2 h-2 rounded-full bg-red-500" />
+                                  <span>Theme generation failed</span>
+                                </div>
+                                <p className="text-red-700 dark:text-red-400 text-sm">
+                                  {part.errorText || "An unexpected error occurred"}
+                                </p>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    // Retry the last message
+                                    if (messages.length > 0) {
+                                      const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+                                      if (lastUserMessage) {
+                                        const textPart = lastUserMessage.parts.find(p => p.type === 'text');
+                                        if (textPart && textPart.type === 'text') {
+                                          sendMessage({ text: textPart.text });
+                                        }
+                                      }
+                                    }
+                                  }}
+                                  className="h-7 text-xs"
+                                >
+                                  Try Again
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        default:
+                          return null;
+                      }
+                    })}
+
+                </div>
+              )}
+            </Message>
+          ))}
+
+          {/* Simple shimmer loading */}
+          {isLoading && (
+            <Message className="mx-auto flex w-full max-w-3xl flex-col items-start gap-2 px-2 md:px-10">
+              <div className="flex items-center justify-between py-4 w-full max-w-md">
+                <span className="text-sm text-muted-foreground animate-pulse">
+                  {craftingText}
+                </span>
+                <span className="text-xs text-muted-foreground/60">
+                  {craftingTimer}s
+                </span>
+              </div>
+            </Message>
+          )}
         </ChatContainerContent>
       </ChatContainerRoot>
 
-      <div className="inset-x-0 bottom-0 mx-auto w-full max-w-3xl shrink-0 px-3 pb-3 md:px-5 md:pb-5">
-        {/* Show attachments preview above input */}
-        {attachments.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-2">
-            {attachments.map((attachment, index) => (
-              <div key={index} className="relative">
-                <AttachmentBubble
-                  att={{
-                    kind: 'image',
-                    content: attachment.file.name,
-                    imageData: attachment.url,
-                    id: `preview-${index}`
-                  } as any}
-                />
-                <button
-                  onClick={() => removeAttachment(index)}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors flex items-center justify-center"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <PromptInput
-          isLoading={status !== "ready"}
-          value={input}
-          onValueChange={setInput}
-          onSubmit={handleSubmit}
-          className="border-input bg-popover relative z-10 w-full rounded-3xl border p-0 pt-1 shadow-lg"
-        >
-          <div className="flex flex-col">
-            <div 
-              className="relative"
-              onDrop={(e) => {
-                e.preventDefault();
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                  handleFileUpload(files);
-                }
-              }}
-              onDragOver={(e) => {
-                e.preventDefault();
-              }}
-            >
-              <PromptInputTextarea
-                placeholder={attachments.length > 0 
-                  ? "Describe what theme you want based on the image..." 
-                  : "Describe your ideal theme or drag & drop an image..."
-                }
-                className="min-h-[48px] pt-3 pl-4 pr-4 text-base leading-[1.4] sm:text-base md:text-base"
-              />
-            </div>
-
-            <PromptInputActions className="mt-2 flex w-full items-center justify-between gap-2 p-2">
-              <div className="flex items-center gap-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      handleFileUpload(e.target.files);
-                    }
-                  }}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <label
-                  htmlFor="file-upload"
-                  className="cursor-pointer text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-                >
-                  📎 {attachments.length > 0 ? `${attachments.length} image${attachments.length > 1 ? 's' : ''}` : 'Add image'}
-                </label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  size="icon"
-                  disabled={
-                    (!input.trim() && attachments.length === 0) || (status !== "ready" && status !== "error")
-                  }
-                  onClick={handleSubmit}
-                  className="size-9 rounded-full"
-                >
-                  {status === "ready" || status === "error" ? (
-                    <ArrowUp size={18} />
-                  ) : (
-                    <span className="size-3 rounded-xs bg-white" />
-                  )}
-                </Button>
-              </div>
-            </PromptInputActions>
-          </div>
-        </PromptInput>
-      </div>
+      <ChatInput
+        onSubmit={handleSubmit}
+        onStop={stop}
+        placeholder="Describe your ideal theme or drag & drop an image..."
+        disabled={isChatDisabled}
+        isStreaming={isLoading}
+      />
     </div>
   );
 }

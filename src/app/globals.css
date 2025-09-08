@@ -194,3 +194,13 @@ body {
     clip-path: polygon(130% 0, -30% 0, -15% 100%, 110% 115%);
   }
 }
+
+/* Shimmer effect for theme generation loading */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

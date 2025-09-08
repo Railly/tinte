@@ -255,46 +255,63 @@ export type SemanticToken =
 export type TokenColorMap = Record<SemanticToken, keyof TinteBlock>;
 
 const defaultTokenColorMap: TokenColorMap = {
-  plain: "tx",
-  classes: "pr",
-  interfaces: "pr",
-  structs: "pr",
-  enums: "pr",
-  keys: "tx",
-  methods: "sc",
-  functions: "pr",
-  variables: "tx",
-  variablesOther: "sc",
-  globalVariables: "ac_2",
-  localVariables: "tx",
-  parameters: "tx",
-  properties: "tx",
-  strings: "ac_2",
-  stringEscapeSequences: "tx",
-  keywords: "sc",
-  keywordsControl: "sc",
-  storageModifiers: "sc",
-  comments: "tx_3",
-  docComments: "tx_3",
-  numbers: "ac_3",
-  booleans: "ac_3",
-  operators: "sc",
-  macros: "sc",
-  preprocessor: "ac_2",
-  urls: "sc",
-  tags: "sc",
-  jsxTags: "sc",
-  attributes: "pr",
-  types: "sc",
-  constants: "sc",
-  labels: "ac_2",
-  namespaces: "pr",
-  modules: "sc",
-  typeParameters: "pr",
-  exceptions: "sc",
-  decorators: "pr",
-  calls: "tx",
-  punctuation: "tx_2",
+  // Basic text and default colors
+  plain: "tx",                    // Default text color
+  punctuation: "tx_2",            // Brackets, semicolons, commas
+  
+  // Type definitions and declarations (CRITICAL: needs high contrast with bg)
+  classes: "pr",                  // Class names - PRIMARY usage, needs good contrast
+  interfaces: "pr",               // Interface names - PRIMARY usage
+  structs: "pr",                  // Struct definitions - PRIMARY usage
+  enums: "pr",                    // Enum definitions - PRIMARY usage
+  types: "sc",                    // Type annotations
+  typeParameters: "pr",           // Generic type parameters
+  
+  // Functions and methods (CRITICAL: high visibility needed)
+  functions: "pr",                // Function names - PRIMARY usage, needs good contrast
+  methods: "sc",                  // Method calls
+  calls: "tx",                    // Function calls
+  
+  // Variables and properties
+  variables: "tx",                // Local variables
+  variablesOther: "sc",          // Object variables
+  globalVariables: "ac_2",        // Global scope variables
+  localVariables: "tx",           // Local scope variables
+  parameters: "tx",               // Function parameters
+  properties: "tx",               // Object properties
+  keys: "tx",                     // Object keys
+  
+  // Language constructs
+  keywords: "sc",                 // if, for, while, etc.
+  keywordsControl: "sc",          // import, export, return
+  storageModifiers: "sc",         // const, let, var, public, private
+  operators: "sc",                // +, -, *, /, =, etc.
+  
+  // Literals and constants
+  strings: "ac_2",                // String literals
+  stringEscapeSequences: "tx",    // \n, \t, etc.
+  numbers: "ac_3",                // Numeric literals
+  booleans: "ac_3",               // true, false
+  constants: "sc",                // CONSTANTS, readonly
+  
+  // Documentation and comments
+  comments: "tx_3",               // Regular comments
+  docComments: "tx_3",            // JSDoc, docstrings
+  
+  // Web/markup specific
+  tags: "sc",                     // HTML/XML tags
+  jsxTags: "sc",                  // JSX component tags
+  attributes: "pr",               // HTML attributes - PRIMARY usage
+  urls: "sc",                     // Links in comments
+  
+  // Advanced constructs
+  namespaces: "pr",               // Namespace declarations - PRIMARY usage
+  modules: "sc",                  // Module imports
+  macros: "sc",                   // Preprocessor macros
+  preprocessor: "ac_2",           // #define, #include
+  exceptions: "sc",               // try, catch, throw
+  decorators: "pr",               // @decorators - PRIMARY usage
+  labels: "ac_2",                 // goto labels
 };
 
 const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {

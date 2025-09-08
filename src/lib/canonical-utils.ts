@@ -8,16 +8,16 @@ export interface CanonicalGroup {
 
 export const COLOR_GROUPS: CanonicalGroup[] = [
   {
-    label: "Text",
-    keys: ["tx", "tx_2", "tx_3"] as (keyof TinteBlock)[],
+    label: "Background",
+    keys: ["bg", "bg_2"] as (keyof TinteBlock)[],
   },
   {
     label: "Interface",
     keys: ["ui", "ui_2", "ui_3"] as (keyof TinteBlock)[],
   },
   {
-    label: "Background",
-    keys: ["bg", "bg_2"] as (keyof TinteBlock)[],
+    label: "Text",
+    keys: ["tx_3", "tx_2", "tx"] as (keyof TinteBlock)[],
   },
   {
     label: "Accents",
@@ -36,7 +36,7 @@ export const createInitialCanonicalGroups = (): Record<string, boolean> => {
 
 // Check if we have valid tinte colors loaded
 export const hasValidTinteColors = (
-  colors: TinteBlock | undefined,
+  colors: TinteBlock | undefined
 ): boolean => {
   if (!colors) return false;
   return COLOR_GROUPS.some((group) =>
@@ -44,8 +44,8 @@ export const hasValidTinteColors = (
       (key) =>
         colors[key] &&
         typeof colors[key] === "string" &&
-        colors[key].startsWith("#"),
-    ),
+        colors[key].startsWith("#")
+    )
   );
 };
 

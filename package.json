@@ -11,8 +11,9 @@
     "fix": "biome check . --write --unsafe --max-diagnostics=10000"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^2.0.24",
+    "@ai-sdk/openai": "^2.0.25",
     "@ai-sdk/react": "^2.0.34",
+    "@ai-sdk/rsc": "^1.0.35",
     "@biomejs/biome": "2.2.0",
     "@hookform/resolvers": "^5.2.0",
     "@monaco-editor/react": "^4.7.0",

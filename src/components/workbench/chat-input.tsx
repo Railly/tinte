@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, Globe, Image, Plus } from "lucide-react";
+import { ArrowUp, Globe, Image, Plus, Square } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { PasteDialog } from "@/components/home/prompt-input/paste-dialog";
@@ -21,14 +21,18 @@ import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
 
 interface ChatInputProps {
   onSubmit?: (content: string, attachments: PastedItem[]) => void;
+  onStop?: () => void;
   placeholder?: string;
   disabled?: boolean;
+  isStreaming?: boolean;
 }
 
 export function ChatInput({
   onSubmit,
+  onStop,
   placeholder = "Type a message...",
   disabled = false,
+  isStreaming = false,
 }: ChatInputProps) {
   const [message, setMessage] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -232,20 +236,26 @@ export function ChatInput({
               </DropdownMenu>
             </div>
 
-            {/* Submit button positioned absolutely over the textarea only */}
+            {/* Submit/Stop button positioned absolutely over the textarea only */}
             <motion.button
-              onClick={handleSubmit}
-              disabled={!hasContent || disabled}
-              whileHover={{ scale: hasContent ? 1.05 : 1 }}
-              whileTap={{ scale: hasContent ? 0.95 : 1 }}
+              onClick={isStreaming ? onStop : handleSubmit}
+              disabled={(!hasContent && !isStreaming) || disabled}
+              whileHover={{ scale: (hasContent || isStreaming) ? 1.05 : 1 }}
+              whileTap={{ scale: (hasContent || isStreaming) ? 0.95 : 1 }}
               className={cn(
-                "absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg",
-                hasContent && !disabled
-                  ? "bg-primary text-primary-foreground cursor-pointer"
+                "absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg transition-colors",
+                (hasContent || isStreaming) && !disabled
+                  ? isStreaming 
+                    ? "bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                    : "bg-primary text-primary-foreground cursor-pointer"
                   : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
               )}
             >
-              <ArrowUp className="size-4" />
+              {isStreaming ? (
+                <Square className="size-3" />
+              ) : (
+                <ArrowUp className="size-4" />
+              )}
             </motion.button>
           </div>
 
