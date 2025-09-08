@@ -21,7 +21,7 @@ export function Message({ children, className, ...props }: MessageProps) {
 
 export function MessageContent({ children, className, ...props }: MessageContentProps) {
   return (
-    <div className={cn("rounded-lg px-3 py-2", className)} {...props}>
+    <div className={cn("rounded-sm px-3 py-2", className)} {...props}>
       {children}
     </div>
   );

@@ -14,8 +14,16 @@ const TinteBlockSchema = z.object({
   tx_3: z.string().describe("Faint text/comment color in hex format"),
   tx_2: z.string().describe("Muted text/punctuation color in hex format"),
   tx: z.string().describe("Primary text color in hex format"),
-  pr: z.string().describe("Primary accent color in hex format"),
-  sc: z.string().describe("Secondary accent color in hex format"),
+  pr: z
+    .string()
+    .describe(
+      "Primary accent color in hex format - must meet WCAG AA contrast and be different hue family from secondary"
+    ),
+  sc: z
+    .string()
+    .describe(
+      "Secondary accent color in hex format - must be >60° apart from primary and meet WCAG AA contrast"
+    ),
   ac_1: z.string().describe("Accent color 1 in hex format"),
   ac_2: z.string().describe("Accent color 2 in hex format"),
   ac_3: z.string().describe("Accent color 3 in hex format"),
@@ -41,136 +49,162 @@ export async function POST(request: NextRequest) {
     }
 
     const result = streamText({
-      model: openai("gpt-4o"),
+      model: openai("gpt-4.1"),
       temperature: 0.7,
-      system: `# Role
-You are tweakcn, an expert shadcn/ui theme generator. ALWAYS use the generateTheme tool immediately - do not write explanatory text first. Generate the theme directly.
+      system: `You are Tinte AI, an expert theme generator for the Tinte platform. ALWAYS use the generateTheme tool immediately.
 
-# Image & SVG Analysis Instructions (when visual content is provided)
-- If one or more images are provided (with or without a text prompt), always analyze the image(s) and extract dominant color tokens, mood, border radius, fonts, and shadows to create a theme based on them 
-- If SVG markup is provided, analyze the SVG code to extract colors, styles, and visual elements for theme generation
-- **Always match the colors, border radius and shadows of the source image(s) or SVG elements** as closely as possible
-- If both visual content and a text prompt are provided, use the prompt as additional guidance
-- Translate visual elements into appropriate theme tokens
-- If only a text prompt is provided (no visual content), generate the theme based on the prompt
+# Core Rules
+- **ACCESSIBILITY FIRST**: All colors must meet WCAG AA (4.5:1 contrast minimum)
+- **Primary (pr) and Secondary (sc) MUST be different hue families** (>60° apart in HSL)
+- Output colors in HEX format only (#RRGGBB)
+- Light mode: darker colors for readability (pr, sc, accents must be dark)
+- Dark mode: bright enough colors for contrast
 
-# Typography & Design Elements
-- Consider the mood and style of the design when choosing the theme aesthetic (modern/clean, elegant/refined, playful/rounded, etc.)
-- Match design styles to the visual content when images or SVGs are provided
+# Token Scale
+**Continuous progression**: bg → bg_2 → ui → ui_2 → ui_3 → tx_3 → tx_2 → tx
+- Small steps between tokens (2-5% lightness difference)
+- Light mode: bg (lightest) → tx (darkest)  
+- Dark mode: bg (darkest) → tx (lightest)
 
-# Tinte Token Groups & Continuous Scale
-**CRITICAL: Follow the exact continuous scale progression**
+# Google Fonts & Typography
+- **Sans-serif**: Primary UI font (Inter, Poppins, Nunito Sans, Work Sans, etc.)
+- **Serif**: For headings/accent text (Playfair Display, Merriweather, Crimson Text, etc.)
+- **Mono**: For code blocks (JetBrains Mono, Fira Code, Source Code Pro, etc.)
+- Choose fonts that match the theme mood (modern/clean, elegant, playful, etc.)
+- Only use popular, well-established Google Fonts
 
-**Continuous Scale**: bg → bg_2 → ui → ui_2 → ui_3 → tx_3 → tx_2 → tx
+# Border Radius System
+- **sm**: Small elements (2-3px / 0.125-0.1875rem)
+- **md**: Default components (4-6px / 0.25-0.375rem)
+- **lg**: Cards, modals (8-12px / 0.5-0.75rem)
+- **xl**: Large containers (12-16px / 0.75-1rem)
+- Match visual style: sharp/modern (smaller), friendly/soft (larger)
 
-- **Surfaces**: bg, bg_2 (main and elevated backgrounds)
-- **UI Elements**: ui, ui_2, ui_3 (border states: resting, hover, active) 
-- **Typography**: tx_3, tx_2, tx (text hierarchy: faint, muted, primary)
-- **Brand**: pr, sc (primary and secondary brand colors)
-- **Accents**: ac_1, ac_2, ac_3 (accent colors for highlighting)
+# Shadow System
+- **Modern/Clean**: color=#000000, opacity=0.1, offset=0px/2px, blur=8px, spread=0px
+- **Neobrutalism**: color=#000000, opacity=1, offset=4px/4px, blur=0px, spread=0px (sharp, high contrast)
+- **Soft/Friendly**: color=#000000, opacity=0.15, offset=0px/4px, blur=16px, spread=1px
+- **Elegant**: color=match primary hue, opacity=0.2, offset=2px/8px, blur=12px, spread=0px
+- **Cyberpunk**: color=match accent, opacity=0.6, offset=0px/0px, blur=20px, spread=2px (glow effect)
+- Match theme mood: brutal themes need sharp, high-contrast shadows with no blur
 
-**CRITICAL PROGRESSION RULES**:
-- Each token MUST be a VERY subtle step from the previous one (maximum 3-5% lightness difference)
-- The ENTIRE sequence must form a smooth gradient: bg → bg_2 → ui → ui_2 → ui_3 → tx_3 → tx_2 → tx
-- ui should be BARELY perceptible from bg_2 (add 2-3% lightness only)
-- ui_2 should be a tiny step from ui (add 2-3% more lightness)  
-- ui_3 should be a tiny step from ui_2 (add 2-3% more lightness)
-- **CRITICAL**: tx_3 should be VERY close to ui_3 (add only 3-5% more lightness)
-- tx_2 should be a small step from tx_3 (add 5-8% more lightness)
-- tx should be a step from tx_2 (add 8-12% more lightness)
-- NO dramatic jumps anywhere in the sequence
-- Example perfect dark progression: #111614 → #171D1A → #1C241F → #212A23 → #263025 → #2E3530 → #4A5249 → #8B9488
-- Example perfect light progression: #FFF8EC → #FFF3E0 → #FFE8B6 → #FFDF80 → #FFD269 → #B8941F → #8B6914 → #2D1B05
-- Example bad progression: #FFD269 → #C1A26D (TOO BIG JUMP - FORBIDDEN)
-- **LIGHT MODE SPECIFIC**: tx_3 should be VERY close to ui_3 in lightness (maximum 5-8% darker)
-- **DARK MODE SPECIFIC**: tx_3 should be VERY close to ui_3 in lightness (maximum 3-5% lighter)
-- Always maintain smooth OKLCH lightness transitions in BOTH modes
-- The ui_3 → tx_3 transition is CRITICAL and must be seamless
+# Image Analysis
+If images provided: extract colors, fonts, shadows, radius style closely
+If text only: generate based on description and mood
 
-# LIGHT MODE CONTRAST FOCUS **CRITICAL**
-- **LIGHT MODE IS FAILING** - needs much darker colors for readability
-- **pr (primary)**: Must be VERY DARK - deep blues, browns, purples (L* 25-35 in OKLCH)
-- **sc (secondary)**: Must be DARK enough - no bright colors (L* 30-45 in OKLCH)  
-- **tx (text)**: Must be VERY DARK - almost black (L* 15-25 in OKLCH)
-- **tx_2 (muted text)**: Must be DARK - dark grays (L* 25-35 in OKLCH)
-- **Accent colors in light mode**: NO pastels, NO light colors - use deep saturated colors
-- **Test rule**: All syntax colors must pass WCAG AA (4.5:1) against light bg
+# Style Detection & Shadows
+**ONLY apply these styles when specifically mentioned in the prompt:**
+- "neobrutalism", "brutal", "harsh" → Sharp shadows (blur=0px, opacity=1, offset=4px/4px) + borders match shadow color
+- "soft", "gentle", "friendly" → Soft shadows (blur=16px+, low opacity) + subtle borders
+- "elegant", "sophisticated" → Subtle colored shadows matching primary + refined borders
+- "cyberpunk", "neon", "glow" → Colored glow effects + bright borders
+- **DEFAULT for all other themes**: Standard modern shadows (blur=8px, opacity=0.1-0.15, offset=0px/2px) + neutral borders
 
-# Rules **IMPORTANT**
-- When a base theme is specified in the prompt (denoted as @[base_theme]), use the base theme properties as a starting point and modify only the tokens that are explicitly requested by the user for change.
-- Output colors in HEX format only (#RRGGBB), do NOT output rgba()
-- Generate harmonious light/dark modes following Flexoki-inspired continuous scale
-- Ensure proper contrast for readability (WCAG AA minimum)
-- Light mode: bg (lightest) → tx (darkest) with GRADUAL progression
-- Dark mode: bg (darkest) → tx (lightest) with GRADUAL progression
+# Special Style Rules (ONLY when explicitly requested)
+**Neobrutalism ONLY**: Shadow color = border color for cohesive brutalist look
+**All other themes**: Use appropriate neutral borders that complement the color scheme
 
-# CRITICAL CONTRAST REQUIREMENTS
-- **Primary (pr) color MUST have high contrast with bg** - used for classes, functions, interfaces in VS Code
-- **Light mode pr**: Must be VERY DARK (minimum L* 35 in OKLCH, think deep blue/purple/brown, NOT light yellow)
-- **Dark mode pr**: Must be bright enough to read clearly on dark bg (minimum 4.5:1 contrast ratio)
-- **Light mode examples of GOOD pr colors**: #1B4D3E, #7C2D12, #3730A3, #1F2937, #831843
-- **Light mode examples of BAD pr colors**: #FFD800, #FDE047, #A7F3D0, #FBBF24 (TOO LIGHT!)
-- Secondary (sc) and accents also need sufficient contrast in light mode - avoid pastels
-- Primary is the MOST IMPORTANT color for syntax highlighting - never sacrifice readability for aesthetics
-- **RULE**: If you can't easily read white text ON the pr color in light mode, the pr is too light
-
-# Color Change Logic
-- "Make it [color]" → modify brand colors (pr, sc) primarily
-- "Background darker/lighter" → modify surface colors (bg, bg_2) only
-- Specific token requests → change those tokens + maintain harmony
-- "Change [colors] in light/dark mode" → change those colors only in the requested mode, leave the other mode unchanged
-- Maintain color harmony across all related tokens
-
-# Text Description
-Fill the colorStory field in a friendly, concise way, for example: "I've generated..." or "Here's a refined..." Focus on the design rationale and color relationships.`,
+# Response Style
+Write friendly responses like "I've crafted..." or "Here's your new theme..." mentioning the design rationale.`,
       messages: convertToModelMessages(messages),
       tools: {
         generateTheme: tool({
           description:
-            "Generate a complete Tinte theme palette with scientifically crafted light and dark variants. This tool creates harmonious color systems following perceptual uniformity principles and Flexoki design philosophy. Use this after conceptualizing the color story and mood.",
+            "Generate a complete Tinte theme with colors, Google Fonts, border radius, and shadows. Creates accessibility-first WCAG AA compliant themes with different hue families for primary/secondary colors. Includes typography system, border radius scale, and shadow configuration matching the theme mood and aesthetic.",
           inputSchema: z.object({
-            concept: z
+            title: z
               .string()
+              .max(20)
               .describe(
-                "The theme concept, mood, and design rationale (e.g., 'Ocean sunset with warm-cool temperature dance, golden hour magic transitioning from coral warmth to deep ocean coolness')"
+                "Short theme title, maximum 2 words (e.g., 'Ocean Sunset', 'Dark Forest')"
               ),
-            colorStory: z
-              .string()
-              .describe(
-                "Detailed explanation of the color choices, relationships, and intended emotional experience"
-              ),
+            concept: z.string().describe("Brief theme description and mood"),
             light: TinteBlockSchema.describe(
               "Light mode palette with perceptual luminance progression from bg (lightest) to tx (darkest)"
             ),
             dark: TinteBlockSchema.describe(
               "Dark mode palette with perceptual luminance progression from bg (darkest) to tx (lightest)"
             ),
-            accessibility: z
+            fonts: z
               .object({
-                contrastRatio: z
+                sans: z
                   .string()
-                  .describe("Achieved contrast ratio level (e.g., 'WCAG AAA')"),
-                colorBlindSafe: z
-                  .boolean()
-                  .describe("Whether the theme is color-blind friendly"),
+                  .describe(
+                    "Primary sans-serif font family from Google Fonts (e.g., 'Inter', 'Poppins')"
+                  ),
+                serif: z
+                  .string()
+                  .describe(
+                    "Serif font family from Google Fonts (e.g., 'Playfair Display', 'Merriweather')"
+                  ),
+                mono: z
+                  .string()
+                  .describe(
+                    "Monospace font family from Google Fonts (e.g., 'JetBrains Mono', 'Fira Code')"
+                  ),
               })
-              .describe("Accessibility validation and compliance details"),
+              .describe("Google Fonts selection for theme typography"),
+            radius: z
+              .object({
+                sm: z
+                  .string()
+                  .describe("Small border radius (e.g., '0.125rem', '2px')"),
+                md: z
+                  .string()
+                  .describe("Medium border radius (e.g., '0.375rem', '6px')"),
+                lg: z
+                  .string()
+                  .describe("Large border radius (e.g., '0.5rem', '8px')"),
+                xl: z
+                  .string()
+                  .describe(
+                    "Extra large border radius (e.g., '0.75rem', '12px')"
+                  ),
+              })
+              .describe("Border radius scale for rounded corners"),
+            shadows: z
+              .object({
+                color: z
+                  .string()
+                  .describe("Shadow color in hex format (e.g., '#000000')"),
+                opacity: z
+                  .string()
+                  .describe(
+                    "Shadow opacity as decimal string (e.g., '0.1', '0.25')"
+                  ),
+                offsetX: z
+                  .string()
+                  .describe("Shadow horizontal offset (e.g., '0px', '2px')"),
+                offsetY: z
+                  .string()
+                  .describe("Shadow vertical offset (e.g., '2px', '4px')"),
+                blur: z
+                  .string()
+                  .describe("Shadow blur radius (e.g., '4px', '8px')"),
+                spread: z
+                  .string()
+                  .describe("Shadow spread radius (e.g., '0px', '1px')"),
+              })
+              .describe("Shadow system configuration"),
           }),
           execute: async ({
+            title,
             concept,
-            colorStory,
             light,
             dark,
-            accessibility,
+            fonts,
+            radius,
+            shadows,
           }) => {
-            // Reduced delay for better UX - just enough to show the fancy loading
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
+            console.log({ shadows });
+
             return {
               theme: { light, dark },
+              fonts,
+              radius,
+              shadows,
+              title,
               concept,
-              colorStory,
-              accessibility,
               success: true,
               timestamp: new Date().toISOString(),
             };
