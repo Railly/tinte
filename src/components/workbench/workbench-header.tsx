@@ -77,7 +77,7 @@ export function WorkbenchHeader({ chatId }: WorkbenchHeaderProps) {
             themes={allThemes}
             activeId={activeId}
             onSelect={handleThemeSelect}
-            triggerClassName="w-[24ch]"
+            triggerClassName="w-[14rem]"
             label="Select theme…"
           />
           <Button

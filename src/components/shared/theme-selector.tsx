@@ -51,7 +51,7 @@ export function ThemeSelector({
           aria-expanded={open}
           size="sm"
           className={cn(
-            "justify-between gap-2 md:h-auto md:py-1.5 hover:text-muted-foreground w-[20ch]",
+            "justify-between gap-2 md:h-auto md:py-1.5 hover:text-muted-foreground",
             triggerClassName,
           )}
           title={label}
