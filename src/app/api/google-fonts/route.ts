@@ -27,7 +27,7 @@ async function fetchGoogleFonts(): Promise<FontInfo[]> {
     }
 
     const response = await fetch(
-      `${GOOGLE_FONTS_API_URL}?key=${apiKey}&sort=popularity`,
+      `${GOOGLE_FONTS_API_URL}?key=${apiKey}&sort=popularity`
     );
 
     if (!response.ok) {
@@ -43,7 +43,7 @@ async function fetchGoogleFonts(): Promise<FontInfo[]> {
       variants: font.variants,
       variable: font.variants.some(
         (variant: string) =>
-          variant.includes("wght") || variant.includes("ital,wght"),
+          variant.includes("wght") || variant.includes("ital,wght")
       ),
     }));
 
@@ -63,7 +63,7 @@ async function fetchGoogleFonts(): Promise<FontInfo[]> {
 function filterFonts(
   fonts: FontInfo[],
   query: string,
-  category?: string,
+  category?: string
 ): FontInfo[] {
   let filtered = fonts;
 
@@ -76,7 +76,7 @@ function filterFonts(
   if (query.trim()) {
     const lowerQuery = query.toLowerCase();
     filtered = filtered.filter((font) =>
-      font.family.toLowerCase().includes(lowerQuery),
+      font.family.toLowerCase().includes(lowerQuery)
     );
   }
 
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
       const filteredFallbacks = filterFonts(FALLBACK_FONTS, query, category);
       const paginatedFallbacks = filteredFallbacks.slice(
         offset,
-        offset + limit,
+        offset + limit
       );
       const hasMore = offset + limit < filteredFallbacks.length;
 
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
     console.error("Google Fonts API route error:", error);
     return NextResponse.json(
       { error: "Failed to fetch fonts" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

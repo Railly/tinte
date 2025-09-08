@@ -196,8 +196,6 @@ Write friendly responses like "I've crafted..." or "Here's your new theme..." me
             radius,
             shadows,
           }) => {
-            console.log({ shadows });
-
             return {
               theme: { light, dark },
               fonts,

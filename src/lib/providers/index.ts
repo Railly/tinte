@@ -1,6 +1,7 @@
 import type { TinteTheme } from "@/types/tinte";
 
 export { alacrittyProvider } from "./alacritty";
+export { bananaProvider } from "./banana";
 export { gimpProvider } from "./gimp";
 export { kittyProvider } from "./kitty";
 // Export new Poline-based providers
@@ -14,6 +15,7 @@ export { warpProvider } from "./warp";
 export { windowsTerminalProvider } from "./windows-terminal";
 
 import { alacrittyProvider } from "./alacritty";
+import { bananaProvider } from "./banana";
 import { gimpProvider } from "./gimp";
 import { kittyProvider } from "./kitty";
 import { ProviderRegistry } from "./registry";
@@ -27,6 +29,7 @@ const registry = new ProviderRegistry();
 registry.registerPreviewable(shadcnProvider);
 registry.registerPreviewable(vscodeProvider);
 registry.registerPreviewable(alacrittyProvider);
+registry.registerPreviewable(bananaProvider);
 registry.registerPreviewable(kittyProvider);
 registry.registerPreviewable(warpProvider);
 registry.registerPreviewable(windowsTerminalProvider);

@@ -1,6 +1,7 @@
 // Import removed to fix circular dependency
 
 import { AlacrittyIcon } from "@/components/shared/icons/alacritty";
+import { BananaIcon } from "@/components/shared/icons/banana";
 import { CursorIcon } from "@/components/shared/icons/cursor";
 import { GhosttyIcon } from "@/components/shared/icons/ghostty";
 import { GIMPIcon } from "@/components/shared/icons/gimp";
@@ -70,6 +71,7 @@ export const LEGACY_PROVIDER_ICONS: Record<
 };
 
 export const PLANNED_PROVIDERS = [
+  { id: "banana", name: "Nano Banana", icon: BananaIcon, category: "other" },
   { id: "zed", name: "Zed", icon: ZedIcon, category: "editor" },
   { id: "warp", name: "Warp", icon: WarpIcon, category: "terminal" },
   {
