@@ -193,7 +193,7 @@ function MessageAttachment({ file }: { file: any }) {
 export function AgentTab() {
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
-      api: "/api/generate-theme",
+      api: "/api/chat",
     }),
   });
   console.log({ messages });
