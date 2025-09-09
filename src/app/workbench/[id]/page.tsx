@@ -9,12 +9,15 @@ export const metadata: Metadata = {
 
 export default async function WorkbenchIdPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { id } = await params;
+  const { tab } = await searchParams;
 
-  const defaultTab = "canonical";
+  const defaultTab = (tab as "canonical" | "overrides" | "agent") || "canonical";
 
   return <WorkbenchMain chatId={id} defaultTab={defaultTab} />;
 }

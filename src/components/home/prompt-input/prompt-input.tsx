@@ -233,7 +233,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
       createdAt: Date.now(),
     });
 
-    router.push(`/workbench/${chatId}`);
+    router.push(`/workbench/${chatId}?tab=agent`);
     onSubmit?.("prompt", allContent);
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useThemeContext } from "@/providers/theme";
@@ -22,6 +22,9 @@ import {
   Palette,
   Sparkles,
   ChevronDown,
+  Globe,
+  FileCode,
+  Image as ImageIcon,
 } from "lucide-react";
 import { ChatInput } from "@/components/workbench/chat-input";
 import type { PastedItem } from "@/lib/input-detection";
@@ -31,6 +34,10 @@ import { extractThemeColors } from "@/lib/theme-utils";
 import { loadGoogleFont } from "@/utils/fonts";
 import Logo from "@/components/shared/logo";
 import { motion } from "motion/react";
+import { useWorkbenchStore } from "@/stores/workbench-store";
+import { clearSeed } from "@/utils/anon-seed";
+import { CSSIcon } from "@/components/shared/icons/css";
+import { TailwindIcon } from "@/components/shared/icons/tailwind";
 
 const suggestions = [
   "Ocean sunset theme with warm oranges and cool blues",
@@ -129,6 +136,49 @@ function FontPreview({ fonts }: { fonts: { sans: string; serif: string; mono: st
   );
 }
 
+function MessageAttachment({ file }: { file: any }) {
+  const isImage = (file.type === 'file' && file.mediaType?.startsWith('image/')) ||
+                  (file.type === 'file' && file.url?.startsWith('data:image/')) ||
+                  (file.imageData?.startsWith('data:image/'));
+  
+  const imageUrl = file.url || file.imageData;
+  const filename = file.filename || file.name || file.content || "Attachment";
+  
+  if (isImage && imageUrl) {
+    return (
+      <div className="inline-flex items-center gap-2 p-2 bg-muted/30 border border-border/40 rounded-md text-xs max-w-xs">
+        <img
+          src={imageUrl}
+          alt={filename}
+          className="w-8 h-8 rounded object-cover border border-border/20"
+        />
+        <div className="flex items-center gap-1">
+          <ImageIcon className="h-3 w-3 text-muted-foreground" />
+          <span className="text-muted-foreground truncate">
+            {filename === imageUrl ? "Image" : filename}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  const kindIcons: Record<string, any> = {
+    url: Globe,
+    cssvars: CSSIcon,
+    tailwind: TailwindIcon,
+    palette: Palette,
+  };
+
+  const Icon = kindIcons[file.kind] || FileCode;
+  
+  return (
+    <div className="inline-flex items-center gap-2 p-2 bg-muted/30 border border-border/40 rounded-md text-xs max-w-xs">
+      <Icon className="h-3 w-3 text-muted-foreground" />
+      <span className="text-muted-foreground truncate">{filename}</span>
+    </div>
+  );
+}
+
 export function AgentTab() {
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
@@ -138,12 +188,16 @@ export function AgentTab() {
   console.log({ messages })
 
   const { addTheme, handleThemeSelect, currentMode } = useThemeContext();
+  const seed = useWorkbenchStore((state) => state.seed);
+  const chatId = useWorkbenchStore((state) => state.chatId);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     colors: false,
     typography: false,
     radius: false,
     shadows: false,
   });
+  const [seedProcessed, setSeedProcessed] = useState(false);
+  const processedSeedRef = useRef<string | null>(null);
 
   const toggleSection = (section: string) => {
     setOpenSections(prev => ({
@@ -151,6 +205,36 @@ export function AgentTab() {
       [section]: !prev[section]
     }));
   };
+
+  useEffect(() => {
+    if (seed && !seedProcessed && messages.length === 0 && chatId && processedSeedRef.current !== seed.id) {
+      setSeedProcessed(true);
+      processedSeedRef.current = seed.id;
+      
+      const files: any[] = [];
+      seed.attachments.forEach((attachment) => {
+        if (attachment.kind === 'image' && attachment.imageData) {
+          const mediaType = attachment.imageData.startsWith('data:image/')
+            ? attachment.imageData.substring(5, attachment.imageData.indexOf(';'))
+            : 'image/png';
+
+          files.push({
+            type: 'file',
+            mediaType,
+            url: attachment.imageData,
+            filename: attachment.content || `image.${mediaType.split('/')[1]}`
+          });
+        }
+      });
+
+      sendMessage({
+        text: seed.content,
+        files: files.length > 0 ? files : undefined
+      });
+
+      clearSeed(chatId);
+    }
+  }, [seed, seedProcessed, chatId]);
 
   const handleApplyTheme = useCallback(async (toolResult: any) => {
     if (!toolResult?.theme) return;
@@ -374,6 +458,7 @@ export function AgentTab() {
 
               if (!hasContent) return null;
 
+
               return (
                 <Message
                   key={message.id}
@@ -390,6 +475,17 @@ export function AgentTab() {
                           .map(part => part.type === "text" ? part.text : "")
                           .join("")}
                       </MessageContent>
+                      {/* Display file attachments from message parts */}
+                      {(() => {
+                        const fileParts = message.parts.filter(part => part.type === "file");
+                        return fileParts.length > 0 && (
+                          <div className="flex flex-wrap gap-2 max-w-full justify-end">
+                            {fileParts.map((part: any, index: number) => (
+                              <MessageAttachment key={`part-${index}`} file={part} />
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </div>
                   ) : (
                     <div className="group flex w-full">
