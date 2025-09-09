@@ -1,9 +1,11 @@
-import { google } from "@ai-sdk/google";
+import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText } from "ai";
 import type { NextRequest } from "next/server";
-import prompt from "./prompt.md";
+import prompt from './prompt.md';
+import { generateThemeTool } from './tools/generate-theme';
 
 export const maxDuration = 30;
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,30 +18,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return Response.json(
-        { error: "Google Generative AI API key is not configured" },
+        { error: "OpenAI API key is not configured" },
         { status: 500 },
       );
     }
 
     const result = streamText({
-      model: google("gemini-2.5-flash-image-preview"),
+      model: openai("gpt-4.1"),
       temperature: 0.7,
-      providerOptions: {
-        google: { responseModalities: ["TEXT", "IMAGE"] },
-      },
       system: prompt,
       messages: convertToModelMessages(messages),
+      tools: {
+        generateTheme: generateThemeTool,
+      },
     });
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
-    console.error("Nano Banana chat error:", error);
+    console.error("Theme generation error:", error);
 
     return Response.json(
-      { error: "Failed to process chat request" },
+      { error: "Failed to generate theme" },
       { status: 500 },
     );
   }
