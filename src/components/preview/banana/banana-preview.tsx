@@ -1,8 +1,8 @@
 "use client";
 
-import type { BananaTheme } from "@/lib/providers/banana";
 import { BananaChat } from "@/components/ui/banana-chat";
 import { cn } from "@/lib";
+import type { BananaTheme } from "@/lib/providers/banana";
 
 interface BananaPreviewProps {
   theme: { light: BananaTheme; dark: BananaTheme };

@@ -83,13 +83,14 @@ function computeThemeTokens(theme: ThemeData): {
     try {
       // Check if this is an extended theme with fonts/radius/shadows
       const extendedTheme = theme.rawTheme as any;
-      const hasExtendedProps = extendedTheme.fonts || extendedTheme.radius || extendedTheme.shadows;
-      
+      const hasExtendedProps =
+        extendedTheme.fonts || extendedTheme.radius || extendedTheme.shadows;
+
       if (hasExtendedProps) {
         // Use the convertTinteToShadcn function directly with extended theme data
         const { convertTinteToShadcn } = require("@/lib/providers/shadcn");
         const shadcnTheme = convertTinteToShadcn(extendedTheme) as ShadcnTheme;
-        
+
         if (shadcnTheme?.light && shadcnTheme.dark) {
           computedTokens = {
             light: shadcnTheme.light,
@@ -139,15 +140,14 @@ function applyThemeToDOM(theme: ThemeData, mode: ThemeMode): void {
 
   const computedTokens = computeThemeTokens(theme);
   let tokens = computedTokens[mode];
-  
+
   // Generate shadow variables from the base shadow properties
   const shadowVars = computeShadowVars(tokens);
-  
+
   // Merge shadow vars with base tokens
   tokens = { ...tokens, ...shadowVars };
-  
-  const root = document.documentElement;
 
+  const root = document.documentElement;
 
   // Apply mode class
   if (mode === "dark") {
@@ -163,10 +163,10 @@ function applyThemeToDOM(theme: ThemeData, mode: ThemeMode): void {
     if (typeof value === "string" && value.trim()) {
       root.style.setProperty(`--${key}`, value);
       // Debug shadow tokens specifically
-      if (key.startsWith('shadow')) {
+      if (key.startsWith("shadow")) {
         console.log(`Setting --${key}:`, value);
         // Also check if we're setting the computed shadow values
-        if (key === 'shadow' || key === 'shadow-sm' || key === 'shadow-md') {
+        if (key === "shadow" || key === "shadow-sm" || key === "shadow-md") {
           console.log(`🎯 COMPUTED SHADOW --${key}:`, value);
         }
       }
@@ -175,13 +175,14 @@ function applyThemeToDOM(theme: ThemeData, mode: ThemeMode): void {
 
   // Update global reference
   (window as any).__TINTE_THEME__ = { theme, mode, tokens };
-  
+
   // Force repaint to ensure shadow changes are applied
   if (typeof window !== "undefined") {
     requestAnimationFrame(() => {
       // Force DOM recalculation
-      const forceRepaint = document.createElement('div');
-      forceRepaint.style.cssText = 'position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;';
+      const forceRepaint = document.createElement("div");
+      forceRepaint.style.cssText =
+        "position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;";
       document.body.appendChild(forceRepaint);
       forceRepaint.offsetHeight; // Trigger reflow
       document.body.removeChild(forceRepaint);

@@ -65,7 +65,7 @@ function buildRamp(seed?: string): string[] {
 
 const pick = (ramp: string[], step: number) => {
   const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(
-    step
+    step,
   );
   return ramp[Math.max(0, idx)];
 };
@@ -74,7 +74,11 @@ const surface = (bg: string, mode: ThemeMode, delta = 0.02) => {
   return tweakL(bg, mode === "light" ? +delta : -delta);
 };
 
-function mapBlock(block: TinteBlock, mode: ThemeMode, extendedTheme?: any): ShadcnBlock {
+function mapBlock(
+  block: TinteBlock,
+  mode: ThemeMode,
+  extendedTheme?: any,
+): ShadcnBlock {
   const bg = block.bg || (mode === "light" ? "#ffffff" : "#0b0b0f");
   const fg = block.tx || bestTextFor(bg);
 
@@ -146,9 +150,12 @@ function mapBlock(block: TinteBlock, mode: ThemeMode, extendedTheme?: any): Shad
 
   // Add fonts if available
   if (extendedTheme?.fonts) {
-    result["font-sans"] = `"${extendedTheme.fonts.sans}", ${DEFAULT_FONTS["font-sans"]}`;
-    result["font-serif"] = `"${extendedTheme.fonts.serif}", ${DEFAULT_FONTS["font-serif"]}`;
-    result["font-mono"] = `"${extendedTheme.fonts.mono}", ${DEFAULT_FONTS["font-mono"]}`;
+    result["font-sans"] =
+      `"${extendedTheme.fonts.sans}", ${DEFAULT_FONTS["font-sans"]}`;
+    result["font-serif"] =
+      `"${extendedTheme.fonts.serif}", ${DEFAULT_FONTS["font-serif"]}`;
+    result["font-mono"] =
+      `"${extendedTheme.fonts.mono}", ${DEFAULT_FONTS["font-mono"]}`;
   } else {
     Object.assign(result, DEFAULT_FONTS);
   }
@@ -159,7 +166,7 @@ function mapBlock(block: TinteBlock, mode: ThemeMode, extendedTheme?: any): Shad
     result["radius-md"] = extendedTheme.radius.md;
     result["radius-lg"] = extendedTheme.radius.lg;
     result["radius-xl"] = extendedTheme.radius.xl;
-    result["radius"] = extendedTheme.radius.md; // Default radius
+    result.radius = extendedTheme.radius.md; // Default radius
   }
 
   // Add shadow properties if available
@@ -170,7 +177,6 @@ function mapBlock(block: TinteBlock, mode: ThemeMode, extendedTheme?: any): Shad
     result["shadow-offset-y"] = extendedTheme.shadows.offsetY;
     result["shadow-blur"] = extendedTheme.shadows.blur;
     result["shadow-spread"] = extendedTheme.shadows.spread;
-    
   } else {
     Object.assign(result, DEFAULT_SHADOWS);
   }
@@ -180,9 +186,10 @@ function mapBlock(block: TinteBlock, mode: ThemeMode, extendedTheme?: any): Shad
 
 export function convertTinteToShadcn(tinte: TinteTheme | any): ShadcnTheme {
   // Check if we have extended theme data (fonts, radius, shadows)
-  const extendedTheme = (tinte as any).fonts || (tinte as any).radius || (tinte as any).shadows 
-    ? tinte as any 
-    : null;
+  const extendedTheme =
+    (tinte as any).fonts || (tinte as any).radius || (tinte as any).shadows
+      ? (tinte as any)
+      : null;
 
   return {
     light: mapBlock(tinte.light, "light", extendedTheme),
@@ -191,7 +198,7 @@ export function convertTinteToShadcn(tinte: TinteTheme | any): ShadcnTheme {
 }
 
 export function computeShadowVars(
-  tokens: Record<string, string>
+  tokens: Record<string, string>,
 ): Record<string, string> {
   const shadowColor = tokens["shadow-color"] || "hsl(0 0% 0%)";
   const opacity = parseFloat(tokens["shadow-opacity"] || "0.1");
@@ -224,34 +231,34 @@ export function computeShadowVars(
       parseFloat(spread.replace("px", "") || "0") - 1
     ).toString()}px`;
     return `${offsetX} ${fixedOffsetY} ${fixedBlur} ${spread2} ${colorWithOpacity(
-      1.0
+      1.0,
     )}`;
   };
 
   return {
     "shadow-2xs": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
-      0.5
+      0.5,
     )}`,
     "shadow-xs": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
-      0.5
+      0.5,
     )}`,
     "shadow-sm": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
-      1.0
+      1.0,
     )}, ${secondLayer("1px", "2px")}`,
     shadow: `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
-      1.0
+      1.0,
     )}, ${secondLayer("1px", "2px")}`,
     "shadow-md": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
-      1.0
+      1.0,
     )}, ${secondLayer("2px", "4px")}`,
     "shadow-lg": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
-      1.0
+      1.0,
     )}, ${secondLayer("4px", "6px")}`,
     "shadow-xl": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
-      1.0
+      1.0,
     )}, ${secondLayer("8px", "10px")}`,
     "shadow-2xl": `${offsetX} ${offsetY} ${blur} ${spread} ${colorWithOpacity(
-      2.5
+      2.5,
     )}`,
   };
 }
@@ -260,7 +267,6 @@ function generateCSSVariables(theme: ShadcnTheme): string {
   // Compute shadow vars for both modes using the tokens (which already have shadow properties if extended)
   const lightShadowVars = computeShadowVars(theme.light);
   const darkShadowVars = computeShadowVars(theme.dark);
-
 
   const lightVars = Object.entries({ ...theme.light, ...lightShadowVars })
     .map(([key, value]) => `    --${key}: ${value};`)

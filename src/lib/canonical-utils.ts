@@ -36,7 +36,7 @@ export const createInitialCanonicalGroups = (): Record<string, boolean> => {
 
 // Check if we have valid tinte colors loaded
 export const hasValidTinteColors = (
-  colors: TinteBlock | undefined
+  colors: TinteBlock | undefined,
 ): boolean => {
   if (!colors) return false;
   return COLOR_GROUPS.some((group) =>
@@ -44,8 +44,8 @@ export const hasValidTinteColors = (
       (key) =>
         colors[key] &&
         typeof colors[key] === "string" &&
-        colors[key].startsWith("#")
-    )
+        colors[key].startsWith("#"),
+    ),
   );
 };
 

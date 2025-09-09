@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface MessageProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -19,7 +19,11 @@ export function Message({ children, className, ...props }: MessageProps) {
   );
 }
 
-export function MessageContent({ children, className, ...props }: MessageContentProps) {
+export function MessageContent({
+  children,
+  className,
+  ...props
+}: MessageContentProps) {
   return (
     <div className={cn("rounded-sm px-3 py-2", className)} {...props}>
       {children}

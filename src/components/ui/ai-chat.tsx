@@ -1,27 +1,27 @@
 "use client";
 
-import { useCallback, useMemo, useState, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
+import { Copy, Sparkles } from "lucide-react";
+import { motion } from "motion/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   ChatContainerContent,
   ChatContainerRoot,
 } from "@/components/ui/chat-container";
 import { Message, MessageContent } from "@/components/ui/message";
-import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
-import { Copy, Sparkles } from "lucide-react";
 import { ChatInput } from "@/components/workbench/chat-input";
 import type { PastedItem } from "@/lib/input-detection";
-import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
 
 // Animated avatar component for the assistant
-export function AssistantAvatar({ 
+export function AssistantAvatar({
   isLoading = false,
   icon: Icon,
-  className
-}: { 
+  className,
+}: {
   isLoading?: boolean;
   icon?: React.ComponentType<{ size: number }>;
   className?: string;
@@ -30,20 +30,28 @@ export function AssistantAvatar({
     <div className={cn("relative flex-shrink-0 pt-2", className)}>
       <motion.div
         className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center border border-border/30"
-        animate={isLoading ? {
-          scale: [1, 1.05, 1],
-          rotate: [0, 5, -5, 0]
-        } : {
-          scale: 1,
-          rotate: 0
-        }}
+        animate={
+          isLoading
+            ? {
+                scale: [1, 1.05, 1],
+                rotate: [0, 5, -5, 0],
+              }
+            : {
+                scale: 1,
+                rotate: 0,
+              }
+        }
         transition={{
           duration: 2,
           repeat: isLoading ? Infinity : 0,
-          ease: "easeInOut"
+          ease: "easeInOut",
         }}
       >
-        {Icon ? <Icon size={20} /> : <Sparkles className="h-5 w-5 text-primary" />}
+        {Icon ? (
+          <Icon size={20} />
+        ) : (
+          <Sparkles className="h-5 w-5 text-primary" />
+        )}
       </motion.div>
 
       {isLoading && (
@@ -53,7 +61,7 @@ export function AssistantAvatar({
           transition={{
             duration: 1.5,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         >
           <Sparkles className="h-1.5 w-1.5 text-amber-500" />
@@ -90,7 +98,7 @@ export function AIChat({
   onSubmit: externalOnSubmit,
   className,
   includeImages = true,
-  systemPrompt
+  systemPrompt,
 }: AIChatProps) {
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
@@ -103,14 +111,19 @@ export function AIChat({
   const [startTime, setStartTime] = useState<number | null>(null);
 
   const isLoading = useMemo(() => {
-    const hasAssistantMessages = messages.some(message =>
-      message.role === "assistant" &&
-      message.parts.some(part =>
-        (part.type === "text" && part.text.trim()) ||
-        part.type.startsWith("tool-")
-      )
+    const hasAssistantMessages = messages.some(
+      (message) =>
+        message.role === "assistant" &&
+        message.parts.some(
+          (part) =>
+            (part.type === "text" && part.text.trim()) ||
+            part.type.startsWith("tool-"),
+        ),
     );
-    return (status === "submitted" || status === "streaming") && !hasAssistantMessages;
+    return (
+      (status === "submitted" || status === "streaming") &&
+      !hasAssistantMessages
+    );
   }, [status, messages]);
 
   // Timer effect
@@ -138,46 +151,52 @@ export function AIChat({
     };
   }, [isLoading, startTime]);
 
-  const handleSubmit = useCallback((content: string, attachments: PastedItem[]) => {
-    if (!content.trim() && attachments.length === 0) return;
+  const handleSubmit = useCallback(
+    (content: string, attachments: PastedItem[]) => {
+      if (!content.trim() && attachments.length === 0) return;
 
-    // Add system prompt to first message if provided
-    let messageText = content;
-    if (messages.length === 0 && systemPrompt) {
-      messageText = `${systemPrompt}\n\n${content}`;
-    }
-
-    // Convert PastedItems to AI SDK files format
-    const files: any[] = [];
-    attachments.forEach((item) => {
-      if (item.kind === 'image' && item.imageData) {
-        const mediaType = item.imageData.startsWith('data:image/')
-          ? item.imageData.substring(5, item.imageData.indexOf(';'))
-          : 'image/png';
-
-        files.push({
-          type: 'file',
-          mediaType,
-          url: item.imageData,
-          filename: item.content || `image.${mediaType.split('/')[1]}`
-        });
+      // Add system prompt to first message if provided
+      let messageText = content;
+      if (messages.length === 0 && systemPrompt) {
+        messageText = `${systemPrompt}\n\n${content}`;
       }
-    });
 
-    sendMessage({
-      text: messageText,
-      files: files.length > 0 ? files : undefined
-    });
+      // Convert PastedItems to AI SDK files format
+      const files: any[] = [];
+      attachments.forEach((item) => {
+        if (item.kind === "image" && item.imageData) {
+          const mediaType = item.imageData.startsWith("data:image/")
+            ? item.imageData.substring(5, item.imageData.indexOf(";"))
+            : "image/png";
 
-    // Call external onSubmit if provided
-    if (externalOnSubmit) {
-      externalOnSubmit(content, attachments);
-    }
-  }, [sendMessage, messages.length, systemPrompt, externalOnSubmit]);
+          files.push({
+            type: "file",
+            mediaType,
+            url: item.imageData,
+            filename: item.content || `image.${mediaType.split("/")[1]}`,
+          });
+        }
+      });
 
-  const handleSuggestionClick = useCallback((suggestion: string) => {
-    handleSubmit(suggestion, []);
-  }, [handleSubmit]);
+      sendMessage({
+        text: messageText,
+        files: files.length > 0 ? files : undefined,
+      });
+
+      // Call external onSubmit if provided
+      if (externalOnSubmit) {
+        externalOnSubmit(content, attachments);
+      }
+    },
+    [sendMessage, messages.length, systemPrompt, externalOnSubmit],
+  );
+
+  const handleSuggestionClick = useCallback(
+    (suggestion: string) => {
+      handleSubmit(suggestion, []);
+    },
+    [handleSubmit],
+  );
 
   const isChatDisabled = useMemo(() => {
     return status !== "ready" && status !== "error";
@@ -192,7 +211,11 @@ export function AIChat({
               <div className="flex flex-col items-center justify-center py-16 text-center max-w-lg mx-auto">
                 <div className="relative mb-6">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center border border-border/30">
-                    {EmptyIcon ? <EmptyIcon size={32} /> : <Sparkles className="h-8 w-8 text-primary" />}
+                    {EmptyIcon ? (
+                      <EmptyIcon size={32} />
+                    ) : (
+                      <Sparkles className="h-8 w-8 text-primary" />
+                    )}
                   </div>
                   <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-background flex items-center justify-center border border-amber-300/30">
                     <Sparkles className="h-3 w-3 text-amber-500" />
@@ -224,9 +247,10 @@ export function AIChat({
 
             {messages.map((message) => {
               // Skip messages with no content
-              const hasContent = message.parts.some(part =>
-                (part.type === "text" && part.text.trim()) ||
-                (part.type.startsWith("tool-") && part.type !== "step-start")
+              const hasContent = message.parts.some(
+                (part) =>
+                  (part.type === "text" && part.text.trim()) ||
+                  (part.type.startsWith("tool-") && part.type !== "step-start"),
               );
 
               if (!hasContent) return null;
@@ -236,34 +260,40 @@ export function AIChat({
                   key={message.id}
                   className={cn(
                     "flex w-full max-w-3xl flex-col gap-2",
-                    message.role === "user" ? "items-end" : "items-start"
+                    message.role === "user" ? "items-end" : "items-start",
                   )}
                 >
                   {message.role === "user" ? (
                     <div className="group flex w-full flex-col items-end gap-1">
                       <MessageContent className="bg-card border max-w-full rounded-sm px-5 py-2.5 whitespace-normal">
                         {message.parts
-                          .filter(part => part.type === "text")
-                          .map(part => part.type === "text" ? part.text : "")
+                          .filter((part) => part.type === "text")
+                          .map((part) =>
+                            part.type === "text" ? part.text : "",
+                          )
                           .join("")}
                       </MessageContent>
                     </div>
                   ) : (
                     <div className="group flex w-full">
                       <AssistantAvatar icon={AssistantIcon} />
-                      
+
                       <div className="flex flex-col gap-3 flex-1 min-w-0">
                         {renderContent ? (
                           renderContent(message, 0)
                         ) : (
                           <>
                             {/* Text content */}
-                            {message.parts.some(part => part.type === "text") && (
+                            {message.parts.some(
+                              (part) => part.type === "text",
+                            ) && (
                               <div className="w-full max-w-2xl">
                                 <MessageContent className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">
                                   {message.parts
-                                    .filter(part => part.type === "text")
-                                    .map(part => part.type === "text" ? part.text : "")
+                                    .filter((part) => part.type === "text")
+                                    .map((part) =>
+                                      part.type === "text" ? part.text : "",
+                                    )
                                     .join("")}
                                 </MessageContent>
                               </div>
@@ -271,12 +301,16 @@ export function AIChat({
 
                             {/* File content (images) */}
                             {message.parts
-                              .filter(part => part.type === "file" && part.mediaType?.startsWith("image/"))
+                              .filter(
+                                (part) =>
+                                  part.type === "file" &&
+                                  part.mediaType?.startsWith("image/"),
+                              )
                               .map((part, index) => (
                                 <div key={index} className="mt-2">
-                                  <img 
-                                    src={part.url} 
-                                    alt="Generated content" 
+                                  <img
+                                    src={(part as any).url}
+                                    alt="Generated content"
                                     className="max-w-full h-auto rounded-lg border border-border"
                                   />
                                 </div>
@@ -317,7 +351,6 @@ export function AIChat({
         placeholder={placeholder}
         disabled={isChatDisabled}
         isStreaming={isLoading}
-        acceptImages={includeImages}
       />
     </div>
   );
