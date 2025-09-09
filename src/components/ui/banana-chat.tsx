@@ -1,13 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Wand2, Image, Palette, Zap } from "lucide-react";
-import type { BananaTheme } from "@/lib/providers/banana";
-import { useThemeContext } from "@/providers/theme";
-import { AIChat } from "@/components/ui/ai-chat";
+import { Image, Palette, Wand2, Zap } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { BananaIcon } from "@/components/shared/icons/banana";
+
+// Wrapper to make BananaIcon compatible with AIChat's expected interface
+const BananaIconWrapper = ({ size }: { size: number }) => (
+  <div style={{ width: size, height: size }}>
+    <BananaIcon className="w-full h-full" />
+  </div>
+);
+import { AIChat } from "@/components/ui/ai-chat";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib";
+import type { BananaTheme } from "@/lib/providers/banana";
+import { useThemeContext } from "@/providers/theme";
 
 interface BananaChatProps {
   theme: { light: BananaTheme; dark: BananaTheme };
@@ -17,7 +24,7 @@ interface BananaChatProps {
 export function BananaChat({ theme, className }: BananaChatProps) {
   const { currentMode } = useThemeContext();
   const currentTheme = currentMode === "dark" ? theme.dark : theme.light;
-  const previousThemeRef = useRef<BananaTheme | null>(null);
+  const _previousThemeRef = useRef<BananaTheme | null>(null);
 
   // Create theme context message for AI
   const createThemeContext = (theme: BananaTheme, mode: "light" | "dark") => {
@@ -59,7 +66,7 @@ Use these exact colors when generating any visual assets or brand materials.`;
   const quickPrompts = [
     "Create a hero banner for my brand",
     "Design a social media kit",
-    "Make a professional logo concept", 
+    "Make a professional logo concept",
     "Generate marketing materials",
   ];
 
@@ -71,25 +78,28 @@ Use these exact colors when generating any visual assets or brand materials.`;
     return (
       <div className="w-full max-w-2xl space-y-3">
         {message.parts.map((part: any, index: number) => {
-          if (part.type === 'text') {
+          if (part.type === "text") {
             return (
-              <Markdown 
-                key={index} 
+              <Markdown
+                key={index}
                 className="prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-foreground/90 prose-strong:text-foreground prose-code:text-foreground prose-pre:bg-muted prose-pre:border prose-pre:border-border"
               >
                 {part.text}
               </Markdown>
             );
-          } else if (part.type === 'file' && part.mediaType?.startsWith('image/')) {
+          } else if (
+            part.type === "file" &&
+            part.mediaType?.startsWith("image/")
+          ) {
             return (
               <div key={index} className="mt-4">
-                <div 
+                <div
                   className="rounded-lg border overflow-hidden"
                   style={{ borderColor: brandColors.border }}
                 >
-                  <img 
-                    src={part.url} 
-                    alt="Generated design asset" 
+                  <img
+                    src={part.url}
+                    alt="Generated design asset"
                     className="w-full h-auto"
                   />
                 </div>
@@ -107,16 +117,19 @@ Use these exact colors when generating any visual assets or brand materials.`;
 
   return (
     <div
-      className={cn("rounded-lg border overflow-hidden h-full flex flex-col", className)}
-      style={{ 
+      className={cn(
+        "rounded-lg border overflow-hidden h-full flex flex-col",
+        className,
+      )}
+      style={{
         backgroundColor: brandColors.background,
         borderColor: brandColors.border,
       }}
     >
       {/* Header */}
-      <div 
+      <div
         className="px-4 py-3 border-b flex items-center justify-between flex-shrink-0"
-        style={{ 
+        style={{
           backgroundColor: brandColors.surface,
           borderBottomColor: brandColors.border,
           color: brandColors.heading,
@@ -148,8 +161,8 @@ Use these exact colors when generating any visual assets or brand materials.`;
         suggestions={quickPrompts}
         emptyStateTitle="Ready to create amazing assets!"
         emptyStateDescription="Tell me about your brand and I'll generate stunning visuals"
-        emptyStateIcon={BananaIcon}
-        assistantIcon={BananaIcon}
+        emptyStateIcon={BananaIconWrapper}
+        assistantIcon={BananaIconWrapper}
         renderContent={renderBananaContent}
         includeImages={true}
         systemPrompt={systemPrompt}

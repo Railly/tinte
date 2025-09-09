@@ -1,6 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, tool } from "ai";
-import { type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 export const maxDuration = 30;
@@ -17,12 +17,12 @@ const TinteBlockSchema = z.object({
   pr: z
     .string()
     .describe(
-      "Primary accent color in hex format - must meet WCAG AA contrast and be different hue family from secondary"
+      "Primary accent color in hex format - must meet WCAG AA contrast and be different hue family from secondary",
     ),
   sc: z
     .string()
     .describe(
-      "Secondary accent color in hex format - must be >60° apart from primary and meet WCAG AA contrast"
+      "Secondary accent color in hex format - must be >60° apart from primary and meet WCAG AA contrast",
     ),
   ac_1: z.string().describe("Accent color 1 in hex format"),
   ac_2: z.string().describe("Accent color 2 in hex format"),
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (!messages || !Array.isArray(messages)) {
       return Response.json(
         { error: "Messages array is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (!apiKey) {
       return Response.json(
         { error: "OpenAI API key is not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -116,31 +116,31 @@ Write friendly responses like "I've crafted..." or "Here's your new theme..." me
               .string()
               .max(20)
               .describe(
-                "Short theme title, maximum 2 words (e.g., 'Ocean Sunset', 'Dark Forest')"
+                "Short theme title, maximum 2 words (e.g., 'Ocean Sunset', 'Dark Forest')",
               ),
             concept: z.string().describe("Brief theme description and mood"),
             light: TinteBlockSchema.describe(
-              "Light mode palette with perceptual luminance progression from bg (lightest) to tx (darkest)"
+              "Light mode palette with perceptual luminance progression from bg (lightest) to tx (darkest)",
             ),
             dark: TinteBlockSchema.describe(
-              "Dark mode palette with perceptual luminance progression from bg (darkest) to tx (lightest)"
+              "Dark mode palette with perceptual luminance progression from bg (darkest) to tx (lightest)",
             ),
             fonts: z
               .object({
                 sans: z
                   .string()
                   .describe(
-                    "Primary sans-serif font family from Google Fonts (e.g., 'Inter', 'Poppins')"
+                    "Primary sans-serif font family from Google Fonts (e.g., 'Inter', 'Poppins')",
                   ),
                 serif: z
                   .string()
                   .describe(
-                    "Serif font family from Google Fonts (e.g., 'Playfair Display', 'Merriweather')"
+                    "Serif font family from Google Fonts (e.g., 'Playfair Display', 'Merriweather')",
                   ),
                 mono: z
                   .string()
                   .describe(
-                    "Monospace font family from Google Fonts (e.g., 'JetBrains Mono', 'Fira Code')"
+                    "Monospace font family from Google Fonts (e.g., 'JetBrains Mono', 'Fira Code')",
                   ),
               })
               .describe("Google Fonts selection for theme typography"),
@@ -158,7 +158,7 @@ Write friendly responses like "I've crafted..." or "Here's your new theme..." me
                 xl: z
                   .string()
                   .describe(
-                    "Extra large border radius (e.g., '0.75rem', '12px')"
+                    "Extra large border radius (e.g., '0.75rem', '12px')",
                   ),
               })
               .describe("Border radius scale for rounded corners"),
@@ -170,7 +170,7 @@ Write friendly responses like "I've crafted..." or "Here's your new theme..." me
                 opacity: z
                   .string()
                   .describe(
-                    "Shadow opacity as decimal string (e.g., '0.1', '0.25')"
+                    "Shadow opacity as decimal string (e.g., '0.1', '0.25')",
                   ),
                 offsetX: z
                   .string()
@@ -217,7 +217,7 @@ Write friendly responses like "I've crafted..." or "Here's your new theme..." me
 
     return Response.json(
       { error: "Failed to generate theme" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -17,7 +17,8 @@ export default async function WorkbenchIdPage({
   const { id } = await params;
   const { tab } = await searchParams;
 
-  const defaultTab = (tab as "canonical" | "overrides" | "agent") || "canonical";
+  const defaultTab =
+    (tab as "canonical" | "overrides" | "agent") || "canonical";
 
   return <WorkbenchMain chatId={id} defaultTab={defaultTab} />;
 }

@@ -9,22 +9,22 @@ export interface BananaTheme {
   primaryBrand: string; // Main brand color
   secondaryBrand: string; // Secondary brand color
   accentColor: string; // Accent color for CTAs
-  
+
   // Background system
   backgroundColor: string; // Main background
   surfaceColor: string; // Surface/card backgrounds
   borderColor: string; // Border colors
-  
+
   // Text hierarchy
   headingColor: string; // Heading text
   bodyColor: string; // Body text
   mutedColor: string; // Muted text
-  
+
   // Status colors for marketing
   successColor: string; // Success/positive messaging
   warningColor: string; // Warning/attention messaging
   errorColor: string; // Error/negative messaging
-  
+
   // Special marketing colors
   ctaColor: string; // Call-to-action buttons
   linkColor: string; // Link colors
@@ -43,22 +43,22 @@ function generateBananaTheme(
     primaryBrand: colorMapping.primary,
     secondaryBrand: colorMapping.secondary,
     accentColor: colorMapping.accent,
-    
+
     // Background system
     backgroundColor: colorMapping.bg,
     surfaceColor: colorMapping.bg2,
     borderColor: colorMapping.ui,
-    
+
     // Text hierarchy
     headingColor: colorMapping.tx,
     bodyColor: colorMapping.tx2,
     mutedColor: colorMapping.tx3,
-    
+
     // Status colors for marketing
     successColor: colorMapping.green,
     warningColor: colorMapping.yellow,
     errorColor: colorMapping.red,
-    
+
     // Special marketing colors
     ctaColor: colorMapping.primary, // Use primary for CTAs
     linkColor: colorMapping.blue, // Use blue for links
@@ -73,7 +73,8 @@ export const bananaProvider: PreviewableProvider<{
   metadata: {
     id: "banana",
     name: "Nano Banana",
-    description: "AI-powered creative partner for marketing assets and digital design",
+    description:
+      "AI-powered creative partner for marketing assets and digital design",
     category: "other",
     tags: ["ai", "design", "marketing", "creative", "assets", "branding"],
     icon: BananaIcon,
@@ -96,7 +97,8 @@ export const bananaProvider: PreviewableProvider<{
     const brandKit = {
       name: themeName,
       version: "1.0.0",
-      description: "Brand colors and design tokens for Nano Banana creative assets",
+      description:
+        "Brand colors and design tokens for Nano Banana creative assets",
       modes: {
         light: converted.light,
         dark: converted.dark,
