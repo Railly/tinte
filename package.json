@@ -101,6 +101,7 @@
     "@types/react-dom": "^19",
     "dotenv": "^17.2.2",
     "drizzle-kit": "^0.31.4",
+    "raw-loader": "^4.0.2",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5"
