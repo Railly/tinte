@@ -1,6 +1,6 @@
 import { google } from '@ai-sdk/google';
 import { convertToModelMessages, streamText } from 'ai';
-import { type NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export const maxDuration = 30;
 
