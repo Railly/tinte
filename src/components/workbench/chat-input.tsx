@@ -240,12 +240,12 @@ export function ChatInput({
             <motion.button
               onClick={isStreaming ? onStop : handleSubmit}
               disabled={(!hasContent && !isStreaming) || disabled}
-              whileHover={{ scale: (hasContent || isStreaming) ? 1.05 : 1 }}
-              whileTap={{ scale: (hasContent || isStreaming) ? 0.95 : 1 }}
+              whileHover={{ scale: hasContent || isStreaming ? 1.05 : 1 }}
+              whileTap={{ scale: hasContent || isStreaming ? 0.95 : 1 }}
               className={cn(
                 "absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg transition-colors",
                 (hasContent || isStreaming) && !disabled
-                  ? isStreaming 
+                  ? isStreaming
                     ? "bg-red-500 hover:bg-red-600 text-white cursor-pointer"
                     : "bg-primary text-primary-foreground cursor-pointer"
                   : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",

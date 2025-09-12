@@ -40,20 +40,20 @@ export function BananaIcon({ className }: { className?: string }) {
           />
         </filter>
       </defs>
-      
+
       {/* Main banana shape */}
       <path
         d="M25 75 Q30 85 40 80 Q50 75 60 65 Q70 55 75 45 Q80 35 75 25 Q70 15 60 20 Q50 25 45 35 Q40 45 35 55 Q30 65 25 75 Z"
         fill="url(#bananaGradient)"
         filter="url(#shadow)"
       />
-      
+
       {/* Banana highlight */}
       <path
         d="M30 70 Q35 75 42 72 Q47 68 52 62 Q57 56 60 50 Q62 44 60 40 Q58 36 55 38 Q52 40 50 44 Q48 48 46 52 Q44 56 42 60 Q40 64 38 67 Q36 69 34 70 Q32 71 30 70 Z"
         fill="url(#bananaHighlight)"
       />
-      
+
       {/* Banana curves/lines */}
       <path
         d="M32 72 Q45 68 58 52 Q68 38 65 28"
@@ -63,7 +63,7 @@ export function BananaIcon({ className }: { className?: string }) {
         fill="none"
         opacity="0.6"
       />
-      
+
       <path
         d="M28 68 Q38 64 48 54 Q58 44 62 34"
         stroke="#F57F17"
@@ -72,7 +72,7 @@ export function BananaIcon({ className }: { className?: string }) {
         fill="none"
         opacity="0.4"
       />
-      
+
       {/* Stem */}
       <ellipse
         cx="73"
@@ -82,7 +82,7 @@ export function BananaIcon({ className }: { className?: string }) {
         fill="#4CAF50"
         transform="rotate(-25 73 28)"
       />
-      
+
       {/* AI sparkle */}
       <g opacity="0.8">
         <circle cx="45" cy="45" r="1.5" fill="#FF6B35" />
@@ -92,7 +92,7 @@ export function BananaIcon({ className }: { className?: string }) {
           opacity="0.6"
         />
       </g>
-      
+
       {/* Tech elements */}
       <circle cx="55" cy="35" r="0.8" fill="#2196F3" opacity="0.7" />
       <circle cx="38" cy="58" r="0.8" fill="#9C27B0" opacity="0.7" />
