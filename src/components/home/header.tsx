@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, LogIn, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import GithubIcon from "@/components/shared/icons/github";
 import TwitterIcon from "@/components/shared/icons/twitter";
@@ -16,8 +16,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { siteConfig } from "@/config/site";
+import { authClient } from "@/lib/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function Header() {
+  const { data: session } = authClient.useSession();
+  console.log({ session })
+
   const navigation = [
     { name: "Features", href: "#features" },
     { name: "Roadmap", href: "#roadmap" },
@@ -69,6 +74,39 @@ export function Header() {
                 <TwitterIcon className="h-4 w-4" />
               </a>
             </Button>
+
+            {session ? (
+              <>
+                <Button variant="ghost" size="sm" className="h-7 px-3 text-xs gap-2">
+                  <Avatar className="h-5 w-5">
+                    <AvatarImage src={session.user.image || ""} />
+                    <AvatarFallback className="text-xs">
+                      {(session.user.name || session.user.email || "U").charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {session.user.name || session.user.email}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-3 text-xs"
+                  onClick={() => authClient.signOut()}
+                >
+                  <LogOut className="h-3 w-3 mr-1" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button
+                size="sm"
+                className="h-7 px-3 text-xs"
+                onClick={() => authClient.signIn.social({ provider: "github" })}
+              >
+                <LogIn className="h-3 w-3 mr-1" />
+                Sign In
+              </Button>
+            )}
+
             <Button size="sm" className="h-7 px-3 text-xs" asChild>
               <Link href="/workbench">Get Started</Link>
             </Button>
@@ -135,8 +173,44 @@ export function Header() {
                       </a>
                     </Button>
                   </div>
+
+                  {session ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col items-center gap-2">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={session.user.image || ""} />
+                          <AvatarFallback className="text-lg">
+                            {(session.user.name || session.user.email || "U").charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="text-center text-sm text-muted-foreground">
+                          Welcome, {session.user.name || session.user.email}!
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="h-12 px-8 text-base w-full font-medium"
+                        onClick={() => authClient.signOut()}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      size="lg"
+                      className="h-12 px-8 text-base w-full font-medium"
+                      onClick={() => authClient.signIn.social({ provider: "github" })}
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Sign In
+                    </Button>
+                  )}
+
                   <Link href="/workbench">
                     <Button
+                      variant="outline"
                       size="lg"
                       className="h-12 px-8 text-base w-full font-medium"
                     >

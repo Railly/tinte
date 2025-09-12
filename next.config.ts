@@ -10,9 +10,9 @@ const nextConfig: NextConfig = {
   },
   turbopack: {
     rules: {
-      '*.md': {
-        loaders: ['raw-loader'],
-        as: '*.js',
+      "*.md": {
+        loaders: ["raw-loader"],
+        as: "*.js",
       },
     },
   },
@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
       },
     ],
   },

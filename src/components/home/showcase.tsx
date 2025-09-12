@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, User } from "lucide-react";
 import { useState } from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
@@ -12,8 +12,15 @@ import { useThemeContext } from "@/providers/theme";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
 import { extractTinteThemeData } from "@/utils/tinte-presets";
 import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
+import type { UserThemeData } from "@/types/user-theme";
+import type { SessionData } from "@/types/auth";
 
-export function Showcase() {
+interface ShowcaseProps {
+  session: SessionData;
+  userThemes: UserThemeData[];
+}
+
+export function Showcase({ session, userThemes }: ShowcaseProps) {
   const [activeTab, setActiveTab] = useState("tweakcn");
   const { isDark, handleThemeSelect } = useThemeContext();
 
@@ -64,7 +71,7 @@ export function Showcase() {
   }));
 
   return (
-    <div className="w-full space-y-8 p-4 max-w-7xl mx-auto">
+    <div className="w-full space-y-8 p-4 mx-auto">
       {/* Header */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -87,6 +94,15 @@ export function Showcase() {
             className="w-full sm:w-auto"
           >
             <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm w-full sm:w-auto">
+              {session && (
+                <TabsTrigger
+                  value="user"
+                  className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
+                >
+                  <User className="w-3 h-3" />
+                  My Themes
+                </TabsTrigger>
+              )}
               <TabsTrigger
                 value="tweakcn"
                 className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
@@ -115,6 +131,36 @@ export function Showcase() {
 
       {/* Provider Content */}
       <div>
+        {activeTab === "user" && session && (
+          <div className="space-y-4">
+            {userThemes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {userThemes.map((theme, index) => (
+                  <ThemeCard
+                    key={theme.id}
+                    theme={theme}
+                    index={index}
+                    onThemeSelect={handleThemeSelect}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 space-y-4">
+                <User className="w-12 h-12 mx-auto text-muted-foreground" />
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">No themes yet</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Start creating your first theme in the workbench!
+                  </p>
+                </div>
+                <Button className="mt-4" asChild>
+                  <a href="/workbench">Create Theme</a>
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === "tweakcn" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {tweakcnThemes.slice(0, 8).map((theme, index) => (

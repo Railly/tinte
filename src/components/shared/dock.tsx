@@ -55,7 +55,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     reset,
   } = useThemeHistory(theme, updateTheme);
 
-  const themeIdRef = useRef<string>();
+  const themeIdRef = useRef<string>(null);
 
   const provider = getProvider(providerId);
   const providerMetadata = provider?.metadata;
@@ -71,7 +71,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     getPrimaryActionConfig,
   } = useDockActions({ theme, providerId, providerName, provider });
 
-  const prevThemeRef = useRef<string>();
+  const prevThemeRef = useRef<string>(null);
   const isInitialLoad = useRef(true);
 
   // Reset history when switching to a different base theme
@@ -86,14 +86,14 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   useEffect(() => {
     const themeString = JSON.stringify(theme);
-    
+
     // Skip the first load to avoid initial undo count
     if (isInitialLoad.current) {
       prevThemeRef.current = themeString;
       isInitialLoad.current = false;
       return;
     }
-    
+
     if (prevThemeRef.current && prevThemeRef.current !== themeString) {
       pushToHistory(theme);
     }
@@ -158,14 +158,6 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   // Check if there are changes (simplified - could be more sophisticated)
   const hasChanges = undoCount > 0;
-
-  const formatFileSize = (content: string) => {
-    const bytes = new TextEncoder().encode(content).length;
-    if (bytes < 1024) return `${bytes}B`;
-    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)}KB`;
-    return `${Math.round(bytes / (1024 * 1024))}MB`;
-  };
-
   const exportedTheme = exportTheme(providerId, theme);
   const primaryActionConfig = getPrimaryActionConfig();
 
@@ -205,7 +197,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
             duration: 0.6,
           }}
           style={{ borderRadius: 32 }}
-          className="flex items-center justify-center px-2 bg-black/90 backdrop-blur-sm border border-white/10 shadow-2xl"
+          className="flex items-center justify-center px-2 bg-foreground text-background backdrop-blur-sm border border-white/10 shadow-2xl"
           animate={{
             width: dockState === "main" ? 420 : 200,
             height: dockState === "main" ? 48 : "auto",
