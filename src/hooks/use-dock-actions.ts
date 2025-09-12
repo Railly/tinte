@@ -103,21 +103,21 @@ export function useDockActions({
   const getPrimaryActionConfig = () => {
     if (providerId === "shadcn") {
       return {
-        label: "Install Theme",
+        label: "Install",
         description: "npx shadcn@latest add theme",
         icon: Palette,
         variant: "default" as const,
       };
     } else if (providerId === "vscode") {
       return {
-        label: "Install Theme",
+        label: "Install",
         description: "Install in VS Code/Cursor",
         icon: Download,
         variant: "default" as const,
       };
     } else {
       return {
-        label: "Install Theme",
+        label: "Install",
         description: `Download .${provider?.fileExtension} file`,
         icon: Download,
         variant: "default" as const,
