@@ -18,7 +18,7 @@ import {
 import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";
-import { TokenInput } from "./token-input";
+import { EnhancedTokenInput } from "./enhanced-token-input";
 
 declare global {
   interface Window {
@@ -129,7 +129,7 @@ export function ThemeEditorPanel() {
                             </Label>
                           )}
                           <div>
-                            <TokenInput
+                            <EnhancedTokenInput
                               group={group}
                               tokenKey={key}
                               value={value}
