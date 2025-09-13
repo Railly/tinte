@@ -1,12 +1,12 @@
 "use client";
 
-import { LogIn, Shuffle, Slash } from "lucide-react";
+import { Shuffle, Slash } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import Logo from "@/components/shared/logo";
 import { ProviderSwitcher } from "@/components/shared/provider-switcher";
 import { ThemeSelector } from "@/components/shared/theme-selector";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserDropdown } from "@/components/shared/user-dropdown";
 import { siteConfig } from "@/config/site";
 import { authClient } from "@/lib/auth-client";
 import type { ThemeData } from "@/lib/theme-tokens";
@@ -114,21 +114,7 @@ export function WorkbenchHeader({ chatId, userThemes = [] }: WorkbenchHeaderProp
           </div>
         </div>
         <Separator orientation="vertical" className="!h-8 hidden sm:block" />
-        {session ? (
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={session.user.image || ""} alt={session.user.name || "User"} />
-            <AvatarFallback>{(session.user.name || session.user.email || "U").charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-        ) : (
-          <Button
-            size="sm"
-            className="h-8 px-3 text-xs"
-            onClick={() => authClient.signIn.social({ provider: "github" })}
-          >
-            <LogIn className="h-3 w-3 mr-1" />
-            Sign In
-          </Button>
-        )}
+        <UserDropdown avatarSize="sm" />
       </div>
     </header>
   );
