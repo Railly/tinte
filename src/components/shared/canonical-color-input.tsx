@@ -20,6 +20,7 @@ interface CanonicalColorInputProps {
   colorKey: keyof TinteBlock;
   value?: string;
   onChange: (key: keyof TinteBlock, value: string) => void;
+  disabled?: boolean;
 }
 
 export const CanonicalColorInput: React.FC<CanonicalColorInputProps> = ({
@@ -27,6 +28,7 @@ export const CanonicalColorInput: React.FC<CanonicalColorInputProps> = ({
   colorKey,
   value,
   onChange,
+  disabled = false,
 }) => {
   const handleTailwindColorSelect = (color: string) => {
     onChange(colorKey, color);
@@ -42,11 +44,12 @@ export const CanonicalColorInput: React.FC<CanonicalColorInputProps> = ({
   }
 
   return (
-    <div className="flex gap-2">
+    <div className={`flex gap-2 ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
       <div className="flex-1">
         <ColorPickerInput
           color={value}
           onChange={(newValue) => onChange(colorKey, newValue)}
+          disabled={disabled}
         />
       </div>
 
@@ -57,6 +60,7 @@ export const CanonicalColorInput: React.FC<CanonicalColorInputProps> = ({
             variant="outline"
             className="h-10 w-10 p-0 flex items-center justify-center"
             title="Generate Tailwind palette from current color"
+            disabled={disabled}
           >
             <TailwindIcon className="w-5 h-5" />
           </Button>

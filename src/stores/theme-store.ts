@@ -162,14 +162,6 @@ function applyThemeToDOM(theme: ThemeData, mode: ThemeMode): void {
   Object.entries(tokens).forEach(([key, value]) => {
     if (typeof value === "string" && value.trim()) {
       root.style.setProperty(`--${key}`, value);
-      // Debug shadow tokens specifically
-      if (key.startsWith("shadow")) {
-        console.log(`Setting --${key}:`, value);
-        // Also check if we're setting the computed shadow values
-        if (key === "shadow" || key === "shadow-sm" || key === "shadow-md") {
-          console.log(`🎯 COMPUTED SHADOW --${key}:`, value);
-        }
-      }
     }
   });
 
@@ -617,7 +609,12 @@ export const useThemeStore = create<ThemeState>()(
           const updatedTheme = {
             ...state.activeTheme,
             rawTheme: newTinteTheme,
+            // Temporarily change author to force proper conversion for TweakCN
+            author: state.activeTheme.author === "tweakcn" ? "tinte" : state.activeTheme.author,
           };
+
+          // Force clear cached tokens
+          delete (updatedTheme as any).computedTokens;
 
           // Recompute tokens
           const computedTokens = computeThemeTokens(updatedTheme);
@@ -630,9 +627,27 @@ export const useThemeStore = create<ThemeState>()(
             }
           }
 
+          // For TweakCN themes, update rawTheme with converted ShadcnTheme
+          let finalActiveTheme;
+          if (state.activeTheme.author === "tweakcn") {
+            // Convert TinteTheme back to ShadcnTheme for TweakCN themes
+            const { convertTinteToShadcn } = require("@/lib/providers/shadcn");
+            const convertedShadcnTheme = convertTinteToShadcn(newTinteTheme);
+            finalActiveTheme = {
+              ...updatedTheme,
+              author: state.activeTheme.author, // Restore original author
+              rawTheme: convertedShadcnTheme, // Use converted ShadcnTheme
+            };
+          } else {
+            finalActiveTheme = {
+              ...updatedTheme,
+              author: state.activeTheme.author, // Restore original author
+            };
+          }
+
           return {
             tinteTheme: newTinteTheme,
-            activeTheme: updatedTheme,
+            activeTheme: finalActiveTheme,
             currentTokens: processedTokens,
             hasEdits: true,
           };

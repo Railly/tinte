@@ -101,7 +101,7 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
     
     return (
       <div
-        className={`${group.type === "color" ? "h-10" : "h-8"} bg-muted/30 rounded animate-pulse`}
+        className="h-8 bg-muted/30 rounded animate-pulse"
       ></div>
     );
   }
