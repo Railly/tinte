@@ -14,7 +14,6 @@ import {
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -61,15 +60,6 @@ const NAVIGATION_ITEMS = [
     icon: MessageSquare,
     shortcut: "w",
     description: "Create and edit themes",
-  },
-];
-
-const _THEME_ACTIONS = [
-  {
-    id: "toggle-mode",
-    title: "Toggle Theme Mode",
-    shortcut: "m",
-    description: "Switch between light and dark mode",
   },
 ];
 

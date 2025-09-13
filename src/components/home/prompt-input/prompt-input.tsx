@@ -1,15 +1,12 @@
 "use client";
 
-import { ArrowUp, Globe, Image, Palette, Plus, Search } from "lucide-react";
+import { ArrowUp, Globe, Image, Palette, Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CSSIcon } from "@/components/shared/icons/css";
-import RaycastIcon from "@/components/shared/icons/raycast";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
-import TweakCNIcon from "@/components/shared/icons/tweakcn";
-import Logo from "@/components/shared/logo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,11 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { usePalette } from "@/hooks/use-palette";
 import { usePastedItems } from "@/hooks/use-pasted-items";
@@ -34,6 +26,9 @@ import { mapPastedToAttachments } from "@/utils/seed-mapper";
 import { Button } from "../../ui/button";
 import { PasteDialog } from "./paste-dialog";
 import { PastedItemsList } from "./pasted-items-list";
+import { ThemeSelector } from "@/components/shared/theme-selector";
+import { ThemeSelectorDialog } from "./theme-selector-dialog";
+import type { ThemeData } from "@/lib/theme-tokens";
 
 interface PromptInputProps {
   onSubmit?: (kind: Kind, raw: string) => void;
@@ -45,18 +40,6 @@ interface PalettePreset {
   description: string;
 }
 
-interface ThemePreset {
-  id: string;
-  name: string;
-  provider: "tweakcn" | "rayso" | "tinte";
-  colors: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    background: string;
-    foreground: string;
-  };
-}
 
 export default function PromptInput({ onSubmit }: PromptInputProps) {
   const [prompt, setPrompt] = useState("");
@@ -129,10 +112,9 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
   const [editingItem, setEditingItem] = useState<PastedItem | null>(null);
   const [customColor, setCustomColor] = useState("");
   const [paletteDropdownOpen, setPaletteDropdownOpen] = useState(false);
-  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
-  const [themeSearchQuery, setThemeSearchQuery] = useState("");
+  const [themeSelectorOpen, setThemeSelectorOpen] = useState(false);
+  const [selectedThemeItem, setSelectedThemeItem] = useState<PastedItem | null>(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
-  const themeSearchRef = useRef<HTMLInputElement>(null);
   const {
     pastedItems,
     addPastedItem,
@@ -151,23 +133,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
     }
   }, [paletteDropdownOpen]);
 
-  useEffect(() => {
-    if (themeDropdownOpen) {
-      setTimeout(() => {
-        themeSearchRef.current?.focus();
-      }, 100);
-    }
-  }, [themeDropdownOpen]);
-
-  // Get themes from provider (already includes provider field)
-  const allThemePresets = allThemes;
-
-  // Filter themes based on search query
-  const filteredThemes = allThemePresets.filter(
-    (theme) =>
-      theme.name.toLowerCase().includes(themeSearchQuery.toLowerCase()) ||
-      theme.provider.toLowerCase().includes(themeSearchQuery.toLowerCase()),
-  );
 
   function handlePaste(e: React.ClipboardEvent) {
     const clipboardData = e.clipboardData;
@@ -290,7 +255,11 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
   }
 
   function handleEditItem(item: PastedItem) {
-    if (["url", "tailwind", "cssvars", "palette"].includes(item.kind)) {
+    // Check if this is a theme item (palette with theme name pattern)
+    if (item.kind === "palette" && item.content.includes(" theme")) {
+      setSelectedThemeItem(item);
+      setThemeSelectorOpen(true);
+    } else if (["url", "tailwind", "cssvars", "palette"].includes(item.kind)) {
       setEditingItem(item);
       setDialogType(item.kind as "url" | "tailwind" | "cssvars" | "palette");
       setDialogOpen(true);
@@ -300,6 +269,18 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
   function handleDialogClose() {
     setDialogOpen(false);
     setEditingItem(null);
+  }
+
+  function handleThemeReplace(theme: ThemeData, item: PastedItem) {
+    const validColors = Object.entries(theme.colors || {})
+      .filter(([_, colorValue]) => colorValue?.startsWith("#"))
+      .map(([_, colorValue]) => colorValue);
+
+    if (validColors.length > 0) {
+      // Create content with colors included so extractColors can pick them up
+      const contentWithColors = `${theme.name} theme: ${validColors.join(" ")}`;
+      updatePastedItem(item.id, contentWithColors, "palette");
+    }
   }
 
   function handlePaletteSelect(preset: PalettePreset) {
@@ -314,35 +295,21 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
     setPaletteDropdownOpen(false);
   }
 
-  function handleThemeSelect(theme: ThemePreset) {
-    // Clear existing palette items and replace with new theme colors
-    const nonPaletteItems = pastedItems.filter(
-      (item) => item.kind !== "palette",
-    );
-    clearPastedItems();
+  function handleThemeSelect(theme: ThemeData) {
+    // Add the theme as a single pasted item (accumulate, don't replace)
+    const validColors = Object.entries(theme.colors || {})
+      .filter(([_, colorValue]) => colorValue?.startsWith("#"))
+      .map(([_, colorValue]) => colorValue);
 
-    // Re-add non-palette items
-    nonPaletteItems.forEach((item) => {
-      addPastedItem(item.content, item.kind, item.colors, item.imageData);
-    });
-
-    // Add each color from the theme as separate palette items
-    const colors = Object.entries(theme.colors);
-
-    colors.forEach(([colorName, colorValue]) => {
-      if (colorValue?.startsWith("#")) {
-        const paletteColors = generateTailwindPalette(colorValue);
-        const colorsString = paletteColors.map((c) => c.value).join(" ");
-        addPastedItem(
-          `${theme.name} ${colorName}: ${colorsString}`,
-          "palette",
-          paletteColors.map((c) => c.value),
-        );
-      }
-    });
-
-    setThemeDropdownOpen(false);
-    setThemeSearchQuery("");
+    if (validColors.length > 0) {
+      // Create content with colors included so they show visually
+      const contentWithColors = `${theme.name} theme: ${validColors.join(" ")}`;
+      addPastedItem(
+        contentWithColors,
+        "palette",
+        validColors,
+      );
+    }
   }
 
   function handleCustomColorSubmit() {
@@ -446,38 +413,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
     );
   }
 
-  function ThemeColorPreview({ theme }: { theme: ThemePreset }) {
-    const colorEntries = Object.entries(theme.colors).filter(([_, value]) =>
-      value?.startsWith("#"),
-    );
-    const displayColors = colorEntries.slice(0, 5); // Show up to 5 colors
-
-    return (
-      <div className="flex gap-0.5">
-        {displayColors.map(([name, color], index) => (
-          <div
-            key={index}
-            className="w-4 h-4 rounded-sm border border-border/20"
-            style={{ backgroundColor: color }}
-            title={`${name}: ${color}`}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  function getProviderIcon(provider: "tweakcn" | "rayso" | "tinte") {
-    switch (provider) {
-      case "tweakcn":
-        return <TweakCNIcon className="w-3 h-3" />;
-      case "rayso":
-        return <RaycastIcon className="w-3 h-3" />;
-      case "tinte":
-        return <Logo size={12} />;
-      default:
-        return null;
-    }
-  }
 
   return (
     <>
@@ -487,7 +422,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
           className={cn(
             "relative",
             pastedItems.length > 0 &&
-              "rounded-lg border border-border/70 focus-within:border-border/90 focus-within:shadow-sm",
+            "rounded-lg border border-border/70 focus-within:border-border/90 focus-within:shadow-sm",
           )}
         >
           {/* Textarea container with controls */}
@@ -574,71 +509,14 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Popover
-                open={themeDropdownOpen}
-                onOpenChange={setThemeDropdownOpen}
-              >
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Search className="size-4" />
-                    <span className="text-xs font-medium">Themes</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-80 p-0">
-                  <div className="p-2 border-b border-border/50 sticky top-0 z-50">
-                    <Input
-                      ref={themeSearchRef}
-                      placeholder="Search themes..."
-                      value={themeSearchQuery}
-                      onChange={(e) => setThemeSearchQuery(e.target.value)}
-                      className="h-8 text-xs"
-                    />
-                  </div>
-                  <div
-                    className="overflow-y-auto"
-                    style={{
-                      maxHeight: "320px",
-                      height:
-                        filteredThemes.length === 0
-                          ? "64px"
-                          : `${Math.min(filteredThemes.length * 50 + (filteredThemes.length - 1) * 4 + 8, 320)}px`,
-                    }}
-                  >
-                    <div className="flex flex-col gap-1 p-1">
-                      {filteredThemes.slice(0, 20).map((theme) => (
-                        <button
-                          key={`${theme.provider}-${theme.id}`}
-                          onClick={() => handleThemeSelect(theme)}
-                          className="flex items-center gap-3 p-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm w-full text-left"
-                        >
-                          <ThemeColorPreview theme={theme} />
-                          <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                            <div className="text-xs font-medium truncate">
-                              {theme.name}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              {getProviderIcon(theme.provider)}
-                              <span className="text-xs text-muted-foreground capitalize">
-                                {theme.provider}
-                              </span>
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                      {filteredThemes.length === 0 && (
-                        <div className="p-2 text-xs text-muted-foreground text-center">
-                          No themes found
-                        </div>
-                      )}
-                      {filteredThemes.length > 20 && (
-                        <div className="p-2 text-xs text-muted-foreground text-center">
-                          Showing first 20 of {filteredThemes.length} themes
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
+              <ThemeSelector
+                themes={allThemes}
+                activeId={null}
+                onSelect={handleThemeSelect}
+                triggerClassName="h-8"
+                label="Themes"
+                popoverWidth="w-72"
+              />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="inline-flex cursor-pointer items-center justify-center w-8 h-8 p-0 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground">
@@ -773,6 +651,14 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
         onSubmit={handleDialogSubmit}
         editMode={!!editingItem}
         initialContent={editingItem?.content}
+      />
+
+      <ThemeSelectorDialog
+        open={themeSelectorOpen}
+        onOpenChange={setThemeSelectorOpen}
+        themes={allThemes}
+        onThemeSelect={handleThemeReplace}
+        item={selectedThemeItem}
       />
     </>
   );

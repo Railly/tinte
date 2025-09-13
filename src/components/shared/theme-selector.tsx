@@ -33,12 +33,14 @@ export function ThemeSelector({
   onSelect,
   triggerClassName,
   label = "Themes",
+  popoverWidth,
 }: {
   themes: ThemeData[];
   activeId?: string | null;
   onSelect: (t: ThemeData) => void;
   triggerClassName?: string;
   label?: string;
+  popoverWidth?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   const { currentMode } = useThemeContext();
@@ -143,7 +145,10 @@ export function ThemeSelector({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-(--radix-popover-trigger-width) p-0"
+        className={cn(
+          popoverWidth ? popoverWidth : "w-(--radix-popover-trigger-width)",
+          "p-0"
+        )}
       >
         <Command>
           <CommandInput

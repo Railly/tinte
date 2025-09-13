@@ -184,15 +184,22 @@ export function PastedItemCard({
               </div>
             </div>
           ) : item.kind === "palette" ? (
-            <div className="flex flex-wrap gap-1 p-1">
-              {item.colors?.slice(0, 11).map((color) => (
-                <div
-                  key={color}
-                  className="w-4 h-4 rounded border cursor-pointer hover:scale-110"
-                  style={{ backgroundColor: color }}
-                  onClick={() => navigator.clipboard.writeText(color)}
-                />
-              ))}
+            <div className="space-y-1">
+              {item.colors?.length === 5 && (
+                <p className="text-[8px] text-muted-foreground break-words leading-tight px-1">
+                  {item.content}
+                </p>
+              )}
+              <div className="grid grid-cols-5 gap-1 p-1">
+                {item.colors?.map((color, index) => (
+                  <div
+                    key={`${color}-${index}`}
+                    className="w-4 h-4 rounded border cursor-pointer hover:scale-110"
+                    style={{ backgroundColor: color }}
+                    onClick={() => navigator.clipboard.writeText(color)}
+                  />
+                ))}
+              </div>
             </div>
           ) : item.colors && item.colors.length > 0 ? (
             <div className="space-y-2">
