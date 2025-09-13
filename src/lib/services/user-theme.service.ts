@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, count } from "drizzle-orm";
 import type { 
   DbTheme, 
   UserThemeData, 
@@ -38,7 +38,7 @@ export class UserThemeService {
     }
   }
 
-  static async getPublicThemes(limit?: number): Promise<UserThemeData[]> {
+  static async getPublicThemes(limit?: number, offset?: number): Promise<UserThemeData[]> {
     try {
       let query = db
         .select()
@@ -48,6 +48,10 @@ export class UserThemeService {
 
       if (limit) {
         query = query.limit(limit);
+      }
+
+      if (offset) {
+        query = query.offset(offset);
       }
 
       const dbThemes = await query;
@@ -68,6 +72,20 @@ export class UserThemeService {
     } catch (error) {
       console.error("Error fetching public themes:", error);
       return [];
+    }
+  }
+
+  static async getPublicThemesCount(): Promise<number> {
+    try {
+      const result = await db
+        .select({ count: count() })
+        .from(theme)
+        .where(eq(theme.is_public, true));
+
+      return result[0]?.count || 0;
+    } catch (error) {
+      console.error("Error counting public themes:", error);
+      return 0;
     }
   }
 

@@ -11,7 +11,7 @@ export function Hero() {
   const [active, ref2] = useLoop();
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 py-16 min-h-[80vh]">
+    <div className="flex flex-col items-center justify-center px-4 min-h-[65dvh]">
       <div className="flex flex-col items-center gap-2 md:gap-4 mb-8">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 backdrop-blur-sm">
           <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor">
@@ -51,15 +51,15 @@ export function Hero() {
                             animate={
                               name === active
                                 ? {
-                                    scale: 1,
-                                    filter: "blur(0px)",
-                                    opacity: 1,
-                                  }
+                                  scale: 1,
+                                  filter: "blur(0px)",
+                                  opacity: 1,
+                                }
                                 : {
-                                    scale: 0.5,
-                                    filter: "blur(4px)",
-                                    opacity: 0,
-                                  }
+                                  scale: 0.5,
+                                  filter: "blur(4px)",
+                                  opacity: 0,
+                                }
                             }
                             exit={{
                               scale: 0.5,

@@ -105,6 +105,13 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                 <Users className="w-3 h-3" />
                 Community
               </TabsTrigger>
+              <TabsTrigger
+                value="tinte"
+                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
+              >
+                <Logo size={12} />
+                tinte
+              </TabsTrigger>
               {session && (
                 <TabsTrigger
                   value="user"
@@ -128,13 +135,6 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                 <RaycastIcon className="w-3 h-3" />
                 ray.so
               </TabsTrigger>
-              <TabsTrigger
-                value="tinte"
-                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
-              >
-                <Logo size={12} />
-                tinte
-              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -152,7 +152,7 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
               </div>
             ) : publicThemes.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {publicThemes.slice(0, 20).map((theme, index) => (
+                {publicThemes.slice(0, 8).map((theme, index) => (
                   <ThemeCard
                     key={theme.id}
                     theme={theme}

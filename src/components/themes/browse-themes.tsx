@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Loader2 } from "lucide-react";
 import { ThemeCard, ThemeCardSkeleton, ThemeCardListSkeleton } from "@/components/shared/theme-card";
 import { Header } from "@/components/home/header";
 import { Footer } from "@/components/shared/footer";
@@ -13,6 +13,7 @@ import { useThemeContext } from "@/providers/theme";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
 import { extractTinteThemeData } from "@/utils/tinte-presets";
 import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import type { UserThemeData } from "@/types/user-theme";
 import type { SessionData } from "@/types/auth";
 import RaycastIcon from "@/components/shared/icons/raycast";
@@ -24,6 +25,7 @@ interface BrowseThemesProps {
   session: SessionData;
   userThemes: UserThemeData[];
   publicThemes: UserThemeData[];
+  publicThemesCount: number;
   initialCategory?: string;
   initialSearch?: string;
 }
@@ -32,7 +34,8 @@ export function BrowseThemes({
   session,
   userThemes,
   publicThemes,
-  initialCategory = "all",
+  publicThemesCount,
+  initialCategory = "community",
   initialSearch = ""
 }: BrowseThemesProps) {
   const { isDark, handleThemeSelect, mounted } = useThemeContext();
@@ -40,6 +43,13 @@ export function BrowseThemes({
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [sortBy, setSortBy] = useState("relevance");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Initialize infinite scroll for community themes
+  const infiniteScrollState = useInfiniteScroll({
+    initialThemes: publicThemes.slice(0, 20),
+    limit: 20,
+    sentinelId: "infinite-scroll-sentinel-browse"
+  });
 
   // Get all themes
   const tweakcnThemes = extractTweakcnThemeData(isDark).map((themeData, index) => ({
@@ -81,7 +91,8 @@ export function BrowseThemes({
 
     switch (activeCategory) {
       case "community":
-        allThemes = publicThemes;
+        // Use infinite scroll state for community themes
+        allThemes = infiniteScrollState.themes;
         break;
       case "user":
         allThemes = userThemes;
@@ -96,7 +107,8 @@ export function BrowseThemes({
         allThemes = tinteThemes;
         break;
       default:
-        allThemes = [...publicThemes, ...userThemes, ...tweakcnThemes, ...raysoThemes, ...tinteThemes];
+        // Default to community if unknown category
+        allThemes = infiniteScrollState.themes;
     }
 
     if (searchTerm) {
@@ -121,8 +133,8 @@ export function BrowseThemes({
   };
 
   const filteredThemes = getFilteredThemes();
-  const totalThemes = [...publicThemes, ...userThemes, ...tweakcnThemes, ...raysoThemes, ...tinteThemes].length;
-  
+  const totalThemes = publicThemesCount + userThemes.length + tweakcnThemes.length + raysoThemes.length + tinteThemes.length;
+
   // Show skeletons while theme context is mounting or theme state is not ready
   const shouldShowSkeletons = !mounted;
 
@@ -159,10 +171,7 @@ export function BrowseThemes({
               <span className="text-sm font-medium ml-4">Category</span>
               <Tabs value={activeCategory} onValueChange={setActiveCategory}>
                 <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm">
-                  <TabsTrigger value="all" className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs">
-                    All Categories
-                  </TabsTrigger>
-                  <TabsTrigger value="community" className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5">
+                  <TabsTrigger value="community" className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-6 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5">
                     <Users className="w-3 h-3" />
                     Community
                   </TabsTrigger>
@@ -233,7 +242,7 @@ export function BrowseThemes({
           </div>
 
           {/* Theme Grid/List */}
-          <div className={viewMode === "grid" 
+          <div className={viewMode === "grid"
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             : "space-y-4"
           }>
@@ -259,6 +268,34 @@ export function BrowseThemes({
             )}
           </div>
 
+          {/* Infinite scroll sentinel for community tab */}
+          {activeCategory === "community" && !shouldShowSkeletons && infiniteScrollState.hasMore && (
+            <div id="infinite-scroll-sentinel-browse" className="flex justify-center py-8">
+              {infiniteScrollState.loading ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Loading more themes...</span>
+                </div>
+              ) : (
+                <div className="h-4 w-full" />
+              )}
+            </div>
+          )}
+
+          {activeCategory === "community" && infiniteScrollState.error && (
+            <div className="text-center py-4">
+              <p className="text-red-500 text-sm">{infiniteScrollState.error}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={infiniteScrollState.loadMore}
+              >
+                Try Again
+              </Button>
+            </div>
+          )}
+
           {!shouldShowSkeletons && filteredThemes.length === 0 && (
             <div className="text-center py-12 space-y-4">
               <Search className="w-12 h-12 mx-auto text-muted-foreground" />
@@ -268,7 +305,7 @@ export function BrowseThemes({
                   Try adjusting your search or filter criteria
                 </p>
               </div>
-              <Button variant="outline" onClick={() => { setSearchTerm(""); setActiveCategory("all"); }}>
+              <Button variant="outline" onClick={() => { setSearchTerm(""); setActiveCategory("community"); }}>
                 Clear Filters
               </Button>
             </div>

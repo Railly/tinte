@@ -25,13 +25,15 @@ export default async function ThemesPage({
     ? await UserThemeService.getUserThemes(session.user.id) 
     : [];
     
-  const publicThemes = await UserThemeService.getPublicThemes();
+  const publicThemes = await UserThemeService.getPublicThemes(20);
+  const publicThemesCount = await UserThemeService.getPublicThemesCount();
 
   return (
     <BrowseThemes 
       session={session}
       userThemes={userThemes}
       publicThemes={publicThemes}
+      publicThemesCount={publicThemesCount}
       initialCategory={category as string}
       initialSearch={search as string}
     />
