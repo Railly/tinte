@@ -89,6 +89,33 @@ export class UserThemeService {
     }
   }
 
+  static async getAllPublicThemes(): Promise<UserThemeData[]> {
+    try {
+      const dbThemes = await db
+        .select()
+        .from(theme)
+        .where(eq(theme.is_public, true))
+        .orderBy(desc(theme.created_at));
+
+      console.log("UserThemeService - All public themes count:", dbThemes.length);
+      
+      const transformedThemes = dbThemes.map(dbTheme => 
+        UserThemeService.transformDbThemeToUserTheme(dbTheme, {
+          author: "Community",
+          description: `Beautiful ${dbTheme.name.toLowerCase()} theme shared by the community`,
+          tags: ["community", "public", "shared"]
+        })
+      );
+      
+      console.log("UserThemeService - Transformed all public themes:", transformedThemes.length);
+      
+      return transformedThemes;
+    } catch (error) {
+      console.error("Error fetching all public themes:", error);
+      return [];
+    }
+  }
+
   private static transformDbThemeToUserTheme(
     dbTheme: DbTheme,
     options: ThemeTransformOptions = {}
