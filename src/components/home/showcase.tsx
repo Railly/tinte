@@ -82,14 +82,38 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full" />
+                <div className="size-8 rounded-full bg-foreground flex items-center justify-center">
+                  {activeTab === "community" ? (
+                    <Users className="size-5 text-background" />
+                  ) : activeTab === "tinte" ? (
+                    <Logo size={24} className="text-foreground" />
+                  ) : activeTab === "user" ? (
+                    <User className="size-5 text-background" />
+                  ) : activeTab === "tweakcn" ? (
+                    <TweakCNIcon className="size-5 text-background" />
+                  ) : activeTab === "rayso" ? (
+                    <RaycastIcon className="size-5 text-background" />
+                  ) : (
+                    <div className="w-2 h-2 bg-white rounded-full" />
+                  )}
                 </div>
-                <h2 className="text-xl font-medium">From the Community</h2>
+                <h2 className="text-xl font-medium">
+                  {activeTab === "community" ? "From the Community" :
+                    activeTab === "tinte" ? "Tinte Themes" :
+                      activeTab === "user" ? "My Themes" :
+                        activeTab === "tweakcn" ? "tweakcn Themes" :
+                          activeTab === "rayso" ? "ray.so Themes" :
+                            "From the Community"}
+                </h2>
               </div>
             </div>
             <p className="text-muted-foreground text-sm">
-              Explore what the community is crafting with Tinte.
+              {activeTab === "community" ? "Explore what the community is crafting with Tinte." :
+                activeTab === "tinte" ? "Beautiful themes created by the Tinte team." :
+                  activeTab === "user" ? "Your personal theme collection." :
+                    activeTab === "tweakcn" ? "Curated themes from tweakcn.com." :
+                      activeTab === "rayso" ? "Modern themes from ray.so." :
+                        "Explore what the community is crafting with Tinte."}
             </p>
           </div>
           <Tabs
@@ -158,6 +182,7 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                     theme={theme}
                     index={index}
                     onThemeSelect={handleThemeSelect}
+                    showUserInfo={true}
                   />
                 ))}
               </div>
@@ -194,6 +219,7 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                     theme={theme}
                     index={index}
                     onThemeSelect={handleThemeSelect}
+                    showUserInfo={true}
                   />
                 ))}
               </div>
@@ -227,6 +253,7 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                   theme={theme}
                   index={index}
                   onThemeSelect={handleThemeSelect}
+                  showUserInfo={false}
                 />
               ))
             )}
@@ -246,6 +273,7 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                   theme={theme}
                   index={index}
                   onThemeSelect={handleThemeSelect}
+                  showUserInfo={false}
                 />
               ))
             )}
@@ -265,6 +293,7 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                   theme={theme}
                   index={index}
                   onThemeSelect={handleThemeSelect}
+                  showUserInfo={false}
                 />
               ))
             )}
@@ -279,8 +308,13 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
           className="gap-2 h-10 px-6"
           asChild
         >
-          <a href="/themes">
-            Browse All Themes
+          <a href={`/themes?category=${activeTab}`}>
+            Browse All {activeTab === "community" ? "Community" :
+              activeTab === "tinte" ? "Tinte" :
+                activeTab === "user" ? "My" :
+                  activeTab === "tweakcn" ? "tweakcn" :
+                    activeTab === "rayso" ? "ray.so" :
+                      "Community"} Themes
             <ArrowRight className="w-4 h-4" />
           </a>
         </Button>

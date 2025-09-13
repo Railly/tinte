@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { parseAsString, useQueryState } from "nuqs";
 import { Search, Loader2 } from "lucide-react";
 import { ThemeCard, ThemeCardSkeleton, ThemeCardListSkeleton } from "@/components/shared/theme-card";
 import { Header } from "@/components/home/header";
@@ -39,8 +40,17 @@ export function BrowseThemes({
   initialSearch = ""
 }: BrowseThemesProps) {
   const { isDark, handleThemeSelect, mounted } = useThemeContext();
-  const [activeCategory, setActiveCategory] = useState(initialCategory);
-  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  
+  // Use nuqs for URL synchronization
+  const [activeCategory, setActiveCategory] = useQueryState(
+    "category", 
+    parseAsString.withDefault(initialCategory)
+  );
+  const [searchTerm, setSearchTerm] = useQueryState(
+    "search", 
+    parseAsString.withDefault(initialSearch)
+  );
+  
   const [sortBy, setSortBy] = useState("relevance");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
@@ -263,6 +273,7 @@ export function BrowseThemes({
                   index={index}
                   variant={viewMode}
                   onThemeSelect={handleThemeSelect}
+                  showUserInfo={activeCategory === "community" || activeCategory === "user"}
                 />
               ))
             )}

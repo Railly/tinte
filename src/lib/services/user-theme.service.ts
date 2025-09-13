@@ -69,25 +69,34 @@ export class UserThemeService {
   static async getPublicThemes(limit?: number, offset?: number): Promise<UserThemeData[]> {
     try {
       const baseQuery = db
-        .select()
+        .select({
+          theme: theme,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          }
+        })
         .from(theme)
+        .leftJoin(user, eq(theme.user_id, user.id))
         .where(eq(theme.is_public, true))
         .orderBy(desc(theme.created_at));
 
-      const dbThemes = await (
+      const results = await (
         offset
           ? (limit ? baseQuery.limit(limit).offset(offset) : baseQuery.offset(offset))
           : (limit ? baseQuery.limit(limit) : baseQuery)
       );
 
-      console.log("UserThemeService - Public themes count:", dbThemes.length);
+      console.log("UserThemeService - Public themes count:", results.length);
       
-      const transformedThemes = dbThemes.map(dbTheme => 
-        UserThemeService.transformDbThemeToUserTheme(dbTheme, {
-          author: "Community",
-          description: `Beautiful ${dbTheme.name.toLowerCase()} theme shared by the community`,
+      const transformedThemes = results.map(result => 
+        UserThemeService.transformDbThemeToUserTheme(result.theme, {
+          author: result.user?.name || "Anonymous",
+          description: `Beautiful ${result.theme.name.toLowerCase()} theme ${result.user?.name ? `by ${result.user.name}` : 'shared by the community'}`,
           tags: ["community", "public", "shared"]
-        })
+        }, result.user)
       );
       
       console.log("UserThemeService - Transformed public themes:", transformedThemes.length);
@@ -115,20 +124,29 @@ export class UserThemeService {
 
   static async getAllPublicThemes(): Promise<UserThemeData[]> {
     try {
-      const dbThemes = await db
-        .select()
+      const results = await db
+        .select({
+          theme: theme,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          }
+        })
         .from(theme)
+        .leftJoin(user, eq(theme.user_id, user.id))
         .where(eq(theme.is_public, true))
         .orderBy(desc(theme.created_at));
 
-      console.log("UserThemeService - All public themes count:", dbThemes.length);
+      console.log("UserThemeService - All public themes count:", results.length);
       
-      const transformedThemes = dbThemes.map(dbTheme => 
-        UserThemeService.transformDbThemeToUserTheme(dbTheme, {
-          author: "Community",
-          description: `Beautiful ${dbTheme.name.toLowerCase()} theme shared by the community`,
+      const transformedThemes = results.map(result => 
+        UserThemeService.transformDbThemeToUserTheme(result.theme, {
+          author: result.user?.name || "Anonymous",
+          description: `Beautiful ${result.theme.name.toLowerCase()} theme ${result.user?.name ? `by ${result.user.name}` : 'shared by the community'}`,
           tags: ["community", "public", "shared"]
-        })
+        }, result.user)
       );
       
       console.log("UserThemeService - Transformed all public themes:", transformedThemes.length);

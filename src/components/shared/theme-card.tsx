@@ -1,11 +1,14 @@
 "use client";
 
-import { Download, Heart } from "lucide-react";
+import { Download, Heart, UserX, Edit } from "lucide-react";
 import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
+import { nanoid } from "nanoid";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
 import Logo from "@/components/shared/logo";
 import { ThemeCardPreview } from "@/components/shared/theme-card-preview";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { ThemeData } from "@/lib/theme-tokens";
 import { extractThemeColors, extractShadcnColors, extractShadcnFonts, formatNumber } from "@/utils/theme-card-helpers";
@@ -16,6 +19,7 @@ interface ThemeCardProps {
   index: number;
   onThemeSelect?: (theme: ThemeData) => void;
   variant?: "grid" | "list";
+  showUserInfo?: boolean;
 }
 
 export function ThemeCardListSkeleton() {
@@ -103,10 +107,30 @@ export function ThemeCardSkeleton() {
   );
 }
 
-export function ThemeCard({ theme, onThemeSelect, variant = "grid" }: ThemeCardProps) {
+export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo = false }: ThemeCardProps) {
   const { isDark } = useThemeContext();
+  const router = useRouter();
+
+  const handleApplyTheme = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onThemeSelect) {
+      onThemeSelect(theme);
+    }
+  };
+
+  const handleOpenInEditor = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // First apply the theme
+    if (onThemeSelect) {
+      onThemeSelect(theme);
+    }
+    // Then navigate to workbench
+    const chatId = nanoid();
+    router.push(`/workbench/${chatId}`);
+  };
 
   const handleThemeClick = () => {
+    // Default click behavior - just apply theme
     if (onThemeSelect) {
       onThemeSelect(theme);
     }
@@ -137,8 +161,26 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid" }: ThemeCardP
                   {theme.name}
                 </h3>
                 {theme.author && (
-                  <div className="flex items-center">
-                    {theme.author === "tweakcn" ? (
+                  <div className="flex items-center gap-1">
+                    {showUserInfo && theme.provider === "tinte" && (theme as any).user?.image ? (
+                      <>
+                        <Avatar className="w-3.5 h-3.5">
+                          <AvatarImage
+                            src={(theme as any).user.image}
+                            alt={(theme as any).user.name || "User"}
+                          />
+                          <AvatarFallback className="text-[8px]">
+                            {((theme as any).user.name?.[0] || "U").toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-xs text-muted-foreground">by {(theme as any).user.name || "Anonymous"}</span>
+                      </>
+                    ) : showUserInfo && theme.provider === "tinte" ? (
+                      <>
+                        <UserX className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">by Anonymous</span>
+                      </>
+                    ) : theme.author === "tweakcn" ? (
                       <TweakCNIcon className="w-3.5 h-3.5 text-muted-foreground" />
                     ) : theme.author === "ray.so" ? (
                       <RaycastIcon className="w-3.5 h-3.5 text-muted-foreground" />
@@ -167,17 +209,25 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid" }: ThemeCardP
                 </div>
               </div>
 
-              <Button
-                size="sm"
-                variant="outline"
-                className="opacity-0 group-hover:opacity-100 transition-opacity text-xs px-3 h-7"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleThemeClick();
-                }}
-              >
-                Open
-              </Button>
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-xs px-2 h-7"
+                  onClick={handleApplyTheme}
+                >
+                  Apply
+                </Button>
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="text-xs px-2 h-7 gap-1"
+                  onClick={handleOpenInEditor}
+                >
+                  <Edit className="w-3 h-3" />
+                  Edit
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -254,16 +304,24 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid" }: ThemeCardP
           transition={{ duration: 0.15 }}
           className="absolute inset-0 bg-gradient-to-b from-foreground/20 to-foreground/10 flex items-center justify-center"
         >
-          <Button
-            size="sm"
-            className="bg-foreground text-background font-medium px-6"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleThemeClick();
-            }}
-          >
-            Open in Editor
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              className="font-medium px-4"
+              onClick={handleApplyTheme}
+            >
+              Apply Theme
+            </Button>
+            <Button
+              size="sm"
+              className="bg-foreground text-background font-medium px-4 gap-1"
+              onClick={handleOpenInEditor}
+            >
+              <Edit className="w-3 h-3" />
+              Open in Editor
+            </Button>
+          </div>
         </motion.div>
       </div>
 
@@ -292,8 +350,26 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid" }: ThemeCardP
 
           {/* Author */}
           {theme.author && (
-            <div className="flex items-center">
-              {theme.author === "tweakcn" ? (
+            <div className="flex items-center gap-1">
+              {showUserInfo && theme.provider === "tinte" && (theme as any).user?.image ? (
+                <>
+                  <Avatar className="w-3.5 h-3.5">
+                    <AvatarImage
+                      src={(theme as any).user.image}
+                      alt={(theme as any).user.name || "User"}
+                    />
+                    <AvatarFallback className="text-[8px]">
+                      {((theme as any).user.name?.[0] || "U").toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">{(theme as any).user.name || "Anonymous"}</span>
+                </>
+              ) : showUserInfo && theme.provider === "tinte" ? (
+                <>
+                  <UserX className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                  <span className="text-xs text-gray-400 dark:text-gray-500">Anonymous</span>
+                </>
+              ) : theme.author === "tweakcn" ? (
                 <TweakCNIcon className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
               ) : theme.author === "ray.so" ? (
                 <RaycastIcon className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
