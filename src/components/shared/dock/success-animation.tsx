@@ -24,8 +24,8 @@ export function SuccessAnimation({
             ease: "easeOut"
           }}
           className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50"
-          onAnimationComplete={(definition) => {
-            if (definition.opacity === 1 && onComplete) {
+          onAnimationComplete={() => {
+            if (onComplete) {
               setTimeout(onComplete, 1500);
             }
           }}

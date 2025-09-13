@@ -12,7 +12,7 @@ import type { TinteBlock } from "@/types/tinte";
 export class UserThemeService {
   static async getThemesWithUsers(limit?: number): Promise<UserThemeData[]> {
     try {
-      let query = db
+      const baseQuery = db
         .select({
           theme: theme,
           user: {
@@ -26,11 +26,7 @@ export class UserThemeService {
         .leftJoin(user, eq(theme.user_id, user.id))
         .orderBy(desc(theme.created_at));
 
-      if (limit) {
-        query = query.limit(limit);
-      }
-
-      const results = await query;
+      const results = await (limit ? baseQuery.limit(limit) : baseQuery);
 
       return results.map(result => 
         UserThemeService.transformDbThemeToUserTheme(result.theme, {
@@ -47,17 +43,13 @@ export class UserThemeService {
 
   static async getUserThemes(userId: string, limit?: number): Promise<UserThemeData[]> {
     try {
-      let query = db
+      const baseQuery = db
         .select()
         .from(theme)
         .where(eq(theme.user_id, userId))
         .orderBy(theme.created_at);
 
-      if (limit) {
-        query = query.limit(limit);
-      }
-
-      const dbThemes = await query;
+      const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
 
       console.log("UserThemeService - DB themes count:", dbThemes.length);
       
@@ -76,21 +68,17 @@ export class UserThemeService {
 
   static async getPublicThemes(limit?: number, offset?: number): Promise<UserThemeData[]> {
     try {
-      let query = db
+      const baseQuery = db
         .select()
         .from(theme)
         .where(eq(theme.is_public, true))
         .orderBy(desc(theme.created_at));
 
-      if (limit) {
-        query = query.limit(limit);
-      }
-
-      if (offset) {
-        query = query.offset(offset);
-      }
-
-      const dbThemes = await query;
+      const dbThemes = await (
+        offset
+          ? (limit ? baseQuery.limit(limit).offset(offset) : baseQuery.offset(offset))
+          : (limit ? baseQuery.limit(limit) : baseQuery)
+      );
 
       console.log("UserThemeService - Public themes count:", dbThemes.length);
       

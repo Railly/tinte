@@ -70,8 +70,8 @@ async function migrateUsers() {
       // Check if user exists by clerk_id
       const existingUser = existingUsers.find(u => u.clerk_id === csvUser.id);
 
-      const isEmailVerified = csvUser.verified_email_addresses && 
-                             csvUser.verified_email_addresses.includes(csvUser.primary_email_address);
+      const isEmailVerified = Boolean(csvUser.verified_email_addresses && 
+                                      csvUser.verified_email_addresses.includes(csvUser.primary_email_address));
 
       if (existingUser) {
         // Update existing user
@@ -97,10 +97,6 @@ async function migrateUsers() {
           email_verified: isEmailVerified,
           image: null,
           clerk_id: csvUser.id,
-          username: csvUser.username || null,
-          image_url: null,
-          created_at: new Date(),
-          updated_at: new Date(),
         });
         
         insertedCount++;

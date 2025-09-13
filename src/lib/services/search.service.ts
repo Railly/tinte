@@ -76,17 +76,17 @@ class SearchService {
         try {
           const theme: ThemeData = {
             id: result.id,
-            name: result.content.name,
-            description: result.content.description,
-            author: result.content.author,
-            provider: result.content.provider,
-            tags: result.content.tags ? result.content.tags.split(" ") : [],
-            downloads: result.metadata?.downloads || 0,
-            likes: result.metadata?.likes || 0,
-            views: result.metadata?.views || 0,
-            createdAt: result.metadata?.createdAt || "",
-            colors: result.metadata?.colors ? JSON.parse(result.metadata.colors) : {},
-            rawTheme: result.metadata?.rawTheme ? JSON.parse(result.metadata.rawTheme) : undefined,
+            name: String(result.content.name || ''),
+            description: String(result.content.description || ''),
+            author: String(result.content.author || ''),
+            provider: String(result.content.provider || '') as "tweakcn" | "rayso" | "tinte",
+            tags: result.content.tags ? String(result.content.tags).split(" ") : [],
+            downloads: Number(result.metadata?.downloads) || 0,
+            likes: Number(result.metadata?.likes) || 0,
+            views: Number(result.metadata?.views) || 0,
+            createdAt: String(result.metadata?.createdAt) || "",
+            colors: result.metadata?.colors ? JSON.parse(String(result.metadata.colors)) : {},
+            rawTheme: result.metadata?.rawTheme ? JSON.parse(String(result.metadata.rawTheme)) : undefined,
           };
           return theme;
         } catch (error) {
