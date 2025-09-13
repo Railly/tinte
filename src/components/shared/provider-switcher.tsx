@@ -27,7 +27,6 @@ interface ProviderSwitcherProps {
 export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
   const [provider, setProvider] = useQueryState("provider", {
     defaultValue: "shadcn",
-    shallow: false,
   });
   const [open, setOpen] = React.useState(false);
 
@@ -51,9 +50,18 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
     );
   }, [availableProviders]);
 
-  const allProviders = [...availableProviders, ...plannedProviders];
-  const activeProvider =
-    allProviders.find((p) => p.id === provider) || availableProviders[0];
+  const allProviders = React.useMemo(() => [...availableProviders, ...plannedProviders], [availableProviders, plannedProviders]);
+  
+  const activeProvider = React.useMemo(() => {
+    return allProviders.find((p) => p.id === provider) || availableProviders[0];
+  }, [allProviders, provider, availableProviders]);
+
+  const handleProviderSelect = React.useCallback((providerId: string) => {
+    if (provider !== providerId) {
+      setProvider(providerId);
+    }
+    setOpen(false);
+  }, [provider, setProvider]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -63,17 +71,23 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={`justify-between ${className} hover:text-muted-foreground w-[18ch]`}
+          className={`justify-between ${className} hover:text-muted-foreground w-[18ch] transition-all duration-150`}
         >
           <div className="flex items-center gap-2 min-w-0">
             {activeProvider.icon && (
-              <activeProvider.icon className="h-4 w-4 shrink-0" />
+              <activeProvider.icon 
+                key={activeProvider.id}
+                className="h-4 w-4 shrink-0 transition-all duration-150" 
+              />
             )}
-            <span className="font-medium max-w-[8ch] md:max-w-none truncate">
+            <span 
+              key={`${activeProvider.id}-name`}
+              className="font-medium max-w-[8ch] md:max-w-none truncate transition-all duration-150"
+            >
               {activeProvider.name}
             </span>
             {!activeProvider.available && (
-              <Clock className="h-3 w-3 text-amber-500 shrink-0" />
+              <Clock className="h-3 w-3 text-amber-500 shrink-0 transition-all duration-150" />
             )}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -94,10 +108,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
                   <CommandItem
                     key={prov.id}
                     value={prov.id}
-                    onSelect={() => {
-                      setProvider(prov.id);
-                      setOpen(false);
-                    }}
+                    onSelect={() => handleProviderSelect(prov.id)}
                     className="gap-2"
                   >
                     {prov.icon && <prov.icon className="h-4 w-4" />}
