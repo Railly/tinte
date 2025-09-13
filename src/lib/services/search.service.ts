@@ -1,5 +1,8 @@
 import { Search } from "@upstash/search";
 import type { ThemeData } from "@/lib/theme-tokens";
+import { db } from "@/db";
+import { theme, user } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 class SearchService {
   private client: Search;
@@ -69,7 +72,7 @@ class SearchService {
         reranking: true,
       });
 
-      return searchResults.map((result) => {
+      const themes = searchResults.map((result) => {
         try {
           const theme: ThemeData = {
             id: result.id,
@@ -91,6 +94,45 @@ class SearchService {
           return null;
         }
       }).filter(Boolean) as ThemeData[];
+
+      // Fetch user data for themes that come from the database
+      const themesWithUsers = await Promise.all(
+        themes.map(async (themeData) => {
+          try {
+            // Only fetch user data for tinte provider themes (user-created themes)
+            if (themeData.provider === "tinte") {
+              const dbTheme = await db
+                .select({
+                  theme: theme,
+                  user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    image: user.image,
+                  }
+                })
+                .from(theme)
+                .leftJoin(user, eq(theme.user_id, user.id))
+                .where(eq(theme.id, themeData.id))
+                .limit(1);
+
+              if (dbTheme.length > 0 && dbTheme[0].user) {
+                return {
+                  ...themeData,
+                  user: dbTheme[0].user
+                };
+              }
+            }
+            
+            return themeData;
+          } catch (error) {
+            console.error("Error fetching user data for theme:", themeData.id, error);
+            return themeData;
+          }
+        })
+      );
+
+      return themesWithUsers;
     } catch (error) {
       console.error("Search error:", error);
       return [];

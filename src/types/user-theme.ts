@@ -36,6 +36,12 @@ export interface DbTheme {
 
 export interface UserThemeData extends ThemeData {
   provider: "tinte";
+  user?: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } | null;
 }
 
 export interface ThemeTransformOptions {

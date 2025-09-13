@@ -1,16 +1,16 @@
 "use client";
 
-import { Shuffle, Slash } from "lucide-react";
+import { LogIn, Shuffle, Slash } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Logo from "@/components/shared/logo";
 import { ProviderSwitcher } from "@/components/shared/provider-switcher";
 import { ThemeSelector } from "@/components/shared/theme-selector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { siteConfig } from "@/config/site";
+import { authClient } from "@/lib/auth-client";
 import type { ThemeData } from "@/lib/theme-tokens";
 import { useThemeContext } from "@/providers/theme";
-import { generateThemeFromChatId } from "@/utils/tinte-presets";
 import type { UserThemeData } from "@/types/user-theme";
 import DiscordIcon from "../shared/icons/discord";
 import GithubIcon from "../shared/icons/github";
@@ -28,54 +28,23 @@ interface WorkbenchHeaderProps {
 export function WorkbenchHeader({ chatId, userThemes = [] }: WorkbenchHeaderProps) {
   const { allThemes, activeTheme, handleThemeSelect, navigateTheme, addTheme } =
     useThemeContext();
+  const { data: session } = authClient.useSession();
   const activeId = activeTheme?.id || null;
-  const initializedChats = useRef(new Set<string>());
 
   // Add user themes to the theme context
   useEffect(() => {
     userThemes.forEach(userTheme => {
       const existingTheme = allThemes.find(t => t.id === userTheme.id);
       if (!existingTheme) {
-        addTheme(userTheme as ThemeData);
+        // Add user data to the theme before adding to context
+        const themeWithUser: ThemeData = {
+          ...userTheme,
+          user: userTheme.user
+        };
+        addTheme(themeWithUser);
       }
     });
   }, [userThemes, allThemes, addTheme]);
-
-  useEffect(() => {
-    if (initializedChats.current.has(chatId)) return;
-
-    const chatThemeId = `chat-${chatId}`;
-    const existingChatTheme = allThemes.find((t) => t.id === chatThemeId);
-
-    if (!existingChatTheme) {
-      const generatedTheme = generateThemeFromChatId(chatId);
-      const chatTheme: ThemeData = {
-        id: chatThemeId,
-        name: `Chat ${chatId.slice(0, 8)}`,
-        description: `Generated theme for chat ${chatId}`,
-        author: "tinte",
-        provider: "tinte",
-        downloads: 0,
-        likes: 0,
-        views: 0,
-        createdAt: new Date().toISOString().split("T")[0],
-        colors: {
-          primary: generatedTheme.light.pr,
-          secondary: generatedTheme.light.sc,
-          accent: generatedTheme.light.ac_1,
-          background: generatedTheme.light.bg,
-          foreground: generatedTheme.light.tx,
-        },
-        tags: ["chat", "generated"],
-        rawTheme: generatedTheme,
-      };
-
-      addTheme(chatTheme);
-      handleThemeSelect(chatTheme);
-    }
-
-    initializedChats.current.add(chatId);
-  }, [chatId, allThemes, addTheme, handleThemeSelect]);
 
   return (
     <header className="sticky px-3 md:px-4 flex items-center justify-between h-[var(--header-height)] top-0 z-50 w-full border-b bg-background/95 backdrop-blur shrink-0">
@@ -145,10 +114,21 @@ export function WorkbenchHeader({ chatId, userThemes = [] }: WorkbenchHeaderProp
           </div>
         </div>
         <Separator orientation="vertical" className="!h-8 hidden sm:block" />
-        <Avatar className="h-8 w-8">
-          <AvatarImage src="" alt="User" />
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
+        {session ? (
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={session.user.image || ""} alt={session.user.name || "User"} />
+            <AvatarFallback>{(session.user.name || session.user.email || "U").charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+        ) : (
+          <Button
+            size="sm"
+            className="h-8 px-3 text-xs"
+            onClick={() => authClient.signIn.social({ provider: "github" })}
+          >
+            <LogIn className="h-3 w-3 mr-1" />
+            Sign In
+          </Button>
+        )}
       </div>
     </header>
   );

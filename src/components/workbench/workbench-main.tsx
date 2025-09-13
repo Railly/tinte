@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
 import type { UserThemeData } from "@/types/user-theme";
+
 import { WorkbenchHeader } from "./workbench-header";
 import { WorkbenchMobile } from "./workbench-mobile";
 import { WorkbenchPreviewPane } from "./workbench-preview-pane";

@@ -1,5 +1,6 @@
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
+import { user } from "@/db/schema/user";
 import { eq, desc, count } from "drizzle-orm";
 import type { 
   DbTheme, 
@@ -9,6 +10,41 @@ import type {
 import type { TinteBlock } from "@/types/tinte";
 
 export class UserThemeService {
+  static async getThemesWithUsers(limit?: number): Promise<UserThemeData[]> {
+    try {
+      let query = db
+        .select({
+          theme: theme,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          }
+        })
+        .from(theme)
+        .leftJoin(user, eq(theme.user_id, user.id))
+        .orderBy(desc(theme.created_at));
+
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      const results = await query;
+
+      return results.map(result => 
+        UserThemeService.transformDbThemeToUserTheme(result.theme, {
+          author: result.user?.name || "Anonymous",
+          description: `Theme by ${result.user?.name || "Anonymous"}`,
+          tags: ["user", "custom"]
+        }, result.user)
+      );
+    } catch (error) {
+      console.error("Error fetching themes with users:", error);
+      return [];
+    }
+  }
+
   static async getUserThemes(userId: string, limit?: number): Promise<UserThemeData[]> {
     try {
       let query = db
@@ -118,7 +154,8 @@ export class UserThemeService {
 
   private static transformDbThemeToUserTheme(
     dbTheme: DbTheme,
-    options: ThemeTransformOptions = {}
+    options: ThemeTransformOptions = {},
+    user?: { id: string; name?: string | null; email?: string | null; image?: string | null } | null
   ): UserThemeData {
     const {
       author = "You",
@@ -139,6 +176,7 @@ export class UserThemeService {
       createdAt: dbTheme.created_at?.toISOString() || new Date().toISOString(),
       colors: UserThemeService.extractThemeColors(dbTheme),
       rawTheme: UserThemeService.buildRawTheme(dbTheme),
+      user: user,
       ...UserThemeService.flattenThemeProperties(dbTheme),
     };
   }

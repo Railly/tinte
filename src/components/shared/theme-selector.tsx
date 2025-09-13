@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronsUpDown, Loader2 } from "lucide-react";
+import { ChevronsUpDown, Loader2, Users, UserX } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
@@ -41,7 +42,7 @@ export function ThemeSelector({
 }) {
   const [open, setOpen] = React.useState(false);
   const { currentMode } = useThemeContext();
-  
+
   const {
     searchResults,
     isSearching,
@@ -49,6 +50,26 @@ export function ThemeSelector({
     searchQuery,
     setSearchQuery,
   } = useThemeSearch();
+
+  // Fetch popular community themes for default display
+  const [popularCommunityThemes, setPopularCommunityThemes] = React.useState<ThemeData[]>([]);
+
+  React.useEffect(() => {
+    // Fetch popular community themes when component mounts
+    const fetchPopularThemes = async () => {
+      try {
+        const response = await fetch('/api/themes/popular?limit=10');
+        if (response.ok) {
+          const data = await response.json();
+          setPopularCommunityThemes(data.themes || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch popular themes:', error);
+      }
+    };
+
+    fetchPopularThemes();
+  }, []);
 
   // Store the selected theme from search so it persists even when search is cleared
   const [selectedSearchTheme, setSelectedSearchTheme] = React.useState<ThemeData | null>(null);
@@ -65,37 +86,44 @@ export function ThemeSelector({
   // Combine regular themes and search results
   const allThemes = React.useMemo(() => {
     let combined = [...themes];
-    
+
     // Add selected search theme if it's not already in the themes list
     if (selectedSearchTheme && !themes.some(t => t.id === selectedSearchTheme.id)) {
       combined.push(selectedSearchTheme);
     }
-    
+
+    // Add popular community themes when no search is active
+    if (!searchQuery.trim() && popularCommunityThemes.length > 0) {
+      const existingIds = new Set(combined.map(t => t.id));
+      const newCommunityThemes = popularCommunityThemes.filter(t => !existingIds.has(t.id));
+      combined.push(...newCommunityThemes);
+    }
+
     if (searchQuery.trim() && searchResults.length > 0) {
       // Show search results with regular themes as fallback
       const searchIds = new Set(searchResults.map(t => t.id));
       const remainingThemes = combined.filter(t => !searchIds.has(t.id));
       return [...searchResults, ...remainingThemes];
     }
-    
+
     return combined;
-  }, [themes, searchResults, searchQuery, selectedSearchTheme]);
+  }, [themes, searchResults, searchQuery, selectedSearchTheme, popularCommunityThemes]);
 
   // Find active theme in ALL available themes (built-in + search results + selected search theme)
   const active = React.useMemo(() => {
     // First try to find in built-in themes
     let found = themes.find((t) => t.id === activeId);
-    
+
     // If not found, check selected search theme
     if (!found && selectedSearchTheme && selectedSearchTheme.id === activeId) {
       found = selectedSearchTheme;
     }
-    
+
     // If still not found and we have search results, look there too
     if (!found && searchResults.length > 0) {
       found = searchResults.find((t) => t.id === activeId);
     }
-    
+
     return found;
   }, [themes, searchResults, selectedSearchTheme, activeId]);
 
@@ -149,9 +177,9 @@ export function ThemeSelector({
         className="w-(--radix-popover-trigger-width) p-0"
       >
         <Command>
-          <CommandInput 
-            placeholder="Search 12k+ themes..." 
-            className="h-9" 
+          <CommandInput
+            placeholder="Search 12k+ themes..."
+            className="h-9"
             value={searchQuery}
             onValueChange={setSearchQuery}
           />
@@ -170,7 +198,7 @@ export function ThemeSelector({
             <CommandEmpty>
               {searchQuery.trim() ? "No themes found for your search." : "No theme found."}
             </CommandEmpty>
-            
+
             {/* Regular themes section */}
             {themes.length > 0 && !searchQuery.trim() && (
               <CommandGroup heading="Built-in Themes">
@@ -203,7 +231,25 @@ export function ThemeSelector({
                             ) : theme.author === "tinte" ? (
                               <Logo size={12} className="invert" />
                             ) : (
-                              theme.author
+                              <>
+                                {theme.author && (
+                                  <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                                    {theme.user?.image ? (
+                                      <Avatar className="w-3 h-3">
+                                        <AvatarImage
+                                          src={theme.user.image}
+                                          alt={theme.user.name || "User"}
+                                        />
+                                        <AvatarFallback className="text-[8px]">
+                                          {(theme.user.name?.[0] || "U").toUpperCase()}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    ) : (
+                                      <UserX className="w-3 h-3" />
+                                    )}
+                                  </div>
+                                )}
+                              </>
                             )}
                           </div>
                         )}
@@ -225,7 +271,104 @@ export function ThemeSelector({
                             ) : theme.author === "tinte" ? (
                               <Logo size={12} />
                             ) : (
-                              theme.author
+                              <>
+                                {theme.author && (
+                                  <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                                    {theme.user?.image ? (
+                                      <Avatar className="w-3 h-3">
+                                        <AvatarImage
+                                          src={theme.user.image}
+                                          alt={theme.user.name || "User"}
+                                        />
+                                        <AvatarFallback className="text-[8px]">
+                                          {(theme.user.name?.[0] || "U").toUpperCase()}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    ) : (
+                                      <UserX className="w-3 h-3" />
+                                    )}
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <ThemeColorPreview
+                        colors={extractThemeColors(theme, currentMode)}
+                        maxColors={8}
+                        size="sm"
+                        className="self-start"
+                      />
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+
+            {/* Popular community themes section */}
+            {!searchQuery.trim() && popularCommunityThemes.length > 0 && (
+              <CommandGroup heading="Popular Community Themes">
+                {popularCommunityThemes.map((theme) => (
+                  <CommandItem
+                    key={theme.id}
+                    value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
+                    onSelect={() => {
+                      handleThemeSelect(theme);
+                      setOpen(false);
+                    }}
+                    className="gap-2 md:h-auto md:py-2"
+                  >
+                    {/* Desktop layout - horizontal */}
+                    <div className="hidden md:flex items-center gap-2 min-w-0 flex-1">
+                      <ThemeColorPreview
+                        colors={extractThemeColors(theme, currentMode)}
+                        maxColors={3}
+                      />
+                      <div className="flex justify-between gap-0.5 min-w-0 flex-1">
+                        <span className="text-xs font-medium truncate">
+                          {theme.name}
+                        </span>
+                        {theme.author && (
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                            {theme.user?.image ? (
+                              <Avatar className="w-3 h-3">
+                                <AvatarImage
+                                  src={theme.user.image}
+                                  alt={theme.user.name || "User"}
+                                />
+                                <AvatarFallback className="text-[8px]">
+                                  {(theme.user.name?.[0] || "U").toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                            ) : (
+                              <UserX className="w-3 h-3" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Mobile layout - stacked */}
+                    <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
+                      <div className="flex items-center justify-between w-full min-w-0">
+                        <span className="text-xs font-medium truncate">
+                          {theme.name}
+                        </span>
+                        {theme.author && (
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
+                            {theme.user?.image ? (
+                              <Avatar className="w-3 h-3">
+                                <AvatarImage
+                                  src={theme.user.image}
+                                  alt={theme.user.name || "User"}
+                                />
+                                <AvatarFallback className="text-[8px]">
+                                  {(theme.user.name?.[0] || "U").toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                            ) : (
+                              <UserX className="w-3 h-3" />
                             )}
                           </div>
                         )}
@@ -273,8 +416,20 @@ export function ThemeSelector({
                               <RaycastIcon className="w-3 h-3" />
                             ) : theme.author === "tinte" ? (
                               <Logo size={12} className="invert" />
-                            ) : theme.author === "Community" ? (
-                              <span className="text-xs">👥</span>
+                            ) : theme.provider === "tinte" && theme.user?.image ? (
+                              // User-created theme with avatar
+                              <Avatar className="w-3 h-3">
+                                <AvatarImage
+                                  src={theme.user.image}
+                                  alt={theme.user.name || "User"}
+                                />
+                                <AvatarFallback className="text-[8px]">
+                                  {(theme.user.name?.[0] || "U").toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                            ) : theme.provider === "tinte" ? (
+                              // User-created theme without avatar (anonymous)
+                              <UserX className="w-3 h-3" />
                             ) : (
                               theme.author
                             )}
@@ -297,8 +452,20 @@ export function ThemeSelector({
                               <RaycastIcon className="w-3 h-3" />
                             ) : theme.author === "tinte" ? (
                               <Logo size={12} />
-                            ) : theme.author === "Community" ? (
-                              <span className="text-xs">👥</span>
+                            ) : theme.provider === "tinte" && theme.user?.image ? (
+                              // User-created theme with avatar
+                              <Avatar className="w-3 h-3">
+                                <AvatarImage
+                                  src={theme.user.image}
+                                  alt={theme.user.name || "User"}
+                                />
+                                <AvatarFallback className="text-[8px]">
+                                  {(theme.user.name?.[0] || "U").toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                            ) : theme.provider === "tinte" ? (
+                              // User-created theme without avatar (anonymous)
+                              <UserX className="w-3 h-3" />
                             ) : (
                               theme.author
                             )}

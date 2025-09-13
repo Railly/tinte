@@ -17,6 +17,12 @@ export interface ThemeData {
   };
   tags: string[];
   rawTheme?: any;
+  user?: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } | null;
 }
 
 export interface ThemeColors {

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { WorkbenchMain } from "@/components/workbench/workbench-main";
-import { auth } from "@/lib/auth";
 import { UserThemeService } from "@/lib/services/user-theme.service";
-import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Theme Workbench | Tinte",
@@ -23,14 +21,8 @@ export default async function WorkbenchIdPage({
   const defaultTab =
     (tab as "canonical" | "overrides" | "agent") || "canonical";
 
-  // Fetch user session and themes server-side
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
-  
-  const userThemes = session 
-    ? await UserThemeService.getUserThemes(session.user.id, 8) 
-    : [];
+  // Fetch themes with user data server-side
+  const userThemes = await UserThemeService.getThemesWithUsers(8);
 
   return <WorkbenchMain chatId={id} defaultTab={defaultTab} userThemes={userThemes} />;
 }
