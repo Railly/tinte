@@ -3,15 +3,18 @@
 import {
   CornerDownLeft,
   Home,
+  Loader2,
   MessageSquare,
   Moon,
+  Palette,
   Search,
   Sun,
+  UserX,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -24,9 +27,15 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { Separator } from "@/components/ui/separator";
+import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
+import RaycastIcon from "@/components/shared/icons/raycast";
+import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import Logo from "@/components/shared/logo";
 import { ALL_PROVIDERS } from "@/config/providers";
 import { cn } from "@/lib/utils";
+import { extractThemeColors } from "@/lib/theme-utils";
 import { useThemeContext } from "@/providers/theme";
+import { useThemeSearch } from "@/hooks/use-theme-search";
 
 const NAVIGATION_ITEMS = [
   {
@@ -38,8 +47,16 @@ const NAVIGATION_ITEMS = [
     description: "Go to homepage",
   },
   {
-    id: "chat",
-    title: "Theme Workbench",
+    id: "themes",
+    title: "Themes",
+    path: "/themes",
+    icon: Palette,
+    shortcut: "p",
+    description: "Explore all themes",
+  },
+  {
+    id: "workbench",
+    title: "Workbench",
     path: "/workbench",
     icon: MessageSquare,
     shortcut: "w",
@@ -68,8 +85,16 @@ export function TinteCommandMenu({
   const [open, setOpen] = React.useState(false);
   const [selectedType, setSelectedType] = React.useState<string | null>(null);
   const router = useRouter();
-  const { theme, setTheme, handleThemeSelect, isDark, allThemes } =
+  const { theme, setTheme, handleThemeSelect, isDark, allThemes, currentMode } =
     useThemeContext();
+
+  const {
+    searchResults,
+    isSearching,
+    searchError,
+    searchQuery,
+    setSearchQuery,
+  } = useThemeSearch();
 
   const runCommand = React.useCallback((command: () => void) => {
     setOpen(false);
@@ -139,9 +164,26 @@ export function TinteCommandMenu({
 
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command className="rounded-lg border shadow-md">
-          <CommandInput placeholder="Type a command or search..." />
+          <CommandInput
+            placeholder="Search themes, actions, or navigate..."
+            value={searchQuery}
+            onValueChange={setSearchQuery}
+          />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            {isSearching && (
+              <div className="flex items-center gap-2 p-4 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Searching 13k+ themes...
+              </div>
+            )}
+            {searchError && (
+              <div className="p-4 text-sm text-destructive">
+                Search failed: {searchError}
+              </div>
+            )}
+            <CommandEmpty>
+              {searchQuery.trim() ? "No themes or actions found." : "No results found."}
+            </CommandEmpty>
 
             {/* Navigation */}
             <CommandGroup heading="Navigation">
@@ -195,67 +237,184 @@ export function TinteCommandMenu({
               </CommandItem>
             </CommandGroup>
 
-            {/* Popular Themes */}
-            <CommandGroup heading="Popular Themes">
-              {allThemes.slice(0, 6).map((themeData) => (
-                <CommandItem
-                  key={themeData.id}
-                  value={`${themeData.name} theme ${themeData.author}`}
-                  onSelect={() => {
-                    runCommand(() => handleThemeSelect(themeData));
-                    setSelectedType("theme-select");
-                  }}
-                  onMouseEnter={() => setSelectedType("theme-select")}
-                >
-                  <div className="mr-2 flex h-4 w-4 items-center justify-center">
-                    <div
-                      className="h-3 w-3 rounded-full border"
-                      style={{ backgroundColor: themeData.colors.primary }}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                      <span>{themeData.name}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {themeData.author}
-                      </Badge>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      Apply {themeData.name.toLowerCase()} theme
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-
-            {/* Export Providers */}
-            <CommandGroup heading="Export Formats">
-              {ALL_PROVIDERS.slice(0, 4).map((provider) => {
-                const Icon = provider.icon;
-                return (
+            {/* Search Results */}
+            {searchQuery.trim() && searchResults.length > 0 && (
+              <CommandGroup heading={`Search Results (${searchResults.length})`}>
+                {searchResults.map((themeData) => (
                   <CommandItem
-                    key={provider.id}
-                    value={`export ${provider.name} format`}
+                    key={themeData.id}
+                    value={`${themeData.name} ${themeData.author || ""} ${(themeData.tags || []).join(" ")}`}
                     onSelect={() => {
-                      runCommand(() => {
-                        // Navigate to chat with provider focus
-                        router.push(`/workbench?provider=${provider.id}`);
-                      });
-                      setSelectedType("export");
+                      runCommand(() => handleThemeSelect(themeData));
+                      setSelectedType("theme-search");
                     }}
-                    onMouseEnter={() => setSelectedType("export")}
+                    onMouseEnter={() => setSelectedType("theme-search")}
+                    className="flex items-center gap-3 py-3 px-3"
                   >
-                    <Icon className="mr-2 h-4 w-4" />
-                    <div className="flex flex-col">
-                      <span>Export to {provider.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        Convert theme for {provider.name}
-                      </span>
+                    <ThemeColorPreview
+                      colors={extractThemeColors(themeData, currentMode)}
+                      maxColors={3}
+                    />
+                    <div className="flex flex-col min-w-0 flex-1 gap-1">
+                      <div className="flex items-center gap-2 w-full min-w-0">
+                        <span className="text-sm font-medium leading-none truncate">
+                          {themeData.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-xs text-muted-foreground">
+                          Apply {themeData.name.toLowerCase()} theme
+                        </span>
+                        {themeData.author && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            {themeData.author === "tinte" ? (
+                              <>
+                                <Logo size={14} />
+                                <span>Tinte</span>
+                              </>
+                            ) : themeData.author === "tweakcn" ? (
+                              <>
+                                <TweakCNIcon className="w-3.5 h-3.5" />
+                                <span>TweakCN</span>
+                              </>
+                            ) : themeData.author === "ray.so" ? (
+                              <>
+                                <RaycastIcon className="w-3.5 h-3.5" />
+                                <span>Ray.so</span>
+                              </>
+                            ) : themeData.provider === "tinte" && (themeData as any).user?.image ? (
+                              <>
+                                <Avatar className="w-3.5 h-3.5">
+                                  <AvatarImage
+                                    src={(themeData as any).user.image}
+                                    alt={(themeData as any).user.name || "User"}
+                                  />
+                                  <AvatarFallback className="text-[8px]">
+                                    {((themeData as any).user.name?.[0] || "U").toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span>by {(themeData as any).user.name || "Anonymous"}</span>
+                              </>
+                            ) : themeData.provider === "tinte" ? (
+                              <>
+                                <UserX className="w-3.5 h-3.5" />
+                                <span>by Anonymous</span>
+                              </>
+                            ) : (
+                              <span>by {themeData.author}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </CommandItem>
-                );
-              })}
-            </CommandGroup>
+                ))}
+              </CommandGroup>
+            )}
+
+            {/* Popular Themes */}
+            {!searchQuery.trim() && (
+              <CommandGroup heading="Popular Themes">
+                {allThemes.slice(0, 6).map((themeData) => (
+                  <CommandItem
+                    key={themeData.id}
+                    value={`${themeData.name} theme ${themeData.author}`}
+                    onSelect={() => {
+                      runCommand(() => handleThemeSelect(themeData));
+                      setSelectedType("theme-select");
+                    }}
+                    onMouseEnter={() => setSelectedType("theme-select")}
+                    className="flex items-center gap-3 py-3 px-3"
+                  >
+                    <ThemeColorPreview
+                      colors={extractThemeColors(themeData, currentMode)}
+                      maxColors={3}
+                    />
+                    <div className="flex flex-col min-w-0 flex-1 gap-1">
+                      <div className="flex items-center gap-2 w-full min-w-0">
+                        <span className="text-sm font-medium leading-none truncate">{themeData.name}</span>
+                      </div>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-xs text-muted-foreground">
+                          Apply {themeData.name.toLowerCase()} theme
+                        </span>
+                        {themeData.author && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            {themeData.author === "tinte" ? (
+                              <>
+                                <Logo size={14} />
+                                <span>Tinte</span>
+                              </>
+                            ) : themeData.author === "tweakcn" ? (
+                              <>
+                                <TweakCNIcon className="w-3.5 h-3.5" />
+                                <span>TweakCN</span>
+                              </>
+                            ) : themeData.author === "ray.so" ? (
+                              <>
+                                <RaycastIcon className="w-3.5 h-3.5" />
+                                <span>Ray.so</span>
+                              </>
+                            ) : themeData.provider === "tinte" && (themeData as any).user?.image ? (
+                              <>
+                                <Avatar className="w-3.5 h-3.5">
+                                  <AvatarImage
+                                    src={(themeData as any).user.image}
+                                    alt={(themeData as any).user.name || "User"}
+                                  />
+                                  <AvatarFallback className="text-[8px]">
+                                    {((themeData as any).user.name?.[0] || "U").toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span>by {(themeData as any).user.name || "Anonymous"}</span>
+                              </>
+                            ) : themeData.provider === "tinte" ? (
+                              <>
+                                <UserX className="w-3.5 h-3.5" />
+                                <span>by Anonymous</span>
+                              </>
+                            ) : (
+                              <span>by {themeData.author}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+
+            {/* Export Providers */}
+            {!searchQuery.trim() && (
+              <CommandGroup heading="Export Formats">
+                {ALL_PROVIDERS.slice(0, 4).map((provider) => {
+                  const Icon = provider.icon;
+                  return (
+                    <CommandItem
+                      key={provider.id}
+                      value={`export ${provider.name} format`}
+                      onSelect={() => {
+                        runCommand(() => {
+                          // Navigate to chat with provider focus
+                          router.push(`/workbench?provider=${provider.id}`);
+                        });
+                        setSelectedType("export");
+                      }}
+                      onMouseEnter={() => setSelectedType("export")}
+                    >
+                      <Icon className="mr-2 h-4 w-4" />
+                      <div className="flex flex-col">
+                        <span>Export to {provider.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          Convert theme for {provider.name}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            )}
           </CommandList>
 
           {/* Footer */}
@@ -267,6 +426,7 @@ export function TinteCommandMenu({
               {selectedType === "navigation" && "Navigate to page"}
               {selectedType === "theme" && "Apply theme setting"}
               {selectedType === "theme-select" && "Apply theme"}
+              {selectedType === "theme-search" && "Apply searched theme"}
               {selectedType === "export" && "Export theme"}
               {!selectedType && "Select action"}
             </div>
