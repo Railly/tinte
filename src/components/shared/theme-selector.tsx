@@ -41,7 +41,6 @@ export function ThemeSelector({
 }) {
   const [open, setOpen] = React.useState(false);
   const { currentMode } = useThemeContext();
-  const active = themes.find((t) => t.id === activeId);
   
   const {
     searchResults,
@@ -51,16 +50,54 @@ export function ThemeSelector({
     setSearchQuery,
   } = useThemeSearch();
 
+  // Store the selected theme from search so it persists even when search is cleared
+  const [selectedSearchTheme, setSelectedSearchTheme] = React.useState<ThemeData | null>(null);
+
+  // Update selected search theme when a theme is selected
+  const handleThemeSelect = React.useCallback((theme: ThemeData) => {
+    // If this theme came from search results, store it
+    if (searchResults.some(t => t.id === theme.id)) {
+      setSelectedSearchTheme(theme);
+    }
+    onSelect(theme);
+  }, [searchResults, onSelect]);
+
   // Combine regular themes and search results
   const allThemes = React.useMemo(() => {
+    let combined = [...themes];
+    
+    // Add selected search theme if it's not already in the themes list
+    if (selectedSearchTheme && !themes.some(t => t.id === selectedSearchTheme.id)) {
+      combined.push(selectedSearchTheme);
+    }
+    
     if (searchQuery.trim() && searchResults.length > 0) {
       // Show search results with regular themes as fallback
       const searchIds = new Set(searchResults.map(t => t.id));
-      const remainingThemes = themes.filter(t => !searchIds.has(t.id));
+      const remainingThemes = combined.filter(t => !searchIds.has(t.id));
       return [...searchResults, ...remainingThemes];
     }
-    return themes;
-  }, [themes, searchResults, searchQuery]);
+    
+    return combined;
+  }, [themes, searchResults, searchQuery, selectedSearchTheme]);
+
+  // Find active theme in ALL available themes (built-in + search results + selected search theme)
+  const active = React.useMemo(() => {
+    // First try to find in built-in themes
+    let found = themes.find((t) => t.id === activeId);
+    
+    // If not found, check selected search theme
+    if (!found && selectedSearchTheme && selectedSearchTheme.id === activeId) {
+      found = selectedSearchTheme;
+    }
+    
+    // If still not found and we have search results, look there too
+    if (!found && searchResults.length > 0) {
+      found = searchResults.find((t) => t.id === activeId);
+    }
+    
+    return found;
+  }, [themes, searchResults, selectedSearchTheme, activeId]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -142,7 +179,7 @@ export function ThemeSelector({
                     key={theme.id}
                     value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
                     onSelect={() => {
-                      onSelect(theme);
+                      handleThemeSelect(theme);
                       setOpen(false);
                     }}
                     className="gap-2 md:h-auto md:py-2"
@@ -213,7 +250,7 @@ export function ThemeSelector({
                     key={theme.id}
                     value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
                     onSelect={() => {
-                      onSelect(theme);
+                      handleThemeSelect(theme);
                       setOpen(false);
                     }}
                     className="gap-2 md:h-auto md:py-2"
