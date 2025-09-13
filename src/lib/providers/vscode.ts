@@ -162,6 +162,7 @@ console.log('User deleted:', deleted);`,
 export function convertThemeToVSCode(
   activeTheme: any,
   fallbackTheme: { light: VSCodeTheme; dark: VSCodeTheme },
+  overrides?: Partial<Record<SemanticToken, string>>,
 ) {
   if (!activeTheme?.rawTheme) return fallbackTheme;
 
@@ -174,14 +175,14 @@ export function convertThemeToVSCode(
         dark: themeData.rawTheme.dark || themeData.rawTheme,
       };
       const tinteTheme = shadcnToTinte(shadcnTheme);
-      const vscodeTheme = convertTinteToVSCode(tinteTheme) as {
+      const vscodeTheme = convertTinteToVSCode(tinteTheme, "Tinte Theme", overrides) as {
         dark: VSCodeTheme;
         light: VSCodeTheme;
       };
       return vscodeTheme || fallbackTheme;
     } else {
       const tinteTheme = themeData.rawTheme;
-      const vscodeTheme = convertTinteToVSCode(tinteTheme) as {
+      const vscodeTheme = convertTinteToVSCode(tinteTheme, "Tinte Theme", overrides) as {
         dark: VSCodeTheme;
         light: VSCodeTheme;
       };
@@ -544,12 +545,13 @@ function getVSCodeColors(palette: TinteBlock, mode: "light" | "dark") {
 function generateTokenColors(
   palette: TinteBlock,
   tokenColors: TokenColorMap = defaultTokenColorMap,
+  overrides?: Partial<Record<SemanticToken, string>>,
 ): VSCodeTokenColor[] {
   return Object.entries(tokenColors).map(([token, colorKey]) => ({
     name: token,
     scope: tokenToScopeMapping[token as SemanticToken],
     settings: {
-      foreground: palette[colorKey],
+      foreground: overrides?.[token as SemanticToken] || palette[colorKey],
     },
   }));
 }
@@ -557,13 +559,14 @@ function generateTokenColors(
 function convertTinteToVSCode(
   tinteTheme: TinteTheme,
   name: string = "Tinte Theme",
+  overrides?: Partial<Record<SemanticToken, string>>,
 ): { light: VSCodeTheme; dark: VSCodeTheme } {
   const lightTheme: VSCodeTheme = {
     name: `${name} Light`,
     displayName: `${name} (Light)`,
     type: "light",
     colors: getVSCodeColors(tinteTheme.light, "light"),
-    tokenColors: generateTokenColors(tinteTheme.light, defaultTokenColorMap),
+    tokenColors: generateTokenColors(tinteTheme.light, defaultTokenColorMap, overrides),
   };
 
   const darkTheme: VSCodeTheme = {
@@ -571,7 +574,7 @@ function convertTinteToVSCode(
     displayName: `${name} (Dark)`,
     type: "dark",
     colors: getVSCodeColors(tinteTheme.dark, "dark"),
-    tokenColors: generateTokenColors(tinteTheme.dark, defaultTokenColorMap),
+    tokenColors: generateTokenColors(tinteTheme.dark, defaultTokenColorMap, overrides),
   };
 
   return { light: lightTheme, dark: darkTheme };

@@ -12,7 +12,6 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   codeTemplates,
-  convertThemeToVSCode,
   type VSCodeTheme,
 } from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
@@ -26,7 +25,7 @@ interface VSCodePreviewProps {
 }
 
 export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
-  const { activeTheme, currentMode } = useThemeContext();
+  const { currentMode } = useThemeContext();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [viewMode, setViewMode] = useState<
     "split" | "monaco" | "shiki" | "tokens"
@@ -49,24 +48,17 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
   const [themeVersion, setThemeVersion] = useState(0);
   const [currentThemeSet, setCurrentThemeSet] = useState(theme);
 
-  // Memoize theme conversion using utility function
-  const convertedTheme = useMemo(
-    () => convertThemeToVSCode(activeTheme, theme),
-    [activeTheme, theme],
-  );
-
-  // Apply theme changes - trigger on theme ID and mode changes
+  // Apply theme changes - use the theme prop directly since it's already converted
   useEffect(() => {
     console.log("VSCodePreview: Theme change detected", {
-      activeThemeId: activeTheme?.id,
       currentMode,
       themeVersion,
-      convertedTheme: {
-        light: convertedTheme.light.name,
-        dark: convertedTheme.dark.name,
+      theme: {
+        light: theme.light.name,
+        dark: theme.dark.name,
       },
     });
-    setCurrentThemeSet(convertedTheme);
+    setCurrentThemeSet(theme);
     setThemeVersion((prev) => {
       const newVersion = prev + 1;
       console.log(
@@ -77,7 +69,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
       );
       return newVersion;
     });
-  }, [activeTheme?.id || "default", currentMode]);
+  }, [theme, currentMode]);
 
   const currentTheme =
     currentMode === "dark" ? currentThemeSet.dark : currentThemeSet.light;

@@ -15,16 +15,15 @@ import {
   VSCODE_TOKEN_GROUPS,
 } from "@/lib/vscode-token-utils";
 import { useThemeContext } from "@/providers/theme";
+import { useVSCodeOverrides } from "@/providers/vscode-overrides";
 import type { SemanticToken, TokenColorMap } from "@/lib/providers/vscode";
 
 export function VSCodeOverridesPanel() {
   const { tinteTheme, currentMode, mounted } = useThemeContext();
+  const { overrides: tokenOverrides, setOverride } = useVSCodeOverrides();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     createInitialVSCodeTokenGroups,
   );
-  
-  // Store VS Code token overrides in a separate state
-  const [tokenOverrides, setTokenOverrides] = React.useState<Partial<Record<SemanticToken, string>>>({});
 
   // Determine if we should show skeletons or real data
   const currentColors = tinteTheme?.[currentMode];
@@ -34,10 +33,7 @@ export function VSCodeOverridesPanel() {
     : VSCODE_TOKEN_GROUPS;
 
   const handleTokenChange = (tokenKey: SemanticToken, value: string) => {
-    setTokenOverrides((prev) => ({
-      ...prev,
-      [tokenKey]: value,
-    }));
+    setOverride(tokenKey, value);
   };
 
   const toggleGroup = (groupName: string) => {

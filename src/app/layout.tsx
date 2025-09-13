@@ -5,6 +5,7 @@ import { TinteThemeScript } from "@/components/theme-script";
 import { META_THEME_COLORS, siteConfig } from "@/config/site";
 import { QueryProvider } from "@/providers/query";
 import { ThemeProvider } from "@/providers/theme";
+import { VSCodeOverridesProvider } from "@/providers/vscode-overrides";
 import "./globals.css";
 import { Toaster } from "sonner";
 
@@ -109,7 +110,11 @@ export default function RootLayout({
       >
         <NuqsAdapter>
           <QueryProvider>
-            <ThemeProvider>{children}</ThemeProvider>
+            <ThemeProvider>
+              <VSCodeOverridesProvider>
+                {children}
+              </VSCodeOverridesProvider>
+            </ThemeProvider>
           </QueryProvider>
         </NuqsAdapter>
         <Toaster />
