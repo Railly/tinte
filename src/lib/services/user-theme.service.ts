@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import type { 
   DbTheme, 
   UserThemeData, 
@@ -9,12 +9,19 @@ import type {
 import type { TinteBlock } from "@/types/tinte";
 
 export class UserThemeService {
-  static async getUserThemes(userId: string): Promise<UserThemeData[]> {
+  static async getUserThemes(userId: string, limit?: number): Promise<UserThemeData[]> {
     try {
-      const dbThemes = await db
+      let query = db
         .select()
         .from(theme)
-        .where(eq(theme.user_id, userId));
+        .where(eq(theme.user_id, userId))
+        .orderBy(theme.created_at);
+
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      const dbThemes = await query;
 
       console.log("UserThemeService - DB themes count:", dbThemes.length);
       
@@ -27,6 +34,39 @@ export class UserThemeService {
       return transformedThemes;
     } catch (error) {
       console.error("Error fetching user themes:", error);
+      return [];
+    }
+  }
+
+  static async getPublicThemes(limit?: number): Promise<UserThemeData[]> {
+    try {
+      let query = db
+        .select()
+        .from(theme)
+        .where(eq(theme.is_public, true))
+        .orderBy(desc(theme.created_at));
+
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      const dbThemes = await query;
+
+      console.log("UserThemeService - Public themes count:", dbThemes.length);
+      
+      const transformedThemes = dbThemes.map(dbTheme => 
+        UserThemeService.transformDbThemeToUserTheme(dbTheme, {
+          author: "Community",
+          description: `Beautiful ${dbTheme.name.toLowerCase()} theme shared by the community`,
+          tags: ["community", "public", "shared"]
+        })
+      );
+      
+      console.log("UserThemeService - Transformed public themes:", transformedThemes.length);
+      
+      return transformedThemes;
+    } catch (error) {
+      console.error("Error fetching public themes:", error);
       return [];
     }
   }

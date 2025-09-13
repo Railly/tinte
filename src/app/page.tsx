@@ -14,8 +14,10 @@ export default async function Home() {
   });
   
   const userThemes = session 
-    ? await UserThemeService.getUserThemes(session.user.id) 
+    ? await UserThemeService.getUserThemes(session.user.id, 8) 
     : [];
+    
+  const publicThemes = await UserThemeService.getPublicThemes(20);
 
   return (
     <div className="min-h-screen">
@@ -31,7 +33,7 @@ export default async function Home() {
         </div>
       )}
       <Hero />
-      <Showcase session={session} userThemes={userThemes} />
+      <Showcase session={session} userThemes={userThemes} publicThemes={publicThemes} />
       <Roadmap />
       <FAQ />
       <Footer />

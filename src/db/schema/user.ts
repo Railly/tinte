@@ -3,13 +3,11 @@ import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
 
-  // Better-auth required fields
   name: text("name"),
   email: text("email").unique(),
   email_verified: boolean("email_verified").default(false),
   image: text("image"),
 
-  // Legacy Clerk fields (mantener para compatibilidad)
   clerk_id: text("clerk_id").unique(),
 
   created_at: timestamp("created_at", { withTimezone: true })

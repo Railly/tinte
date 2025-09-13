@@ -11,6 +11,7 @@ import { siteConfig } from "@/config/site";
 import type { ThemeData } from "@/lib/theme-tokens";
 import { useThemeContext } from "@/providers/theme";
 import { generateThemeFromChatId } from "@/utils/tinte-presets";
+import type { UserThemeData } from "@/types/user-theme";
 import DiscordIcon from "../shared/icons/discord";
 import GithubIcon from "../shared/icons/github";
 import TwitterIcon from "../shared/icons/twitter";
@@ -21,13 +22,24 @@ import { Separator } from "../ui/separator";
 
 interface WorkbenchHeaderProps {
   chatId: string;
+  userThemes?: UserThemeData[];
 }
 
-export function WorkbenchHeader({ chatId }: WorkbenchHeaderProps) {
+export function WorkbenchHeader({ chatId, userThemes = [] }: WorkbenchHeaderProps) {
   const { allThemes, activeTheme, handleThemeSelect, navigateTheme, addTheme } =
     useThemeContext();
   const activeId = activeTheme?.id || null;
   const initializedChats = useRef(new Set<string>());
+
+  // Add user themes to the theme context
+  useEffect(() => {
+    userThemes.forEach(userTheme => {
+      const existingTheme = allThemes.find(t => t.id === userTheme.id);
+      if (!existingTheme) {
+        addTheme(userTheme as ThemeData);
+      }
+    });
+  }, [userThemes, allThemes, addTheme]);
 
   useEffect(() => {
     if (initializedChats.current.has(chatId)) return;

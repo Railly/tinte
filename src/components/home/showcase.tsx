@@ -1,11 +1,11 @@
 "use client";
 
-import { ArrowRight, User } from "lucide-react";
+import { ArrowRight, User, Users } from "lucide-react";
 import { useState } from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
 import Logo from "@/components/shared/logo";
-import { ThemeCard } from "@/components/shared/theme-card";
+import { ThemeCard, ThemeCardSkeleton } from "@/components/shared/theme-card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useThemeContext } from "@/providers/theme";
@@ -18,11 +18,12 @@ import type { SessionData } from "@/types/auth";
 interface ShowcaseProps {
   session: SessionData;
   userThemes: UserThemeData[];
+  publicThemes: UserThemeData[];
 }
 
-export function Showcase({ session, userThemes }: ShowcaseProps) {
-  const [activeTab, setActiveTab] = useState("tweakcn");
-  const { isDark, handleThemeSelect } = useThemeContext();
+export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
+  const [activeTab, setActiveTab] = useState("community");
+  const { isDark, handleThemeSelect, mounted } = useThemeContext();
 
   // Static theme data for showcase (no SSR issues)
   const tweakcnThemes = extractTweakcnThemeData(isDark).map(
@@ -70,6 +71,9 @@ export function Showcase({ session, userThemes }: ShowcaseProps) {
     ],
   }));
 
+  // Show skeletons while theme context is mounting
+  const shouldShowSkeletons = !mounted;
+
   return (
     <div className="w-full space-y-8 p-4 mx-auto">
       {/* Header */}
@@ -94,6 +98,13 @@ export function Showcase({ session, userThemes }: ShowcaseProps) {
             className="w-full sm:w-auto"
           >
             <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm w-full sm:w-auto">
+              <TabsTrigger
+                value="community"
+                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
+              >
+                <Users className="w-3 h-3" />
+                Community
+              </TabsTrigger>
               {session && (
                 <TabsTrigger
                   value="user"
@@ -131,10 +142,52 @@ export function Showcase({ session, userThemes }: ShowcaseProps) {
 
       {/* Provider Content */}
       <div>
+        {activeTab === "community" && (
+          <div className="space-y-4">
+            {shouldShowSkeletons ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <ThemeCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : publicThemes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {publicThemes.slice(0, 20).map((theme, index) => (
+                  <ThemeCard
+                    key={theme.id}
+                    theme={theme}
+                    index={index}
+                    onThemeSelect={handleThemeSelect}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 space-y-4">
+                <Users className="w-12 h-12 mx-auto text-muted-foreground" />
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">No community themes yet</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Be the first to share a theme with the community!
+                  </p>
+                </div>
+                <Button className="mt-4" asChild>
+                  <a href="/workbench">Create Theme</a>
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === "user" && session && (
           <div className="space-y-4">
-            {userThemes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {shouldShowSkeletons ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <ThemeCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : userThemes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {userThemes.map((theme, index) => (
                   <ThemeCard
                     key={theme.id}
@@ -162,41 +215,59 @@ export function Showcase({ session, userThemes }: ShowcaseProps) {
         )}
 
         {activeTab === "tweakcn" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {tweakcnThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard
-                key={theme.id}
-                theme={theme}
-                index={index}
-                onThemeSelect={handleThemeSelect}
-              />
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {shouldShowSkeletons ? (
+              Array.from({ length: 8 }).map((_, index) => (
+                <ThemeCardSkeleton key={index} />
+              ))
+            ) : (
+              tweakcnThemes.slice(0, 8).map((theme, index) => (
+                <ThemeCard
+                  key={theme.id}
+                  theme={theme}
+                  index={index}
+                  onThemeSelect={handleThemeSelect}
+                />
+              ))
+            )}
           </div>
         )}
 
         {activeTab === "rayso" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {raysoThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard
-                key={theme.id}
-                theme={theme}
-                index={index}
-                onThemeSelect={handleThemeSelect}
-              />
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {shouldShowSkeletons ? (
+              Array.from({ length: 8 }).map((_, index) => (
+                <ThemeCardSkeleton key={index} />
+              ))
+            ) : (
+              raysoThemes.slice(0, 8).map((theme, index) => (
+                <ThemeCard
+                  key={theme.id}
+                  theme={theme}
+                  index={index}
+                  onThemeSelect={handleThemeSelect}
+                />
+              ))
+            )}
           </div>
         )}
 
         {activeTab === "tinte" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {tinteThemes.slice(0, 8).map((theme, index) => (
-              <ThemeCard
-                key={theme.id}
-                theme={theme}
-                index={index}
-                onThemeSelect={handleThemeSelect}
-              />
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {shouldShowSkeletons ? (
+              Array.from({ length: 8 }).map((_, index) => (
+                <ThemeCardSkeleton key={index} />
+              ))
+            ) : (
+              tinteThemes.slice(0, 8).map((theme, index) => (
+                <ThemeCard
+                  key={theme.id}
+                  theme={theme}
+                  index={index}
+                  onThemeSelect={handleThemeSelect}
+                />
+              ))
+            )}
           </div>
         )}
       </div>
@@ -206,10 +277,12 @@ export function Showcase({ session, userThemes }: ShowcaseProps) {
         <Button
           variant="outline"
           className="gap-2 h-10 px-6"
-          onClick={() => console.log("Browse all themes")}
+          asChild
         >
-          Browse All Themes
-          <ArrowRight className="w-4 h-4" />
+          <a href="/themes">
+            Browse All Themes
+            <ArrowRight className="w-4 h-4" />
+          </a>
         </Button>
       </div>
     </div>

@@ -35,10 +35,10 @@ export function Header() {
       <div className="px-4">
         <div className="relative flex h-[var(--header-height)] items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <Logo size={24} />
             <span className="font-bold text-base">Tinte</span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation - Centered */}
           <nav className="hidden md:flex items-center gap-6 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">

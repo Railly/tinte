@@ -416,11 +416,11 @@ export const useThemeStore = create<ThemeState>()(
         });
 
         saveToStorage(activeTheme, mode);
-        applyThemeWithTransition(activeTheme, mode);
+        applyThemeToDOM(activeTheme, mode);
       },
 
       toggleMode: (coords) => {
-        const { currentMode } = get();
+        const { currentMode, activeTheme } = get();
         const newMode = currentMode === "light" ? "dark" : "light";
 
         if (typeof window === "undefined") {
@@ -444,7 +444,28 @@ export const useThemeStore = create<ThemeState>()(
         }
 
         document.startViewTransition(() => {
-          get().setMode(newMode);
+          // Update state
+          set((state) => {
+            const computedTokens = computeThemeTokens(activeTheme);
+            const baseTokens = computedTokens[newMode];
+            const processedTokens: Record<string, string> = {};
+
+            for (const [key, value] of Object.entries(baseTokens)) {
+              if (typeof value === "string") {
+                processedTokens[key] = convertColorToHex(value);
+              }
+            }
+
+            return {
+              currentMode: newMode,
+              isDark: newMode === "dark",
+              currentTokens: { ...processedTokens, ...state.editedTokens },
+            };
+          });
+
+          // Apply to DOM and save
+          saveToStorage(activeTheme, newMode);
+          applyThemeToDOM(activeTheme, newMode);
         });
       },
 
@@ -492,7 +513,7 @@ export const useThemeStore = create<ThemeState>()(
         });
 
         saveToStorage(theme, currentMode);
-        applyThemeToDOM(theme, currentMode);
+        applyThemeWithTransition(theme, currentMode);
       },
 
       editToken: (key, value) => {
