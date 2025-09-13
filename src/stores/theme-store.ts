@@ -470,9 +470,9 @@ export const useThemeStore = create<ThemeState>()(
       },
 
       selectTheme: (theme) => {
-        const { currentMode } = get();
+        const { currentMode, allThemes } = get();
 
-        set((_state) => {
+        set((state) => {
           const computedTokens = computeThemeTokens(theme);
           const baseTokens = computedTokens[currentMode];
           const processedTokens: Record<string, string> = {};
@@ -503,8 +503,19 @@ export const useThemeStore = create<ThemeState>()(
             tinteTheme = DEFAULT_THEME.rawTheme as TinteTheme;
           }
 
+          // Add theme to allThemes if it's not already there
+          let updatedAllThemes = [...allThemes];
+          const existingThemeIndex = allThemes.findIndex(t => t.id === theme.id);
+          if (existingThemeIndex === -1) {
+            updatedAllThemes.push(theme);
+          } else {
+            // Update existing theme with latest data
+            updatedAllThemes[existingThemeIndex] = theme;
+          }
+
           return {
             activeTheme: theme,
+            allThemes: updatedAllThemes,
             currentTokens: processedTokens,
             editedTokens: {},
             hasEdits: false,
