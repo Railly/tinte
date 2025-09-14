@@ -18,6 +18,7 @@ import { useThemeContext } from "@/providers/theme";
 import { MonacoPreview } from "./monaco-preview";
 import { ShikiPreview } from "./shiki-preview";
 import { TokensPreview } from "./tokens-preview";
+import { MonacoLikePreview } from "./monaco-like-preview";
 
 interface VSCodePreviewProps {
   theme: { light: VSCodeTheme; dark: VSCodeTheme };
@@ -28,7 +29,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
   const { currentMode } = useThemeContext();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [viewMode, setViewMode] = useState<
-    "split" | "monaco" | "shiki" | "tokens"
+    "split" | "monaco" | "shiki" | "tokens" | "monaco-like"
   >("split");
 
   // Set default view mode based on screen size - monaco for mobile, split for desktop
@@ -127,6 +128,9 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
                 <TabsTrigger value="tokens" className="text-xs">
                   Tokens
                 </TabsTrigger>
+                <TabsTrigger value="monaco-like" className="text-xs">
+                  Monaco-Like
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -147,6 +151,9 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
                 </TabsTrigger>
                 <TabsTrigger value="tokens" className="text-xs">
                   Tokens
+                </TabsTrigger>
+                <TabsTrigger value="monaco-like" className="text-xs">
+                  Monaco-Like
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -241,6 +248,17 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
         {viewMode === "tokens" && (
           <div className="flex-1 overflow-auto">
             <TokensPreview theme={currentTheme} mode={currentMode} />
+          </div>
+        )}
+
+        {viewMode === "monaco-like" && (
+          <div className="flex-1 overflow-hidden">
+            <MonacoLikePreview
+              themeSet={currentThemeSet}
+              currentMode={currentMode}
+              template={currentTemplate}
+              themeVersion={themeVersion}
+            />
           </div>
         )}
       </div>

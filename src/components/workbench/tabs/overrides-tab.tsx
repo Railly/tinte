@@ -1,16 +1,43 @@
+"use client";
+
 import { useQueryState } from "nuqs";
+import * as React from "react";
 import { ThemeEditorPanel } from "@/components/shared/theme-editor-panel";
+import { TokenSearch } from "@/components/shared/token-search";
 import { VSCodeOverridesPanel } from "@/components/shared/vscode-overrides-panel";
 
 export function OverridesTab() {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const getSearchPlaceholder = () => {
+    if (provider === "shadcn") {
+      return "Search tokens... (e.g., background, foreground, primary)";
+    }
+    if (provider === "vscode") {
+      return "Search tokens... (e.g., entity.name.type.class, editor.background)";
+    }
+    return "Search tokens...";
+  };
 
   if (provider === "shadcn") {
-    return <ThemeEditorPanel />;
+    return (
+      <ThemeEditorPanel
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder={getSearchPlaceholder()}
+      />
+    );
   }
 
   if (provider === "vscode") {
-    return <VSCodeOverridesPanel />;
+    return (
+      <VSCodeOverridesPanel
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder={getSearchPlaceholder()}
+      />
+    );
   }
 
   return (

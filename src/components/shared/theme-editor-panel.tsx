@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Info } from "lucide-react";
 import * as React from "react";
 import {
   Collapsible,
@@ -9,6 +9,11 @@ import {
 } from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   createInitialOpenGroups,
   createSkeletonGroups,
@@ -19,6 +24,7 @@ import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";
 import { EnhancedTokenInput } from "./enhanced-token-input";
+import { TokenSearch } from "./token-search";
 
 declare global {
   interface Window {
@@ -30,7 +36,17 @@ declare global {
   }
 }
 
-export function ThemeEditorPanel() {
+interface ThemeEditorPanelProps {
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  searchPlaceholder?: string;
+}
+
+export function ThemeEditorPanel({
+  searchQuery = "",
+  onSearchChange,
+  searchPlaceholder = "Search tokens...",
+}: ThemeEditorPanelProps) {
   const { currentTokens, handleTokenEdit, mounted, currentMode } =
     useThemeContext();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
@@ -66,23 +82,65 @@ export function ThemeEditorPanel() {
       : organizeRealTokens(currentTokens);
   }, [currentTokens, mounted]);
 
+  // Filter tokens based on search query
+  const filteredTokens = React.useMemo(() => {
+    if (!searchQuery.trim()) return organizedTokens;
+
+    return organizedTokens
+      .map((group) => {
+        const filteredGroupTokens = group.tokens.filter(
+          ([key]) =>
+            key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            key
+              .replace(/_/g, "-")
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()),
+        );
+
+        return {
+          ...group,
+          tokens: filteredGroupTokens,
+        };
+      })
+      .filter((group) => group.tokens.length > 0);
+  }, [organizedTokens, searchQuery]);
+
   return (
     <div className="flex flex-col h-full">
-      <div className="px-1 pb-1">
-        <h3 className="text-sm font-medium">Override Tokens ({currentMode})</h3>
-        <p className="text-xs text-muted-foreground mt-1">
-          Fine-tune provider-specific design tokens
-        </p>
+      <div className="px-1 pb-2">
+        <h3 className="text-sm font-medium flex items-center gap-1">
+          Override Tokens ({currentMode})
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="w-3 h-3 text-muted-foreground/60 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">
+                Fine-tune provider-specific design tokens
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </h3>
       </div>
+
+      {onSearchChange && (
+        <div className="pr-3 pl-1 pb-2 flex-shrink-0">
+          <TokenSearch
+            placeholder={searchPlaceholder}
+            onSearch={onSearchChange}
+            value={searchQuery}
+          />
+        </div>
+      )}
 
       <ScrollArea
         className="flex-1 min-h-0 pl-1 pr-3"
         showScrollIndicators={true}
         indicatorType="shadow"
       >
-        <div className="space-y-4 py-2">
+        <div className="space-y-4 pb-2">
           <div className="space-y-4">
-            {organizedTokens.map((group) => (
+            {filteredTokens.map((group) => (
               <Collapsible
                 key={group.label}
                 open={openGroups[group.label]}
@@ -103,8 +161,8 @@ export function ThemeEditorPanel() {
                       let colorNumber = 0;
                       if (isColorInput) {
                         // Calculate the color number based on position across all color groups
-                        const previousColorGroups = organizedTokens
-                          .slice(0, organizedTokens.indexOf(group))
+                        const previousColorGroups = filteredTokens
+                          .slice(0, filteredTokens.indexOf(group))
                           .filter((g) => g.type === "color");
                         const previousColorCount = previousColorGroups.reduce(
                           (sum, g) => sum + g.tokens.length,

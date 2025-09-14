@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import Logo from "@/components/shared/logo";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
 import { generateTailwindPalette } from "@/lib/ice-theme";
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 import type { SemanticToken } from "@/lib/providers/vscode";
 import type { TinteBlock } from "@/types/tinte";
 import InvertedLogo from "./inverted-logo";
+import { Info } from "lucide-react";
 
 interface VSCodeTokenInputProps {
   tokenKey: SemanticToken;
@@ -90,9 +92,14 @@ export function VSCodeTokenInput({
       <Label htmlFor={tokenKey} className="text-xs font-medium flex items-center gap-1">
         {displayName || tokenKey.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
         {description && (
-          <sup className="text-[10px] text-muted-foreground/60 font-mono">
-            {description}
-          </sup>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="w-3 h-3 text-muted-foreground/60 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">{description}</p>
+            </TooltipContent>
+          </Tooltip>
         )}
       </Label>
 

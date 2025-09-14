@@ -389,7 +389,7 @@ const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
   plain: ["source", "support.type.property-name.css"],
 };
 
-const editorColorMap = {
+export const editorColorMap = {
   "editor.background": "bg",
   "editor.foreground": "tx",
   "editor.hoverHighlightBackground": "ui_2",
