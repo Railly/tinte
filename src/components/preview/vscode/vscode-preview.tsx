@@ -23,25 +23,10 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
   const [themeVersion, setThemeVersion] = useState(0);
   const [currentThemeSet, setCurrentThemeSet] = useState(theme);
 
-  // Apply theme changes - use the theme prop directly since it's already converted
   useEffect(() => {
-    console.log("VSCodePreview: Theme change detected", {
-      currentMode,
-      themeVersion,
-      theme: {
-        light: theme.light.name,
-        dark: theme.dark.name,
-      },
-    });
     setCurrentThemeSet(theme);
     setThemeVersion((prev) => {
       const newVersion = prev + 1;
-      console.log(
-        "VSCodePreview: themeVersion updated",
-        prev,
-        "->",
-        newVersion,
-      );
       return newVersion;
     });
   }, [theme, currentMode]);
@@ -55,7 +40,6 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
     <div
       className={`rounded-lg border overflow-hidden font-mono text-sm flex flex-col h-full bg-background text-foreground ${className || ""}`}
     >
-
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         <MonacoLikePreview

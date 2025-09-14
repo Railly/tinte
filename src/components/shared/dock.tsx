@@ -5,6 +5,7 @@ import { DockMore } from "@/components/shared/dock/dock-more";
 import { DockContrast } from "@/components/shared/dock/dock-contrast";
 import { InstallGuideModal } from "@/components/shared/dock/install-guide-modal";
 import { SuccessAnimation } from "@/components/shared/dock/success-animation";
+import { AnonymousSignInButton } from "@/components/auth/anonymous-signin-button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useDockActions } from "@/hooks/use-dock-actions";
 import { useDockState } from "@/hooks/use-dock-state";
@@ -13,6 +14,7 @@ import { exportTheme, getProvider } from "@/lib/providers";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteTheme } from "@/types/tinte";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface DockProps {
   theme: TinteTheme;
@@ -35,8 +37,21 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const [showInstallGuide, setShowInstallGuide] = useState(false);
 
-  // Get theme context for updating theme
-  const { updateTinteTheme } = useThemeContext();
+  // Get theme context for updating theme and persistence
+  const {
+    updateTinteTheme,
+    activeTheme,
+    user,
+    isAuthenticated,
+    isAnonymous,
+    canSave,
+    saveCurrentTheme,
+    forkTheme,
+    unsavedChanges,
+    isSaving
+  } = useThemeContext();
+
+  // Theme ownership checks are now handled in the store
 
   // Helper to update theme
   const updateTheme = (newTheme: TinteTheme) => {
@@ -121,6 +136,11 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const handleNavigateToExport = () => navigateTo("export");
   const handleNavigateToMore = () => navigateTo("more");
   const handleNavigateToContrast = () => navigateTo("contrast");
+
+  // Legacy save handlers (persistence is now in header)
+  const handleSaveTheme = async () => {
+    console.log("Save functionality moved to header");
+  };
 
   // Placeholder handlers for future features
   const handleReset = () => {
@@ -237,6 +257,8 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
               onShare={handleShare}
               isSharing={isSharing}
               hasChanges={hasChanges}
+              isAuthenticated={isAuthenticated}
+              isAnonymous={isAnonymous}
             />
           ) : dockState === "contrast" ? (
             <DockContrast

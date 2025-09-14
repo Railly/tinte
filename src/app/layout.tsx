@@ -111,9 +111,7 @@ export default function RootLayout({
         <NuqsAdapter>
           <QueryProvider>
             <ThemeProvider>
-              <VSCodeOverridesProvider>
-                {children}
-              </VSCodeOverridesProvider>
+              <VSCodeOverridesProvider>{children}</VSCodeOverridesProvider>
             </ThemeProvider>
           </QueryProvider>
         </NuqsAdapter>

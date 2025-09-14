@@ -123,8 +123,8 @@ export const theme = pgTable("theme", {
 
   // Overrides
   shadcn_override: jsonb("shadcn_override").$type<ShadcnOverrideSchema>(),
-
   vscode_override: jsonb("vscode_override"),
+  shiki_override: jsonb("shiki_override"),
 
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()

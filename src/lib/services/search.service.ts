@@ -1,8 +1,8 @@
 import { Search } from "@upstash/search";
-import type { ThemeData } from "@/lib/theme-tokens";
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { theme, user } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import type { ThemeData } from "@/lib/theme-tokens";
 
 class SearchService {
   private client: Search;
@@ -41,7 +41,7 @@ class SearchService {
 
     const batchSize = 100;
     const batches = [];
-    
+
     for (let i = 0; i < documents.length; i += batchSize) {
       batches.push(documents.slice(i, i + batchSize));
     }
@@ -72,28 +72,39 @@ class SearchService {
         reranking: true,
       });
 
-      const themes = searchResults.map((result) => {
-        try {
-          const theme: ThemeData = {
-            id: result.id,
-            name: String(result.content.name || ''),
-            description: String(result.content.description || ''),
-            author: String(result.content.author || ''),
-            provider: String(result.content.provider || '') as "tweakcn" | "rayso" | "tinte",
-            tags: result.content.tags ? String(result.content.tags).split(" ") : [],
-            downloads: Number(result.metadata?.downloads) || 0,
-            likes: Number(result.metadata?.likes) || 0,
-            views: Number(result.metadata?.views) || 0,
-            createdAt: String(result.metadata?.createdAt) || "",
-            colors: result.metadata?.colors ? JSON.parse(String(result.metadata.colors)) : {},
-            rawTheme: result.metadata?.rawTheme ? JSON.parse(String(result.metadata.rawTheme)) : undefined,
-          };
-          return theme;
-        } catch (error) {
-          console.error("Error parsing theme result:", error);
-          return null;
-        }
-      }).filter(Boolean) as ThemeData[];
+      const themes = searchResults
+        .map((result) => {
+          try {
+            const theme: ThemeData = {
+              id: result.id,
+              name: String(result.content.name || ""),
+              description: String(result.content.description || ""),
+              author: String(result.content.author || ""),
+              provider: String(result.content.provider || "") as
+                | "tweakcn"
+                | "rayso"
+                | "tinte",
+              tags: result.content.tags
+                ? String(result.content.tags).split(" ")
+                : [],
+              downloads: Number(result.metadata?.downloads) || 0,
+              likes: Number(result.metadata?.likes) || 0,
+              views: Number(result.metadata?.views) || 0,
+              createdAt: String(result.metadata?.createdAt) || "",
+              colors: result.metadata?.colors
+                ? JSON.parse(String(result.metadata.colors))
+                : {},
+              rawTheme: result.metadata?.rawTheme
+                ? JSON.parse(String(result.metadata.rawTheme))
+                : undefined,
+            };
+            return theme;
+          } catch (error) {
+            console.error("Error parsing theme result:", error);
+            return null;
+          }
+        })
+        .filter(Boolean) as ThemeData[];
 
       // Fetch user data for themes that come from the database
       const themesWithUsers = await Promise.all(
@@ -109,7 +120,7 @@ class SearchService {
                     name: user.name,
                     email: user.email,
                     image: user.image,
-                  }
+                  },
                 })
                 .from(theme)
                 .leftJoin(user, eq(theme.user_id, user.id))
@@ -119,17 +130,21 @@ class SearchService {
               if (dbTheme.length > 0 && dbTheme[0].user) {
                 return {
                   ...themeData,
-                  user: dbTheme[0].user
+                  user: dbTheme[0].user,
                 };
               }
             }
-            
+
             return themeData;
           } catch (error) {
-            console.error("Error fetching user data for theme:", themeData.id, error);
+            console.error(
+              "Error fetching user data for theme:",
+              themeData.id,
+              error,
+            );
             return themeData;
           }
-        })
+        }),
       );
 
       return themesWithUsers;
@@ -146,7 +161,7 @@ class SearchService {
         query: "theme", // Search for a common term
         limit: 100, // Within read limits
       });
-      
+
       // If we get 100 results, we likely have many themes uploaded
       // We know from the error that ~10,000 were uploaded before hitting the limit
       return searchResults.length === 100 ? 10000 : searchResults.length;
@@ -160,39 +175,41 @@ class SearchService {
     // Since we hit the 10,000 write limit after 100 batches,
     // we know the first 10,000 themes were uploaded successfully
     const UPLOADED_COUNT = 10000;
-    
+
     if (allThemes.length <= UPLOADED_COUNT) {
       console.log("All themes appear to be uploaded already");
       return [];
     }
-    
+
     // Return themes starting from index 10,000 onwards
     const remainingThemes = allThemes.slice(UPLOADED_COUNT);
-    
+
     console.log(`Total themes: ${allThemes.length}`);
     console.log(`Already uploaded: ${UPLOADED_COUNT}`);
     console.log(`Remaining to upload: ${remainingThemes.length}`);
-    
+
     return remainingThemes;
   }
 
   async resumeUpload(allThemes: ThemeData[]) {
     const remainingThemes = await this.getRemainingThemes(allThemes);
-    
+
     if (remainingThemes.length === 0) {
       console.log("No remaining themes found. Upload is complete!");
       return { success: true, uploaded: 0, message: "Upload already complete" };
     }
 
-    console.log(`Resuming upload for ${remainingThemes.length} remaining themes...`);
-    
+    console.log(
+      `Resuming upload for ${remainingThemes.length} remaining themes...`,
+    );
+
     const results = await this.upsertThemes(remainingThemes);
-    
+
     return {
       success: true,
       uploaded: remainingThemes.length,
       batches: results.length,
-      message: `Successfully uploaded ${remainingThemes.length} remaining themes`
+      message: `Successfully uploaded ${remainingThemes.length} remaining themes`,
     };
   }
 

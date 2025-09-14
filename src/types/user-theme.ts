@@ -1,5 +1,21 @@
 import type { ThemeData } from "@/lib/theme-tokens";
 import type { TinteBlock } from "./tinte";
+import type { ShadcnOverrideSchema } from "@/db/schema/theme";
+import type { ShikiCssTheme } from "./shiki";
+
+// VS Code theme color customizations
+export interface VSCodeOverride {
+  colors?: Record<string, string>; // workbench colors like "editor.background", "sideBar.background", etc.
+  tokenColors?: Array<{
+    name?: string;
+    scope: string | string[];
+    settings: {
+      foreground?: string;
+      background?: string;
+      fontStyle?: string;
+    };
+  }>;
+}
 
 export interface DbTheme {
   id: string;
@@ -32,6 +48,9 @@ export interface DbTheme {
   dark_ac_1: string;
   dark_ac_2: string;
   dark_ac_3: string;
+  shadcn_override?: any;
+  vscode_override?: any;
+  shiki_override?: any;
 }
 
 export interface UserThemeData extends ThemeData {
@@ -42,6 +61,20 @@ export interface UserThemeData extends ThemeData {
     email?: string | null;
     image?: string | null;
   } | null;
+  overrides?: {
+    shadcn?: {
+      light?: Partial<ShadcnOverrideSchema>;
+      dark?: Partial<ShadcnOverrideSchema>;
+    };
+    vscode?: {
+      light?: VSCodeOverride;
+      dark?: VSCodeOverride;
+    };
+    shiki?: {
+      light?: ShikiCssTheme;
+      dark?: ShikiCssTheme;
+    };
+  };
 }
 
 export interface ThemeTransformOptions {

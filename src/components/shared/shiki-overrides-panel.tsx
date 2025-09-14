@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
+import { useShikiOverrides } from "@/hooks/use-provider-overrides";
 
 interface ShikiVariable {
   key: string;
@@ -178,14 +179,13 @@ export function ShikiOverridesPanel({
   searchPlaceholder = "Search CSS variables...",
 }: ShikiOverridesPanelProps) {
   const { currentMode, mounted, tinteTheme } = useThemeContext();
+  const shikiOverrides = useShikiOverrides();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     SHIKI_VARIABLE_GROUPS.reduce(
       (acc, group) => ({ ...acc, [group.label]: true }),
       {},
     ),
   );
-
-  const [overrides, setOverrides] = React.useState<Record<string, string>>({});
 
   // Initialize default values from current theme - ensure hex colors
   const getDefaultValue = React.useCallback(
@@ -355,7 +355,7 @@ export function ShikiOverridesPanel({
   };
 
   const handleVariableChange = (key: string, value: string) => {
-    setOverrides((prev) => ({ ...prev, [key]: value }));
+    shikiOverrides.setOverride(key, value);
 
     // Apply CSS variable to document root for live preview
     if (value.trim()) {
@@ -374,12 +374,8 @@ export function ShikiOverridesPanel({
     return JSON.stringify(currentColors);
   }, [mounted, tinteTheme, currentMode]);
 
-  // Clear overrides when theme hash changes to get real-time updates from canonical tab
-  React.useEffect(() => {
-    if (!themeHash) return;
-    // Clear all overrides to get fresh values from theme
-    setOverrides({});
-  }, [themeHash]);
+  // Note: Overrides are now managed centrally by the theme store
+  // and will be automatically synced across mode changes
 
   // Apply default CSS variables when theme changes
   React.useEffect(() => {
@@ -400,7 +396,7 @@ export function ShikiOverridesPanel({
   }, [mounted, tinteTheme, currentMode, getDefaultValue, themeHash]);
 
   const getVariableValue = (key: string): string => {
-    return overrides[key] || getDefaultValue(key);
+    return shikiOverrides.getValue(key, getDefaultValue(key)) || getDefaultValue(key);
   };
 
   return (

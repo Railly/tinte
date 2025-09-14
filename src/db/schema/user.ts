@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -7,6 +7,7 @@ export const user = pgTable("user", {
   email: text("email").unique(),
   email_verified: boolean("email_verified").default(false),
   image: text("image"),
+  is_anonymous: boolean("is_anonymous").default(false),
 
   clerk_id: text("clerk_id").unique(),
 

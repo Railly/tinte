@@ -183,7 +183,19 @@ export class UserThemeService {
       colors: UserThemeService.extractThemeColors(dbTheme),
       rawTheme: UserThemeService.buildRawTheme(dbTheme),
       user: user,
+      // Include overrides from database - structured by mode
+      overrides: UserThemeService.transformOverridesFromDb(dbTheme),
       ...UserThemeService.flattenThemeProperties(dbTheme),
+    };
+  }
+
+  private static transformOverridesFromDb(dbTheme: DbTheme) {
+    // For now, assuming overrides are already structured by mode
+    // If they're not, we'd need more complex transformation logic
+    return {
+      shadcn: dbTheme.shadcn_override || undefined,
+      vscode: dbTheme.vscode_override || undefined,
+      shiki: dbTheme.shiki_override || undefined,
     };
   }
 

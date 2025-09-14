@@ -3,8 +3,7 @@
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { ShikiOverridesPanel } from "@/components/shared/shiki-overrides-panel";
-import { ThemeEditorPanel } from "@/components/shared/theme-editor-panel";
-import { TokenSearch } from "@/components/shared/token-search";
+import { ShadcnOverridesPanel } from "@/components/shared/shadcn-overrides-panel";
 import { VSCodeOverridesPanel } from "@/components/shared/vscode-overrides-panel";
 
 export function OverridesTab() {
@@ -26,7 +25,7 @@ export function OverridesTab() {
 
   if (provider === "shadcn") {
     return (
-      <ThemeEditorPanel
+      <ShadcnOverridesPanel
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         searchPlaceholder={getSearchPlaceholder()}

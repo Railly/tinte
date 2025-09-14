@@ -1,6 +1,7 @@
-import { ArrowLeft, RotateCcw, Upload, Eye, Share } from "lucide-react";
+import { ArrowLeft, RotateCcw, Upload, Eye, Share, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { AnonymousSignInButton } from "@/components/auth/anonymous-signin-button";
 
 interface DockMoreProps {
   onBack: () => void;
@@ -10,6 +11,10 @@ interface DockMoreProps {
   onShare: () => void;
   isSharing?: boolean;
   hasChanges?: boolean;
+
+  // Authentication props
+  isAuthenticated?: boolean;
+  isAnonymous?: boolean;
 }
 
 export function DockMore({
@@ -20,6 +25,8 @@ export function DockMore({
   onShare,
   isSharing,
   hasChanges,
+  isAuthenticated,
+  isAnonymous,
 }: DockMoreProps) {
   return (
     <div className="flex flex-col gap-2 p-3 min-w-48">
@@ -35,6 +42,20 @@ export function DockMore({
         </Button>
         <span className="text-sm font-medium text-muted-foreground">More Actions</span>
       </div>
+
+      {/* Authentication prompt */}
+      {!isAuthenticated && !isAnonymous && (
+        <div className="grid grid-cols-1 gap-1 mb-2 pb-2 border-b border-border/50">
+          <AnonymousSignInButton
+            variant="default"
+            size="sm"
+            className="h-8 justify-start gap-2"
+          >
+            <UserPlus className="h-3 w-3" />
+            <span className="text-xs">Sign in to Save</span>
+          </AnonymousSignInButton>
+        </div>
+      )}
 
       {/* More actions */}
       <div className="grid grid-cols-1 gap-1">

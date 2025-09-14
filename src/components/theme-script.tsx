@@ -42,9 +42,85 @@ export function TinteThemeScript() {
       root.style.colorScheme = 'light';
     }
 
-    const tokens = theme.computedTokens ? theme.computedTokens[mode] : DEFAULT_THEME.computedTokens[mode];
+    // Get base tokens - prioritize computedTokens for DOM application
+    let tokens;
+    if (theme.computedTokens && theme.computedTokens[mode]) {
+      tokens = theme.computedTokens[mode];
+    } else if (theme.rawTheme && theme.rawTheme[mode]) {
+      // If no computedTokens, convert rawTheme to shadcn format for DOM
+      const tinteTokens = theme.rawTheme[mode];
+      tokens = {
+        background: tinteTokens.bg || '#ffffff',
+        foreground: tinteTokens.tx || '#000000',
+        card: tinteTokens.bg_2 || tinteTokens.bg || '#ffffff',
+        'card-foreground': tinteTokens.tx || '#000000',
+        popover: tinteTokens.bg_2 || tinteTokens.bg || '#ffffff',
+        'popover-foreground': tinteTokens.tx || '#000000',
+        primary: tinteTokens.pr || '#3b82f6',
+        'primary-foreground': '#ffffff',
+        secondary: tinteTokens.sc || '#f1f5f9',
+        'secondary-foreground': tinteTokens.tx || '#000000',
+        muted: tinteTokens.ui || '#f1f5f9',
+        'muted-foreground': tinteTokens.tx_3 || '#64748b',
+        accent: tinteTokens.ac_1 || '#f1f5f9',
+        'accent-foreground': tinteTokens.tx || '#000000',
+        destructive: '#ef4444',
+        'destructive-foreground': '#ffffff',
+        border: tinteTokens.ui || '#e2e8f0',
+        input: tinteTokens.ui_2 || tinteTokens.ui || '#e2e8f0',
+        ring: tinteTokens.pr || '#3b82f6'
+      };
+    } else {
+      // Fallback to flattened format (dark_bg, light_bg, etc.)
+      const tinteTokens = {};
+      const prefix = mode + '_';
+      for (const key in theme) {
+        if (key.startsWith(prefix)) {
+          const tokenKey = key.substring(prefix.length);
+          tinteTokens[tokenKey] = theme[key];
+        }
+      }
+
+      if (Object.keys(tinteTokens).length > 0) {
+        tokens = {
+          background: tinteTokens.bg || '#ffffff',
+          foreground: tinteTokens.tx || '#000000',
+          card: tinteTokens.bg_2 || tinteTokens.bg || '#ffffff',
+          'card-foreground': tinteTokens.tx || '#000000',
+          popover: tinteTokens.bg_2 || tinteTokens.bg || '#ffffff',
+          'popover-foreground': tinteTokens.tx || '#000000',
+          primary: tinteTokens.pr || '#3b82f6',
+          'primary-foreground': '#ffffff',
+          secondary: tinteTokens.sc || '#f1f5f9',
+          'secondary-foreground': tinteTokens.tx || '#000000',
+          muted: tinteTokens.ui || '#f1f5f9',
+          'muted-foreground': tinteTokens.tx_3 || '#64748b',
+          accent: tinteTokens.ac_1 || '#f1f5f9',
+          'accent-foreground': tinteTokens.tx || '#000000',
+          destructive: '#ef4444',
+          'destructive-foreground': '#ffffff',
+          border: tinteTokens.ui || '#e2e8f0',
+          input: tinteTokens.ui_2 || tinteTokens.ui || '#e2e8f0',
+          ring: tinteTokens.pr || '#3b82f6'
+        };
+      } else {
+        tokens = DEFAULT_THEME.computedTokens[mode];
+      }
+    }
+
+    // Apply overrides if they exist (prioritize shadcn overrides for visual consistency)
+    if (theme.overrides && theme.overrides.shadcn && theme.overrides.shadcn[mode]) {
+      const overrideTokens = theme.overrides.shadcn[mode];
+      // Convert colors to hex and merge
+      Object.entries(overrideTokens).forEach(function([key, value]) {
+        if (typeof value === 'string') {
+          tokens = Object.assign({}, tokens, { [key]: value });
+        }
+      });
+    }
+
     applyTokens(tokens);
-    
+
     window.__TINTE_THEME__ = { theme, mode, tokens };
   })();`;
 

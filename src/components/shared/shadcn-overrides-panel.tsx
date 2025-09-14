@@ -21,6 +21,7 @@ import {
   organizeRealTokens,
 } from "@/lib/theme-editor-utils";
 import { useThemeContext } from "@/providers/theme";
+import { useShadcnOverrides } from "@/hooks/use-provider-overrides";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";
 import { EnhancedTokenInput } from "./enhanced-token-input";
@@ -36,19 +37,19 @@ declare global {
   }
 }
 
-interface ThemeEditorPanelProps {
+interface ShadcnOverridesPanelProps {
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
   searchPlaceholder?: string;
 }
 
-export function ThemeEditorPanel({
+export function ShadcnOverridesPanel({
   searchQuery = "",
   onSearchChange,
   searchPlaceholder = "Search tokens...",
-}: ThemeEditorPanelProps) {
-  const { currentTokens, handleTokenEdit, mounted, currentMode } =
-    useThemeContext();
+}: ShadcnOverridesPanelProps) {
+  const { currentTokens, handleTokenEdit, mounted, currentMode } = useThemeContext();
+  const shadcnOverrides = useShadcnOverrides();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     createInitialOpenGroups,
   );
@@ -77,10 +78,14 @@ export function ThemeEditorPanel({
 
   // Organize tokens by groups for better UI
   const organizedTokens = React.useMemo(() => {
-    return !mounted || !hasValidColorTokens(currentTokens)
-      ? createSkeletonGroups()
-      : organizeRealTokens(currentTokens);
-  }, [currentTokens, mounted]);
+    if (!mounted || !hasValidColorTokens(currentTokens)) {
+      return createSkeletonGroups();
+    }
+
+    // Use the standardized override system to merge tokens
+    const mergedTokens = shadcnOverrides.getMergedTokens(currentTokens);
+    return organizeRealTokens(mergedTokens);
+  }, [currentTokens, mounted, shadcnOverrides]);
 
   // Filter tokens based on search query
   const filteredTokens = React.useMemo(() => {

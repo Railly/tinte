@@ -34,11 +34,19 @@ export const CanonicalColorInput: React.FC<CanonicalColorInputProps> = ({
     onChange(colorKey, color);
   };
 
-  if (group.skeleton || !value) {
+  // Show loading state if no value or if it's a skeleton
+  const isLoading = group.skeleton || !value || value.trim() === "";
+
+  if (isLoading) {
     return (
       <div className="flex gap-2">
-        <div className="h-10 bg-muted/30 rounded animate-pulse flex-1"></div>
-        <div className="h-10 w-10 bg-muted/30 rounded animate-pulse"></div>
+        <div className="h-10 bg-muted/30 rounded border flex items-center px-3 flex-1 animate-pulse">
+          <div className="w-6 h-6 rounded bg-slate-400/40 mr-3"></div>
+          <div className="h-4 bg-muted/50 rounded flex-1"></div>
+        </div>
+        <div className="h-10 w-10 bg-muted/30 rounded border flex items-center justify-center animate-pulse">
+          <div className="w-5 h-5 bg-muted/50 rounded"></div>
+        </div>
       </div>
     );
   }

@@ -28,7 +28,7 @@ import {
   VSCODE_TOKEN_GROUPS,
 } from "@/lib/vscode-token-utils";
 import { useThemeContext } from "@/providers/theme";
-import { useVSCodeOverrides } from "@/providers/vscode-overrides";
+import { useVSCodeOverrides } from "@/hooks/use-provider-overrides";
 
 // Comprehensive editor color groups - ALL tokens from editorColorMap organized logically
 const EDITOR_COLOR_GROUPS = [
@@ -695,7 +695,7 @@ export function VSCodeOverridesPanel({
   searchPlaceholder = "Search tokens...",
 }: VSCodeOverridesPanelProps) {
   const { tinteTheme, currentMode, mounted } = useThemeContext();
-  const { overrides: tokenOverrides, setOverride } = useVSCodeOverrides();
+  const vscodeOverrides = useVSCodeOverrides();
   const [activeTab, setActiveTab] = React.useState("tokens");
   const [openTokenGroups, setOpenTokenGroups] = React.useState<
     Record<string, boolean>
@@ -717,7 +717,7 @@ export function VSCodeOverridesPanel({
   // Determine if we should show skeletons or real data
   const currentColors = tinteTheme?.[currentMode];
   const shouldShowSkeletons =
-    !mounted || Object.keys(tokenOverrides).length === 0;
+    !mounted || !vscodeOverrides.hasAnyOverrides;
   const baseGroupsToRender = shouldShowSkeletons
     ? createVSCodeTokenSkeletons()
     : VSCODE_TOKEN_GROUPS;
@@ -788,7 +788,7 @@ export function VSCodeOverridesPanel({
   }, [searchQuery, hasTokenResults, hasEditorResults, activeTab]);
 
   const handleTokenChange = (tokenKey: SemanticToken, value: string) => {
-    setOverride(tokenKey, value);
+    vscodeOverrides.setOverride(tokenKey, value);
   };
 
   const handleEditorColorChange = (colorKey: string, value: string) => {
@@ -812,8 +812,8 @@ export function VSCodeOverridesPanel({
 
   // Get the current token value (either from overrides or default mapping)
   const getTokenValue = (tokenKey: SemanticToken): string | undefined => {
-    if (tokenOverrides[tokenKey]) {
-      return tokenOverrides[tokenKey];
+    if (vscodeOverrides.hasOverride(tokenKey)) {
+      return vscodeOverrides.getValue(tokenKey);
     }
 
     // Get from default mapping if available

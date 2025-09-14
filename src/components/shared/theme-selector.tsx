@@ -1,12 +1,12 @@
 "use client";
 
 import { ChevronsUpDown, Loader2, Users, UserX } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
 import Logo from "@/components/shared/logo";
 import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -21,15 +21,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useThemeSearch } from "@/hooks/use-theme-search";
 import type { ThemeData } from "@/lib/theme-tokens";
 import { extractThemeColors } from "@/lib/theme-utils";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
-import { useThemeSearch } from "@/hooks/use-theme-search";
 
 export function ThemeSelector({
   themes,
   activeId,
+  activeTheme,
   onSelect,
   triggerClassName,
   label = "Themes",
@@ -37,13 +38,14 @@ export function ThemeSelector({
 }: {
   themes: ThemeData[];
   activeId?: string | null;
+  activeTheme?: ThemeData | null;
   onSelect: (t: ThemeData) => void;
   triggerClassName?: string;
   label?: string;
   popoverWidth?: string;
 }) {
   const [open, setOpen] = React.useState(false);
-  const { currentMode } = useThemeContext();
+  const { currentMode, user, mounted } = useThemeContext();
 
   const {
     searchResults,
@@ -53,37 +55,102 @@ export function ThemeSelector({
     setSearchQuery,
   } = useThemeSearch();
 
-  const [selectedSearchTheme, setSelectedSearchTheme] = React.useState<ThemeData | null>(null);
+  const [selectedSearchTheme, setSelectedSearchTheme] =
+    React.useState<ThemeData | null>(null);
 
-  const handleThemeSelect = React.useCallback((theme: ThemeData) => {
-    if (searchResults.some(t => t.id === theme.id)) {
-      setSelectedSearchTheme(theme);
-    }
-    onSelect(theme);
-  }, [searchResults, onSelect]);
+  const handleThemeSelect = React.useCallback(
+    (theme: ThemeData) => {
+      if (searchResults.some((t) => t.id === theme.id)) {
+        setSelectedSearchTheme(theme);
+      }
+      onSelect(theme);
+    },
+    [searchResults, onSelect],
+  );
 
-  const allThemes = React.useMemo(() => {
-    let combined = [...themes];
+  // Organize themes into sections
+  const organizedThemes = React.useMemo(() => {
+    const combined = [...themes];
 
     // Add selected search theme if it's not already in the themes list
-    if (selectedSearchTheme && !themes.some(t => t.id === selectedSearchTheme.id)) {
+    if (
+      selectedSearchTheme &&
+      !themes.some((t) => t.id === selectedSearchTheme.id)
+    ) {
       combined.push(selectedSearchTheme);
     }
 
     if (searchQuery.trim() && searchResults.length > 0) {
       // Show search results with regular themes as fallback
-      const searchIds = new Set(searchResults.map(t => t.id));
-      const remainingThemes = combined.filter(t => !searchIds.has(t.id));
-      return [...searchResults, ...remainingThemes];
+      const searchIds = new Set(searchResults.map((t) => t.id));
+      const remainingThemes = combined.filter((t) => !searchIds.has(t.id));
+      return {
+        searchResults: searchResults,
+        remainingThemes: remainingThemes,
+        userThemes: [],
+        builtInThemes: [],
+      };
     }
 
-    return combined;
-  }, [themes, searchResults, searchQuery, selectedSearchTheme]);
+    // Separate user themes from built-in themes
+    const userThemes: ThemeData[] = [];
+    const builtInThemes: ThemeData[] = [];
 
-  // Find active theme in ALL available themes (built-in + search results + selected search theme)
+    combined.forEach((theme) => {
+      // Check if theme belongs to current user
+      const isOwnTheme = theme.user?.id === user?.id;
+      const isCustomTheme =
+        theme.author === "You" || theme.name?.includes("Custom");
+      const isUserCreated =
+        theme.provider === "tinte" && (isOwnTheme || isCustomTheme);
+
+      if (isUserCreated || isOwnTheme) {
+        userThemes.push(theme);
+      } else {
+        builtInThemes.push(theme);
+      }
+    });
+
+    // Sort user themes by creation date (newest first)
+    userThemes.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0);
+      const dateB = new Date(b.createdAt || 0);
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    return {
+      userThemes,
+      builtInThemes,
+      searchResults: [],
+      remainingThemes: [],
+    };
+  }, [themes, searchResults, searchQuery, selectedSearchTheme, user]);
+
+  // Find active theme in ALL available themes (user + built-in + search results)
   const active = React.useMemo(() => {
-    // First try to find in built-in themes
-    let found = themes.find((t) => t.id === activeId);
+    // During SSR or initial render, only use activeTheme if provided to avoid hydration mismatch
+    if (!mounted && activeTheme) {
+      return activeTheme;
+    }
+
+    // If activeTheme is provided directly, use it (for modified themes)
+    if (activeTheme) {
+      return activeTheme;
+    }
+
+    // During SSR, don't calculate complex theme lookups to avoid hydration issues
+    if (!mounted) {
+      return null;
+    }
+
+    // Otherwise, search by activeId in organized themes
+    // First check user themes
+    let found = organizedThemes.userThemes.find((t) => t.id === activeId);
+
+    // Then check built-in themes
+    if (!found) {
+      found = organizedThemes.builtInThemes.find((t) => t.id === activeId);
+    }
 
     // If not found, check selected search theme
     if (!found && selectedSearchTheme && selectedSearchTheme.id === activeId) {
@@ -91,12 +158,14 @@ export function ThemeSelector({
     }
 
     // If still not found and we have search results, look there too
-    if (!found && searchResults.length > 0) {
-      found = searchResults.find((t) => t.id === activeId);
+    if (!found && organizedThemes.searchResults.length > 0) {
+      found = organizedThemes.searchResults.find((t) => t.id === activeId);
     }
 
     return found;
-  }, [themes, searchResults, selectedSearchTheme, activeId]);
+  }, [mounted, activeTheme, organizedThemes, selectedSearchTheme, activeId]);
+
+  const isLoading = !mounted;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -114,29 +183,56 @@ export function ThemeSelector({
         >
           {/* Desktop layout - horizontal */}
           <div className="hidden md:flex items-center gap-2 min-w-0">
-            {active && (
-              <ThemeColorPreview
-                colors={extractThemeColors(active, currentMode)}
-                maxColors={3}
-              />
+            {isLoading ? (
+              <>
+                <div className="flex gap-0.5">
+                  <div className="w-4 h-4 bg-muted/30 rounded-sm animate-pulse"></div>
+                  <div className="w-4 h-4 bg-muted/30 rounded-sm animate-pulse"></div>
+                  <div className="w-4 h-4 bg-muted/30 rounded-sm animate-pulse"></div>
+                </div>
+                <div className="h-4 w-16 bg-muted/30 rounded animate-pulse"></div>
+              </>
+            ) : (
+              <>
+                {active && (
+                  <ThemeColorPreview
+                    colors={extractThemeColors(active, currentMode)}
+                    maxColors={3}
+                  />
+                )}
+                <span className="truncate">{active ? active.name : label}</span>
+              </>
             )}
-            <span className="truncate">{active ? active.name : label}</span>
           </div>
 
           {/* Mobile layout - stacked */}
           <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
-            <div className="flex items-center justify-between w-full min-w-0">
-              <span className="text-xs font-medium truncate">
-                {active ? active.name : label}
-              </span>
-            </div>
-            {active && (
-              <ThemeColorPreview
-                colors={extractThemeColors(active, currentMode)}
-                maxColors={8}
-                size="sm"
-                className="self-start"
-              />
+            {isLoading ? (
+              <>
+                <div className="h-3 w-20 bg-muted/30 rounded animate-pulse"></div>
+                <div className="flex gap-0.5">
+                  <div className="w-3 h-2 bg-muted/30 rounded-sm animate-pulse"></div>
+                  <div className="w-3 h-2 bg-muted/30 rounded-sm animate-pulse"></div>
+                  <div className="w-3 h-2 bg-muted/30 rounded-sm animate-pulse"></div>
+                  <div className="w-3 h-2 bg-muted/30 rounded-sm animate-pulse"></div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between w-full min-w-0">
+                  <span className="text-xs font-medium truncate">
+                    {active ? active.name : label}
+                  </span>
+                </div>
+                {active && (
+                  <ThemeColorPreview
+                    colors={extractThemeColors(active, currentMode)}
+                    maxColors={8}
+                    size="sm"
+                    className="self-start"
+                  />
+                )}
+              </>
             )}
           </div>
 
@@ -147,7 +243,7 @@ export function ThemeSelector({
         align="start"
         className={cn(
           popoverWidth ? popoverWidth : "w-(--radix-popover-trigger-width)",
-          "p-0"
+          "p-0",
         )}
       >
         <Command>
@@ -170,13 +266,15 @@ export function ThemeSelector({
               </div>
             )}
             <CommandEmpty>
-              {searchQuery.trim() ? "No themes found for your search." : "No theme found."}
+              {searchQuery.trim()
+                ? "No themes found for your search."
+                : "No theme found."}
             </CommandEmpty>
 
-            {/* Regular themes section */}
-            {themes.length > 0 && !searchQuery.trim() && (
-              <CommandGroup heading="Built-in Themes">
-                {themes.map((theme) => (
+            {/* User themes section - only when not searching */}
+            {!searchQuery.trim() && organizedThemes.userThemes.length > 0 && (
+              <CommandGroup heading="Your Themes">
+                {organizedThemes.userThemes.map((theme) => (
                   <CommandItem
                     key={theme.id}
                     value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
@@ -186,88 +284,22 @@ export function ThemeSelector({
                     }}
                     className="gap-2 md:h-auto md:py-2"
                   >
-                    {/* Desktop layout - horizontal */}
+                    {/* Desktop layout - horizontal - simplified for user themes */}
                     <div className="hidden md:flex items-center gap-2 min-w-0 flex-1">
                       <ThemeColorPreview
                         colors={extractThemeColors(theme, currentMode)}
                         maxColors={3}
                       />
-                      <div className="flex justify-between gap-0.5 min-w-0 flex-1">
-                        <span className="text-xs font-medium truncate">
-                          {theme.name}
-                        </span>
-                        {theme.author && (
-                          <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                            {theme.author === "tweakcn" ? (
-                              <TweakCNIcon className="w-3 h-3" />
-                            ) : theme.author === "ray.so" ? (
-                              <RaycastIcon className="w-3 h-3" />
-                            ) : theme.author === "tinte" ? (
-                              <Logo size={12} className="invert" />
-                            ) : (
-                              <>
-                                {theme.author && (
-                                  <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                                    {theme.user?.image ? (
-                                      <Avatar className="w-3 h-3">
-                                        <AvatarImage
-                                          src={theme.user.image}
-                                          alt={theme.user.name || "User"}
-                                        />
-                                        <AvatarFallback className="text-[8px]">
-                                          {(theme.user.name?.[0] || "U").toUpperCase()}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                    ) : (
-                                      <UserX className="w-3 h-3" />
-                                    )}
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      <span className="text-xs font-medium truncate">
+                        {theme.name}
+                      </span>
                     </div>
 
-                    {/* Mobile layout - stacked */}
+                    {/* Mobile layout - stacked - simplified for user themes */}
                     <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
-                      <div className="flex items-center justify-between w-full min-w-0">
-                        <span className="text-xs font-medium truncate">
-                          {theme.name}
-                        </span>
-                        {theme.author && (
-                          <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
-                            {theme.author === "tweakcn" ? (
-                              <TweakCNIcon className="w-3 h-3" />
-                            ) : theme.author === "ray.so" ? (
-                              <RaycastIcon className="w-3 h-3" />
-                            ) : theme.author === "tinte" ? (
-                              <Logo size={12} />
-                            ) : (
-                              <>
-                                {theme.author && (
-                                  <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                                    {theme.user?.image ? (
-                                      <Avatar className="w-3 h-3">
-                                        <AvatarImage
-                                          src={theme.user.image}
-                                          alt={theme.user.name || "User"}
-                                        />
-                                        <AvatarFallback className="text-[8px]">
-                                          {(theme.user.name?.[0] || "U").toUpperCase()}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                    ) : (
-                                      <UserX className="w-3 h-3" />
-                                    )}
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      <span className="text-xs font-medium truncate">
+                        {theme.name}
+                      </span>
                       <ThemeColorPreview
                         colors={extractThemeColors(theme, currentMode)}
                         maxColors={8}
@@ -280,9 +312,123 @@ export function ThemeSelector({
               </CommandGroup>
             )}
 
+            {/* Built-in themes section - only when not searching */}
+            {!searchQuery.trim() &&
+              organizedThemes.builtInThemes.length > 0 && (
+                <CommandGroup heading="Built-in Themes">
+                  {organizedThemes.builtInThemes.map((theme) => (
+                    <CommandItem
+                      key={theme.id}
+                      value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
+                      onSelect={() => {
+                        handleThemeSelect(theme);
+                        setOpen(false);
+                      }}
+                      className="gap-2 md:h-auto md:py-2"
+                    >
+                      {/* Desktop layout - horizontal */}
+                      <div className="hidden md:flex items-center gap-2 min-w-0 flex-1">
+                        <ThemeColorPreview
+                          colors={extractThemeColors(theme, currentMode)}
+                          maxColors={3}
+                        />
+                        <div className="flex justify-between gap-0.5 min-w-0 flex-1">
+                          <span className="text-xs font-medium truncate">
+                            {theme.name}
+                          </span>
+                          {theme.author && (
+                            <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                              {theme.author === "tweakcn" ? (
+                                <TweakCNIcon className="w-3 h-3" />
+                              ) : theme.author === "ray.so" ? (
+                                <RaycastIcon className="w-3 h-3" />
+                              ) : theme.author === "tinte" ? (
+                                <Logo size={12} className="invert" />
+                              ) : (
+                                <>
+                                  {theme.author && (
+                                    <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                                      {theme.user?.image ? (
+                                        <Avatar className="w-3 h-3">
+                                          <AvatarImage
+                                            src={theme.user.image}
+                                            alt={theme.user.name || "User"}
+                                          />
+                                          <AvatarFallback className="text-[8px]">
+                                            {(
+                                              theme.user.name?.[0] || "U"
+                                            ).toUpperCase()}
+                                          </AvatarFallback>
+                                        </Avatar>
+                                      ) : (
+                                        <UserX className="w-3 h-3" />
+                                      )}
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Mobile layout - stacked */}
+                      <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
+                        <div className="flex items-center justify-between w-full min-w-0">
+                          <span className="text-xs font-medium truncate">
+                            {theme.name}
+                          </span>
+                          {theme.author && (
+                            <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
+                              {theme.author === "tweakcn" ? (
+                                <TweakCNIcon className="w-3 h-3" />
+                              ) : theme.author === "ray.so" ? (
+                                <RaycastIcon className="w-3 h-3" />
+                              ) : theme.author === "tinte" ? (
+                                <Logo size={12} />
+                              ) : (
+                                <>
+                                  {theme.author && (
+                                    <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                                      {theme.user?.image ? (
+                                        <Avatar className="w-3 h-3">
+                                          <AvatarImage
+                                            src={theme.user.image}
+                                            alt={theme.user.name || "User"}
+                                          />
+                                          <AvatarFallback className="text-[8px]">
+                                            {(
+                                              theme.user.name?.[0] || "U"
+                                            ).toUpperCase()}
+                                          </AvatarFallback>
+                                        </Avatar>
+                                      ) : (
+                                        <UserX className="w-3 h-3" />
+                                      )}
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <ThemeColorPreview
+                          colors={extractThemeColors(theme, currentMode)}
+                          maxColors={8}
+                          size="sm"
+                          className="self-start"
+                        />
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+
             {/* Search results section */}
             {searchQuery.trim() && searchResults.length > 0 && (
-              <CommandGroup heading={`Search Results (${searchResults.length})`}>
+              <CommandGroup
+                heading={`Search Results (${searchResults.length})`}
+              >
                 {searchResults.map((theme) => (
                   <CommandItem
                     key={theme.id}
@@ -311,7 +457,8 @@ export function ThemeSelector({
                               <RaycastIcon className="w-3 h-3" />
                             ) : theme.author === "tinte" ? (
                               <Logo size={12} className="invert" />
-                            ) : theme.provider === "tinte" && theme.user?.image ? (
+                            ) : theme.provider === "tinte" &&
+                              theme.user?.image ? (
                               // User-created theme with avatar
                               <Avatar className="w-3 h-3">
                                 <AvatarImage
@@ -347,7 +494,8 @@ export function ThemeSelector({
                               <RaycastIcon className="w-3 h-3" />
                             ) : theme.author === "tinte" ? (
                               <Logo size={12} />
-                            ) : theme.provider === "tinte" && theme.user?.image ? (
+                            ) : theme.provider === "tinte" &&
+                              theme.user?.image ? (
                               // User-created theme with avatar
                               <Avatar className="w-3 h-3">
                                 <AvatarImage

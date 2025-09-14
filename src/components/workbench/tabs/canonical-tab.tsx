@@ -20,7 +20,11 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   generateFullNeutralRamp,
   getAllNeutralKeys,
@@ -48,7 +52,7 @@ export function CanonicalTab() {
   // Persist neutral ramp state per theme
   const storageKey = `tinte-neutral-ramp-${activeTheme.name}`;
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (mounted) {
       const stored = localStorage.getItem(storageKey);
       if (stored) {
@@ -67,7 +71,7 @@ export function CanonicalTab() {
     }
   }, [mounted, storageKey]);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (mounted) {
       localStorage.setItem(
         storageKey,
@@ -80,8 +84,50 @@ export function CanonicalTab() {
   }, [neutralRampMode, neutralRampColor, mounted, storageKey]);
 
   // Determine if we should show skeletons or real data
-  const currentColors = tinteTheme?.[currentMode];
-  const shouldShowSkeletons = !mounted || !hasValidTinteColors(currentColors);
+  // Try to get theme data from preloaded window object to avoid loading state
+  const preloadedTheme = React.useMemo(() => {
+    if (typeof window !== "undefined" && (window as any).__TINTE_THEME__) {
+      const tinteTheme = (window as any).__TINTE_THEME__;
+      return tinteTheme.theme;
+    }
+    return null;
+  }, []);
+
+  // Convert flattened preloaded theme to nested structure for canonical tab
+  const preloadedColors = React.useMemo(() => {
+    if (!preloadedTheme || typeof window === "undefined") return null;
+
+    // Prioritize rawTheme structure (canonical format for tinte)
+    if (preloadedTheme.rawTheme?.[currentMode]) {
+      return preloadedTheme.rawTheme[currentMode];
+    }
+
+    // Fallback to flattened format
+    const colors: Record<string, string> = {};
+    const prefix = currentMode + "_";
+
+    for (const key in preloadedTheme) {
+      if (key.startsWith(prefix)) {
+        const tokenKey = key.substring(prefix.length);
+        colors[tokenKey] = preloadedTheme[key];
+      }
+    }
+
+    return Object.keys(colors).length > 0 ? colors : null;
+  }, [preloadedTheme, currentMode]);
+
+  const currentColors = React.useMemo(() => {
+    // During SSR or if not mounted yet, show loading state
+    if (!mounted) {
+      return null;
+    }
+
+    // After hydration, prioritize tinteTheme from context
+    return tinteTheme?.[currentMode] || preloadedColors;
+  }, [mounted, tinteTheme, currentMode, preloadedColors]);
+
+  const shouldShowSkeletons =
+    !mounted || !currentColors || !hasValidTinteColors(currentColors);
   const groupsToRender = shouldShowSkeletons
     ? createCanonicalSkeletons()
     : COLOR_GROUPS;
@@ -117,9 +163,7 @@ export function CanonicalTab() {
       <div className="px-1 pb-2">
         <div>
           <div className="flex items-center gap-1">
-            <h3 className="text-sm font-medium">
-              Canonical Colors ({currentMode})
-            </h3>
+            <h3 className="text-sm font-medium">Canonical Colors</h3>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="h-3 w-3 text-muted-foreground/60 cursor-help" />
