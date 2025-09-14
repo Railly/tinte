@@ -2,6 +2,7 @@
 
 import Editor from "@monaco-editor/react";
 import React from "react";
+import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import { useMonacoEditor } from "@/hooks/use-monaco-editor";
 import type { CodeTemplate, VSCodeTheme } from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
@@ -66,12 +67,7 @@ export function MonacoLikePreview({
       >
         {/* VS Code Logo */}
         <div className="w-4 h-4 mr-3 flex-shrink-0">
-          <img
-            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIWSURBVHgBjVM9aFNRFD73JpH+UE2l1SgoyeAPYm10KLoYAl3iJggODlZnhxZBF/U9jbUBlcRBnCSbk4N0KNrBl4A4OLQoLc2Wp3UQxBKKoX0v957jfbe+5iUtbQ58wz3vnu987zvnMugwUk9KF/gemhk4OfLOWXfy01f2f/PyrJPi81OzY4zx16zh8NjwRZ1DIguBj/PdikcmZ+8isqKUxAUSCAQNJJYGorImSL5aim9XnMx+MIWknJAIPiRBEFF++sWiiS5Wh/KLU8HiIeN9DiUZG1038dFX4IOdKixUgUArIAZVgTgaXvnxgHF+PUhIwO4sPco8HX27SsF8GKmRJopYROSRJBjKBckj3SAcRR/y7atics7FKNlP2Dl7XYPDKxFmbOY20kmdrmRDqFn2HQER6QbpuSQiZqmQvlf0CZUMLwl5yvWZ7rgLsO6wyXRs3ewaBegb7QyhbJiWoTcHBe9MJF7klkMXFn2UQa6ubpkmkYRe4FZucyzQVUAs4raElBMXVuJR8/gl/LSeUkS8DzsfVwswcyM6bvoIgwihZUU1XfWSFlfzlif+Nbg08/vobEc2AWqP//ueUbDNRr3J0vBitFW7UoC32mvOGGmCTpFGHI8fPbCXYKXofzt0mCc/0wf0LR080CdTof+76FurGueeC8Jrypa49af5/SY38akevUYfxJdkl6E0sfuw7hCI5+2af3o1/V+hARIlaA00AAAAASUVORK5CYII="
-            alt="VS Code Logo"
-            className="w-full h-full"
-            draggable={false}
-          />
+          <VSCodeIcon />
         </div>
 
         {/* Menu Bar */}
@@ -106,7 +102,8 @@ export function MonacoLikePreview({
           className="w-12 flex flex-col justify-between py-2 border-r"
           style={{
             background: colors["activityBar.background"] || "#000815",
-            color: colors["activityBar.foreground"] || "rgba(255, 255, 255, 0.4)",
+            color:
+              colors["activityBar.foreground"] || "rgba(255, 255, 255, 0.4)",
             borderRightColor: colors["activityBar.border"] || "#6c6c6c",
           }}
         >
@@ -129,7 +126,9 @@ export function MonacoLikePreview({
             <div
               className="icon-wrap relative w-12 h-12 flex items-center justify-center cursor-pointer group"
               style={{
-                color: colors["activityBar.inactiveForeground"] || "rgba(255, 255, 255, 0.4)"
+                color:
+                  colors["activityBar.inactiveForeground"] ||
+                  "rgba(255, 255, 255, 0.4)",
               }}
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
@@ -141,7 +140,9 @@ export function MonacoLikePreview({
             <div
               className="icon-wrap relative w-12 h-12 flex items-center justify-center cursor-pointer group"
               style={{
-                color: colors["activityBar.inactiveForeground"] || "rgba(255, 255, 255, 0.4)"
+                color:
+                  colors["activityBar.inactiveForeground"] ||
+                  "rgba(255, 255, 255, 0.4)",
               }}
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
@@ -151,7 +152,8 @@ export function MonacoLikePreview({
               <div
                 className="badge absolute top-1 right-1 text-xs px-1 rounded-full min-w-[16px] h-4 flex items-center justify-center"
                 style={{
-                  background: colors["activityBarBadge.background"] || "#007acc",
+                  background:
+                    colors["activityBarBadge.background"] || "#007acc",
                   color: colors["activityBarBadge.foreground"] || "#ffffff",
                   fontSize: "10px",
                 }}
@@ -164,7 +166,9 @@ export function MonacoLikePreview({
             <div
               className="icon-wrap relative w-12 h-12 flex items-center justify-center cursor-pointer group"
               style={{
-                color: colors["activityBar.inactiveForeground"] || "rgba(255, 255, 255, 0.4)"
+                color:
+                  colors["activityBar.inactiveForeground"] ||
+                  "rgba(255, 255, 255, 0.4)",
               }}
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
@@ -176,11 +180,17 @@ export function MonacoLikePreview({
             <div
               className="icon-wrap relative w-12 h-12 flex items-center justify-center cursor-pointer group"
               style={{
-                color: colors["activityBar.inactiveForeground"] || "rgba(255, 255, 255, 0.4)"
+                color:
+                  colors["activityBar.inactiveForeground"] ||
+                  "rgba(255, 255, 255, 0.4)",
               }}
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                <path fillRule="evenodd" d="M13.5 1.5L15 0h7.5L24 1.5V9l-1.5 1.5H15L13.5 9zm1.5 0V9h7.5V1.5zM0 15V6l1.5-1.5H9L10.5 6v7.5H18l1.5 1.5v7.5L18 24H1.5L0 22.5zm9-1.5V6H1.5v7.5zM9 15H1.5v7.5H9zm1.5 7.5H18V15h-7.5z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M13.5 1.5L15 0h7.5L24 1.5V9l-1.5 1.5H15L13.5 9zm1.5 0V9h7.5V1.5zM0 15V6l1.5-1.5H9L10.5 6v7.5H18l1.5 1.5v7.5L18 24H1.5L0 22.5zm9-1.5V6H1.5v7.5zM9 15H1.5v7.5H9zm1.5 7.5H18V15h-7.5z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
           </div>
@@ -191,7 +201,9 @@ export function MonacoLikePreview({
             <div
               className="icon-wrap relative w-12 h-12 flex items-center justify-center cursor-pointer group"
               style={{
-                color: colors["activityBar.inactiveForeground"] || "rgba(255, 255, 255, 0.4)"
+                color:
+                  colors["activityBar.inactiveForeground"] ||
+                  "rgba(255, 255, 255, 0.4)",
               }}
             >
               <svg className="w-6 h-6" viewBox="0 0 16 16" fill="currentColor">
@@ -201,7 +213,8 @@ export function MonacoLikePreview({
               <div
                 className="badge absolute top-1 right-1 text-xs px-1 rounded-full min-w-[16px] h-4 flex items-center justify-center"
                 style={{
-                  background: colors["activityBarBadge.background"] || "#007acc",
+                  background:
+                    colors["activityBarBadge.background"] || "#007acc",
                   color: colors["activityBarBadge.foreground"] || "#ffffff",
                   fontSize: "10px",
                 }}
@@ -214,11 +227,17 @@ export function MonacoLikePreview({
             <div
               className="icon-wrap relative w-12 h-12 flex items-center justify-center cursor-pointer group"
               style={{
-                color: colors["activityBar.inactiveForeground"] || "rgba(255, 255, 255, 0.4)"
+                color:
+                  colors["activityBar.inactiveForeground"] ||
+                  "rgba(255, 255, 255, 0.4)",
               }}
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                <path fillRule="evenodd" d="m19.85 8.75l4.15.83v4.84l-4.15.83l2.35 3.52l-3.43 3.43l-3.52-2.35l-.83 4.15H9.58l-.83-4.15l-3.52 2.35l-3.43-3.43l2.35-3.52L0 14.42V9.58l4.15-.83L1.8 5.23L5.23 1.8l3.52 2.35L9.58 0h4.84l.83 4.15l3.52-2.35l3.43 3.43zm-1.57 5.07l4-.81v-2l-4-.81l-.54-1.3l2.29-3.43l-1.43-1.43l-3.43 2.29l-1.3-.54l-.81-4h-2l-.81 4l-1.3.54l-3.43-2.29l-1.43 1.43L6.38 8.9l-.54 1.3l-4 .81v2l4 .81l.54 1.3l-2.29 3.43l1.43 1.43l3.43-2.29l1.3.54l.81 4h2l.81-4l1.3-.54l3.43 2.29l1.43-1.43l-2.29-3.43zm-8.186-4.672A3.43 3.43 0 0 1 12 8.57A3.44 3.44 0 0 1 15.43 12a3.43 3.43 0 1 1-5.336-2.852m.956 4.274c.281.188.612.288.95.288A1.7 1.7 0 0 0 13.71 12a1.71 1.71 0 1 0-2.66 1.422" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="m19.85 8.75l4.15.83v4.84l-4.15.83l2.35 3.52l-3.43 3.43l-3.52-2.35l-.83 4.15H9.58l-.83-4.15l-3.52 2.35l-3.43-3.43l2.35-3.52L0 14.42V9.58l4.15-.83L1.8 5.23L5.23 1.8l3.52 2.35L9.58 0h4.84l.83 4.15l3.52-2.35l3.43 3.43zm-1.57 5.07l4-.81v-2l-4-.81l-.54-1.3l2.29-3.43l-1.43-1.43l-3.43 2.29l-1.3-.54l-.81-4h-2l-.81 4l-1.3.54l-3.43-2.29l-1.43 1.43L6.38 8.9l-.54 1.3l-4 .81v2l4 .81l.54 1.3l-2.29 3.43l1.43 1.43l3.43-2.29l1.3.54l.81 4h2l.81-4l1.3-.54l3.43 2.29l1.43-1.43l-2.29-3.43zm-8.186-4.672A3.43 3.43 0 0 1 12 8.57A3.44 3.44 0 0 1 15.43 12a3.43 3.43 0 1 1-5.336-2.852m.956 4.274c.281.188.612.288.95.288A1.7 1.7 0 0 0 13.71 12a1.71 1.71 0 1 0-2.66 1.422"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
           </div>
@@ -252,9 +271,14 @@ export function MonacoLikePreview({
               <div
                 className="px-3 py-2 text-xs font-semibold uppercase tracking-wider border-b"
                 style={{
-                  background: colors["sideBarSectionHeader.background"] || "#252526",
-                  color: colors["sideBarSectionHeader.foreground"] || colors["sideBarTitle.foreground"] || "#cccccc",
-                  borderBottomColor: colors["sideBarSectionHeader.border"] || "#6c6c6c",
+                  background:
+                    colors["sideBarSectionHeader.background"] || "#252526",
+                  color:
+                    colors["sideBarSectionHeader.foreground"] ||
+                    colors["sideBarTitle.foreground"] ||
+                    "#cccccc",
+                  borderBottomColor:
+                    colors["sideBarSectionHeader.border"] || "#6c6c6c",
                 }}
               >
                 Explorer
@@ -268,15 +292,25 @@ export function MonacoLikePreview({
                     color: colors["list.foreground"] || "#cccccc",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors["list.hoverBackground"] || "rgba(255, 255, 255, 0.1)";
-                    e.currentTarget.style.color = colors["list.hoverForeground"] || colors["list.foreground"] || "#ffffff";
+                    e.currentTarget.style.background =
+                      colors["list.hoverBackground"] ||
+                      "rgba(255, 255, 255, 0.1)";
+                    e.currentTarget.style.color =
+                      colors["list.hoverForeground"] ||
+                      colors["list.foreground"] ||
+                      "#ffffff";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = colors["list.foreground"] || "#cccccc";
+                    e.currentTarget.style.color =
+                      colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <svg className="w-4 h-4 text-blue-400" viewBox="0 0 16 16" fill="currentColor">
+                  <svg
+                    className="w-4 h-4 text-blue-400"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
                     <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z" />
                   </svg>
                   <span>{template.name.toLowerCase()}-project</span>
@@ -289,15 +323,25 @@ export function MonacoLikePreview({
                     color: colors["list.foreground"] || "#cccccc",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors["list.hoverBackground"] || "rgba(255, 255, 255, 0.1)";
-                    e.currentTarget.style.color = colors["list.hoverForeground"] || colors["list.foreground"] || "#ffffff";
+                    e.currentTarget.style.background =
+                      colors["list.hoverBackground"] ||
+                      "rgba(255, 255, 255, 0.1)";
+                    e.currentTarget.style.color =
+                      colors["list.hoverForeground"] ||
+                      colors["list.foreground"] ||
+                      "#ffffff";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = colors["list.foreground"] || "#cccccc";
+                    e.currentTarget.style.color =
+                      colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <svg className="w-4 h-4 text-blue-400" viewBox="0 0 16 16" fill="currentColor">
+                  <svg
+                    className="w-4 h-4 text-blue-400"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
                     <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z" />
                   </svg>
                   <span>src</span>
@@ -307,12 +351,18 @@ export function MonacoLikePreview({
                 <div
                   className="pl-10 py-1 text-sm rounded flex items-center gap-2 mx-1"
                   style={{
-                    background: colors["list.activeSelectionBackground"] || "#094771",
-                    color: colors["list.activeSelectionForeground"] || "#ffffff",
+                    background:
+                      colors["list.activeSelectionBackground"] || "#094771",
+                    color:
+                      colors["list.activeSelectionForeground"] || "#ffffff",
                     outline: `1px solid ${colors["list.focusOutline"] || "transparent"}`,
                   }}
                 >
-                  <svg className="w-4 h-4 text-orange-400" viewBox="0 0 16 16" fill="currentColor">
+                  <svg
+                    className="w-4 h-4 text-orange-400"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
                     <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
                   </svg>
                   <span>{template.filename}</span>
@@ -325,15 +375,25 @@ export function MonacoLikePreview({
                     color: colors["list.foreground"] || "#cccccc",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors["list.hoverBackground"] || "rgba(255, 255, 255, 0.1)";
-                    e.currentTarget.style.color = colors["list.hoverForeground"] || colors["list.foreground"] || "#ffffff";
+                    e.currentTarget.style.background =
+                      colors["list.hoverBackground"] ||
+                      "rgba(255, 255, 255, 0.1)";
+                    e.currentTarget.style.color =
+                      colors["list.hoverForeground"] ||
+                      colors["list.foreground"] ||
+                      "#ffffff";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = colors["list.foreground"] || "#cccccc";
+                    e.currentTarget.style.color =
+                      colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <svg className="w-4 h-4 text-blue-400" viewBox="0 0 16 16" fill="currentColor">
+                  <svg
+                    className="w-4 h-4 text-blue-400"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
                     <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z" />
                   </svg>
                   <span>public</span>
@@ -345,15 +405,25 @@ export function MonacoLikePreview({
                     color: colors["list.foreground"] || "#cccccc",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors["list.hoverBackground"] || "rgba(255, 255, 255, 0.1)";
-                    e.currentTarget.style.color = colors["list.hoverForeground"] || colors["list.foreground"] || "#ffffff";
+                    e.currentTarget.style.background =
+                      colors["list.hoverBackground"] ||
+                      "rgba(255, 255, 255, 0.1)";
+                    e.currentTarget.style.color =
+                      colors["list.hoverForeground"] ||
+                      colors["list.foreground"] ||
+                      "#ffffff";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = colors["list.foreground"] || "#cccccc";
+                    e.currentTarget.style.color =
+                      colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <svg className="w-4 h-4 text-green-400" viewBox="0 0 16 16" fill="currentColor">
+                  <svg
+                    className="w-4 h-4 text-green-400"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
                     <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
                   </svg>
                   <span>package.json</span>
@@ -363,11 +433,20 @@ export function MonacoLikePreview({
                 <div
                   className="pl-4 py-1 text-sm flex items-center gap-2 rounded cursor-pointer"
                   style={{
-                    background: colors["list.inactiveSelectionBackground"] || "rgba(255, 255, 255, 0.05)",
-                    color: colors["list.inactiveSelectionForeground"] || colors["list.foreground"] || "#cccccc",
+                    background:
+                      colors["list.inactiveSelectionBackground"] ||
+                      "rgba(255, 255, 255, 0.05)",
+                    color:
+                      colors["list.inactiveSelectionForeground"] ||
+                      colors["list.foreground"] ||
+                      "#cccccc",
                   }}
                 >
-                  <svg className="w-4 h-4 text-yellow-400" viewBox="0 0 16 16" fill="currentColor">
+                  <svg
+                    className="w-4 h-4 text-yellow-400"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
                     <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
                   </svg>
                   <span>README.md</span>
@@ -406,7 +485,8 @@ export function MonacoLikePreview({
                   <div
                     className="w-2 h-2 rounded-full ml-1"
                     style={{
-                      background: colors["tab.activeModifiedBorder"] || "#ff8c00",
+                      background:
+                        colors["tab.activeModifiedBorder"] || "#ff8c00",
                     }}
                   />
                   <button className="ml-2 w-4 h-4 text-white/60 hover:text-white/80 hover:bg-white/10 rounded flex items-center justify-center">
@@ -424,20 +504,32 @@ export function MonacoLikePreview({
                 <div
                   className="px-4 py-2 text-sm border-r flex items-center gap-2 cursor-pointer transition-colors"
                   style={{
-                    background: colors["tab.inactiveBackground"] || "transparent",
+                    background:
+                      colors["tab.inactiveBackground"] || "transparent",
                     color: colors["tab.inactiveForeground"] || "#969696",
                     borderRightColor: colors["tab.border"] || "#6c6c6c",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors["tab.hoverBackground"] || "rgba(255, 255, 255, 0.1)";
-                    e.currentTarget.style.color = colors["tab.hoverForeground"] || colors["tab.activeForeground"] || "#ffffff";
+                    e.currentTarget.style.background =
+                      colors["tab.hoverBackground"] ||
+                      "rgba(255, 255, 255, 0.1)";
+                    e.currentTarget.style.color =
+                      colors["tab.hoverForeground"] ||
+                      colors["tab.activeForeground"] ||
+                      "#ffffff";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = colors["tab.inactiveBackground"] || "transparent";
-                    e.currentTarget.style.color = colors["tab.inactiveForeground"] || "#969696";
+                    e.currentTarget.style.background =
+                      colors["tab.inactiveBackground"] || "transparent";
+                    e.currentTarget.style.color =
+                      colors["tab.inactiveForeground"] || "#969696";
                   }}
                 >
-                  <svg className="w-4 h-4 text-blue-400" viewBox="0 0 16 16" fill="currentColor">
+                  <svg
+                    className="w-4 h-4 text-blue-400"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
                     <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
                   </svg>
                   <span>utils.{template.language}</span>
@@ -447,20 +539,37 @@ export function MonacoLikePreview({
                 <div
                   className="px-4 py-2 text-sm border-r flex items-center gap-2 cursor-pointer transition-colors"
                   style={{
-                    background: colors["tab.unfocusedInactiveBackground"] || "transparent",
-                    color: colors["tab.unfocusedInactiveForeground"] || "rgba(150, 150, 150, 0.7)",
+                    background:
+                      colors["tab.unfocusedInactiveBackground"] ||
+                      "transparent",
+                    color:
+                      colors["tab.unfocusedInactiveForeground"] ||
+                      "rgba(150, 150, 150, 0.7)",
                     borderRightColor: colors["tab.border"] || "#6c6c6c",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors["tab.unfocusedHoverBackground"] || "rgba(255, 255, 255, 0.05)";
-                    e.currentTarget.style.color = colors["tab.unfocusedHoverForeground"] || colors["tab.inactiveForeground"] || "#969696";
+                    e.currentTarget.style.background =
+                      colors["tab.unfocusedHoverBackground"] ||
+                      "rgba(255, 255, 255, 0.05)";
+                    e.currentTarget.style.color =
+                      colors["tab.unfocusedHoverForeground"] ||
+                      colors["tab.inactiveForeground"] ||
+                      "#969696";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = colors["tab.unfocusedInactiveBackground"] || "transparent";
-                    e.currentTarget.style.color = colors["tab.unfocusedInactiveForeground"] || "rgba(150, 150, 150, 0.7)";
+                    e.currentTarget.style.background =
+                      colors["tab.unfocusedInactiveBackground"] ||
+                      "transparent";
+                    e.currentTarget.style.color =
+                      colors["tab.unfocusedInactiveForeground"] ||
+                      "rgba(150, 150, 150, 0.7)";
                   }}
                 >
-                  <svg className="w-4 h-4 text-green-400" viewBox="0 0 16 16" fill="currentColor">
+                  <svg
+                    className="w-4 h-4 text-green-400"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                  >
                     <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
                   </svg>
                   <span>config.json</span>
@@ -549,7 +658,9 @@ export function MonacoLikePreview({
             <div
               className="flex items-center px-4 py-1 border-b text-sm"
               style={{
-                background: colors["panelTitle.inactiveForeground"] ? "transparent" : colors["panel.background"] || "#1e1e1e",
+                background: colors["panelTitle.inactiveForeground"]
+                  ? "transparent"
+                  : colors["panel.background"] || "#1e1e1e",
                 borderBottomColor: colors["panel.border"] || "#6c6c6c",
               }}
             >
@@ -557,7 +668,8 @@ export function MonacoLikePreview({
                 className="px-3 py-1 border-b-2 cursor-pointer"
                 style={{
                   color: colors["panelTitle.activeForeground"] || "#ffffff",
-                  borderBottomColor: colors["panelTitle.activeBorder"] || "#007acc",
+                  borderBottomColor:
+                    colors["panelTitle.activeBorder"] || "#007acc",
                 }}
               >
                 TERMINAL
@@ -584,20 +696,49 @@ export function MonacoLikePreview({
             <div
               className="flex-1 p-2 text-sm font-mono overflow-auto"
               style={{
-                background: colors["terminal.background"] || colors["panel.background"] || "#1e1e1e",
+                background:
+                  colors["terminal.background"] ||
+                  colors["panel.background"] ||
+                  "#1e1e1e",
                 color: colors["terminal.foreground"] || "#cccccc",
               }}
             >
               <div className="flex items-center gap-2 mb-1">
-                <span style={{ color: colors["terminal.ansiGreen"] || "#16c60c" }}>➜</span>
-                <span style={{ color: colors["terminal.ansiCyan"] || "#3a96dd" }}>~</span>
+                <span
+                  style={{ color: colors["terminal.ansiGreen"] || "#16c60c" }}
+                >
+                  ➜
+                </span>
+                <span
+                  style={{ color: colors["terminal.ansiCyan"] || "#3a96dd" }}
+                >
+                  ~
+                </span>
                 <span className="ml-1">npm run dev</span>
               </div>
-              <div className="mb-1" style={{ color: colors["terminal.ansiYellow"] || "#d7ba7d" }}>Starting development server...</div>
-              <div className="mb-1" style={{ color: colors["terminal.ansiGreen"] || "#16c60c" }}>✓ Ready on http://localhost:3000</div>
+              <div
+                className="mb-1"
+                style={{ color: colors["terminal.ansiYellow"] || "#d7ba7d" }}
+              >
+                Starting development server...
+              </div>
+              <div
+                className="mb-1"
+                style={{ color: colors["terminal.ansiGreen"] || "#16c60c" }}
+              >
+                ✓ Ready on http://localhost:3000
+              </div>
               <div className="flex items-center gap-2">
-                <span style={{ color: colors["terminal.ansiGreen"] || "#16c60c" }}>➜</span>
-                <span style={{ color: colors["terminal.ansiCyan"] || "#3a96dd" }}>~</span>
+                <span
+                  style={{ color: colors["terminal.ansiGreen"] || "#16c60c" }}
+                >
+                  ➜
+                </span>
+                <span
+                  style={{ color: colors["terminal.ansiCyan"] || "#3a96dd" }}
+                >
+                  ~
+                </span>
                 <span className="ml-1 opacity-50">_</span>
               </div>
             </div>
@@ -663,11 +804,21 @@ export function MonacoLikePreview({
 
         {/* Right Items */}
         <div className="flex items-center">
-          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">Ln 9, Col 21</div>
-          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">Spaces: 4</div>
-          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">UTF-8</div>
-          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">LF</div>
-          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">{template.name}</div>
+          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">
+            Ln 9, Col 21
+          </div>
+          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">
+            Spaces: 4
+          </div>
+          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">
+            UTF-8
+          </div>
+          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">
+            LF
+          </div>
+          <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">
+            {template.name}
+          </div>
 
           {/* Smiley Icon */}
           <div className="px-2 py-1 cursor-pointer hover:bg-white/[0.12]">

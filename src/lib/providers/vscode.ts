@@ -315,7 +315,7 @@ const defaultTokenColorMap: TokenColorMap = {
   labels: "ac_2", // goto labels
 };
 
-const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
+export const tokenToScopeMapping: Record<SemanticToken, string | string[]> = {
   classes: ["entity.name.type.class"],
   interfaces: ["entity.name.type.interface", "entity.name.type"],
   structs: ["entity.name.type.struct"],

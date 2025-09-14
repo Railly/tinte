@@ -12,10 +12,10 @@ export function OverridesTab() {
 
   const getSearchPlaceholder = () => {
     if (provider === "shadcn") {
-      return "Search tokens... (e.g., background, foreground, primary)";
+      return "Search tokens...";
     }
     if (provider === "vscode") {
-      return "Search tokens... (e.g., entity.name.type.class, editor.background)";
+      return "Search by name, key, or scope...";
     }
     return "Search tokens...";
   };

@@ -20,6 +20,7 @@ import {
   editorColorMap,
   type SemanticToken,
   type TokenColorMap,
+  tokenToScopeMapping,
 } from "@/lib/providers/vscode";
 import {
   createInitialVSCodeTokenGroups,
@@ -727,11 +728,22 @@ export function VSCodeOverridesPanel({
 
     return baseGroupsToRender
       .map((group) => {
-        const filteredTokens = group.tokens.filter(
-          (token) =>
-            token.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            token.displayName.toLowerCase().includes(searchQuery.toLowerCase()),
-        );
+        const filteredTokens = group.tokens.filter((token) => {
+          const query = searchQuery.toLowerCase();
+
+          // Search by token key and display name
+          const keyMatch = token.key.toLowerCase().includes(query) ||
+                          token.displayName.toLowerCase().includes(query) ||
+                          token.description.toLowerCase().includes(query);
+
+          // Search by VSCode scopes
+          const scopes = tokenToScopeMapping[token.key];
+          const scopeMatch = scopes && (Array.isArray(scopes)
+            ? scopes.some(scope => scope.toLowerCase().includes(query))
+            : scopes.toLowerCase().includes(query));
+
+          return keyMatch || scopeMatch;
+        });
 
         return {
           ...group,
@@ -759,6 +771,21 @@ export function VSCodeOverridesPanel({
       };
     }).filter((group) => group.colors.length > 0);
   }, [searchQuery]);
+
+  // Determine if there are search results in each tab
+  const hasTokenResults = searchQuery.trim() && filteredTokenGroups.length > 0;
+  const hasEditorResults = searchQuery.trim() && filteredEditorGroups.length > 0;
+
+  // Auto-switch tab if search results are only in the other tab
+  React.useEffect(() => {
+    if (!searchQuery.trim()) return;
+
+    if (activeTab === "tokens" && !hasTokenResults && hasEditorResults) {
+      setActiveTab("editor");
+    } else if (activeTab === "editor" && !hasEditorResults && hasTokenResults) {
+      setActiveTab("tokens");
+    }
+  }, [searchQuery, hasTokenResults, hasEditorResults, activeTab]);
 
   const handleTokenChange = (tokenKey: SemanticToken, value: string) => {
     setOverride(tokenKey, value);
@@ -877,8 +904,18 @@ export function VSCodeOverridesPanel({
       <div className="flex-shrink-0 bg-muted/30 mb-2">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 gap-2 pl-1">
-            <TabsTrigger value="tokens">Token Colors</TabsTrigger>
-            <TabsTrigger value="editor">Editor Colors</TabsTrigger>
+            <TabsTrigger value="tokens" className="relative">
+              Token Colors
+              {searchQuery.trim() && hasTokenResults && (
+                <span className="absolute -top-1 -right-1 h-2 w-2 bg-primary rounded-full"></span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="editor" className="relative">
+              Editor Colors
+              {searchQuery.trim() && hasEditorResults && (
+                <span className="absolute -top-1 -right-1 h-2 w-2 bg-primary rounded-full"></span>
+              )}
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -890,6 +927,12 @@ export function VSCodeOverridesPanel({
       >
         {activeTab === "tokens" && (
           <div className="space-y-4 pb-2">
+            {searchQuery.trim() && !hasTokenResults && hasEditorResults && (
+              <div className="p-4 text-center text-muted-foreground bg-muted/20 rounded-md">
+                <p className="text-sm">No token colors found for "{searchQuery}"</p>
+                <p className="text-xs mt-1">Found results in Editor Colors tab</p>
+              </div>
+            )}
             {filteredTokenGroups.map((group) => (
               <Collapsible
                 key={group.label}
@@ -932,6 +975,12 @@ export function VSCodeOverridesPanel({
 
         {activeTab === "editor" && (
           <div className="space-y-4 pb-2">
+            {searchQuery.trim() && !hasEditorResults && hasTokenResults && (
+              <div className="p-4 text-center text-muted-foreground bg-muted/20 rounded-md">
+                <p className="text-sm">No editor colors found for "{searchQuery}"</p>
+                <p className="text-xs mt-1">Found results in Token Colors tab</p>
+              </div>
+            )}
             {filteredEditorGroups.map((group) => (
               <Collapsible
                 key={group.label}

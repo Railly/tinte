@@ -10,15 +10,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  codeTemplates,
-  type VSCodeTheme,
-} from "@/lib/providers/vscode";
+import { codeTemplates, type VSCodeTheme } from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
+import { MonacoLikePreview } from "./monaco-like-preview";
 import { MonacoPreview } from "./monaco-preview";
 import { ShikiPreview } from "./shiki-preview";
 import { TokensPreview } from "./tokens-preview";
-import { MonacoLikePreview } from "./monaco-like-preview";
 
 interface VSCodePreviewProps {
   theme: { light: VSCodeTheme; dark: VSCodeTheme };
@@ -261,15 +258,6 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
             />
           </div>
         )}
-      </div>
-
-      {/* Status bar */}
-      <div className="px-4 py-1 text-xs flex items-center justify-between flex-shrink-0 bg-muted/50 text-muted-foreground border-t border-border">
-        <div>
-          {currentTemplate.name} •{" "}
-          {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} View
-        </div>
-        <div>Ln 1, Col 1</div>
       </div>
     </div>
   );
