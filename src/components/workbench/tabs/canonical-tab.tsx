@@ -147,20 +147,20 @@ export function CanonicalTab() {
       return null;
     }
 
-    // After hydration, prioritize preloaded colors for immediate display
-    if (preloadedColors) {
-      return preloadedColors;
-    }
-
-    // Fallback to context tinteTheme data
+    // First priority: context tinteTheme data (reactive to mode changes)
     const tinteColors = tinteTheme?.[currentMode];
     if (tinteColors) {
       return tinteColors;
     }
 
+    // Second priority: preloaded colors (only for initial load)
+    if (preloadedColors) {
+      return preloadedColors;
+    }
+
     // No data available
     return null;
-  }, [mounted, preloadedColors, tinteTheme, currentMode]);
+  }, [mounted, tinteTheme, currentMode, preloadedColors]);
 
   const shouldShowSkeletons = React.useMemo(() => {
     // If we have valid preloaded colors or valid tinteTheme, don't show loading
