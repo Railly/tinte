@@ -93,16 +93,16 @@ export function CanonicalTab() {
     return null;
   }, []);
 
-  // Convert flattened preloaded theme to nested structure for canonical tab
+  // Convert preloaded theme to TinteBlock format for canonical tab
   const preloadedColors = React.useMemo(() => {
     if (!preloadedTheme || typeof window === "undefined") return null;
 
-    // Prioritize rawTheme structure (canonical format for tinte)
+    // First, try to get rawTheme structure (TinteTheme format)
     if (preloadedTheme.rawTheme?.[currentMode]) {
       return preloadedTheme.rawTheme[currentMode];
     }
 
-    // Fallback to flattened format
+    // Second, try flattened format (dark_bg, light_bg, etc.)
     const colors: Record<string, string> = {};
     const prefix = currentMode + "_";
 
@@ -113,21 +113,75 @@ export function CanonicalTab() {
       }
     }
 
-    return Object.keys(colors).length > 0 ? colors : null;
+    if (Object.keys(colors).length > 0) {
+      return colors;
+    }
+
+    // Third, try to extract from computedTokens and convert to tinte format
+    if (preloadedTheme.computedTokens?.[currentMode]) {
+      const shadcnTokens = preloadedTheme.computedTokens[currentMode];
+      // Convert shadcn tokens back to tinte format approximation
+      return {
+        bg: shadcnTokens.background,
+        bg_2: shadcnTokens.card,
+        ui: shadcnTokens.border,
+        ui_2: shadcnTokens.input,
+        ui_3: shadcnTokens.muted,
+        tx_3: shadcnTokens['muted-foreground'],
+        tx_2: shadcnTokens['secondary-foreground'],
+        tx: shadcnTokens.foreground,
+        pr: shadcnTokens.primary,
+        sc: shadcnTokens.secondary,
+        ac_1: shadcnTokens.accent,
+        ac_2: shadcnTokens.accent,
+        ac_3: shadcnTokens.accent,
+      };
+    }
+
+    return null;
   }, [preloadedTheme, currentMode]);
 
   const currentColors = React.useMemo(() => {
-    // During SSR or if not mounted yet, show loading state
+    // During SSR, show loading state
     if (!mounted) {
       return null;
     }
 
-    // After hydration, prioritize tinteTheme from context
-    return tinteTheme?.[currentMode] || preloadedColors;
-  }, [mounted, tinteTheme, currentMode, preloadedColors]);
+    // After hydration, prioritize preloaded colors for immediate display
+    if (preloadedColors) {
+      return preloadedColors;
+    }
 
-  const shouldShowSkeletons =
-    !mounted || !currentColors || !hasValidTinteColors(currentColors);
+    // Fallback to context tinteTheme data
+    const tinteColors = tinteTheme?.[currentMode];
+    if (tinteColors) {
+      return tinteColors;
+    }
+
+    // No data available
+    return null;
+  }, [mounted, preloadedColors, tinteTheme, currentMode]);
+
+  const shouldShowSkeletons = React.useMemo(() => {
+    // If we have valid preloaded colors or valid tinteTheme, don't show loading
+    if (preloadedColors && hasValidTinteColors(preloadedColors)) {
+      return false;
+    }
+
+    // If we have valid currentColors, don't show loading
+    if (currentColors && hasValidTinteColors(currentColors)) {
+      return false;
+    }
+
+    // If we have tinteTheme data even before mounting, don't show loading
+    if (tinteTheme?.[currentMode] && hasValidTinteColors(tinteTheme[currentMode])) {
+      return false;
+    }
+
+    // Only show loading if we truly don't have valid data
+    return !mounted || !currentColors || !hasValidTinteColors(currentColors);
+  }, [mounted, currentColors, preloadedColors, tinteTheme, currentMode]);
+
   const groupsToRender = shouldShowSkeletons
     ? createCanonicalSkeletons()
     : COLOR_GROUPS;

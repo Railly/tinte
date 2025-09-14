@@ -485,7 +485,7 @@ const getInitialState = () => {
     loadedShikiOverride = dbThemeOverrides.shiki;
   }
 
-  // Extract TinteTheme
+  // Extract TinteTheme from various sources
   let tinteTheme: TinteTheme;
   if (theme?.rawTheme && typeof theme.rawTheme === "object") {
     if ("light" in theme.rawTheme && "dark" in theme.rawTheme) {
@@ -498,6 +498,41 @@ const getInitialState = () => {
     } else {
       tinteTheme = shadcnToTinte(theme.rawTheme as ShadcnTheme);
     }
+  } else if (theme && 'light_bg' in theme && 'dark_bg' in theme) {
+    // Database theme with flat structure - convert to TinteTheme
+    const flatTheme = theme as any;
+    tinteTheme = {
+      light: {
+        bg: flatTheme.light_bg,
+        bg_2: flatTheme.light_bg_2,
+        ui: flatTheme.light_ui,
+        ui_2: flatTheme.light_ui_2,
+        ui_3: flatTheme.light_ui_3,
+        tx: flatTheme.light_tx,
+        tx_2: flatTheme.light_tx_2,
+        tx_3: flatTheme.light_tx_3,
+        pr: flatTheme.light_pr,
+        sc: flatTheme.light_sc,
+        ac_1: flatTheme.light_ac_1,
+        ac_2: flatTheme.light_ac_2,
+        ac_3: flatTheme.light_ac_3,
+      },
+      dark: {
+        bg: flatTheme.dark_bg,
+        bg_2: flatTheme.dark_bg_2,
+        ui: flatTheme.dark_ui,
+        ui_2: flatTheme.dark_ui_2,
+        ui_3: flatTheme.dark_ui_3,
+        tx: flatTheme.dark_tx,
+        tx_2: flatTheme.dark_tx_2,
+        tx_3: flatTheme.dark_tx_3,
+        pr: flatTheme.dark_pr,
+        sc: flatTheme.dark_sc,
+        ac_1: flatTheme.dark_ac_1,
+        ac_2: flatTheme.dark_ac_2,
+        ac_3: flatTheme.dark_ac_3,
+      }
+    };
   } else {
     tinteTheme = DEFAULT_THEME.rawTheme as TinteTheme;
   }
@@ -694,7 +729,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           });
         }
 
-        // Extract TinteTheme
+        // Extract TinteTheme from various sources
         let tinteTheme: TinteTheme;
         if (theme?.rawTheme && typeof theme.rawTheme === "object") {
           if ("light" in theme.rawTheme && "dark" in theme.rawTheme) {
@@ -707,6 +742,41 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           } else {
             tinteTheme = shadcnToTinte(theme.rawTheme as ShadcnTheme);
           }
+        } else if (theme && 'light_bg' in theme && 'dark_bg' in theme) {
+          // Database theme with flat structure - convert to TinteTheme
+          const flatTheme = theme as any;
+          tinteTheme = {
+            light: {
+              bg: flatTheme.light_bg,
+              bg_2: flatTheme.light_bg_2,
+              ui: flatTheme.light_ui,
+              ui_2: flatTheme.light_ui_2,
+              ui_3: flatTheme.light_ui_3,
+              tx: flatTheme.light_tx,
+              tx_2: flatTheme.light_tx_2,
+              tx_3: flatTheme.light_tx_3,
+              pr: flatTheme.light_pr,
+              sc: flatTheme.light_sc,
+              ac_1: flatTheme.light_ac_1,
+              ac_2: flatTheme.light_ac_2,
+              ac_3: flatTheme.light_ac_3,
+            },
+            dark: {
+              bg: flatTheme.dark_bg,
+              bg_2: flatTheme.dark_bg_2,
+              ui: flatTheme.dark_ui,
+              ui_2: flatTheme.dark_ui_2,
+              ui_3: flatTheme.dark_ui_3,
+              tx: flatTheme.dark_tx,
+              tx_2: flatTheme.dark_tx_2,
+              tx_3: flatTheme.dark_tx_3,
+              pr: flatTheme.dark_pr,
+              sc: flatTheme.dark_sc,
+              ac_1: flatTheme.dark_ac_1,
+              ac_2: flatTheme.dark_ac_2,
+              ac_3: flatTheme.dark_ac_3,
+            }
+          };
         } else {
           tinteTheme = DEFAULT_THEME.rawTheme as TinteTheme;
         }
@@ -889,6 +959,41 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             } else {
               tinteTheme = shadcnToTinte(theme.rawTheme as ShadcnTheme);
             }
+          } else if (theme && 'light_bg' in theme && 'dark_bg' in theme) {
+            // Database theme with flat structure - convert to TinteTheme
+            const flatTheme = theme as any;
+            tinteTheme = {
+              light: {
+                bg: flatTheme.light_bg,
+                bg_2: flatTheme.light_bg_2,
+                ui: flatTheme.light_ui,
+                ui_2: flatTheme.light_ui_2,
+                ui_3: flatTheme.light_ui_3,
+                tx: flatTheme.light_tx,
+                tx_2: flatTheme.light_tx_2,
+                tx_3: flatTheme.light_tx_3,
+                pr: flatTheme.light_pr,
+                sc: flatTheme.light_sc,
+                ac_1: flatTheme.light_ac_1,
+                ac_2: flatTheme.light_ac_2,
+                ac_3: flatTheme.light_ac_3,
+              },
+              dark: {
+                bg: flatTheme.dark_bg,
+                bg_2: flatTheme.dark_bg_2,
+                ui: flatTheme.dark_ui,
+                ui_2: flatTheme.dark_ui_2,
+                ui_3: flatTheme.dark_ui_3,
+                tx: flatTheme.dark_tx,
+                tx_2: flatTheme.dark_tx_2,
+                tx_3: flatTheme.dark_tx_3,
+                pr: flatTheme.dark_pr,
+                sc: flatTheme.dark_sc,
+                ac_1: flatTheme.dark_ac_1,
+                ac_2: flatTheme.dark_ac_2,
+                ac_3: flatTheme.dark_ac_3,
+              }
+            };
           } else {
             tinteTheme = DEFAULT_THEME.rawTheme as TinteTheme;
           }

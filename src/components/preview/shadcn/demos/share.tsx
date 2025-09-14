@@ -22,24 +22,29 @@ import { Separator } from "@/components/ui/separator";
 
 const people = [
   {
-    name: "Olivia Martin",
-    email: "m@example.com",
-    avatar: "/avatars/03.png",
+    name: "Midudev",
+    email: "miduga@gmail.com",
+    avatar: "/avatars/02.webp",
   },
   {
-    name: "Isabella Nguyen",
-    email: "b@example.com",
-    avatar: "/avatars/04.png",
+    name: "Anthony Cueva",
+    email: "anthony@crafterstation.com",
+    avatar: "/avatars/04.webp",
   },
   {
-    name: "Sofia Davis",
-    email: "p@example.com",
-    avatar: "/avatars/05.png",
+    name: "Cristian Correa",
+    email: "cristian@crafterstation.com",
+    avatar: "/avatars/05.webp",
   },
   {
-    name: "Ethan Thompson",
-    email: "e@example.com",
-    avatar: "/avatars/01.png",
+    name: "Railly Hugo",
+    email: "railly@crafterstation.com",
+    avatar: "/avatars/01.webp",
+  },
+  {
+    name: "Mateo Alvarez",
+    email: "mateo@example.com",
+    avatar: "/avatars/03.webp",
   },
 ];
 export function CardsShare() {

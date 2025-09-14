@@ -14,6 +14,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useShadcnOverrides } from "@/hooks/use-provider-overrides";
 import {
   createInitialOpenGroups,
   createSkeletonGroups,
@@ -21,7 +22,6 @@ import {
   organizeRealTokens,
 } from "@/lib/theme-editor-utils";
 import { useThemeContext } from "@/providers/theme";
-import { useShadcnOverrides } from "@/hooks/use-provider-overrides";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";
 import { EnhancedTokenInput } from "./enhanced-token-input";
@@ -48,7 +48,8 @@ export function ShadcnOverridesPanel({
   onSearchChange,
   searchPlaceholder = "Search tokens...",
 }: ShadcnOverridesPanelProps) {
-  const { currentTokens, handleTokenEdit, mounted, currentMode } = useThemeContext();
+  const { currentTokens, handleTokenEdit, mounted, currentMode } =
+    useThemeContext();
   const shadcnOverrides = useShadcnOverrides();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     createInitialOpenGroups,
@@ -114,7 +115,7 @@ export function ShadcnOverridesPanel({
     <div className="flex flex-col h-full">
       <div className="px-1 pb-2">
         <h3 className="text-sm font-medium flex items-center gap-1">
-          Override Tokens ({currentMode})
+          Override Tokens
           <Tooltip>
             <TooltipTrigger asChild>
               <Info className="w-3 h-3 text-muted-foreground/60 cursor-help" />
