@@ -48,7 +48,7 @@ export function ShadcnOverridesPanel({
   onSearchChange,
   searchPlaceholder = "Search tokens...",
 }: ShadcnOverridesPanelProps) {
-  const { currentTokens, handleTokenEdit, mounted, currentMode } =
+  const { currentTokens, mounted, currentMode } =
     useThemeContext();
   const shadcnOverrides = useShadcnOverrides();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
@@ -61,6 +61,13 @@ export function ShadcnOverridesPanel({
       [groupName]: !prev[groupName],
     }));
   };
+
+  const handleTokenEdit = React.useCallback(
+    (key: string, value: string) => {
+      shadcnOverrides.setOverride(key, value);
+    },
+    [shadcnOverrides],
+  );
 
   const handleFontSelect = React.useCallback(
     (key: string, font: FontInfo) => {

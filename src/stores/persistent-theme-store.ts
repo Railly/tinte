@@ -1204,6 +1204,15 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             }
           }
 
+          // Apply current overrides to preserve precedence over canonical changes
+          if (state.shadcnOverride && state.shadcnOverride[state.currentMode]) {
+            Object.entries(state.shadcnOverride[state.currentMode]).forEach(([key, value]) => {
+              if (typeof value === "string") {
+                processedTokens[key] = convertColorToHex(value);
+              }
+            });
+          }
+
           // Handle tweakcn conversion if needed
           let finalActiveTheme;
           if (state.activeTheme.author === "tweakcn" && !isUserOwnedTheme) {
@@ -1236,19 +1245,44 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
       updateShadcnOverride: (override) => {
         set((state) => {
           const currentOverride = state.shadcnOverride || {};
+          const newShadcnOverride = { ...currentOverride, ...override };
+
+          // Recalculate currentTokens with new overrides applied
+          const computedTokens = computeThemeTokens(state.activeTheme);
+          const baseTokens = computedTokens[state.currentMode];
+          const processedTokens: Record<string, string> = {};
+
+          // First, populate with base extrapolated tokens
+          for (const [key, value] of Object.entries(baseTokens)) {
+            if (typeof value === "string") {
+              processedTokens[key] = convertColorToHex(value);
+            }
+          }
+
+          // Then apply new overrides for current mode
+          if (newShadcnOverride && newShadcnOverride[state.currentMode]) {
+            Object.entries(newShadcnOverride[state.currentMode]).forEach(([key, value]) => {
+              if (typeof value === "string") {
+                processedTokens[key] = convertColorToHex(value);
+              }
+            });
+          }
+
           return {
-            shadcnOverride: { ...currentOverride, ...override },
+            shadcnOverride: newShadcnOverride,
+            currentTokens: processedTokens,
             unsavedChanges: true,
           };
         });
 
-        // Immediately persist to localStorage
-        const { activeTheme, currentMode, shadcnOverride, vscodeOverride, shikiOverride } = get();
+        // Immediately persist to localStorage and apply to DOM
+        const { activeTheme, currentMode, shadcnOverride, vscodeOverride, shikiOverride, currentTokens } = get();
         saveToStorage(activeTheme, currentMode, {
           shadcn: shadcnOverride,
           vscode: vscodeOverride,
           shiki: shikiOverride
         });
+        applyProcessedTokensToDOM(activeTheme, currentMode, currentTokens);
       },
 
       updateVscodeOverride: (override) => {
