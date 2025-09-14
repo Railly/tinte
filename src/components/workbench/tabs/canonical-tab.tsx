@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Wand2 } from "lucide-react";
+import { ChevronDown, Info, Wand2 } from "lucide-react";
 import * as React from "react";
 import { CanonicalColorInput } from "@/components/shared/canonical-color-input";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
@@ -20,6 +20,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   generateFullNeutralRamp,
   getAllNeutralKeys,
@@ -115,12 +116,19 @@ export function CanonicalTab() {
     <div className="flex flex-col h-full">
       <div className="px-1 pb-2">
         <div>
-          <h3 className="text-sm font-medium">
-            Canonical Colors ({currentMode})
-          </h3>
-          <p className="text-xs text-muted-foreground mt-1">
-            Edit the source colors that generate all theme variants
-          </p>
+          <div className="flex items-center gap-1">
+            <h3 className="text-sm font-medium">
+              Canonical Colors ({currentMode})
+            </h3>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-3 w-3 text-muted-foreground/60 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                Source colors for all theme variants
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
       </div>
 

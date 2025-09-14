@@ -414,8 +414,7 @@ export function ShikiOverridesPanel({
             </TooltipTrigger>
             <TooltipContent>
               <p className="text-xs">
-                Customize syntax highlighting colors using CSS variables for
-                Shiki themes
+                Customize syntax highlighting colors using CSS variables
               </p>
             </TooltipContent>
           </Tooltip>
