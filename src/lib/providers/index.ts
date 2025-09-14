@@ -12,32 +12,33 @@ export { shikiProvider } from "./shiki";
 export { slackProvider } from "./slack";
 export * from "./types";
 export * from "./vscode";
-export { warpProvider } from "./warp";
-export { windowsTerminalProvider } from "./windows-terminal";
 
-import { alacrittyProvider } from "./alacritty";
-import { bananaProvider } from "./banana";
-import { gimpProvider } from "./gimp";
-import { kittyProvider } from "./kitty";
 import { ProviderRegistry } from "./registry";
 import { shadcnProvider } from "./shadcn";
 import { shikiProvider } from "./shiki";
-import { slackProvider } from "./slack";
 import { vscodeProvider } from "./vscode";
-import { warpProvider } from "./warp";
-import { windowsTerminalProvider } from "./windows-terminal";
+
+// import { alacrittyProvider } from "./alacritty";
+// import { bananaProvider } from "./banana";
+// import { gimpProvider } from "./gimp";
+// import { kittyProvider } from "./kitty";
+// export { warpProvider } from "./warp";
+// export { windowsTerminalProvider } from "./windows-terminal";
+// import { slackProvider } from "./slack";
+// import { warpProvider } from "./warp";
+// import { windowsTerminalProvider } from "./windows-terminal";
 
 const registry = new ProviderRegistry();
 registry.registerPreviewable(shadcnProvider);
 registry.registerPreviewable(vscodeProvider);
 registry.registerPreviewable(shikiProvider);
-registry.registerPreviewable(alacrittyProvider);
-registry.registerPreviewable(bananaProvider);
-registry.registerPreviewable(kittyProvider);
-registry.registerPreviewable(warpProvider);
-registry.registerPreviewable(windowsTerminalProvider);
-registry.registerPreviewable(gimpProvider);
-registry.registerPreviewable(slackProvider);
+// registry.registerPreviewable(alacrittyProvider);
+// registry.registerPreviewable(bananaProvider);
+// registry.registerPreviewable(kittyProvider);
+// registry.registerPreviewable(warpProvider);
+// registry.registerPreviewable(windowsTerminalProvider);
+// registry.registerPreviewable(gimpProvider);
+// registry.registerPreviewable(slackProvider);
 
 export function getAvailableProviders() {
   return registry.getAll();

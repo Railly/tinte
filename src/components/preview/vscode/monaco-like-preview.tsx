@@ -2,6 +2,14 @@
 
 import Editor from "@monaco-editor/react";
 import React from "react";
+import { Folder } from "@/components/shared/icons/folder";
+import { FolderOpened } from "@/components/shared/icons/folder-opened";
+import { BrandGolang } from "@/components/shared/icons/golang";
+import { Javascript } from "@/components/shared/icons/javascript";
+import { Json } from "@/components/shared/icons/json";
+import { Markdown } from "@/components/shared/icons/markdown";
+import { Python } from "@/components/shared/icons/python";
+import { Typescript } from "@/components/shared/icons/typescript";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import {
   Select,
@@ -37,6 +45,80 @@ export function MonacoLikePreview({
   selectedTemplate = 0,
   onTemplateChange = () => {},
 }: MonacoLikePreviewProps) {
+  const getFileExtension = (language: string): string => {
+    const languageToExtension: Record<string, string> = {
+      javascript: "js",
+      typescript: "ts",
+      python: "py",
+      go: "go",
+      rust: "rs",
+      java: "java",
+      cpp: "cpp",
+      c: "c",
+    };
+    return languageToExtension[language] || language;
+  };
+
+  const getLanguageIcon = (
+    language: string,
+    className: string,
+    color: string,
+  ) => {
+    const iconStyle = { color };
+    switch (language) {
+      case "javascript":
+        return <Javascript className={className} style={iconStyle} />;
+      case "typescript":
+        return <Typescript className={className} style={iconStyle} />;
+      case "python":
+        return <Python className={className} style={iconStyle} />;
+      case "go":
+        return <BrandGolang className={className} style={iconStyle} />;
+      default:
+        return (
+          <svg
+            className={className}
+            style={iconStyle}
+            viewBox="0 0 16 16"
+            fill="currentColor"
+          >
+            <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
+          </svg>
+        );
+    }
+  };
+
+  const getFileIcon = (filename: string, className: string, color: string) => {
+    const extension = filename.split(".").pop()?.toLowerCase();
+    const iconStyle = { color };
+    switch (extension) {
+      case "js":
+        return <Javascript className={className} style={iconStyle} />;
+      case "ts":
+      case "tsx":
+        return <Typescript className={className} style={iconStyle} />;
+      case "py":
+        return <Python className={className} style={iconStyle} />;
+      case "go":
+        return <BrandGolang className={className} style={iconStyle} />;
+      case "json":
+        return <Json className={className} style={iconStyle} />;
+      case "md":
+        return <Markdown className={className} style={iconStyle} />;
+      default:
+        return (
+          <svg
+            className={className}
+            style={iconStyle}
+            viewBox="0 0 16 16"
+            fill="currentColor"
+          >
+            <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
+          </svg>
+        );
+    }
+  };
+
   const currentTheme = themeSet[currentMode];
   const colors = currentTheme.colors;
   const { currentTokens } = useThemeContext();
@@ -116,7 +198,7 @@ export function MonacoLikePreview({
             onValueChange={(value) => onTemplateChange(parseInt(value))}
           >
             <SelectTrigger
-              className="w-32 h-6 text-xs border-none px-2"
+              className="w-32 h-6 text-xs border-none px-2 flex items-center gap-1"
               style={{
                 background: "rgba(255, 255, 255, 0.1)",
                 color: colors["titleBar.activeForeground"] || "#cccccc",
@@ -127,7 +209,14 @@ export function MonacoLikePreview({
             <SelectContent>
               {codeTemplates.map((template, index) => (
                 <SelectItem key={index} value={index.toString()}>
-                  {template.name}
+                  <div className="flex items-center gap-2">
+                    {getLanguageIcon(
+                      template.language,
+                      "w-4 h-4",
+                      "currentColor",
+                    )}
+                    <span>{template.name}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -346,13 +435,10 @@ export function MonacoLikePreview({
                       colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-blue-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z" />
-                  </svg>
+                  <FolderOpened
+                    className="w-4 h-4"
+                    style={{ color: colors["list.foreground"] || "#cccccc" }}
+                  />
                   <span>{template.name.toLowerCase()}-project</span>
                 </div>
 
@@ -377,13 +463,10 @@ export function MonacoLikePreview({
                       colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-blue-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z" />
-                  </svg>
+                  <Folder
+                    className="w-4 h-4"
+                    style={{ color: colors["list.foreground"] || "#cccccc" }}
+                  />
                   <span>src</span>
                 </div>
 
@@ -398,13 +481,11 @@ export function MonacoLikePreview({
                     outline: `1px solid ${colors["list.focusOutline"] || "transparent"}`,
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-orange-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
-                  </svg>
+                  {getFileIcon(
+                    template.filename,
+                    "w-4 h-4",
+                    colors["list.activeSelectionForeground"] || "#ffffff",
+                  )}
                   <span>{template.filename}</span>
                 </div>
 
@@ -429,13 +510,10 @@ export function MonacoLikePreview({
                       colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-blue-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z" />
-                  </svg>
+                  <Folder
+                    className="w-4 h-4"
+                    style={{ color: colors["list.foreground"] || "#cccccc" }}
+                  />
                   <span>public</span>
                 </div>
 
@@ -459,13 +537,10 @@ export function MonacoLikePreview({
                       colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-green-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
-                  </svg>
+                  <Json
+                    className="w-4 h-4"
+                    style={{ color: colors["list.foreground"] || "#cccccc" }}
+                  />
                   <span>package.json</span>
                 </div>
 
@@ -482,13 +557,10 @@ export function MonacoLikePreview({
                       "#cccccc",
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-yellow-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
-                  </svg>
+                  <Markdown
+                    className="w-4 h-4"
+                    style={{ color: colors["list.foreground"] || "#cccccc" }}
+                  />
                   <span>README.md</span>
                 </div>
               </div>
@@ -514,13 +586,11 @@ export function MonacoLikePreview({
                     borderRightColor: colors["tab.border"] || "#6c6c6c",
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-orange-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
-                  </svg>
+                  {getFileIcon(
+                    template.filename,
+                    "w-4 h-4",
+                    colors["list.activeSelectionForeground"] || "#ffffff",
+                  )}
                   <span>{template.filename}</span>
                   <div
                     className="w-2 h-2 rounded-full ml-1"
@@ -565,14 +635,12 @@ export function MonacoLikePreview({
                       colors["tab.inactiveForeground"] || "#969696";
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-blue-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
-                  </svg>
-                  <span>utils.{template.language}</span>
+                  {getFileIcon(
+                    `utils.${getFileExtension(template.language)}`,
+                    "w-4 h-4",
+                    colors["tab.inactiveForeground"] || "#969696",
+                  )}
+                  <span>utils.{getFileExtension(template.language)}</span>
                 </div>
 
                 {/* Unfocused Tab with Hover State */}
@@ -605,13 +673,10 @@ export function MonacoLikePreview({
                       "rgba(150, 150, 150, 0.7)";
                   }}
                 >
-                  <svg
-                    className="w-4 h-4 text-green-400"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z" />
-                  </svg>
+                  <Json
+                    className="w-4 h-4"
+                    style={{ color: colors["list.foreground"] || "#cccccc" }}
+                  />
                   <span>config.json</span>
                 </div>
               </div>
