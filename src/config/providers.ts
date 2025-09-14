@@ -11,6 +11,7 @@ import { NeovimIcon } from "@/components/shared/icons/neovim";
 import { ObsidianIcon } from "@/components/shared/icons/obsidian";
 import { ReplitIcon } from "@/components/shared/icons/replit";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
+import { ShikiIcon } from "@/components/shared/icons/shiki";
 import { SlackIcon } from "@/components/shared/icons/slack";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import { WarpIcon } from "@/components/shared/icons/warp";
@@ -109,5 +110,6 @@ export const PROVIDER_ICONS = LEGACY_PROVIDER_ICONS;
 export const ALL_PROVIDERS = [
   { id: "shadcn", name: "shadcn/ui", icon: ShadcnIcon },
   { id: "vscode", name: "VS Code", icon: VSCodeIcon },
+  { id: "shiki", name: "Shiki", icon: ShikiIcon, category: "editor" },
   ...PLANNED_PROVIDERS,
 ];

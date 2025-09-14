@@ -3,8 +3,19 @@
 import Editor from "@monaco-editor/react";
 import React from "react";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useMonacoEditor } from "@/hooks/use-monaco-editor";
-import type { CodeTemplate, VSCodeTheme } from "@/lib/providers/vscode";
+import {
+  type CodeTemplate,
+  codeTemplates,
+  type VSCodeTheme,
+} from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
 
 interface MonacoLikePreviewProps {
@@ -13,6 +24,8 @@ interface MonacoLikePreviewProps {
   template: CodeTemplate;
   themeVersion: number;
   className?: string;
+  selectedTemplate?: number;
+  onTemplateChange?: (index: number) => void;
 }
 
 export function MonacoLikePreview({
@@ -21,6 +34,8 @@ export function MonacoLikePreview({
   template,
   themeVersion,
   className,
+  selectedTemplate = 0,
+  onTemplateChange = () => {},
 }: MonacoLikePreviewProps) {
   const currentTheme = themeSet[currentMode];
   const colors = currentTheme.colors;
@@ -92,6 +107,31 @@ export function MonacoLikePreview({
               {item}
             </div>
           ))}
+        </div>
+
+        {/* Language Selector */}
+        <div className="ml-auto">
+          <Select
+            value={selectedTemplate.toString()}
+            onValueChange={(value) => onTemplateChange(parseInt(value))}
+          >
+            <SelectTrigger
+              className="w-32 h-6 text-xs border-none px-2"
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                color: colors["titleBar.activeForeground"] || "#cccccc",
+              }}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {codeTemplates.map((template, index) => (
+                <SelectItem key={index} value={index.toString()}>
+                  {template.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -651,12 +691,12 @@ export function MonacoLikePreview({
             style={{
               background: colors["panel.background"] || "#1e1e1e",
               borderTopColor: colors["panel.border"] || "#6c6c6c",
-              height: "120px",
+              height: "160px",
             }}
           >
             {/* Panel Header */}
             <div
-              className="flex items-center px-4 py-1 border-b text-sm"
+              className="flex items-center px-4 py-1 text-sm"
               style={{
                 background: colors["panelTitle.inactiveForeground"]
                   ? "transparent"
@@ -739,7 +779,6 @@ export function MonacoLikePreview({
                 >
                   ~
                 </span>
-                <span className="ml-1 opacity-50">_</span>
               </div>
             </div>
           </div>
@@ -748,7 +787,7 @@ export function MonacoLikePreview({
 
       {/* Status Bar */}
       <div
-        className="flex items-center justify-between px-0 py-1 text-xs relative"
+        className="flex items-center border-t justify-between px-0 py-1 text-xs relative"
         style={{
           background: colors["statusBar.background"] || "#a179fb",
           color: `${colors["statusBar.foreground"] || "#ffffff"} !important`,
