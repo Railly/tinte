@@ -850,7 +850,7 @@ export type { ShikiPreviewProps };`,
 ];
 
 interface ShikiPreviewProps {
-  theme: { light: ShikiTheme; dark: ShikiTheme };
+  theme: ShikiTheme;
   className?: string;
 }
 
@@ -889,7 +889,7 @@ export function ShikiPreview({ theme, className }: ShikiPreviewProps) {
   const template = codeTemplates[selectedTemplate];
 
   const { html, loading, cssVariables } = useShikiCssHighlighter({
-    themeSet: currentThemeSet,
+    themeSet: { light: currentThemeSet.light, dark: currentThemeSet.dark },
     currentMode,
     template,
     themeVersion,

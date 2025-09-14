@@ -286,7 +286,7 @@ export function ShikiOverridesPanel({
           );
         case "--shiki-token-string":
           return ensureValidColor(
-            currentColors.ac || currentColors.ac_2,
+            currentColors.ac_1 || currentColors.ac_2,
             currentMode === "dark" ? "#ce9178" : "#032f62",
           );
         case "--shiki-token-constant":
@@ -311,7 +311,7 @@ export function ShikiOverridesPanel({
           );
         case "--shiki-token-string-expression":
           return ensureValidColor(
-            currentColors.ac_3 || currentColors.ac,
+            currentColors.ac_3 || currentColors.ac_1,
             currentMode === "dark" ? "#b5cea8" : "#22863a",
           );
         case "--shiki-token-link":
