@@ -1,11 +1,9 @@
 import { motion, useMotionValue } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { toggleFavorite, getFavoriteStatus } from "@/lib/actions/favorites";
-import { renameTheme, duplicateTheme } from "@/lib/actions/themes";
-import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
-import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
 import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
+import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
+import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   useShadcnOverrides,
@@ -14,11 +12,11 @@ import {
 import { useDockActions } from "@/hooks/use-dock-actions";
 import { useDockState } from "@/hooks/use-dock-state";
 import { useThemeHistory } from "@/hooks/use-theme-history";
+import { getFavoriteStatus, toggleFavorite } from "@/lib/actions/favorites";
+import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
 import { exportTheme, getProvider } from "@/lib/providers";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteTheme } from "@/types/tinte";
-// Import the reusable macOS-style Dock components
-import { DockIcon } from "./base-dock";
 import { DockExport } from "./dock-export";
 import { DockMain } from "./dock-main";
 import { DockSettings } from "./dock-settings";
@@ -43,7 +41,6 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Get theme context for updating theme and persistence
   const {
     updateTinteTheme,
     activeTheme,
@@ -52,12 +49,10 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     isAnonymous,
     canSave,
     saveCurrentTheme,
-    forkTheme,
     unsavedChanges,
     isSaving,
   } = useThemeContext();
 
-  // Check if theme is favorited on mount
   useEffect(() => {
     const checkFavoriteStatus = async () => {
       if (!isAuthenticated || !activeTheme?.id) return;
@@ -66,7 +61,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
         const data = await getFavoriteStatus(activeTheme.id);
         setIsFavorite(data.isFavorite);
       } catch (error) {
-        console.error('Error checking favorite status:', error);
+        console.error("Error checking favorite status:", error);
       }
     };
 
@@ -96,18 +91,21 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   const themeIdRef = useRef<string>(null);
   const provider = getProvider(providerId);
-  const providerMetadata = provider?.metadata;
 
   const {
     isExporting,
-    isSharing,
     handleExport,
     handleCopyTheme,
-    handleShare,
     handleCopyCommand,
     handlePrimaryAction,
     getPrimaryActionConfig,
-  } = useDockActions({ theme, providerId, providerName, provider, themeId: activeTheme?.id });
+  } = useDockActions({
+    theme,
+    providerId,
+    providerName,
+    provider,
+    themeId: activeTheme?.id,
+  });
 
   const prevThemeRef = useRef<string>(null);
   const isInitialLoad = useRef(true);
@@ -186,7 +184,9 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   const handleCopyCommandAction = async () => {
     if (providerId === "shadcn") {
-      const command = "npx shadcn@latest add theme";
+      const baseUrl = window.location.origin;
+      const registryUrl = `${baseUrl}/r/${activeTheme?.id}`;
+      const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
       showSuccessWithMessage("Command copied!");
     } else if (providerId === "vscode") {
@@ -284,19 +284,19 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const handleRenameTheme = async (newName: string) => {
     try {
       if (!activeTheme?.id) {
-        throw new Error('No theme ID');
+        throw new Error("No theme ID");
       }
 
       const result = await renameTheme(activeTheme.id, newName);
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to rename theme');
+        throw new Error(result.error || "Failed to rename theme");
       }
 
       toast.success(`Theme renamed to "${newName}"!`);
     } catch (error) {
-      console.error('Error renaming theme:', error);
-      toast.error('Failed to rename theme');
+      console.error("Error renaming theme:", error);
+      toast.error("Failed to rename theme");
       throw error;
     }
   };
@@ -305,31 +305,31 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const handleToggleFavorite = async () => {
     try {
       if (!isAuthenticated) {
-        toast.error('Please sign in to add favorites');
+        toast.error("Please sign in to add favorites");
         return;
       }
 
       if (!activeTheme?.id) {
-        toast.error('No theme selected');
+        toast.error("No theme selected");
         return;
       }
 
       const result = await toggleFavorite(activeTheme.id);
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to update favorite');
+        throw new Error(result.error || "Failed to update favorite");
       }
 
-      setIsFavorite(result.isFavorite);
+      setIsFavorite(result.isFavorite ?? false);
 
       if (result.isFavorite) {
-        toast.success('Added to favorites!');
+        toast.success("Added to favorites!");
       } else {
-        toast.success('Removed from favorites!');
+        toast.success("Removed from favorites!");
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
-      toast.error('Failed to update favorite');
+      console.error("Error toggling favorite:", error);
+      toast.error("Failed to update favorite");
     }
   };
 
@@ -337,19 +337,19 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const handleDuplicateTheme = async (name: string, makePublic: boolean) => {
     try {
       if (!activeTheme?.id) {
-        throw new Error('No theme ID');
+        throw new Error("No theme ID");
       }
 
       const result = await duplicateTheme(activeTheme.id, name, makePublic);
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to duplicate theme');
+        throw new Error(result.error || "Failed to duplicate theme");
       }
 
       toast.success(`Theme duplicated as "${name}"!`);
     } catch (error) {
-      console.error('Error duplicating theme:', error);
-      toast.error('Failed to duplicate theme');
+      console.error("Error duplicating theme:", error);
+      toast.error("Failed to duplicate theme");
       throw error;
     }
   };
@@ -451,6 +451,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
                 isFavorite={isFavorite}
                 isAuthenticated={isAuthenticated}
                 isAnonymous={isAnonymous}
+                isOwnTheme={isOwnTheme}
               />
             ) : null}
           </motion.div>

@@ -48,6 +48,7 @@ export interface DbTheme {
   dark_ac_1: string;
   dark_ac_2: string;
   dark_ac_3: string;
+  installs: number;
   shadcn_override?: any;
   vscode_override?: any;
   shiki_override?: any;

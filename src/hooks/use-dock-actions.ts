@@ -1,7 +1,7 @@
 import { Copy, Download, Palette, Terminal } from "lucide-react";
 import { useState } from "react";
-import { exportTheme } from "@/lib/providers";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
+import { exportTheme } from "@/lib/providers";
 import type { TinteTheme } from "@/types/tinte";
 
 interface UseDockActionsProps {
@@ -27,7 +27,7 @@ export function useDockActions({
       try {
         await incrementThemeInstalls(themeId);
       } catch (error) {
-        console.error('Failed to increment installs:', error);
+        console.error("Failed to increment installs:", error);
       }
     }
   };
@@ -111,7 +111,10 @@ export function useDockActions({
 
   const handlePrimaryAction = async () => {
     if (providerId === "shadcn") {
-      const command = "npx shadcn@latest add theme";
+      // Use the registry endpoint with the theme ID
+      const baseUrl = window.location.origin;
+      const registryUrl = `${baseUrl}/r/${themeId}`;
+      const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
     } else if (providerId === "vscode") {
       await handleCopyTheme();
@@ -122,9 +125,12 @@ export function useDockActions({
 
   const getPrimaryActionConfig = () => {
     if (providerId === "shadcn") {
+      const baseUrl =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const registryUrl = themeId ? `${baseUrl}/r/${themeId}` : "theme";
       return {
         label: "Install",
-        description: "npx shadcn@latest add theme",
+        description: `npx shadcn@latest add ${registryUrl}`,
         icon: Terminal,
         variant: "default" as const,
       };

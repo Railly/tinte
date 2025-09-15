@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { UserThemeService } = await import("@/lib/services/user-theme.service");
-    const themes = await UserThemeService.getUserThemes(session.user.id, limit);
+    const themes = await UserThemeService.getUserThemes(session.user.id, limit, session.user);
 
     return NextResponse.json(themes);
 

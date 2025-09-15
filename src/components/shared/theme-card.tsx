@@ -201,11 +201,11 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Heart className="w-3 h-3" />
-                  <span>{formatNumber(theme.likes)}</span>
+                  <span>{formatNumber(theme.likes || 0)}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Download className="w-3 h-3" />
-                  <span>{formatNumber(theme.downloads)}</span>
+                  <span>{formatNumber((theme as any).installs || theme.downloads || 0)}</span>
                 </div>
               </div>
 
@@ -340,11 +340,11 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
           <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-1">
               <Heart className="w-3 h-3" />
-              {formatNumber(theme.likes)}
+              {formatNumber(theme.likes || 0)}
             </div>
             <div className="flex items-center gap-1">
               <Download className="w-3 h-3" />
-              {formatNumber(theme.downloads)}
+              {formatNumber((theme as any).installs || theme.downloads || 0)}
             </div>
           </div>
 

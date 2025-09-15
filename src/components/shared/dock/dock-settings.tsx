@@ -1,7 +1,11 @@
 import { ArrowLeft, Copy, Edit3, Heart, UserPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnonymousSignInButton } from "@/components/auth/anonymous-signin-button";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DockSettingsProps {
   onBack: () => void;
@@ -13,6 +17,9 @@ interface DockSettingsProps {
   // Authentication props
   isAuthenticated?: boolean;
   isAnonymous?: boolean;
+
+  // Ownership props
+  isOwnTheme?: boolean;
 }
 
 export function DockSettings({
@@ -23,6 +30,7 @@ export function DockSettings({
   isFavorite,
   isAuthenticated,
   isAnonymous,
+  isOwnTheme,
 }: DockSettingsProps) {
   return (
     <div className="flex flex-col gap-2 p-3 min-w-48">
@@ -36,7 +44,9 @@ export function DockSettings({
         >
           <ArrowLeft className="h-3 w-3" />
         </Button>
-        <span className="text-sm font-medium text-muted-foreground">Theme Settings</span>
+        <span className="text-sm font-medium text-muted-foreground">
+          Theme Settings
+        </span>
       </div>
 
       {/* Authentication prompt */}
@@ -61,14 +71,19 @@ export function DockSettings({
               variant="ghost"
               size="sm"
               onClick={onRename}
-              className="h-8 justify-start gap-2"
+              disabled={!isOwnTheme}
+              className={`h-8 justify-start gap-2 ${!isOwnTheme ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <Edit3 className="h-3 w-3" />
               <span className="text-xs">Rename Theme</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
-            <p>Change theme name</p>
+            <p>
+              {isOwnTheme
+                ? "Change theme name"
+                : "Only theme owners can rename themes"}
+            </p>
           </TooltipContent>
         </Tooltip>
 
@@ -80,8 +95,12 @@ export function DockSettings({
               onClick={onToggleFavorite}
               className="h-8 justify-start gap-2"
             >
-              <Heart className={`h-3 w-3 ${isFavorite ? "fill-current text-red-500" : ""}`} />
-              <span className="text-xs">{isFavorite ? "Remove Favorite" : "Add to Favorites"}</span>
+              <Heart
+                className={`h-3 w-3 ${isFavorite ? "fill-current text-destructive" : ""}`}
+              />
+              <span className="text-xs">
+                {isFavorite ? "Remove Favorite" : "Add to Favorites"}
+              </span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">

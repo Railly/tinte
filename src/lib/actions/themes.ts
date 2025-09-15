@@ -1,12 +1,12 @@
 "use server";
 
+import { and, eq, sql } from "drizzle-orm";
+import { nanoid } from "nanoid";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { auth } from "@/lib/auth";
-import { eq, and, sql } from "drizzle-orm";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { nanoid } from "nanoid";
 
 export async function incrementThemeInstalls(themeId: string) {
   try {
@@ -26,9 +26,8 @@ export async function incrementThemeInstalls(themeId: string) {
 
     return {
       success: true,
-      installs: result[0].installs
+      installs: result[0].installs,
     };
-
   } catch (error) {
     console.error("Error incrementing installs:", error);
     return { success: false, error: "Internal server error" };
@@ -54,12 +53,7 @@ export async function renameTheme(themeId: string, newName: string) {
     const existingTheme = await db
       .select()
       .from(theme)
-      .where(
-        and(
-          eq(theme.id, themeId),
-          eq(theme.user_id, session.user.id)
-        )
-      )
+      .where(and(eq(theme.id, themeId), eq(theme.user_id, session.user.id)))
       .limit(1);
 
     if (existingTheme.length === 0) {
@@ -67,7 +61,10 @@ export async function renameTheme(themeId: string, newName: string) {
     }
 
     // Update theme name
-    const slug = newName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const slug = newName
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
 
     const updatedTheme = await db
       .update(theme)
@@ -76,12 +73,7 @@ export async function renameTheme(themeId: string, newName: string) {
         slug,
         updated_at: new Date(),
       })
-      .where(
-        and(
-          eq(theme.id, themeId),
-          eq(theme.user_id, session.user.id)
-        )
-      )
+      .where(and(eq(theme.id, themeId), eq(theme.user_id, session.user.id)))
       .returning();
 
     if (updatedTheme.length === 0) {
@@ -90,16 +82,19 @@ export async function renameTheme(themeId: string, newName: string) {
 
     return {
       success: true,
-      theme: updatedTheme[0]
+      theme: updatedTheme[0],
     };
-
   } catch (error) {
     console.error("Error renaming theme:", error);
     return { success: false, error: "Internal server error" };
   }
 }
 
-export async function duplicateTheme(themeId: string, name: string, makePublic: boolean) {
+export async function duplicateTheme(
+  themeId: string,
+  name: string,
+  makePublic: boolean,
+) {
   try {
     const headersList = await headers();
     const session = await auth.api.getSession({
@@ -130,7 +125,10 @@ export async function duplicateTheme(themeId: string, name: string, makePublic: 
     // Create the duplicate
     const newThemeId = `theme_${nanoid()}`;
     const newLegacyId = `tinte_${nanoid()}`;
-    const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const slug = name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
 
     const duplicatedTheme = await db
       .insert(theme)
@@ -182,9 +180,8 @@ export async function duplicateTheme(themeId: string, name: string, makePublic: 
 
     return {
       success: true,
-      theme: duplicatedTheme[0]
+      theme: duplicatedTheme[0],
     };
-
   } catch (error) {
     console.error("Error duplicating theme:", error);
     return { success: false, error: "Internal server error" };

@@ -57,20 +57,24 @@ export class UserThemeService {
     }
   }
 
-  static async getUserThemes(userId: string, limit?: number): Promise<UserThemeData[]> {
+  static async getUserThemes(userId: string, limit?: number, currentUser?: { id: string; name?: string | null; email?: string | null; image?: string | null }): Promise<UserThemeData[]> {
     try {
       const baseQuery = db
         .select()
         .from(theme)
         .where(eq(theme.user_id, userId))
-        .orderBy(theme.created_at);
+        .orderBy(desc(theme.created_at));
 
       const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
 
       console.log("UserThemeService - DB themes count:", dbThemes.length);
       
-      const transformedThemes = dbThemes.map(theme => 
-        UserThemeService.transformDbThemeToUserTheme(theme)
+      const transformedThemes = dbThemes.map(theme =>
+        UserThemeService.transformDbThemeToUserTheme(theme, {
+          author: "You",
+          description: `Custom theme created by you`,
+          tags: ["custom", "user"]
+        }, currentUser)
       );
       
       console.log("UserThemeService - Transformed themes:", transformedThemes.length);
@@ -251,6 +255,7 @@ export class UserThemeService {
       downloads: 0,
       likes: 0,
       views: 0,
+      installs: dbTheme.installs || 0,
       tags,
       createdAt: dbTheme.created_at?.toISOString() || new Date().toISOString(),
       colors: UserThemeService.extractThemeColors(dbTheme),

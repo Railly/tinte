@@ -22,10 +22,18 @@ export default async function ThemesPage({
   });
 
   const userThemes = session
-    ? await UserThemeService.getUserThemes(session.user.id)
+    ? await UserThemeService.getUserThemes(
+        session.user.id,
+        undefined,
+        session.user,
+      )
     : [];
 
-  const publicThemes = await UserThemeService.getPublicThemes(8);
+  const favoriteThemes = session
+    ? await UserThemeService.getUserFavoriteThemes(session.user.id)
+    : [];
+
+  const publicThemes = await UserThemeService.getPublicThemes(20);
   const publicThemesCount = await UserThemeService.getPublicThemesCount();
 
   return (
@@ -33,6 +41,7 @@ export default async function ThemesPage({
       session={session}
       userThemes={userThemes}
       publicThemes={publicThemes}
+      favoriteThemes={favoriteThemes}
       publicThemesCount={publicThemesCount}
       initialCategory={category as string}
       initialSearch={search as string}

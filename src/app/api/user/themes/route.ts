@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       ? parseInt(searchParams.get("limit")!)
       : undefined;
 
-    const userThemes = await UserThemeService.getUserThemes(session.user.id, limit);
+    const userThemes = await UserThemeService.getUserThemes(session.user.id, limit, session.user);
 
     return NextResponse.json(userThemes);
 

@@ -14,7 +14,11 @@ export default async function Home() {
   });
 
   const userThemes = session
-    ? await UserThemeService.getUserThemes(session.user.id, 8)
+    ? await UserThemeService.getUserThemes(session.user.id, 8, session.user)
+    : [];
+
+  const favoriteThemes = session
+    ? await UserThemeService.getUserFavoriteThemes(session.user.id)
     : [];
 
   const publicThemes = await UserThemeService.getPublicThemes(8);
@@ -38,6 +42,7 @@ export default async function Home() {
         session={session}
         userThemes={userThemes}
         publicThemes={publicThemes}
+        favoriteThemes={favoriteThemes}
       />
       <Roadmap />
       <FAQ />

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, User, Users } from "lucide-react";
+import { ArrowRight, User, Users, Heart } from "lucide-react";
 import { useState } from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
@@ -19,9 +19,10 @@ interface ShowcaseProps {
   session: SessionData;
   userThemes: UserThemeData[];
   publicThemes: UserThemeData[];
+  favoriteThemes?: UserThemeData[];
 }
 
-export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
+export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [] }: ShowcaseProps) {
   const [activeTab, setActiveTab] = useState("community");
   const { isDark, handleThemeSelect, mounted } = useThemeContext();
 
@@ -32,9 +33,9 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
       description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
       author: "tweakcn",
       provider: "tweakcn" as const,
-      downloads: 8000 + index * 500,
-      likes: 400 + index * 50,
-      views: 15000 + index * 2000,
+      downloads: 0,
+      likes: 0,
+      views: 0,
       tags: [
         themeData.name.split(" ")[0].toLowerCase(),
         "modern",
@@ -49,9 +50,9 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
     description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
     author: "ray.so",
     provider: "rayso" as const,
-    downloads: 6000 + index * 400,
-    likes: 300 + index * 40,
-    views: 12000 + index * 1500,
+    downloads: 0,
+    likes: 0,
+    views: 0,
     tags: [themeData.name.toLowerCase(), "rayso", "modern", "community"],
   }));
 
@@ -60,9 +61,9 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
     description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
     author: "tinte",
     provider: "tinte" as const,
-    downloads: 5000 + index * 350,
-    likes: 250 + index * 35,
-    views: 10000 + index * 1200,
+    downloads: 0,
+    likes: 0,
+    views: 0,
     tags: [
       themeData.name.toLowerCase().split(" ")[0],
       "tinte",
@@ -89,6 +90,8 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                     <Logo size={24} className="text-foreground" />
                   ) : activeTab === "user" ? (
                     <User className="size-5 text-background" />
+                  ) : activeTab === "favorites" ? (
+                    <Heart className="size-5 text-background" />
                   ) : activeTab === "tweakcn" ? (
                     <TweakCNIcon className="size-5 text-background" />
                   ) : activeTab === "rayso" ? (
@@ -101,9 +104,10 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
                   {activeTab === "community" ? "From the Community" :
                     activeTab === "tinte" ? "Tinte Themes" :
                       activeTab === "user" ? "My Themes" :
-                        activeTab === "tweakcn" ? "tweakcn Themes" :
-                          activeTab === "rayso" ? "ray.so Themes" :
-                            "From the Community"}
+                        activeTab === "favorites" ? "My Favorites" :
+                          activeTab === "tweakcn" ? "tweakcn Themes" :
+                            activeTab === "rayso" ? "ray.so Themes" :
+                              "From the Community"}
                 </h2>
               </div>
             </div>
@@ -111,9 +115,10 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
               {activeTab === "community" ? "Explore what the community is crafting with Tinte." :
                 activeTab === "tinte" ? "Beautiful themes created by the Tinte team." :
                   activeTab === "user" ? "Your personal theme collection." :
-                    activeTab === "tweakcn" ? "Curated themes from tweakcn.com." :
-                      activeTab === "rayso" ? "Modern themes from ray.so." :
-                        "Explore what the community is crafting with Tinte."}
+                    activeTab === "favorites" ? "Themes you've marked as favorites." :
+                      activeTab === "tweakcn" ? "Curated themes from tweakcn.com." :
+                        activeTab === "rayso" ? "Modern themes from ray.so." :
+                          "Explore what the community is crafting with Tinte."}
             </p>
           </div>
           <Tabs
@@ -121,44 +126,59 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
             onValueChange={setActiveTab}
             className="w-full sm:w-auto"
           >
-            <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm w-full sm:w-auto">
-              <TabsTrigger
-                value="community"
-                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
-              >
-                <Users className="w-3 h-3" />
-                Community
-              </TabsTrigger>
-              <TabsTrigger
-                value="tinte"
-                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
-              >
-                <Logo size={12} />
-                tinte
-              </TabsTrigger>
-              {session && (
+            <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm w-full sm:w-auto overflow-x-auto">
+              <div className="flex min-w-max w-full sm:w-auto">
                 <TabsTrigger
-                  value="user"
-                  className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
+                  value="community"
+                  className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
                 >
-                  <User className="w-3 h-3" />
-                  My Themes
+                  <Users className="w-3 h-3" />
+                  <span className="hidden sm:inline">Community</span>
                 </TabsTrigger>
-              )}
-              <TabsTrigger
-                value="tweakcn"
-                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
-              >
-                <TweakCNIcon className="w-3 h-3" />
-                tweakcn
-              </TabsTrigger>
-              <TabsTrigger
-                value="rayso"
-                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial"
-              >
-                <RaycastIcon className="w-3 h-3" />
-                ray.so
-              </TabsTrigger>
+                <TabsTrigger
+                  value="tinte"
+                  className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
+                >
+                  <Logo size={12} />
+                  <span className="hidden sm:inline">tinte</span>
+                </TabsTrigger>
+                {session && (
+                  <TabsTrigger
+                    value="user"
+                    className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
+                  >
+                    {session.user.image ? (
+                      <img src={session.user.image} alt="Profile" className="w-3 h-3 rounded-full" />
+                    ) : (
+                      <User className="w-3 h-3" />
+                    )}
+                    <span className="hidden sm:inline">My Themes</span>
+                  </TabsTrigger>
+                )}
+                {session && (
+                  <TabsTrigger
+                    value="favorites"
+                    className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
+                  >
+                    <Heart className="w-3 h-3" />
+                    <span className="hidden sm:inline">Favorites</span>
+                  </TabsTrigger>
+                )}
+                <TabsTrigger
+                  value="tweakcn"
+                  className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
+                >
+                  <TweakCNIcon className="w-3 h-3" />
+                  <span className="hidden sm:inline">tweakcn</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="rayso"
+                  className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
+                >
+                  <RaycastIcon className="w-3 h-3" />
+                  <span className="hidden sm:inline">ray.so</span>
+                </TabsTrigger>
+              </div>
             </TabsList>
           </Tabs>
         </div>
@@ -240,6 +260,43 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
           </div>
         )}
 
+        {activeTab === "favorites" && session && (
+          <div className="space-y-4">
+            {shouldShowSkeletons ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <ThemeCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : favoriteThemes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {favoriteThemes.slice(0, 8).map((theme, index) => (
+                  <ThemeCard
+                    key={theme.id}
+                    theme={theme}
+                    index={index}
+                    onThemeSelect={handleThemeSelect}
+                    showUserInfo={true}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 space-y-4">
+                <Heart className="w-12 h-12 mx-auto text-muted-foreground" />
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">No favorites yet</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Start exploring themes and mark your favorites!
+                  </p>
+                </div>
+                <Button className="mt-4" asChild>
+                  <a href="/themes">Browse Themes</a>
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === "tweakcn" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {shouldShowSkeletons ? (
@@ -312,9 +369,10 @@ export function Showcase({ session, userThemes, publicThemes }: ShowcaseProps) {
             Browse All {activeTab === "community" ? "Community" :
               activeTab === "tinte" ? "Tinte" :
                 activeTab === "user" ? "My" :
-                  activeTab === "tweakcn" ? "tweakcn" :
-                    activeTab === "rayso" ? "ray.so" :
-                      "Community"} Themes
+                  activeTab === "favorites" ? "Favorite" :
+                    activeTab === "tweakcn" ? "tweakcn" :
+                      activeTab === "rayso" ? "ray.so" :
+                        "Community"} Themes
             <ArrowRight className="w-4 h-4" />
           </a>
         </Button>

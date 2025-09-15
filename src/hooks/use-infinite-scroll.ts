@@ -36,13 +36,13 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
     try {
       const nextPage = pageRef.current + 1;
       const response = await fetch(`/api/themes/public?page=${nextPage}&limit=${limit}`);
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch themes");
       }
 
       const data = await response.json();
-      
+
       setState(prev => ({
         ...prev,
         themes: [...prev.themes, ...data.themes],
@@ -60,13 +60,13 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
     } finally {
       isLoadingRef.current = false;
     }
-  }, [limit]);
+  }, [limit, state.hasMore]);
 
   // Infinite scroll observer
   useEffect(() => {
     const checkAndObserve = () => {
       const sentinel = document.getElementById(sentinelId);
-      
+
       if (!sentinel) {
         // Try again in a bit
         setTimeout(checkAndObserve, 100);
@@ -80,7 +80,7 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
             loadMore();
           }
         },
-        { threshold: 0.5, rootMargin: "50px" } // Less aggressive
+        { threshold: 0.5, rootMargin: "50px" }
       );
 
       observer.observe(sentinel);
@@ -94,7 +94,7 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
         observer.disconnect();
       }
     };
-  }, [sentinelId]); // Only re-run when sentinelId changes to avoid recreating observer
+  }, [sentinelId, loadMore, state.hasMore, state.loading]);
 
   const reset = useCallback((newThemes: UserThemeData[] = []) => {
     setState({

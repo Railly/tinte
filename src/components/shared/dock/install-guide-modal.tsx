@@ -1,8 +1,8 @@
+import { CheckCircle, Copy, ExternalLink, Terminal, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { X, Terminal, Copy, ExternalLink, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface InstallGuideModalProps {
   show: boolean;
@@ -12,12 +12,12 @@ interface InstallGuideModalProps {
   onCopyCommand: () => void;
 }
 
-export function InstallGuideModal({ 
-  show, 
-  onClose, 
-  providerId, 
+export function InstallGuideModal({
+  show,
+  onClose,
+  providerId,
   providerName,
-  onCopyCommand 
+  onCopyCommand,
 }: InstallGuideModalProps) {
   const [copiedStep, setCopiedStep] = useState<number | null>(null);
 
@@ -28,39 +28,40 @@ export function InstallGuideModal({
           {
             title: "Install shadcn/ui theme",
             command: "npx shadcn@latest add theme",
-            description: "This will add the theme configuration to your project"
+            description:
+              "This will add the theme configuration to your project",
           },
           {
             title: "Update your CSS",
             command: "// Add the theme variables to your globals.css",
-            description: "Copy the exported CSS variables to your project"
-          }
+            description: "Copy the exported CSS variables to your project",
+          },
         ];
       case "vscode":
         return [
           {
             title: "Download theme file",
             command: "// Theme will be downloaded as .vsix",
-            description: "Save the theme file to your computer"
+            description: "Save the theme file to your computer",
           },
           {
             title: "Install in VS Code",
             command: "code --install-extension /path/to/theme.vsix",
-            description: "Install the extension in VS Code or Cursor"
-          }
+            description: "Install the extension in VS Code or Cursor",
+          },
         ];
       default:
         return [
           {
             title: "Download theme",
             command: `# Download ${providerName} theme`,
-            description: "Export the theme file for your editor"
+            description: "Export the theme file for your editor",
           },
           {
             title: "Install theme",
             command: "# Follow provider-specific instructions",
-            description: "Refer to your editor's documentation"
-          }
+            description: "Refer to your editor's documentation",
+          },
         ];
     }
   };
@@ -89,7 +90,7 @@ export function InstallGuideModal({
             className="fixed inset-0 bg-black/30 z-[100]"
             onClick={onClose}
           />
-          
+
           {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -129,18 +130,21 @@ export function InstallGuideModal({
                   className="border border-white/10 rounded-xl p-4 bg-white/5"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <Badge variant="outline" className="text-xs bg-white/10 text-white border-white/20">
+                    <Badge
+                      variant="outline"
+                      className="text-xs bg-white/10 text-white border-white/20"
+                    >
                       Step {index + 1}
                     </Badge>
                     <span className="text-white font-medium text-sm">
                       {step.title}
                     </span>
                   </div>
-                  
+
                   <p className="text-white/70 text-xs mb-3">
                     {step.description}
                   </p>
-                  
+
                   <div className="relative">
                     <code className="block bg-black/40 text-green-400 text-xs p-3 rounded-lg font-mono border border-white/10 pr-12">
                       {step.command}
