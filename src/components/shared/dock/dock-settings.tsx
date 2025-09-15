@@ -96,7 +96,7 @@ export function DockSettings({
               className="h-8 justify-start gap-2"
             >
               <Heart
-                className={`h-3 w-3 ${isFavorite ? "fill-current text-destructive" : ""}`}
+                className={`h-3 w-3 ${isFavorite ? "fill-current text-red-600" : ""}`}
               />
               <span className="text-xs">
                 {isFavorite ? "Remove Favorite" : "Add to Favorites"}

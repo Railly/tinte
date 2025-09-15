@@ -14,7 +14,7 @@ interface RouteContext {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
-
+    console.log({id})
     // Get theme by ID - must be public for registry access
     const themeData = await db
       .select()
@@ -32,12 +32,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const themeRecord = themeData[0];
 
     // Only allow public themes for registry access
-    if (!themeRecord.is_public) {
-      return NextResponse.json(
-        { error: "Theme not found" },
-        { status: 404 }
-      );
-    }
+    // if (!themeRecord.is_public) {
+    //   return NextResponse.json(
+    //     { error: "Theme not found" },
+    //     { status: 404 }
+    //   );
+    // }
 
     // Reconstruct TinteTheme from database record
     const tinteTheme: TinteTheme = {
