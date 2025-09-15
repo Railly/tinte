@@ -106,7 +106,7 @@ export function WorkbenchHeader({
 
   return (
     <header className="sticky px-3 md:px-4 flex items-center justify-between h-[var(--header-height)] top-0 z-50 w-full border-b bg-background/95 backdrop-blur shrink-0">
-      <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
         <Link href="/">
           <Logo size={24} />
         </Link>

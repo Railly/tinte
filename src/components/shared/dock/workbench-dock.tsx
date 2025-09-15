@@ -185,14 +185,14 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const handleCopyCommandAction = async () => {
     if (providerId === "shadcn") {
       const baseUrl = window.location.origin;
-      const registryUrl = `${baseUrl}/r/${activeTheme?.id}`;
+      const registryUrl = `${baseUrl}/api/r/${activeTheme?.id}`;
       const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
       showSuccessWithMessage("Command copied!");
     } else if (providerId === "vscode") {
-      const vsixFilename =
-        exportedTheme?.filename.replace(".json", ".vsix") || "theme.vsix";
-      const command = `code --install-extension /path/to/${vsixFilename}`;
+      const baseUrl = window.location.origin;
+      const registryUrl = `${baseUrl}/api/v/${activeTheme?.id}`;
+      const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
       showSuccessWithMessage("Command copied!");
     } else {

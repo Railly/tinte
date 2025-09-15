@@ -127,8 +127,8 @@ export function CanonicalTab() {
         ui: shadcnTokens.border,
         ui_2: shadcnTokens.input,
         ui_3: shadcnTokens.muted,
-        tx_3: shadcnTokens['muted-foreground'],
-        tx_2: shadcnTokens['secondary-foreground'],
+        tx_3: shadcnTokens["muted-foreground"],
+        tx_2: shadcnTokens["secondary-foreground"],
         tx: shadcnTokens.foreground,
         pr: shadcnTokens.primary,
         sc: shadcnTokens.secondary,
@@ -174,7 +174,10 @@ export function CanonicalTab() {
     }
 
     // If we have tinteTheme data even before mounting, don't show loading
-    if (tinteTheme?.[currentMode] && hasValidTinteColors(tinteTheme[currentMode])) {
+    if (
+      tinteTheme?.[currentMode] &&
+      hasValidTinteColors(tinteTheme[currentMode])
+    ) {
       return false;
     }
 
@@ -214,22 +217,6 @@ export function CanonicalTab() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-1 pb-2">
-        <div>
-          <div className="flex items-center gap-1">
-            <h3 className="text-sm font-medium">Canonical Colors</h3>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3 w-3 text-muted-foreground/60 cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                Source colors for all theme variants
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-      </div>
-
       <ScrollArea
         className="flex-1 min-h-0 pl-1 pr-3"
         showScrollIndicators={true}

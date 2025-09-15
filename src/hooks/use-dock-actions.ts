@@ -113,11 +113,15 @@ export function useDockActions({
     if (providerId === "shadcn") {
       // Use the registry endpoint with the theme ID
       const baseUrl = window.location.origin;
-      const registryUrl = `${baseUrl}/r/${themeId}`;
+      const registryUrl = `${baseUrl}/api/r/${themeId}`;
       const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
     } else if (providerId === "vscode") {
-      await handleCopyTheme();
+      // Use the VS Code registry endpoint
+      const baseUrl = window.location.origin;
+      const registryUrl = `${baseUrl}/api/v/${themeId}`;
+      const command = `npx shadcn@latest add ${registryUrl}`;
+      await handleCopyCommand(command);
     } else {
       await handleCopyTheme();
     }
@@ -127,7 +131,7 @@ export function useDockActions({
     if (providerId === "shadcn") {
       const baseUrl =
         typeof window !== "undefined" ? window.location.origin : "";
-      const registryUrl = themeId ? `${baseUrl}/r/${themeId}` : "theme";
+      const registryUrl = themeId ? `${baseUrl}/api/r/${themeId}` : "theme";
       return {
         label: "Install",
         description: `npx shadcn@latest add ${registryUrl}`,
@@ -135,10 +139,13 @@ export function useDockActions({
         variant: "default" as const,
       };
     } else if (providerId === "vscode") {
+      const baseUrl =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const registryUrl = themeId ? `${baseUrl}/api/v/${themeId}` : "theme";
       return {
-        label: "Copy",
-        description: "Copy VS Code theme",
-        icon: Copy,
+        label: "Install",
+        description: `npx shadcn@latest add ${registryUrl}`,
+        icon: Terminal,
         variant: "default" as const,
       };
     } else {

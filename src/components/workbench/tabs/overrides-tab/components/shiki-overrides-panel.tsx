@@ -403,22 +403,6 @@ export function ShikiOverridesPanel({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-1 pb-2">
-        <h3 className="text-sm font-medium flex items-center gap-1">
-          Shiki CSS Variables
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="w-3 h-3 text-muted-foreground/60 cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">
-                Customize syntax highlighting colors using CSS variables
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </h3>
-      </div>
-
       {onSearchChange && (
         <div className="pr-3 pl-1 pb-2 flex-shrink-0">
           <TokenSearch
