@@ -1,4 +1,4 @@
-import { Copy, Download, MoreVertical, Redo, Save, Undo } from "lucide-react";
+import { Copy, Download, MoreVertical, Redo, RotateCcw, Save, Settings, Undo } from "lucide-react";
 import type { MotionValue } from "motion/react";
 import {
   Tooltip,
@@ -30,17 +30,18 @@ interface DockMainProps {
   isLoading?: boolean;
 
   // Quick actions
-  onCopy: () => void;
   onSave: () => void;
+  onReset: () => void;
 
   // Save state
   canSave: boolean;
   unsavedChanges: boolean;
   isSaving: boolean;
+  hasChanges: boolean;
 
   // Navigation
   onNavigateToExport: () => void;
-  onNavigateToMore: () => void;
+  onNavigateToSettings: () => void;
 }
 
 export function DockMain({
@@ -54,13 +55,14 @@ export function DockMain({
   primaryActionConfig,
   onPrimaryAction,
   isLoading,
-  onCopy,
   onSave,
+  onReset,
   canSave,
   unsavedChanges,
   isSaving,
+  hasChanges,
   onNavigateToExport,
-  onNavigateToMore,
+  onNavigateToSettings,
 }: DockMainProps) {
   const PrimaryIcon = primaryActionConfig.icon;
 
@@ -72,7 +74,7 @@ export function DockMain({
           <DockIcon
             mouseX={mouseX}
             onClick={onUndo}
-            className={`${!canUndo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/20"} relative bg-white/10 border border-white/20`}
+            className={`${!canUndo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} relative bg-background/10 border border-background/20`}
           >
             <Undo className="h-4 w-4" />
             {undoCount > 0 && (
@@ -92,7 +94,7 @@ export function DockMain({
           <DockIcon
             mouseX={mouseX}
             onClick={onRedo}
-            className={`${!canRedo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/20"} relative bg-white/10 border border-white/20`}
+            className={`${!canRedo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} relative bg-background/10 border border-background/20`}
           >
             <Redo className="h-4 w-4" />
             {redoCount > 0 && (
@@ -107,13 +109,16 @@ export function DockMain({
         </TooltipContent>
       </Tooltip>
 
+      {/* Separator */}
+      <div className="w-px h-8 bg-background/20 mx-1" />
+
       {/* Primary Action */}
       <Tooltip>
         <TooltipTrigger asChild>
           <DockIcon
             mouseX={mouseX}
             onClick={onPrimaryAction}
-            className={`${isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/20"} bg-white/10 border border-white/20`}
+            className={`${isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} bg-background/10 border border-background/20`}
           >
             <PrimaryIcon className="h-4 w-4" />
           </DockIcon>
@@ -129,7 +134,7 @@ export function DockMain({
           <DockIcon
             mouseX={mouseX}
             onClick={onSave}
-            className={`${isSaving || !canSave || !unsavedChanges ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/20"} relative bg-white/10 border border-white/20`}
+            className={`${isSaving || !canSave || !unsavedChanges ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} relative bg-background/10 border border-background/20`}
           >
             <Save className="h-4 w-4" />
             {unsavedChanges && canSave && (
@@ -150,19 +155,19 @@ export function DockMain({
         </TooltipContent>
       </Tooltip>
 
-      {/* Copy */}
+      {/* Reset */}
       <Tooltip>
         <TooltipTrigger asChild>
           <DockIcon
             mouseX={mouseX}
-            onClick={onCopy}
-            className="cursor-pointer hover:bg-white/20 bg-white/10 border border-white/20"
+            onClick={onReset}
+            className={`${!hasChanges ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} bg-background/10 border border-background/20`}
           >
-            <Copy className="h-4 w-4" />
+            <RotateCcw className="h-4 w-4" />
           </DockIcon>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Copy theme</p>
+          <p>Reset changes</p>
         </TooltipContent>
       </Tooltip>
 
@@ -172,7 +177,7 @@ export function DockMain({
           <DockIcon
             mouseX={mouseX}
             onClick={onNavigateToExport}
-            className="cursor-pointer hover:bg-white/20 bg-white/10 border border-white/20"
+            className="cursor-pointer hover:bg-background/20 bg-background/10 border border-background/20"
           >
             <Download className="h-4 w-4" />
           </DockIcon>
@@ -182,19 +187,19 @@ export function DockMain({
         </TooltipContent>
       </Tooltip>
 
-      {/* More */}
+      {/* Settings */}
       <Tooltip>
         <TooltipTrigger asChild>
           <DockIcon
             mouseX={mouseX}
-            onClick={onNavigateToMore}
-            className="cursor-pointer hover:bg-white/20 bg-white/10 border border-white/20"
+            onClick={onNavigateToSettings}
+            className="cursor-pointer hover:bg-background/20 bg-background/10 border border-background/20"
           >
-            <MoreVertical className="h-4 w-4" />
+            <Settings className="h-4 w-4" />
           </DockIcon>
         </TooltipTrigger>
         <TooltipContent>
-          <p>More actions</p>
+          <p>Theme settings</p>
         </TooltipContent>
       </Tooltip>
     </div>

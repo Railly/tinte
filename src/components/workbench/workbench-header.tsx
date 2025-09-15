@@ -1,8 +1,8 @@
 "use client";
 
-import { Shuffle, Slash } from "lucide-react";
+import { Shuffle, Slash, Heart } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import Logo from "@/components/shared/logo";
 import { ProviderSwitcher } from "@/components/shared/provider-switcher";
@@ -14,9 +14,7 @@ import type { ThemeData } from "@/lib/theme-tokens";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 import type { UserThemeData } from "@/types/user-theme";
-import DiscordIcon from "../shared/icons/discord";
-import GithubIcon from "../shared/icons/github";
-import TwitterIcon from "../shared/icons/twitter";
+import { SocialsDropdown } from "../shared/socials-dropdown";
 import { ThemeSwitcher } from "../shared/theme-switcher";
 import { TinteCommandMenu } from "../tinte-command-menu";
 import { Button } from "../ui/button";
@@ -44,10 +42,14 @@ export function WorkbenchHeader({
     user,
     isAuthenticated,
     isAnonymous,
+    mounted,
+    favorites,
+    favoritesLoaded,
+    toggleFavorite,
+    getFavoriteStatus,
   } = useThemeContext();
   const { data: session } = authClient.useSession();
   const activeId = activeTheme?.id || null;
-
   // Add user themes to the theme context
   useEffect(() => {
     userThemes.forEach((userTheme) => {
@@ -62,6 +64,44 @@ export function WorkbenchHeader({
       }
     });
   }, [userThemes, allThemes, addTheme]);
+
+  // Get current favorite state using global store
+  const isFavorite = activeTheme?.id && mounted && favoritesLoaded
+    ? getFavoriteStatus(activeTheme.id)
+    : false;
+
+  // Handle toggle favorite using global store
+  const handleToggleFavorite = async () => {
+    try {
+      if (!isAuthenticated) {
+        toast.error('Please sign in to add favorites');
+        return;
+      }
+
+      if (!activeTheme?.id) {
+        toast.error('No theme selected');
+        return;
+      }
+
+      // Show immediate feedback
+      const newFavoriteState = !isFavorite;
+      if (newFavoriteState) {
+        toast.success('Added to favorites!');
+      } else {
+        toast.success('Removed from favorites!');
+      }
+
+      // Use global store action (handles optimistic updates and server sync)
+      const success = await toggleFavorite(activeTheme.id);
+
+      if (!success) {
+        toast.error('Failed to update favorite');
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast.error('Failed to update favorite');
+    }
+  };
 
 
   return (
@@ -83,6 +123,16 @@ export function WorkbenchHeader({
           <Button
             variant="outline"
             size="icon"
+            onClick={handleToggleFavorite}
+            className="h-8 w-8 p-0"
+            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            disabled={!isAuthenticated || !mounted || !favoritesLoaded}
+          >
+            <Heart className={`h-4 w-4 ${isFavorite ? "fill-current text-red-500" : ""}`} />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => navigateTheme("random")}
             className="h-8 w-8 p-0"
             title="Random theme"
@@ -100,38 +150,7 @@ export function WorkbenchHeader({
         </div>
         <ThemeSwitcher />
         <Separator orientation="vertical" className="!h-8 hidden sm:block" />
-        <div className="hidden sm:flex items-center gap-1 md:gap-2">
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-            <a
-              href={siteConfig.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <GithubIcon className="h-4 w-4 [&>path]:!fill-muted-foreground" />
-            </a>
-          </Button>
-          <div className="hidden md:flex items-center gap-1 md:gap-2">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-              <a
-                href={siteConfig.links.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <TwitterIcon className="h-4 w-4 [&>path]:!fill-muted-foreground" />
-              </a>
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-              <a
-                href={siteConfig.links.discord}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <DiscordIcon className="h-4 w-4 [&>path]:!fill-muted-foreground" />
-                <span className="sr-only">Discord</span>
-              </a>
-            </Button>
-          </div>
-        </div>
+        <SocialsDropdown />
         <Separator orientation="vertical" className="!h-8 hidden sm:block" />
         <UserDropdown avatarSize="sm" />
       </div>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type DockState = "main" | "export" | "more" | "contrast";
+type DockState = "main" | "export" | "settings" | "contrast";
 type SyncStatus = "saved" | "saving" | "unsaved" | "synced" | "error";
 
 interface DockNavigation {

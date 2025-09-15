@@ -55,6 +55,10 @@ interface PersistentThemeState {
   isSaving: boolean;
   lastSaved: Date | null;
 
+  // Favorites state
+  favorites: Record<string, boolean>;
+  favoritesLoaded: boolean;
+
   // Computed state
   isDark: boolean;
   currentTokens: Record<string, string>;
@@ -107,6 +111,11 @@ interface PersistentThemeState {
   importTheme: (themeData: any, format: string) => boolean;
   addTheme: (theme: ThemeData) => void;
   forkTheme: (theme: ThemeData, newName?: string) => void;
+
+  // Favorites actions
+  toggleFavorite: (themeId: string) => Promise<boolean>;
+  getFavoriteStatus: (themeId: string) => boolean;
+  loadFavorites: () => Promise<void>;
 }
 
 // Simplified initial state computation
@@ -219,6 +228,8 @@ const getInitialState = () => {
     shadcnOverride: overrides.shadcn,
     vscodeOverride: overrides.vscode,
     shikiOverride: overrides.shiki,
+    favorites: {},
+    favoritesLoaded: false,
   };
 };
 
@@ -322,6 +333,38 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             }
           } else if (isAnonymous) {
             userThemes = loadAnonymousThemes();
+          }
+
+          // Load favorites: DB as source of truth, localStorage as initial fallback
+          let favorites: Record<string, boolean> = {};
+          if (isAuthenticated && user?.id) {
+            // First, try localStorage as initial state
+            if (typeof window !== "undefined") {
+              const stored = localStorage.getItem(`favorites_${user.id}`);
+              if (stored) {
+                try {
+                  favorites = JSON.parse(stored);
+                } catch (error) {
+                  console.error("Error parsing favorites from localStorage:", error);
+                }
+              }
+            }
+
+            // Then fetch from DB to get authoritative state
+            try {
+              const { getUserFavorites } = await import("@/lib/actions/favorites");
+              const dbResult = await getUserFavorites();
+              if (dbResult.favorites) {
+                favorites = dbResult.favorites;
+                // Update localStorage with DB state
+                if (typeof window !== "undefined") {
+                  localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+                }
+              }
+            } catch (error) {
+              console.error("Error loading favorites from DB:", error);
+              // Keep localStorage state as fallback
+            }
           }
 
           const allThemes = [
@@ -433,6 +476,8 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             shadcnOverride: overrides.shadcn,
             vscodeOverride: overrides.vscode,
             shikiOverride: overrides.shiki,
+            favorites,
+            favoritesLoaded: true,
           });
 
           // Apply to DOM if needed
@@ -823,6 +868,105 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
 
         // Theme actions
         ...createThemeActions(get, set),
+
+        // Favorites actions
+        getFavoriteStatus: (themeId: string) => {
+          const { favorites } = get();
+          return favorites[themeId] ?? false;
+        },
+
+        loadFavorites: async () => {
+          const { isAuthenticated, user } = get();
+
+          if (!isAuthenticated || !user?.id) {
+            set({ favorites: {}, favoritesLoaded: true });
+            return;
+          }
+
+          try {
+            const { getUserFavorites } = await import("@/lib/actions/favorites");
+            const { favorites } = await getUserFavorites();
+
+            // Update state and localStorage
+            set({ favorites, favoritesLoaded: true });
+            if (typeof window !== "undefined") {
+              localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+            }
+          } catch (error) {
+            console.error("Error loading favorites from DB:", error);
+            // Fallback to localStorage
+            if (typeof window !== "undefined") {
+              const stored = localStorage.getItem(`favorites_${user.id}`);
+              if (stored) {
+                try {
+                  const favorites = JSON.parse(stored);
+                  set({ favorites, favoritesLoaded: true });
+                } catch (parseError) {
+                  console.error("Error parsing localStorage favorites:", parseError);
+                  set({ favorites: {}, favoritesLoaded: true });
+                }
+              } else {
+                set({ favorites: {}, favoritesLoaded: true });
+              }
+            } else {
+              set({ favorites: {}, favoritesLoaded: true });
+            }
+          }
+        },
+
+        toggleFavorite: async (themeId: string) => {
+          const { isAuthenticated, user, favorites } = get();
+
+          if (!isAuthenticated || !user?.id) {
+            return false;
+          }
+
+          const currentStatus = favorites[themeId] ?? false;
+          const newStatus = !currentStatus;
+
+          // Immediate optimistic update in both state and localStorage
+          const newFavorites = { ...favorites, [themeId]: newStatus };
+          set({ favorites: newFavorites });
+
+          // Immediately persist to localStorage for instant availability
+          if (typeof window !== "undefined") {
+            localStorage.setItem(`favorites_${user.id}`, JSON.stringify(newFavorites));
+          }
+
+          // Sync with DB in background
+          try {
+            const { toggleFavorite } = await import("@/lib/actions/favorites");
+            const result = await toggleFavorite(themeId);
+
+            if (!result.success) {
+              // Revert optimistic update on error
+              set({ favorites });
+              if (typeof window !== "undefined") {
+                localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+              }
+              return false;
+            }
+
+            // Verify result matches our optimistic update
+            if (result.isFavorite !== newStatus) {
+              const correctedFavorites = { ...newFavorites, [themeId]: result.isFavorite };
+              set({ favorites: correctedFavorites });
+              if (typeof window !== "undefined") {
+                localStorage.setItem(`favorites_${user.id}`, JSON.stringify(correctedFavorites));
+              }
+            }
+
+            return true;
+          } catch (error) {
+            console.error("Error syncing favorite with DB:", error);
+            // Revert both state and localStorage on DB sync error
+            set({ favorites });
+            if (typeof window !== "undefined") {
+              localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+            }
+            return false;
+          }
+        },
       };
     }),
     { name: "persistent-theme-store" },

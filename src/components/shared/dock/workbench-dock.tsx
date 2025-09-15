@@ -1,7 +1,11 @@
 import { motion, useMotionValue } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { toggleFavorite, getFavoriteStatus } from "@/lib/actions/favorites";
+import { renameTheme, duplicateTheme } from "@/lib/actions/themes";
 import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
+import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
+import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   useShadcnOverrides,
@@ -17,7 +21,7 @@ import type { TinteTheme } from "@/types/tinte";
 import { DockIcon } from "./base-dock";
 import { DockExport } from "./dock-export";
 import { DockMain } from "./dock-main";
-import { DockMore } from "./dock-more";
+import { DockSettings } from "./dock-settings";
 import { InstallGuideModal } from "./install-guide-modal";
 import { SuccessAnimation } from "./success-animation";
 
@@ -35,6 +39,9 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showRenameDialog, setShowRenameDialog] = useState(false);
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Get theme context for updating theme and persistence
   const {
@@ -49,6 +56,22 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     unsavedChanges,
     isSaving,
   } = useThemeContext();
+
+  // Check if theme is favorited on mount
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!isAuthenticated || !activeTheme?.id) return;
+
+      try {
+        const data = await getFavoriteStatus(activeTheme.id);
+        setIsFavorite(data.isFavorite);
+      } catch (error) {
+        console.error('Error checking favorite status:', error);
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [isAuthenticated, activeTheme?.id]);
 
   // Get override hooks for counting changes
   const shadcnOverrides = useShadcnOverrides();
@@ -84,7 +107,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     handleCopyCommand,
     handlePrimaryAction,
     getPrimaryActionConfig,
-  } = useDockActions({ theme, providerId, providerName, provider });
+  } = useDockActions({ theme, providerId, providerName, provider, themeId: activeTheme?.id });
 
   const prevThemeRef = useRef<string>(null);
   const isInitialLoad = useRef(true);
@@ -126,7 +149,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   // Navigation handlers
   const handleNavigateToExport = () => navigateTo("export");
-  const handleNavigateToMore = () => navigateTo("more");
+  const handleNavigateToSettings = () => navigateTo("settings");
 
   // Code action - shows install guide modal
   const handleCodeAction = () => {
@@ -176,6 +199,8 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
       await handleCopyTheme();
       showSuccessWithMessage("Theme copied!");
     }
+    // Return to main dock after copying
+    navigateTo("main");
   };
 
   // Check if this is a user's own editable theme (consistent with store logic)
@@ -255,6 +280,85 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     return activeTheme.name;
   };
 
+  // Handle rename theme
+  const handleRenameTheme = async (newName: string) => {
+    try {
+      if (!activeTheme?.id) {
+        throw new Error('No theme ID');
+      }
+
+      const result = await renameTheme(activeTheme.id, newName);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to rename theme');
+      }
+
+      toast.success(`Theme renamed to "${newName}"!`);
+    } catch (error) {
+      console.error('Error renaming theme:', error);
+      toast.error('Failed to rename theme');
+      throw error;
+    }
+  };
+
+  // Handle toggle favorite
+  const handleToggleFavorite = async () => {
+    try {
+      if (!isAuthenticated) {
+        toast.error('Please sign in to add favorites');
+        return;
+      }
+
+      if (!activeTheme?.id) {
+        toast.error('No theme selected');
+        return;
+      }
+
+      const result = await toggleFavorite(activeTheme.id);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update favorite');
+      }
+
+      setIsFavorite(result.isFavorite);
+
+      if (result.isFavorite) {
+        toast.success('Added to favorites!');
+      } else {
+        toast.success('Removed from favorites!');
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast.error('Failed to update favorite');
+    }
+  };
+
+  // Handle duplicate theme
+  const handleDuplicateTheme = async (name: string, makePublic: boolean) => {
+    try {
+      if (!activeTheme?.id) {
+        throw new Error('No theme ID');
+      }
+
+      const result = await duplicateTheme(activeTheme.id, name, makePublic);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to duplicate theme');
+      }
+
+      toast.success(`Theme duplicated as "${name}"!`);
+    } catch (error) {
+      console.error('Error duplicating theme:', error);
+      toast.error('Failed to duplicate theme');
+      throw error;
+    }
+  };
+
+  // Get default duplicate name
+  const getDuplicateName = () => {
+    return `Copy of ${getDefaultThemeName()}`;
+  };
+
   const mouseX = useMotionValue(Infinity);
 
   return (
@@ -273,7 +377,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
           onMouseLeave={() => mouseX.set(Infinity)}
           initial={false}
           animate={{
-            width: dockState === "main" ? "auto" : 320,
+            width: dockState === "main" ? 350 : 220,
           }}
           transition={{
             type: "spring",
@@ -281,8 +385,8 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
             damping: 30,
             duration: 0.4,
           }}
-          style={{ borderRadius: 20 }}
-          className="supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 flex items-end justify-center p-4 backdrop-blur-md border border-white/20 shadow-2xl"
+          style={{ borderRadius: dockState === "main" ? 200 : 30 }}
+          className="bg-foreground/90 text-background flex items-end justify-center p-4 backdrop-blur-md border border-foreground/20 shadow-2xl"
         >
           <motion.div
             key={dockState}
@@ -301,33 +405,50 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
                 undoCount={undoCount}
                 redoCount={redoCount}
                 primaryActionConfig={primaryActionConfig}
-                onPrimaryAction={handlePrimaryAction}
+                onPrimaryAction={async () => {
+                  await handlePrimaryAction();
+                  if (providerId === "shadcn") {
+                    showSuccessWithMessage("Command copied!");
+                  } else {
+                    showSuccessWithMessage("Theme copied!");
+                  }
+                }}
                 isLoading={isExporting}
-                onCopy={handleCopyTheme}
                 onSave={handleSaveTheme}
                 canSave={canSave}
                 unsavedChanges={unsavedChanges}
                 isSaving={isSaving}
                 onNavigateToExport={handleNavigateToExport}
-                onNavigateToMore={handleNavigateToMore}
+                onNavigateToSettings={handleNavigateToSettings}
+                onReset={() => reset(theme)}
+                hasChanges={hasChanges}
               />
             ) : dockState === "export" ? (
               <DockExport
                 onBack={navigateBack}
-                onDownload={handleExport}
+                onDownload={async () => {
+                  await handleExport();
+                  showSuccessWithMessage("File downloaded!");
+                  navigateTo("main");
+                }}
                 onCopyTheme={handleCopyTheme}
+                onCopyThemeAndReturn={async () => {
+                  await handleCopyTheme();
+                  showSuccessWithMessage("Theme copied!");
+                  navigateTo("main");
+                }}
                 onCopyCommand={handleCopyCommandAction}
                 onShowInstallGuide={handleCodeAction}
                 isExporting={isExporting}
                 providerName={providerName}
               />
-            ) : dockState === "more" ? (
-              <DockMore
+            ) : dockState === "settings" ? (
+              <DockSettings
                 onBack={navigateBack}
-                onReset={() => reset(theme)}
-                onShare={handleShare}
-                isSharing={isSharing}
-                hasChanges={hasChanges}
+                onRename={() => setShowRenameDialog(true)}
+                onToggleFavorite={handleToggleFavorite}
+                onDuplicate={() => setShowDuplicateDialog(true)}
+                isFavorite={isFavorite}
                 isAuthenticated={isAuthenticated}
                 isAnonymous={isAnonymous}
               />
@@ -361,6 +482,24 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
         onSave={handleSaveWithName}
         defaultName={getDefaultThemeName()}
         isLoading={isSaving}
+      />
+
+      {/* Rename Theme Dialog */}
+      <RenameThemeDialog
+        isOpen={showRenameDialog}
+        onOpenChange={setShowRenameDialog}
+        onRename={handleRenameTheme}
+        currentName={getDefaultThemeName()}
+        isLoading={false}
+      />
+
+      {/* Duplicate Theme Dialog */}
+      <DuplicateThemeDialog
+        isOpen={showDuplicateDialog}
+        onOpenChange={setShowDuplicateDialog}
+        onDuplicate={handleDuplicateTheme}
+        defaultName={getDuplicateName()}
+        isLoading={false}
       />
     </TooltipProvider>
   );

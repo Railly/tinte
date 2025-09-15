@@ -1,4 +1,4 @@
-import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import z from "zod";
 
 import { user } from "./user";
@@ -120,6 +120,7 @@ export const theme = pgTable("theme", {
   dark_ac_3: text("dark_ac_3").notNull(),
 
   is_public: boolean("is_public").notNull().default(true),
+  installs: integer("installs").notNull().default(0),
 
   // Overrides
   shadcn_override: jsonb("shadcn_override").$type<ShadcnOverrideSchema>(),

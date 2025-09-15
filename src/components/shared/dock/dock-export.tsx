@@ -1,4 +1,4 @@
-import { ArrowLeft, Code, Copy, Download, FileText } from "lucide-react";
+import { ArrowLeft, Code, Copy, Download, FileText, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -10,6 +10,7 @@ interface DockExportProps {
   onShowInstallGuide: () => void;
   isExporting?: boolean;
   providerName: string;
+  onCopyThemeAndReturn?: () => void;
 }
 
 export function DockExport({
@@ -20,6 +21,7 @@ export function DockExport({
   onShowInstallGuide,
   isExporting,
   providerName,
+  onCopyThemeAndReturn,
 }: DockExportProps) {
   return (
     <div className="flex flex-col gap-2 p-3 min-w-48">
@@ -61,7 +63,7 @@ export function DockExport({
             <Button
               variant="ghost"
               size="sm"
-              onClick={onCopyTheme}
+              onClick={onCopyThemeAndReturn || onCopyTheme}
               className="h-8 justify-start gap-2"
             >
               <Copy className="h-3 w-3" />
@@ -81,7 +83,7 @@ export function DockExport({
               onClick={onCopyCommand}
               className="h-8 justify-start gap-2"
             >
-              <Code className="h-3 w-3" />
+              <Terminal className="h-3 w-3" />
               <span className="text-xs">Copy Command</span>
             </Button>
           </TooltipTrigger>

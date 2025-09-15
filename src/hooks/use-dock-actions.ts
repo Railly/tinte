@@ -1,6 +1,7 @@
-import { Download, Palette } from "lucide-react";
+import { Copy, Download, Palette, Terminal } from "lucide-react";
 import { useState } from "react";
 import { exportTheme } from "@/lib/providers";
+import { incrementThemeInstalls } from "@/lib/actions/themes";
 import type { TinteTheme } from "@/types/tinte";
 
 interface UseDockActionsProps {
@@ -8,6 +9,7 @@ interface UseDockActionsProps {
   providerId: string;
   providerName: string;
   provider: any;
+  themeId?: string;
 }
 
 export function useDockActions({
@@ -15,9 +17,20 @@ export function useDockActions({
   providerId,
   providerName,
   provider,
+  themeId,
 }: UseDockActionsProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+
+  const incrementInstalls = async () => {
+    if (themeId) {
+      try {
+        await incrementThemeInstalls(themeId);
+      } catch (error) {
+        console.error('Failed to increment installs:', error);
+      }
+    }
+  };
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -36,6 +49,9 @@ export function useDockActions({
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+
+      // Track the install
+      await incrementInstalls();
     } catch (error) {
       console.error("Export failed:", error);
     } finally {
@@ -48,6 +64,8 @@ export function useDockActions({
       const output = exportTheme(providerId, theme);
       if (output) {
         await navigator.clipboard.writeText(output.content);
+        // Track the install
+        await incrementInstalls();
       }
     } catch (error) {
       console.error("Copy failed:", error);
@@ -84,6 +102,8 @@ export function useDockActions({
   const handleCopyCommand = async (command: string) => {
     try {
       await navigator.clipboard.writeText(command);
+      // Track the install for command copying
+      await incrementInstalls();
     } catch (error) {
       console.error("Copy failed:", error);
     }
@@ -94,9 +114,9 @@ export function useDockActions({
       const command = "npx shadcn@latest add theme";
       await handleCopyCommand(command);
     } else if (providerId === "vscode") {
-      await handleExport();
+      await handleCopyTheme();
     } else {
-      await handleExport();
+      await handleCopyTheme();
     }
   };
 
@@ -105,14 +125,14 @@ export function useDockActions({
       return {
         label: "Install",
         description: "npx shadcn@latest add theme",
-        icon: Palette,
+        icon: Terminal,
         variant: "default" as const,
       };
     } else if (providerId === "vscode") {
       return {
-        label: "Install",
-        description: "Install in VS Code/Cursor",
-        icon: Download,
+        label: "Copy",
+        description: "Copy VS Code theme",
+        icon: Copy,
         variant: "default" as const,
       };
     } else {

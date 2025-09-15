@@ -55,6 +55,7 @@ export interface DbTheme {
 
 export interface UserThemeData extends ThemeData {
   provider: "tinte";
+  isFavorite?: boolean;
   user?: {
     id: string;
     name?: string | null;
@@ -81,4 +82,5 @@ export interface ThemeTransformOptions {
   author?: string;
   description?: string;
   tags?: string[];
+  isFavorite?: boolean;
 }

@@ -55,5 +55,12 @@ export function usePersistentTheme() {
     shadcnOverride: store.shadcnOverride,
     vscodeOverride: store.vscodeOverride,
     shikiOverride: store.shikiOverride,
+
+    // Favorites functionality
+    favorites: store.favorites,
+    favoritesLoaded: store.favoritesLoaded,
+    toggleFavorite: store.toggleFavorite,
+    getFavoriteStatus: store.getFavoriteStatus,
+    loadFavorites: store.loadFavorites,
   };
 }

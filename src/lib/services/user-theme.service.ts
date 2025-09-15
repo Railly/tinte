@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { user } from "@/db/schema/user";
-import { eq, desc, count } from "drizzle-orm";
+import { user, userFavorites } from "@/db/schema/user";
+import { eq, desc, count, and, sql } from "drizzle-orm";
 import type { 
   DbTheme, 
   UserThemeData, 
@@ -10,7 +10,7 @@ import type {
 import type { TinteBlock } from "@/types/tinte";
 
 export class UserThemeService {
-  static async getThemesWithUsers(limit?: number): Promise<UserThemeData[]> {
+  static async getThemesWithUsers(limit?: number, currentUserId?: string): Promise<UserThemeData[]> {
     try {
       const baseQuery = db
         .select({
@@ -20,19 +20,32 @@ export class UserThemeService {
             name: user.name,
             email: user.email,
             image: user.image,
-          }
+          },
+          isFavorite: currentUserId
+            ? sql`CASE WHEN ${userFavorites.userId} IS NOT NULL THEN true ELSE false END`
+            : sql`false`
         })
         .from(theme)
         .leftJoin(user, eq(theme.user_id, user.id))
+        .leftJoin(
+          userFavorites,
+          currentUserId
+            ? and(
+                eq(userFavorites.themeId, theme.id),
+                eq(userFavorites.userId, currentUserId)
+              )
+            : undefined
+        )
         .orderBy(desc(theme.created_at));
 
       const results = await (limit ? baseQuery.limit(limit) : baseQuery);
 
-      return results.map(result => 
+      return results.map(result =>
         UserThemeService.transformDbThemeToUserTheme(result.theme, {
           author: result.user?.name || "Anonymous",
           description: `Theme by ${result.user?.name || "Anonymous"}`,
-          tags: ["user", "custom"]
+          tags: ["user", "custom"],
+          isFavorite: Boolean(result.isFavorite)
         }, result.user)
       );
     } catch (error) {
@@ -66,7 +79,7 @@ export class UserThemeService {
     }
   }
 
-  static async getPublicThemes(limit?: number, offset?: number): Promise<UserThemeData[]> {
+  static async getPublicThemes(limit?: number, offset?: number, currentUserId?: string): Promise<UserThemeData[]> {
     try {
       const baseQuery = db
         .select({
@@ -76,10 +89,22 @@ export class UserThemeService {
             name: user.name,
             email: user.email,
             image: user.image,
-          }
+          },
+          isFavorite: currentUserId
+            ? sql`CASE WHEN ${userFavorites.userId} IS NOT NULL THEN true ELSE false END`
+            : sql`false`
         })
         .from(theme)
         .leftJoin(user, eq(theme.user_id, user.id))
+        .leftJoin(
+          userFavorites,
+          currentUserId
+            ? and(
+                eq(userFavorites.themeId, theme.id),
+                eq(userFavorites.userId, currentUserId)
+              )
+            : undefined
+        )
         .where(eq(theme.is_public, true))
         .orderBy(desc(theme.created_at));
 
@@ -90,12 +115,13 @@ export class UserThemeService {
       );
 
       console.log("UserThemeService - Public themes count:", results.length);
-      
-      const transformedThemes = results.map(result => 
+
+      const transformedThemes = results.map(result =>
         UserThemeService.transformDbThemeToUserTheme(result.theme, {
           author: result.user?.name || "Anonymous",
           description: `Beautiful ${result.theme.name.toLowerCase()} theme ${result.user?.name ? `by ${result.user.name}` : 'shared by the community'}`,
-          tags: ["community", "public", "shared"]
+          tags: ["community", "public", "shared"],
+          isFavorite: Boolean(result.isFavorite)
         }, result.user)
       );
       
@@ -107,6 +133,7 @@ export class UserThemeService {
       return [];
     }
   }
+
 
   static async getPublicThemesCount(): Promise<number> {
     try {
@@ -166,7 +193,8 @@ export class UserThemeService {
     const {
       author = "You",
       description = "Custom theme created by user",
-      tags = ["custom", "user"]
+      tags = ["custom", "user"],
+      isFavorite = false
     } = options;
 
     return {
@@ -183,6 +211,7 @@ export class UserThemeService {
       colors: UserThemeService.extractThemeColors(dbTheme),
       rawTheme: UserThemeService.buildRawTheme(dbTheme),
       user: user,
+      isFavorite,
       // Include overrides from database - structured by mode
       overrides: UserThemeService.transformOverridesFromDb(dbTheme),
       ...UserThemeService.flattenThemeProperties(dbTheme),
