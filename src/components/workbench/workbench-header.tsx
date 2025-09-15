@@ -1,6 +1,6 @@
 "use client";
 
-import { Shuffle, Slash, Heart } from "lucide-react";
+import { Heart, Shuffle, Slash } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -66,43 +66,43 @@ export function WorkbenchHeader({
   }, [userThemes, allThemes, addTheme]);
 
   // Get current favorite state using global store
-  const isFavorite = activeTheme?.id && mounted && favoritesLoaded
-    ? getFavoriteStatus(activeTheme.id)
-    : false;
+  const isFavorite =
+    activeTheme?.id && mounted && favoritesLoaded
+      ? getFavoriteStatus(activeTheme.id)
+      : false;
 
   // Handle toggle favorite using global store
   const handleToggleFavorite = async () => {
     try {
       if (!isAuthenticated) {
-        toast.error('Please sign in to add favorites');
+        toast.error("Please sign in to add favorites");
         return;
       }
 
       if (!activeTheme?.id) {
-        toast.error('No theme selected');
+        toast.error("No theme selected");
         return;
       }
 
       // Show immediate feedback
       const newFavoriteState = !isFavorite;
       if (newFavoriteState) {
-        toast.success('Added to favorites!');
+        toast.success("Added to favorites!");
       } else {
-        toast.success('Removed from favorites!');
+        toast.success("Removed from favorites!");
       }
 
       // Use global store action (handles optimistic updates and server sync)
       const success = await toggleFavorite(activeTheme.id);
 
       if (!success) {
-        toast.error('Failed to update favorite');
+        toast.error("Failed to update favorite");
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
-      toast.error('Failed to update favorite');
+      console.error("Error toggling favorite:", error);
+      toast.error("Failed to update favorite");
     }
   };
-
 
   return (
     <header className="sticky px-3 md:px-4 flex items-center justify-between h-[var(--header-height)] top-0 z-50 w-full border-b bg-background/95 backdrop-blur shrink-0">
@@ -128,7 +128,9 @@ export function WorkbenchHeader({
             title={isFavorite ? "Remove from favorites" : "Add to favorites"}
             disabled={!isAuthenticated || !mounted || !favoritesLoaded}
           >
-            <Heart className={`h-4 w-4 ${isFavorite ? "fill-current text-red-500" : ""}`} />
+            <Heart
+              className={`h-4 w-4 ${isFavorite ? "fill-current text-destructive" : ""}`}
+            />
           </Button>
           <Button
             variant="outline"
@@ -154,7 +156,6 @@ export function WorkbenchHeader({
         <Separator orientation="vertical" className="!h-8 hidden sm:block" />
         <UserDropdown avatarSize="sm" />
       </div>
-
     </header>
   );
 }

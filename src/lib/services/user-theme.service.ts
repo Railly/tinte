@@ -12,7 +12,7 @@ import type { TinteBlock } from "@/types/tinte";
 export class UserThemeService {
   static async getThemesWithUsers(limit?: number, currentUserId?: string): Promise<UserThemeData[]> {
     try {
-      const baseQuery = db
+      let baseQuery = db
         .select({
           theme: theme,
           user: {
@@ -26,17 +26,20 @@ export class UserThemeService {
             : sql`false`
         })
         .from(theme)
-        .leftJoin(user, eq(theme.user_id, user.id))
-        .leftJoin(
+        .leftJoin(user, eq(theme.user_id, user.id));
+
+      // Only add userFavorites join if currentUserId is provided
+      if (currentUserId) {
+        baseQuery = baseQuery.leftJoin(
           userFavorites,
-          currentUserId
-            ? and(
-                eq(userFavorites.themeId, theme.id),
-                eq(userFavorites.userId, currentUserId)
-              )
-            : undefined
-        )
-        .orderBy(desc(theme.created_at));
+          and(
+            eq(userFavorites.themeId, theme.id),
+            eq(userFavorites.userId, currentUserId)
+          )
+        );
+      }
+
+      baseQuery = baseQuery.orderBy(desc(theme.created_at));
 
       const results = await (limit ? baseQuery.limit(limit) : baseQuery);
 
@@ -81,7 +84,7 @@ export class UserThemeService {
 
   static async getPublicThemes(limit?: number, offset?: number, currentUserId?: string): Promise<UserThemeData[]> {
     try {
-      const baseQuery = db
+      let baseQuery = db
         .select({
           theme: theme,
           user: {
@@ -95,16 +98,20 @@ export class UserThemeService {
             : sql`false`
         })
         .from(theme)
-        .leftJoin(user, eq(theme.user_id, user.id))
-        .leftJoin(
+        .leftJoin(user, eq(theme.user_id, user.id));
+
+      // Only add userFavorites join if currentUserId is provided
+      if (currentUserId) {
+        baseQuery = baseQuery.leftJoin(
           userFavorites,
-          currentUserId
-            ? and(
-                eq(userFavorites.themeId, theme.id),
-                eq(userFavorites.userId, currentUserId)
-              )
-            : undefined
-        )
+          and(
+            eq(userFavorites.themeId, theme.id),
+            eq(userFavorites.userId, currentUserId)
+          )
+        );
+      }
+
+      baseQuery = baseQuery
         .where(eq(theme.is_public, true))
         .orderBy(desc(theme.created_at));
 
@@ -167,20 +174,58 @@ export class UserThemeService {
         .orderBy(desc(theme.created_at));
 
       console.log("UserThemeService - All public themes count:", results.length);
-      
-      const transformedThemes = results.map(result => 
+
+      const transformedThemes = results.map(result =>
         UserThemeService.transformDbThemeToUserTheme(result.theme, {
           author: result.user?.name || "Anonymous",
           description: `Beautiful ${result.theme.name.toLowerCase()} theme ${result.user?.name ? `by ${result.user.name}` : 'shared by the community'}`,
           tags: ["community", "public", "shared"]
         }, result.user)
       );
-      
+
       console.log("UserThemeService - Transformed all public themes:", transformedThemes.length);
-      
+
       return transformedThemes;
     } catch (error) {
       console.error("Error fetching all public themes:", error);
+      return [];
+    }
+  }
+
+  static async getUserFavoriteThemes(userId: string): Promise<UserThemeData[]> {
+    try {
+      const results = await db
+        .select({
+          theme: theme,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          }
+        })
+        .from(userFavorites)
+        .innerJoin(theme, eq(userFavorites.themeId, theme.id))
+        .leftJoin(user, eq(theme.user_id, user.id))
+        .where(eq(userFavorites.userId, userId))
+        .orderBy(desc(userFavorites.createdAt));
+
+      console.log("UserThemeService - User favorite themes count:", results.length);
+
+      const transformedThemes = results.map(result =>
+        UserThemeService.transformDbThemeToUserTheme(result.theme, {
+          author: result.user?.name || "Anonymous",
+          description: `${result.theme.name} ${result.user?.name ? `by ${result.user.name}` : 'from the community'}`,
+          tags: ["favorite", "starred"],
+          isFavorite: true
+        }, result.user)
+      );
+
+      console.log("UserThemeService - Transformed favorite themes:", transformedThemes.length);
+
+      return transformedThemes;
+    } catch (error) {
+      console.error("Error fetching user favorite themes:", error);
       return [];
     }
   }

@@ -59,6 +59,7 @@ export function usePersistentTheme() {
     // Favorites functionality
     favorites: store.favorites,
     favoritesLoaded: store.favoritesLoaded,
+    favoriteThemes: store.favoriteThemes,
     toggleFavorite: store.toggleFavorite,
     getFavoriteStatus: store.getFavoriteStatus,
     loadFavorites: store.loadFavorites,

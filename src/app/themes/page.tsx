@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { auth } from "@/lib/auth";
-import { UserThemeService } from "@/lib/services/user-theme.service";
 import { headers } from "next/headers";
 import { BrowseThemes } from "@/components/themes/browse-themes";
+import { auth } from "@/lib/auth";
+import { UserThemeService } from "@/lib/services/user-theme.service";
 
 export const metadata: Metadata = {
   title: "Browse Themes | Tinte",
@@ -18,18 +18,18 @@ export default async function ThemesPage({
 
   // Fetch user session and themes server-side
   const session = await auth.api.getSession({
-    headers: await headers()
+    headers: await headers(),
   });
-  
-  const userThemes = session 
-    ? await UserThemeService.getUserThemes(session.user.id) 
+
+  const userThemes = session
+    ? await UserThemeService.getUserThemes(session.user.id)
     : [];
-    
-  const publicThemes = await UserThemeService.getPublicThemes(20);
+
+  const publicThemes = await UserThemeService.getPublicThemes(8);
   const publicThemesCount = await UserThemeService.getPublicThemesCount();
 
   return (
-    <BrowseThemes 
+    <BrowseThemes
       session={session}
       userThemes={userThemes}
       publicThemes={publicThemes}

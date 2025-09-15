@@ -71,6 +71,7 @@ interface PersistentThemeState {
   raysoThemes: ThemeData[];
   tinteThemes: ThemeData[];
   userThemes: ThemeData[];
+  favoriteThemes: ThemeData[];
   tinteTheme: TinteTheme;
 
   // Provider overrides
@@ -224,6 +225,7 @@ const getInitialState = () => {
     raysoThemes: [],
     tinteThemes: [],
     userThemes: [],
+    favoriteThemes: [],
     tinteTheme,
     shadcnOverride: overrides.shadcn,
     vscodeOverride: overrides.vscode,
@@ -333,6 +335,19 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             }
           } else if (isAnonymous) {
             userThemes = loadAnonymousThemes();
+          }
+
+          // Load favorite themes
+          let favoriteThemes: ThemeData[] = [];
+          if (isAuthenticated) {
+            try {
+              const response = await fetch("/api/user/favorites");
+              if (response.ok) {
+                favoriteThemes = await response.json();
+              }
+            } catch (error) {
+              console.error("Error loading favorite themes:", error);
+            }
           }
 
           // Load favorites: DB as source of truth, localStorage as initial fallback
@@ -472,6 +487,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             raysoThemes,
             tinteThemes,
             userThemes,
+            favoriteThemes,
             tinteTheme,
             shadcnOverride: overrides.shadcn,
             vscodeOverride: overrides.vscode,
@@ -954,6 +970,17 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               if (typeof window !== "undefined") {
                 localStorage.setItem(`favorites_${user.id}`, JSON.stringify(correctedFavorites));
               }
+            }
+
+            // Reload favorite themes to update the favorites list
+            try {
+              const response = await fetch("/api/user/favorites");
+              if (response.ok) {
+                const updatedFavoriteThemes = await response.json();
+                set({ favoriteThemes: updatedFavoriteThemes });
+              }
+            } catch (error) {
+              console.error("Error reloading favorite themes:", error);
             }
 
             return true;

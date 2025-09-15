@@ -1,23 +1,9 @@
 "use client";
 
-import { User, Users } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { useThemeContext } from "@/providers/theme";
 
 export function ThemeSwitcher() {
-  const {
-    mounted,
-    isDark,
-    toggleTheme,
-    activeTheme,
-    user,
-    isAuthenticated,
-    unsavedChanges,
-    canSave,
-  } = useThemeContext();
-
-  const isOwnTheme = activeTheme?.user?.id === user?.id;
-  const isUserTheme = !!activeTheme?.user;
+  const { mounted, isDark, toggleTheme } = useThemeContext();
 
   if (!mounted) {
     return (
@@ -108,30 +94,6 @@ export function ThemeSwitcher() {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Theme ownership indicator */}
-      {mounted && (
-        <div className="flex items-center gap-1">
-          {isOwnTheme && (
-            <Badge variant="secondary" className="gap-1 text-xs">
-              <User className="w-3 h-3" />
-              Yours
-            </Badge>
-          )}
-          {isUserTheme && !isOwnTheme && (
-            <Badge variant="outline" className="gap-1 text-xs">
-              <Users className="w-3 h-3" />
-              Shared
-            </Badge>
-          )}
-          {unsavedChanges && (
-            <div
-              className="w-2 h-2 bg-primary border-2 border-rose-500 rounded-full animate-pulse"
-              title="Unsaved changes"
-            />
-          )}
-        </div>
-      )}
-
       {/* Theme switcher button */}
       <button
         type="button"
