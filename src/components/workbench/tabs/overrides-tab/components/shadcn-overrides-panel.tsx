@@ -2,6 +2,8 @@
 
 import { ChevronDown, Info } from "lucide-react";
 import * as React from "react";
+import { EnhancedTokenInput } from "@/components/shared/enhanced-token-input";
+import { TokenSearch } from "@/components/shared/token-search";
 import {
   Collapsible,
   CollapsibleContent,
@@ -14,7 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useShadcnOverrides } from "@/hooks/use-provider-overrides";
+import { useShadcnOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import {
   createInitialOpenGroups,
   createSkeletonGroups,
@@ -24,8 +26,6 @@ import {
 import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";
-import { EnhancedTokenInput } from "./enhanced-token-input";
-import { TokenSearch } from "./token-search";
 
 declare global {
   interface Window {
@@ -48,8 +48,7 @@ export function ShadcnOverridesPanel({
   onSearchChange,
   searchPlaceholder = "Search tokens...",
 }: ShadcnOverridesPanelProps) {
-  const { currentTokens, mounted, currentMode } =
-    useThemeContext();
+  const { currentTokens, mounted, currentMode } = useThemeContext();
   const shadcnOverrides = useShadcnOverrides();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     createInitialOpenGroups,

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useThemeContext } from "@/providers/theme";
+import { convertThemeToVSCode } from "@/lib/providers/vscode";
 
 export type ProviderType = "shadcn" | "vscode" | "shiki";
 
@@ -46,6 +47,7 @@ export function useProviderOverrides<T = Record<string, any>>(
   const context = useThemeContext();
   const {
     currentMode,
+    tinteTheme,
     shadcnOverride,
     vscodeOverride,
     shikiOverride,
@@ -77,6 +79,36 @@ export function useProviderOverrides<T = Record<string, any>>(
     return allOverrides[currentMode] as T;
   }, [allOverrides, currentMode]);
 
+  // Get base theme values for VSCode provider (for fallback)
+  const baseThemeValues = useMemo(() => {
+    if (provider !== "vscode" || !tinteTheme) return {};
+
+    try {
+      const vscodeTheme = convertThemeToVSCode({ rawTheme: tinteTheme }, {} as any, {});
+      const currentTheme = vscodeTheme[currentMode];
+      const values: Record<string, string> = {};
+
+      // Add editor colors
+      if (currentTheme?.colors) {
+        Object.assign(values, currentTheme.colors);
+      }
+
+      // Add token colors
+      if (currentTheme?.tokenColors) {
+        currentTheme.tokenColors.forEach(tokenColor => {
+          if (tokenColor.name && tokenColor.settings?.foreground) {
+            values[tokenColor.name] = tokenColor.settings.foreground;
+          }
+        });
+      }
+
+      return values;
+    } catch (error) {
+      console.warn("Failed to convert theme to VSCode for fallback:", error);
+      return {};
+    }
+  }, [provider, tinteTheme, currentMode]);
+
   // Get the appropriate update function
   const updateFunction = useMemo(() => {
     switch (provider) {
@@ -102,8 +134,14 @@ export function useProviderOverrides<T = Record<string, any>>(
       const value = overrides[key as keyof T];
       return typeof value === "string" ? value : fallback;
     }
+
+    // For VSCode provider, use base theme values as fallback
+    if (provider === "vscode" && baseThemeValues[key]) {
+      return baseThemeValues[key];
+    }
+
     return fallback;
-  }, [overrides, hasOverride]);
+  }, [overrides, hasOverride, provider, baseThemeValues]);
 
   // Set single override
   const setOverride = useCallback((key: string, value: string) => {

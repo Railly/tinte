@@ -1,4 +1,4 @@
-import { ArrowLeft, RotateCcw, Upload, Eye, Share, UserPlus } from "lucide-react";
+import { ArrowLeft, RotateCcw, Share, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnonymousSignInButton } from "@/components/auth/anonymous-signin-button";
@@ -6,8 +6,6 @@ import { AnonymousSignInButton } from "@/components/auth/anonymous-signin-button
 interface DockMoreProps {
   onBack: () => void;
   onReset: () => void;
-  onImport: () => void;
-  onNavigateToContrast: () => void;
   onShare: () => void;
   isSharing?: boolean;
   hasChanges?: boolean;
@@ -20,8 +18,6 @@ interface DockMoreProps {
 export function DockMore({
   onBack,
   onReset,
-  onImport,
-  onNavigateToContrast,
   onShare,
   isSharing,
   hasChanges,
@@ -77,39 +73,6 @@ export function DockMore({
           </TooltipContent>
         </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onImport}
-              className="h-8 justify-start gap-2"
-            >
-              <Upload className="h-3 w-3" />
-              <span className="text-xs">Import Theme</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Import theme from file or CSS</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onNavigateToContrast}
-              className="h-8 justify-start gap-2"
-            >
-              <Eye className="h-3 w-3" />
-              <span className="text-xs">Contrast Check</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Check accessibility and contrast ratios</p>
-          </TooltipContent>
-        </Tooltip>
 
         <Tooltip>
           <TooltipTrigger asChild>

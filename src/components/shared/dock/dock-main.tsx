@@ -1,8 +1,16 @@
-import { ArrowUpDown, Copy, Download, MoreHorizontal, MoreVertical, Redo, Undo } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Copy, Download, MoreVertical, Redo, Save, Undo } from "lucide-react";
+import type { MotionValue } from "motion/react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { DockIcon } from "./base-dock";
 
 interface DockMainProps {
+  // macOS dock mouse tracking
+  mouseX: MotionValue<number>;
+
   // Undo/Redo
   onUndo: () => void;
   onRedo: () => void;
@@ -10,7 +18,7 @@ interface DockMainProps {
   canRedo: boolean;
   undoCount: number;
   redoCount: number;
-  
+
   // Primary action
   primaryActionConfig: {
     label: string;
@@ -20,16 +28,23 @@ interface DockMainProps {
   };
   onPrimaryAction: () => void;
   isLoading?: boolean;
-  
+
   // Quick actions
   onCopy: () => void;
-  
+  onSave: () => void;
+
+  // Save state
+  canSave: boolean;
+  unsavedChanges: boolean;
+  isSaving: boolean;
+
   // Navigation
   onNavigateToExport: () => void;
   onNavigateToMore: () => void;
 }
 
 export function DockMain({
+  mouseX,
   onUndo,
   onRedo,
   canUndo,
@@ -40,126 +55,143 @@ export function DockMain({
   onPrimaryAction,
   isLoading,
   onCopy,
+  onSave,
+  canSave,
+  unsavedChanges,
+  isSaving,
   onNavigateToExport,
   onNavigateToMore,
 }: DockMainProps) {
   const PrimaryIcon = primaryActionConfig.icon;
 
   return (
-    <div className="flex items-center gap-1 px-2 py-1">
+    <div className="flex items-end gap-0.5">
       {/* Undo/Redo Group */}
-      <div className="flex items-center">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onUndo}
-              disabled={!canUndo}
-              className="h-8 w-8 p-0 relative"
-            >
-              <Undo className="h-3 w-3" />
-              {undoCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {undoCount > 9 ? "9+" : undoCount}
-                </span>
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Undo {canUndo ? `(${undoCount})` : ""}</p>
-          </TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRedo}
-              disabled={!canRedo}
-              className="h-8 w-8 p-0 relative"
-            >
-              <Redo className="h-3 w-3" />
-              {redoCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {redoCount > 9 ? "9+" : redoCount}
-                </span>
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Redo {canRedo ? `(${redoCount})` : ""}</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DockIcon
+            mouseX={mouseX}
+            onClick={onUndo}
+            className={`${!canUndo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/20"} relative bg-white/10 border border-white/20`}
+          >
+            <Undo className="h-4 w-4" />
+            {undoCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                {undoCount > 9 ? "9+" : undoCount}
+              </span>
+            )}
+          </DockIcon>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Undo {canUndo ? `(${undoCount})` : ""}</p>
+        </TooltipContent>
+      </Tooltip>
 
-      <div className="w-px h-6 bg-border mx-1" />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DockIcon
+            mouseX={mouseX}
+            onClick={onRedo}
+            className={`${!canRedo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/20"} relative bg-white/10 border border-white/20`}
+          >
+            <Redo className="h-4 w-4" />
+            {redoCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                {redoCount > 9 ? "9+" : redoCount}
+              </span>
+            )}
+          </DockIcon>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Redo {canRedo ? `(${redoCount})` : ""}</p>
+        </TooltipContent>
+      </Tooltip>
 
       {/* Primary Action */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            variant={primaryActionConfig.variant}
-            size="sm"
+          <DockIcon
+            mouseX={mouseX}
             onClick={onPrimaryAction}
-            disabled={isLoading}
-            className="h-8 px-3 gap-1.5"
+            className={`${isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/20"} bg-white/10 border border-white/20`}
           >
-            <PrimaryIcon className="h-3 w-3" />
-            <span className="text-xs font-medium">{primaryActionConfig.label}</span>
-          </Button>
+            <PrimaryIcon className="h-4 w-4" />
+          </DockIcon>
         </TooltipTrigger>
         <TooltipContent>
           <p>{primaryActionConfig.description}</p>
         </TooltipContent>
       </Tooltip>
 
-      <div className="w-px h-6 bg-border mx-1" />
-
-      {/* Quick Actions */}
+      {/* Save */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onCopy}
-            className="h-8 w-8 p-0"
+          <DockIcon
+            mouseX={mouseX}
+            onClick={onSave}
+            className={`${isSaving || !canSave || !unsavedChanges ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/20"} relative bg-white/10 border border-white/20`}
           >
-            <Copy className="h-3 w-3" />
-          </Button>
+            <Save className="h-4 w-4" />
+            {unsavedChanges && canSave && (
+              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
+                !
+              </span>
+            )}
+          </DockIcon>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>
+            {isSaving
+              ? "Saving..."
+              : unsavedChanges
+                ? "Save changes"
+                : "No changes to save"}
+          </p>
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Copy */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DockIcon
+            mouseX={mouseX}
+            onClick={onCopy}
+            className="cursor-pointer hover:bg-white/20 bg-white/10 border border-white/20"
+          >
+            <Copy className="h-4 w-4" />
+          </DockIcon>
         </TooltipTrigger>
         <TooltipContent>
           <p>Copy theme</p>
         </TooltipContent>
       </Tooltip>
 
+      {/* Export */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
+          <DockIcon
+            mouseX={mouseX}
             onClick={onNavigateToExport}
-            className="h-8 w-8 p-0"
+            className="cursor-pointer hover:bg-white/20 bg-white/10 border border-white/20"
           >
-            <Download className="h-3 w-3" />
-          </Button>
+            <Download className="h-4 w-4" />
+          </DockIcon>
         </TooltipTrigger>
         <TooltipContent>
           <p>Export options</p>
         </TooltipContent>
       </Tooltip>
 
+      {/* More */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
+          <DockIcon
+            mouseX={mouseX}
             onClick={onNavigateToMore}
-            className="h-8 w-8 p-0"
+            className="cursor-pointer hover:bg-white/20 bg-white/10 border border-white/20"
           >
-            <MoreVertical className="h-3 w-3" />
-          </Button>
+            <MoreVertical className="h-4 w-4" />
+          </DockIcon>
         </TooltipTrigger>
         <TooltipContent>
           <p>More actions</p>

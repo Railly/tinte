@@ -16,9 +16,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useShikiOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
-import { useShikiOverrides } from "@/hooks/use-provider-overrides";
 
 interface ShikiVariable {
   key: string;
@@ -396,14 +396,16 @@ export function ShikiOverridesPanel({
   }, [mounted, tinteTheme, currentMode, getDefaultValue, themeHash]);
 
   const getVariableValue = (key: string): string => {
-    return shikiOverrides.getValue(key, getDefaultValue(key)) || getDefaultValue(key);
+    return (
+      shikiOverrides.getValue(key, getDefaultValue(key)) || getDefaultValue(key)
+    );
   };
 
   return (
     <div className="flex flex-col h-full">
       <div className="px-1 pb-2">
         <h3 className="text-sm font-medium flex items-center gap-1">
-          Shiki CSS Variables ({currentMode})
+          Shiki CSS Variables
           <Tooltip>
             <TooltipTrigger asChild>
               <Info className="w-3 h-3 text-muted-foreground/60 cursor-help" />

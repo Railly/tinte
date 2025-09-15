@@ -28,7 +28,7 @@ import {
   VSCODE_TOKEN_GROUPS,
 } from "@/lib/vscode-token-utils";
 import { useThemeContext } from "@/providers/theme";
-import { useVSCodeOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+import { useVSCodeOverrides } from "../hooks/use-provider-overrides";
 
 // Comprehensive editor color groups - ALL tokens from editorColorMap organized logically
 const EDITOR_COLOR_GROUPS = [
@@ -716,8 +716,7 @@ export function VSCodeOverridesPanel({
 
   // Determine if we should show skeletons or real data
   const currentColors = tinteTheme?.[currentMode];
-  const shouldShowSkeletons =
-    !mounted || !vscodeOverrides.hasAnyOverrides;
+  const shouldShowSkeletons = !mounted || !vscodeOverrides.hasAnyOverrides;
   const baseGroupsToRender = shouldShowSkeletons
     ? createVSCodeTokenSkeletons()
     : VSCODE_TOKEN_GROUPS;
@@ -732,15 +731,18 @@ export function VSCodeOverridesPanel({
           const query = searchQuery.toLowerCase();
 
           // Search by token key and display name
-          const keyMatch = token.key.toLowerCase().includes(query) ||
-                          token.displayName.toLowerCase().includes(query) ||
-                          token.description.toLowerCase().includes(query);
+          const keyMatch =
+            token.key.toLowerCase().includes(query) ||
+            token.displayName.toLowerCase().includes(query) ||
+            token.description.toLowerCase().includes(query);
 
           // Search by VSCode scopes
           const scopes = tokenToScopeMapping[token.key];
-          const scopeMatch = scopes && (Array.isArray(scopes)
-            ? scopes.some(scope => scope.toLowerCase().includes(query))
-            : scopes.toLowerCase().includes(query));
+          const scopeMatch =
+            scopes &&
+            (Array.isArray(scopes)
+              ? scopes.some((scope) => scope.toLowerCase().includes(query))
+              : scopes.toLowerCase().includes(query));
 
           return keyMatch || scopeMatch;
         });
@@ -774,7 +776,8 @@ export function VSCodeOverridesPanel({
 
   // Determine if there are search results in each tab
   const hasTokenResults = searchQuery.trim() && filteredTokenGroups.length > 0;
-  const hasEditorResults = searchQuery.trim() && filteredEditorGroups.length > 0;
+  const hasEditorResults =
+    searchQuery.trim() && filteredEditorGroups.length > 0;
 
   // Auto-switch tab if search results are only in the other tab
   React.useEffect(() => {
@@ -792,7 +795,8 @@ export function VSCodeOverridesPanel({
   };
 
   const handleEditorColorChange = (colorKey: string, value: string) => {
-    vscodeOverrides.setOverride(colorKey, value);
+    // TODO: Implement editor color override functionality
+    console.log("Editor color change:", colorKey, value);
   };
 
   const toggleTokenGroup = (groupName: string) => {
@@ -865,12 +869,8 @@ export function VSCodeOverridesPanel({
 
   // Get editor color value from theme using the imported editorColorMap
   const getEditorColorValue = (colorKey: string): string | undefined => {
-    // Check for editor color overrides first
-    if (vscodeOverrides.hasOverride(colorKey)) {
-      return vscodeOverrides.getValue(colorKey);
-    }
-
-    // Fall back to current theme colors using the imported editorColorMap
+    // TODO: Check for editor color overrides first
+    // For now, return from current theme colors using the imported editorColorMap
     const mappedKey = editorColorMap[colorKey as keyof typeof editorColorMap];
     return currentColors?.[mappedKey];
   };
@@ -932,8 +932,12 @@ export function VSCodeOverridesPanel({
           <div className="space-y-4 pb-2">
             {searchQuery.trim() && !hasTokenResults && hasEditorResults && (
               <div className="p-4 text-center text-muted-foreground bg-muted/20 rounded-md">
-                <p className="text-sm">No token colors found for "{searchQuery}"</p>
-                <p className="text-xs mt-1">Found results in Editor Colors tab</p>
+                <p className="text-sm">
+                  No token colors found for "{searchQuery}"
+                </p>
+                <p className="text-xs mt-1">
+                  Found results in Editor Colors tab
+                </p>
               </div>
             )}
             {filteredTokenGroups.map((group) => (
@@ -980,8 +984,12 @@ export function VSCodeOverridesPanel({
           <div className="space-y-4 pb-2">
             {searchQuery.trim() && !hasEditorResults && hasTokenResults && (
               <div className="p-4 text-center text-muted-foreground bg-muted/20 rounded-md">
-                <p className="text-sm">No editor colors found for "{searchQuery}"</p>
-                <p className="text-xs mt-1">Found results in Token Colors tab</p>
+                <p className="text-sm">
+                  No editor colors found for "{searchQuery}"
+                </p>
+                <p className="text-xs mt-1">
+                  Found results in Token Colors tab
+                </p>
               </div>
             )}
             {filteredEditorGroups.map((group) => (

@@ -1,10 +1,10 @@
 import { useQueryState } from "nuqs";
+import { useVSCodeOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { convertTheme, getPreviewableProvider } from "@/lib/providers";
 import { convertTinteToVSCode } from "@/lib/providers/vscode";
 import { cn } from "@/lib/utils";
-import { useVSCodeOverrides } from "@/providers/vscode-overrides";
 import type { TinteTheme } from "@/types/tinte";
-import { Dock } from "./shared/dock";
+import { WorkbenchDock } from "./shared/dock";
 
 interface UnifiedPreviewProps {
   theme: TinteTheme;
@@ -13,7 +13,7 @@ interface UnifiedPreviewProps {
 
 export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
-  const { overrides } = useVSCodeOverrides();
+  const vscodeOverrides = useVSCodeOverrides();
   const currentProvider = getPreviewableProvider(provider || "shadcn");
 
   if (!currentProvider) {
@@ -27,11 +27,15 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   // Use special conversion for VS Code with overrides
   let converted;
   if (currentProvider.metadata.id === "vscode") {
-    converted = convertTinteToVSCode(theme, "Tinte Theme", overrides);
+    converted = convertTinteToVSCode(
+      theme,
+      "Tinte Theme",
+      vscodeOverrides.overrides,
+    );
   } else {
     converted = convertTheme(currentProvider.metadata.id, theme);
   }
-  
+
   if (!converted) {
     return (
       <div className="flex items-center justify-center h-64 text-muted-foreground">
@@ -51,7 +55,7 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
     >
       <PreviewComponent theme={converted} />
 
-      <Dock
+      <WorkbenchDock
         theme={theme}
         providerId={currentProvider.metadata.id}
         providerName={currentProvider.metadata.name}

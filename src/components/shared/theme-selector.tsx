@@ -133,7 +133,8 @@ export function ThemeSelector({
       return activeTheme;
     }
 
-    // If activeTheme is provided directly, use it (for modified themes)
+    // ALWAYS prioritize activeTheme if provided directly (for modified themes)
+    // This ensures that edited themes with changed names/IDs are displayed correctly
     if (activeTheme) {
       return activeTheme;
     }
@@ -143,7 +144,7 @@ export function ThemeSelector({
       return null;
     }
 
-    // Otherwise, search by activeId in organized themes
+    // Fallback: search by activeId in organized themes only if no activeTheme provided
     // First check user themes
     let found = organizedThemes.userThemes.find((t) => t.id === activeId);
 

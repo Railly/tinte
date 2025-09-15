@@ -11,18 +11,18 @@ import { ChatInput } from "@/components/workbench/chat-input";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 
-import { AssistantAvatar } from "./agent-tab/components/assistant-avatar";
-import { ChatEmptyState } from "./agent-tab/components/chat-empty-state";
-import { MessageAttachment } from "./agent-tab/components/message-attachment";
-import { ThemeResultCard } from "./agent-tab/components/theme-result-card";
-import { useChatLogic } from "./agent-tab/hooks/use-chat-logic";
-import { useLoadingTimer } from "./agent-tab/hooks/use-loading-timer";
-import { useThemeApplication } from "./agent-tab/hooks/use-theme-application";
+import { AssistantAvatar } from "./components/assistant-avatar";
+import { ChatEmptyState } from "./components/chat-empty-state";
+import { MessageAttachment } from "./components/message-attachment";
+import { ThemeResultCard } from "./components/theme-result-card";
+import { useChatLogic } from "./hooks/use-chat-logic";
+import { useLoadingTimer } from "./hooks/use-loading-timer";
+import { useThemeApplication } from "./hooks/use-theme-application";
 
 export function AgentTab() {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
-  
+
   const {
     messages,
     sendMessage,

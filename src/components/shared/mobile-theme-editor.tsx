@@ -5,7 +5,7 @@ import * as React from "react";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
-import { useShadcnOverrides } from "@/hooks/use-provider-overrides";
+import { useShadcnOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 
 declare global {
   interface Window {
