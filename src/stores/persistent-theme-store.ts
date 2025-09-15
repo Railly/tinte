@@ -18,21 +18,21 @@ import {
   computeThemeTokens,
   computeProcessedTokens,
   convertColorToHex,
-  applyProcessedTokensToDOM
+  applyProcessedTokensToDOM,
 } from "./theme/utils/theme-computation";
 import {
   getThemeOwnershipInfo,
-  createUpdatedThemeForEdit
+  createUpdatedThemeForEdit,
 } from "./theme/utils/theme-ownership";
 import {
   loadFromStorage,
   saveToStorage,
   saveAnonymousThemes,
-  loadAnonymousThemes
+  loadAnonymousThemes,
 } from "./theme/utils/storage";
 import {
   createOverrideHandler,
-  createResetOverridesHandler
+  createResetOverridesHandler,
 } from "./theme/overrides";
 import { createPersistenceActions } from "./theme/actions/persistence-actions";
 import { createThemeActions } from "./theme/actions/theme-actions";
@@ -136,9 +136,9 @@ const getInitialState = () => {
   // Apply overrides from storage
   const themeOverrides = (theme as any).overrides || {};
   const overrides: ThemeOverrides = {
-    shadcn: themeOverrides.shadcn || null,
-    vscode: themeOverrides.vscode || null,
-    shiki: themeOverrides.shiki || null,
+    shadcn: themeOverrides.shadcn ?? undefined,
+    vscode: themeOverrides.vscode ?? undefined,
+    shiki: themeOverrides.shiki ?? undefined,
   };
 
   if (overrides.shadcn?.[mode]) {
@@ -238,6 +238,17 @@ const getInitialState = () => {
 export const usePersistentThemeStore = create<PersistentThemeState>()(
   devtools(
     subscribeWithSelector((set, get) => {
+      const sanitizeFavorites = (input: any): Record<string, boolean> => {
+        try {
+          return Object.fromEntries(
+            Object.entries((input || {}) as Record<string, unknown>).map(
+              ([key, value]) => [key, !!value]
+            )
+          );
+        } catch {
+          return {};
+        }
+      };
       // Create override handlers using the factory
       const updateShadcnOverride = createOverrideHandler("shadcn", get, set);
       const updateVscodeOverride = createOverrideHandler("vscode", get, set);
@@ -283,7 +294,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
                 "preset",
                 "community",
               ],
-            }),
+            })
           );
 
           const raysoThemes = extractRaysoThemeData(false).map(
@@ -301,7 +312,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
                 "modern",
                 "community",
               ],
-            }),
+            })
           );
 
           const tinteThemes = extractTinteThemeData(false).map(
@@ -319,7 +330,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
                 "premium",
                 "design",
               ],
-            }),
+            })
           );
 
           // Load user themes
@@ -358,22 +369,30 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               const stored = localStorage.getItem(`favorites_${user.id}`);
               if (stored) {
                 try {
-                  favorites = JSON.parse(stored);
+                  favorites = sanitizeFavorites(JSON.parse(stored));
                 } catch (error) {
-                  console.error("Error parsing favorites from localStorage:", error);
+                  console.error(
+                    "Error parsing favorites from localStorage:",
+                    error
+                  );
                 }
               }
             }
 
             // Then fetch from DB to get authoritative state
             try {
-              const { getUserFavorites } = await import("@/lib/actions/favorites");
+              const { getUserFavorites } = await import(
+                "@/lib/actions/favorites"
+              );
               const dbResult = await getUserFavorites();
               if (dbResult.favorites) {
-                favorites = dbResult.favorites;
+                favorites = sanitizeFavorites(dbResult.favorites);
                 // Update localStorage with DB state
                 if (typeof window !== "undefined") {
-                  localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+                  localStorage.setItem(
+                    `favorites_${user.id}`,
+                    JSON.stringify(favorites)
+                  );
                 }
               }
             } catch (error) {
@@ -390,7 +409,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             ...userThemes,
           ].filter(
             (theme, index, arr) =>
-              arr.findIndex((t) => t.id === theme.id) === index,
+              arr.findIndex((t) => t.id === theme.id) === index
           );
 
           // Resolve theme priority (simplified)
@@ -408,17 +427,24 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           // Compute final tokens
           const themeOverrides = (finalTheme as any).overrides || {};
           const overrides: ThemeOverrides = {
-            shadcn: themeOverrides.shadcn || null,
-            vscode: themeOverrides.vscode || null,
-            shiki: themeOverrides.shiki || null,
+            shadcn: themeOverrides.shadcn ?? undefined,
+            vscode: themeOverrides.vscode ?? undefined,
+            shiki: themeOverrides.shiki ?? undefined,
           };
 
-          const processedTokens = computeProcessedTokens(finalTheme, mode, overrides);
+          const processedTokens = computeProcessedTokens(
+            finalTheme,
+            mode,
+            overrides
+          );
 
           // Extract TinteTheme (same logic as initial state)
           let tinteTheme: TinteTheme;
           if (finalTheme?.rawTheme && typeof finalTheme.rawTheme === "object") {
-            if ("light" in finalTheme.rawTheme && "dark" in finalTheme.rawTheme) {
+            if (
+              "light" in finalTheme.rawTheme &&
+              "dark" in finalTheme.rawTheme
+            ) {
               const possibleTinte = finalTheme.rawTheme as TinteTheme;
               if (possibleTinte.light.tx && possibleTinte.light.ui) {
                 tinteTheme = possibleTinte;
@@ -514,7 +540,11 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               shiki: state.shikiOverride,
             };
 
-            const processedTokens = computeProcessedTokens(activeTheme, mode, overrides);
+            const processedTokens = computeProcessedTokens(
+              activeTheme,
+              mode,
+              overrides
+            );
 
             return {
               currentMode: mode,
@@ -524,12 +554,21 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             };
           });
 
-          const { shadcnOverride, vscodeOverride, shikiOverride, currentTokens } = get();
+          const {
+            shadcnOverride,
+            vscodeOverride,
+            shikiOverride,
+            currentTokens,
+          } = get();
           saveToStorage(
             activeTheme,
             mode,
-            { shadcn: shadcnOverride, vscode: vscodeOverride, shiki: shikiOverride },
-            false,
+            {
+              shadcn: shadcnOverride,
+              vscode: vscodeOverride,
+              shiki: shikiOverride,
+            },
+            false
           );
           applyProcessedTokensToDOM(activeTheme, mode, currentTokens);
         },
@@ -545,7 +584,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
 
           const root = document.documentElement;
           const prefersReducedMotion = window.matchMedia(
-            "(prefers-reduced-motion: reduce)",
+            "(prefers-reduced-motion: reduce)"
           ).matches;
 
           if (!document.startViewTransition || prefersReducedMotion) {
@@ -575,11 +614,17 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               const storedTheme = localStorage.getItem("tinte-selected-theme");
               if (storedTheme) {
                 const localTheme = JSON.parse(storedTheme);
-                if (localTheme.id === theme.id && localTheme.lastEditTimestamp) {
-                  const selectedTimestamp = theme.updated_at || theme.created_at;
-                  if (!selectedTimestamp ||
-                      new Date(localTheme.lastEditTimestamp).getTime() >
-                      new Date(selectedTimestamp).getTime()) {
+                if (
+                  localTheme.id === theme.id &&
+                  localTheme.lastEditTimestamp
+                ) {
+                  const selectedTimestamp =
+                    (theme as any).updatedAt || theme.createdAt;
+                  if (
+                    !selectedTimestamp ||
+                    new Date(localTheme.lastEditTimestamp).getTime() >
+                      new Date(selectedTimestamp).getTime()
+                  ) {
                     finalTheme = localTheme;
                     hasUnsyncedChanges = true;
                   }
@@ -598,17 +643,29 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               shiki: themeOverrides.shiki || null,
             };
 
-            const processedTokens = computeProcessedTokens(finalTheme, currentMode, overrides);
+            const processedTokens = computeProcessedTokens(
+              finalTheme,
+              currentMode,
+              overrides
+            );
 
             // Extract TinteTheme (same logic as before)
             let tinteTheme: TinteTheme;
-            if (finalTheme?.rawTheme && typeof finalTheme.rawTheme === "object") {
-              if ("light" in finalTheme.rawTheme && "dark" in finalTheme.rawTheme) {
+            if (
+              finalTheme?.rawTheme &&
+              typeof finalTheme.rawTheme === "object"
+            ) {
+              if (
+                "light" in finalTheme.rawTheme &&
+                "dark" in finalTheme.rawTheme
+              ) {
                 const possibleTinte = finalTheme.rawTheme as TinteTheme;
                 if (possibleTinte.light.tx && possibleTinte.light.ui) {
                   tinteTheme = possibleTinte;
                 } else {
-                  tinteTheme = shadcnToTinte(finalTheme.rawTheme as ShadcnTheme);
+                  tinteTheme = shadcnToTinte(
+                    finalTheme.rawTheme as ShadcnTheme
+                  );
                 }
               } else {
                 tinteTheme = shadcnToTinte(finalTheme.rawTheme as ShadcnTheme);
@@ -657,7 +714,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
 
             const updatedAllThemes = [...allThemes];
             const existingThemeIndex = allThemes.findIndex(
-              (t) => t.id === finalTheme.id,
+              (t) => t.id === finalTheme.id
             );
             if (existingThemeIndex === -1) {
               updatedAllThemes.push(finalTheme);
@@ -679,12 +736,21 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             };
           });
 
-          const { shadcnOverride, vscodeOverride, shikiOverride, currentTokens } = get();
+          const {
+            shadcnOverride,
+            vscodeOverride,
+            shikiOverride,
+            currentTokens,
+          } = get();
           saveToStorage(
             finalTheme,
             currentMode,
-            { shadcn: shadcnOverride, vscode: vscodeOverride, shiki: shikiOverride },
-            false,
+            {
+              shadcn: shadcnOverride,
+              vscode: vscodeOverride,
+              shiki: shikiOverride,
+            },
+            false
           );
           applyProcessedTokensToDOM(finalTheme, currentMode, currentTokens);
         },
@@ -700,11 +766,14 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               : convertColorToHex(value);
 
           set((state) => {
-            const ownership = getThemeOwnershipInfo(state.activeTheme, state.user);
+            const ownership = getThemeOwnershipInfo(
+              state.activeTheme,
+              state.user
+            );
             const updatedActiveTheme = createUpdatedThemeForEdit(
               state.activeTheme,
               state.user,
-              ownership,
+              ownership
             );
 
             return {
@@ -717,7 +786,10 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           });
 
           if (typeof window !== "undefined") {
-            document.documentElement.style.setProperty(`--${key}`, processedValue);
+            document.documentElement.style.setProperty(
+              `--${key}`,
+              processedValue
+            );
           }
         },
 
@@ -725,17 +797,25 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           const { activeTheme, currentMode } = get();
 
           set(() => {
-            const overrides: ThemeOverrides = { shadcn: null, vscode: null, shiki: null };
-            const processedTokens = computeProcessedTokens(activeTheme, currentMode, overrides);
+            const overrides: ThemeOverrides = {
+              shadcn: undefined,
+              vscode: undefined,
+              shiki: undefined,
+            };
+            const processedTokens = computeProcessedTokens(
+              activeTheme,
+              currentMode,
+              overrides
+            );
 
             return {
               editedTokens: {},
               currentTokens: processedTokens,
               hasEdits: false,
               unsavedChanges: false,
-              shadcnOverride: null,
-              vscodeOverride: null,
-              shikiOverride: null,
+              shadcnOverride: undefined,
+              vscodeOverride: undefined,
+              shikiOverride: undefined,
             };
           });
 
@@ -753,14 +833,20 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               },
             };
 
-            const ownership = getThemeOwnershipInfo(state.activeTheme, state.user);
+            const ownership = getThemeOwnershipInfo(
+              state.activeTheme,
+              state.user
+            );
             let updatedTheme;
 
             if (ownership.isUserOwnedTheme) {
               // For own themes, ensure we show "(unsaved)" to indicate edits
               let themeName = state.activeTheme.name;
               if (!themeName.includes("(unsaved)")) {
-                themeName = themeName === "Custom" ? "Custom (unsaved)" : `${themeName} (unsaved)`;
+                themeName =
+                  themeName === "Custom"
+                    ? "Custom (unsaved)"
+                    : `${themeName} (unsaved)`;
               }
               updatedTheme = {
                 ...state.activeTheme,
@@ -806,12 +892,21 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               shiki: state.shikiOverride,
             };
 
-            const processedTokens = computeProcessedTokens(updatedTheme, state.currentMode, overrides);
+            const processedTokens = computeProcessedTokens(
+              updatedTheme,
+              state.currentMode,
+              overrides
+            );
 
             // Handle tweakcn conversion if needed
             let finalActiveTheme = updatedTheme;
-            if (state.activeTheme.author === "tweakcn" && !ownership.isUserOwnedTheme) {
-              const { convertTinteToShadcn } = require("@/lib/providers/shadcn");
+            if (
+              state.activeTheme.author === "tweakcn" &&
+              !ownership.isUserOwnedTheme
+            ) {
+              const {
+                convertTinteToShadcn,
+              } = require("@/lib/providers/shadcn");
               const convertedShadcnTheme = convertTinteToShadcn(newTinteTheme);
               finalActiveTheme = {
                 ...updatedTheme,
@@ -828,12 +923,23 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             };
           });
 
-          const { activeTheme, currentMode, shadcnOverride, vscodeOverride, shikiOverride, currentTokens } = get();
+          const {
+            activeTheme,
+            currentMode,
+            shadcnOverride,
+            vscodeOverride,
+            shikiOverride,
+            currentTokens,
+          } = get();
           saveToStorage(
             activeTheme,
             currentMode,
-            { shadcn: shadcnOverride, vscode: vscodeOverride, shiki: shikiOverride },
-            true,
+            {
+              shadcn: shadcnOverride,
+              vscode: vscodeOverride,
+              shiki: shikiOverride,
+            },
+            true
           );
           applyProcessedTokensToDOM(activeTheme, currentMode, currentTokens);
         },
@@ -842,7 +948,9 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           const { activeTheme, allThemes } = get();
           if (!activeTheme || allThemes.length <= 1) return;
 
-          const currentIndex = allThemes.findIndex((t) => t.id === activeTheme.id);
+          const currentIndex = allThemes.findIndex(
+            (t) => t.id === activeTheme.id
+          );
           let nextTheme: ThemeData;
 
           switch (direction) {
@@ -859,8 +967,12 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               break;
             }
             case "random": {
-              const availableThemes = allThemes.filter((t) => t.id !== activeTheme.id);
-              const randomIndex = Math.floor(Math.random() * availableThemes.length);
+              const availableThemes = allThemes.filter(
+                (t) => t.id !== activeTheme.id
+              );
+              const randomIndex = Math.floor(
+                Math.random() * availableThemes.length
+              );
               nextTheme = availableThemes[randomIndex];
               break;
             }
@@ -900,13 +1012,21 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           }
 
           try {
-            const { getUserFavorites } = await import("@/lib/actions/favorites");
+            const { getUserFavorites } = await import(
+              "@/lib/actions/favorites"
+            );
             const { favorites } = await getUserFavorites();
 
             // Update state and localStorage
-            set({ favorites, favoritesLoaded: true });
+            set({
+              favorites: sanitizeFavorites(favorites),
+              favoritesLoaded: true,
+            });
             if (typeof window !== "undefined") {
-              localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+              localStorage.setItem(
+                `favorites_${user.id}`,
+                JSON.stringify(favorites)
+              );
             }
           } catch (error) {
             console.error("Error loading favorites from DB:", error);
@@ -915,10 +1035,13 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               const stored = localStorage.getItem(`favorites_${user.id}`);
               if (stored) {
                 try {
-                  const favorites = JSON.parse(stored);
+                  const favorites = sanitizeFavorites(JSON.parse(stored));
                   set({ favorites, favoritesLoaded: true });
                 } catch (parseError) {
-                  console.error("Error parsing localStorage favorites:", parseError);
+                  console.error(
+                    "Error parsing localStorage favorites:",
+                    parseError
+                  );
                   set({ favorites: {}, favoritesLoaded: true });
                 }
               } else {
@@ -937,7 +1060,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             return false;
           }
 
-          const currentStatus = favorites[themeId] ?? false;
+          const currentStatus = !!favorites[themeId];
           const newStatus = !currentStatus;
 
           // Immediate optimistic update in both state and localStorage
@@ -946,7 +1069,10 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
 
           // Immediately persist to localStorage for instant availability
           if (typeof window !== "undefined") {
-            localStorage.setItem(`favorites_${user.id}`, JSON.stringify(newFavorites));
+            localStorage.setItem(
+              `favorites_${user.id}`,
+              JSON.stringify(newFavorites)
+            );
           }
 
           // Sync with DB in background
@@ -958,17 +1084,26 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               // Revert optimistic update on error
               set({ favorites });
               if (typeof window !== "undefined") {
-                localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+                localStorage.setItem(
+                  `favorites_${user.id}`,
+                  JSON.stringify(favorites)
+                );
               }
               return false;
             }
 
             // Verify result matches our optimistic update
             if (result.isFavorite !== newStatus) {
-              const correctedFavorites = { ...newFavorites, [themeId]: result.isFavorite };
+              const correctedFavorites = {
+                ...newFavorites,
+                [themeId]: !!result.isFavorite,
+              };
               set({ favorites: correctedFavorites });
               if (typeof window !== "undefined") {
-                localStorage.setItem(`favorites_${user.id}`, JSON.stringify(correctedFavorites));
+                localStorage.setItem(
+                  `favorites_${user.id}`,
+                  JSON.stringify(correctedFavorites)
+                );
               }
             }
 
@@ -989,13 +1124,16 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             // Revert both state and localStorage on DB sync error
             set({ favorites });
             if (typeof window !== "undefined") {
-              localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+              localStorage.setItem(
+                `favorites_${user.id}`,
+                JSON.stringify(favorites)
+              );
             }
             return false;
           }
         },
       };
     }),
-    { name: "persistent-theme-store" },
-  ),
+    { name: "persistent-theme-store" }
+  )
 );

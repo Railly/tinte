@@ -532,7 +532,7 @@ import type { ShikiTheme, CodeTemplate } from '@/types/shiki';
 
 // Props interface with comprehensive theme support
 interface ShikiPreviewProps {
-  theme: { light: ShikiTheme; dark: ShikiTheme };
+  theme: ShikiTheme;
   className?: string;
   templates?: CodeTemplate[];
   onTemplateChange?: (template: CodeTemplate) => void;
