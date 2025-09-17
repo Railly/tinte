@@ -105,7 +105,7 @@ export const DEFAULT_THEME: ThemeData & {
   provider: "tinte",
   downloads: 0,
   likes: 0,
-  views: 0,
+  installs: 0,
   createdAt: "2024-01-20",
   colors: {
     primary: "#464646",

@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import { devtools, subscribeWithSelector } from "zustand/middleware";
 import { authClient } from "@/lib/auth-client";
-import { convertTheme } from "@/lib/providers";
 import { shadcnToTinte } from "@/lib/shadcn-to-tinte";
 import type { ThemeData } from "@/lib/theme-tokens";
 import type { ShadcnTheme } from "@/types/shadcn";
@@ -27,7 +26,6 @@ import {
 import {
   loadFromStorage,
   saveToStorage,
-  saveAnonymousThemes,
   loadAnonymousThemes,
 } from "./theme/utils/storage";
 import {
@@ -287,7 +285,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               provider: "tweakcn" as const,
               downloads: 8000 + index * 500,
               likes: 400 + index * 50,
-              views: 15000 + index * 2000,
+              installs: 2000 + index * 200,
               tags: [
                 themeData.name.split(" ")[0].toLowerCase(),
                 "modern",
@@ -305,7 +303,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               provider: "rayso" as const,
               downloads: 6000 + index * 400,
               likes: 300 + index * 40,
-              views: 12000 + index * 1500,
+              installs: 1500 + index * 150,
               tags: [
                 themeData.name.toLowerCase(),
                 "rayso",
@@ -323,7 +321,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               provider: "tinte" as const,
               downloads: 5000 + index * 350,
               likes: 250 + index * 35,
-              views: 10000 + index * 1200,
+              installs: 1000 + index * 100,
               tags: [
                 themeData.name.toLowerCase().split(" ")[0],
                 "tinte",
@@ -824,7 +822,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
         },
 
         updateTinteTheme: (mode, updates) => {
-          set((state) => {
+          set((state: PersistentThemeState) => {
             const newTinteTheme = {
               ...state.tinteTheme,
               [mode]: {
@@ -862,7 +860,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
                 provider: "tinte" as const,
                 downloads: 0,
                 likes: 0,
-                views: 0,
+                installs: 0,
                 tags: ["custom", "unsaved"],
                 createdAt: new Date().toISOString(),
                 colors: {

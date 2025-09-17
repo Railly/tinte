@@ -23,7 +23,12 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     }
 
     const body = await request.json();
-    const { name, tinteTheme, overrides, isPublic }: {
+    const {
+      name,
+      tinteTheme,
+      overrides,
+      isPublic,
+    }: {
       name?: string;
       tinteTheme?: TinteTheme;
       overrides?: {
@@ -39,12 +44,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     const existingTheme = await db
       .select()
       .from(theme)
-      .where(
-        and(
-          eq(theme.id, id),
-          eq(theme.user_id, session.user.id)
-        )
-      )
+      .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)))
       .limit(1);
 
     if (existingTheme.length === 0) {
@@ -61,7 +61,10 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
     if (name) {
       updates.name = name;
-      updates.slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+      updates.slug = name
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
     }
 
     if (tinteTheme) {
@@ -115,12 +118,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     const updatedTheme = await db
       .update(theme)
       .set(updates)
-      .where(
-        and(
-          eq(theme.id, id),
-          eq(theme.user_id, session.user.id)
-        )
-      )
+      .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)))
       .returning();
 
     if (updatedTheme.length === 0) {
@@ -132,9 +130,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json({
       success: true,
-      theme: updatedTheme[0]
+      theme: updatedTheme[0],
     });
-
   } catch (error) {
     console.error("Error updating theme:", error);
     return NextResponse.json(
@@ -159,12 +156,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     const existingTheme = await db
       .select()
       .from(theme)
-      .where(
-        and(
-          eq(theme.id, id),
-          eq(theme.user_id, session.user.id)
-        )
-      )
+      .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)))
       .limit(1);
 
     if (existingTheme.length === 0) {
@@ -176,15 +168,9 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     await db
       .delete(theme)
-      .where(
-        and(
-          eq(theme.id, id),
-          eq(theme.user_id, session.user.id)
-        )
-      );
+      .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)));
 
     return NextResponse.json({ success: true });
-
   } catch (error) {
     console.error("Error deleting theme:", error);
     return NextResponse.json(
@@ -198,7 +184,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     // Get theme by ID - can be public or user's own theme
     const { id } = await context.params;
-    console.log({id})
+    console.log({ id });
     const themeData = await db
       .select()
       .from(theme)
@@ -206,10 +192,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .limit(1);
 
     if (themeData.length === 0) {
-      return NextResponse.json(
-        { error: "Theme not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Theme not found" }, { status: 404 });
     }
 
     const themeRecord = themeData[0];
@@ -229,7 +212,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     // Transform to UserThemeData format
-    const { UserThemeService } = await import("@/lib/services/user-theme.service");
+    const { UserThemeService } = await import(
+      "@/lib/services/user-theme.service"
+    );
     // We can't call the private method directly, so we'll reconstruct the theme data
     const userTheme = {
       id: themeRecord.id,
@@ -239,9 +224,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
       provider: "tinte" as const,
       downloads: 0,
       likes: 0,
-      views: 0,
       tags: ["custom"],
-      createdAt: themeRecord.created_at?.toISOString() || new Date().toISOString(),
+      createdAt:
+        themeRecord.created_at?.toISOString() || new Date().toISOString(),
       colors: {
         primary: themeRecord.light_pr,
         secondary: themeRecord.light_sc,
@@ -289,7 +274,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
     };
 
     return NextResponse.json(userTheme);
-
   } catch (error) {
     console.error("Error fetching theme:", error);
     return NextResponse.json(

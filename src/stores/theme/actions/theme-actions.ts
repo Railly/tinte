@@ -15,7 +15,7 @@ export function createThemeActions(get: any, set: any) {
         provider: "tinte" as const,
         downloads: 0,
         likes: 0,
-        views: 0,
+        installs: 0,
         tags: ["custom"],
         createdAt: new Date().toISOString(),
         colors: {
@@ -70,7 +70,7 @@ export function createThemeActions(get: any, set: any) {
     addTheme: (theme: ThemeData) => {
       set((state: any) => {
         const existingIndex = state.allThemes.findIndex(
-          (t: ThemeData) => t.id === theme.id,
+          (t: ThemeData) => t.id === theme.id
         );
         if (existingIndex >= 0) {
           const updatedThemes = [...state.allThemes];
@@ -83,7 +83,13 @@ export function createThemeActions(get: any, set: any) {
     },
 
     exportTheme: (format: string) => {
-      const { activeTheme, tinteTheme, shadcnOverride, vscodeOverride, shikiOverride } = get();
+      const {
+        activeTheme,
+        tinteTheme,
+        shadcnOverride,
+        vscodeOverride,
+        shikiOverride,
+      } = get();
 
       switch (format) {
         case "tinte":
@@ -93,7 +99,7 @@ export function createThemeActions(get: any, set: any) {
               overrides: { shadcnOverride, vscodeOverride, shikiOverride },
             },
             null,
-            2,
+            2
           );
         case "shadcn":
           return JSON.stringify(convertTheme("shadcn", tinteTheme), null, 2);
@@ -118,7 +124,7 @@ export function createThemeActions(get: any, set: any) {
               provider: "tinte" as const,
               downloads: 0,
               likes: 0,
-              views: 0,
+              installs: 0,
               tags: ["imported"],
               createdAt: new Date().toISOString(),
               colors: {

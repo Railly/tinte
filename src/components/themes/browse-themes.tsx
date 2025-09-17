@@ -98,7 +98,6 @@ export function BrowseThemes({
       provider: "tweakcn" as const,
       downloads: 0,
       likes: 0,
-      views: 0,
       tags: [
         themeData.name.split(" ")[0].toLowerCase(),
         "modern",
@@ -371,27 +370,27 @@ export function BrowseThemes({
           >
             {shouldShowSkeletons
               ? // Show skeleton cards while loading
-                Array.from({ length: 12 }).map((_, index) =>
-                  viewMode === "grid" ? (
-                    <ThemeCardSkeleton key={index} />
-                  ) : (
-                    <ThemeCardListSkeleton key={index} />
-                  ),
-                )
+              Array.from({ length: 12 }).map((_, index) =>
+                viewMode === "grid" ? (
+                  <ThemeCardSkeleton key={index} />
+                ) : (
+                  <ThemeCardListSkeleton key={index} />
+                ),
+              )
               : filteredThemes.map((theme, index) => (
-                  <ThemeCard
-                    key={theme.id}
-                    theme={theme}
-                    index={index}
-                    variant={viewMode}
-                    onThemeSelect={handleThemeSelect}
-                    showUserInfo={
-                      activeCategory === "community" ||
-                      activeCategory === "user" ||
-                      activeCategory === "favorites"
-                    }
-                  />
-                ))}
+                <ThemeCard
+                  key={theme.id}
+                  theme={theme}
+                  index={index}
+                  variant={viewMode}
+                  onThemeSelect={handleThemeSelect}
+                  showUserInfo={
+                    activeCategory === "community" ||
+                    activeCategory === "user" ||
+                    activeCategory === "favorites"
+                  }
+                />
+              ))}
           </div>
 
           {/* Infinite scroll sentinel for community tab - only when not searching */}

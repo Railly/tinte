@@ -32,7 +32,6 @@ class SearchService {
       metadata: {
         downloads: theme.downloads,
         likes: theme.likes,
-        views: theme.views,
         createdAt: theme.createdAt,
         rawTheme: JSON.stringify(theme.rawTheme),
         colors: JSON.stringify(theme.colors),
@@ -89,7 +88,7 @@ class SearchService {
                 : [],
               downloads: Number(result.metadata?.downloads) || 0,
               likes: Number(result.metadata?.likes) || 0,
-              views: Number(result.metadata?.views) || 0,
+              installs: Number(result.metadata?.installs) || 0,
               createdAt: String(result.metadata?.createdAt) || "",
               colors: result.metadata?.colors
                 ? JSON.parse(String(result.metadata.colors))
@@ -140,11 +139,11 @@ class SearchService {
             console.error(
               "Error fetching user data for theme:",
               themeData.id,
-              error,
+              error
             );
             return themeData;
           }
-        }),
+        })
       );
 
       return themesWithUsers;
@@ -200,7 +199,7 @@ class SearchService {
     }
 
     console.log(
-      `Resuming upload for ${remainingThemes.length} remaining themes...`,
+      `Resuming upload for ${remainingThemes.length} remaining themes...`
     );
 
     const results = await this.upsertThemes(remainingThemes);

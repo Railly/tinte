@@ -39,12 +39,14 @@ export function useThemeApplication() {
       const themeData: ThemeData = {
         id: `ai-generated-${Date.now()}`,
         name: toolResult.title || "AI Generated Theme",
-        description: `AI-generated theme: ${toolResult.concept || "Custom theme"}`,
+        description: `AI-generated theme: ${
+          toolResult.concept || "Custom theme"
+        }`,
         author: "AI Assistant",
         provider: "tinte",
         downloads: 0,
         likes: 0,
-        views: 1,
+        installs: 0,
         createdAt: new Date().toISOString(),
         colors: {
           primary: toolResult.theme.light.pr,
@@ -65,7 +67,7 @@ export function useThemeApplication() {
         if (document.documentElement) {
           document.documentElement.style.setProperty(
             "--force-update",
-            Date.now().toString(),
+            Date.now().toString()
           );
           // Remove it immediately to trigger a repaint
           requestAnimationFrame(() => {
@@ -74,7 +76,7 @@ export function useThemeApplication() {
         }
       }, 100);
     },
-    [addTheme, handleThemeSelect],
+    [addTheme, handleThemeSelect]
   );
 
   return { handleApplyTheme };

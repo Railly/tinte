@@ -103,7 +103,7 @@ function computeThemeTokens(theme: ThemeData): {
         // Standard conversion for normal themes
         const shadcnTheme = convertTheme(
           "shadcn",
-          theme.rawTheme as TinteTheme,
+          theme.rawTheme as TinteTheme
         ) as ShadcnTheme;
         if (shadcnTheme?.light && shadcnTheme.dark) {
           computedTokens = {
@@ -114,7 +114,7 @@ function computeThemeTokens(theme: ThemeData): {
           console.warn(
             "Failed to convert theme to shadcn:",
             theme.name,
-            theme.author,
+            theme.author
           );
           computedTokens = DEFAULT_THEME.computedTokens;
         }
@@ -124,7 +124,7 @@ function computeThemeTokens(theme: ThemeData): {
         "Error converting theme to shadcn:",
         theme.name,
         theme.author,
-        error,
+        error
       );
       computedTokens = DEFAULT_THEME.computedTokens;
     }
@@ -191,7 +191,7 @@ function applyThemeWithTransition(theme: ThemeData, mode: ThemeMode): void {
   }
 
   const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
+    "(prefers-reduced-motion: reduce)"
   ).matches;
 
   if (!document.startViewTransition || prefersReducedMotion) {
@@ -281,14 +281,14 @@ export const useThemeStore = create<ThemeState>()(
             provider: "tweakcn" as const,
             downloads: 8000 + index * 500,
             likes: 400 + index * 50,
-            views: 15000 + index * 2000,
+            installs: 2000 + index * 200,
             tags: [
               themeData.name.split(" ")[0].toLowerCase(),
               "modern",
               "preset",
               "community",
             ],
-          }),
+          })
         );
 
         const raysoThemes = extractRaysoThemeData(false).map(
@@ -299,14 +299,14 @@ export const useThemeStore = create<ThemeState>()(
             provider: "rayso" as const,
             downloads: 6000 + index * 400,
             likes: 300 + index * 40,
-            views: 12000 + index * 1500,
+            installs: 1500 + index * 150,
             tags: [
               themeData.name.toLowerCase(),
               "rayso",
               "modern",
               "community",
             ],
-          }),
+          })
         );
 
         const tinteThemes = extractTinteThemeData(false).map(
@@ -317,14 +317,14 @@ export const useThemeStore = create<ThemeState>()(
             provider: "tinte" as const,
             downloads: 5000 + index * 350,
             likes: 250 + index * 35,
-            views: 10000 + index * 1200,
+            installs: 1000 + index * 100,
             tags: [
               themeData.name.toLowerCase().split(" ")[0],
               "tinte",
               "premium",
               "design",
             ],
-          }),
+          })
         );
 
         const allThemes = [
@@ -334,7 +334,7 @@ export const useThemeStore = create<ThemeState>()(
           ...tweakcnThemes,
         ].filter(
           (theme, index, arr) =>
-            arr.findIndex((t) => t.id === theme.id) === index,
+            arr.findIndex((t) => t.id === theme.id) === index
         );
 
         // Compute tokens
@@ -422,7 +422,7 @@ export const useThemeStore = create<ThemeState>()(
 
         const root = document.documentElement;
         const prefersReducedMotion = window.matchMedia(
-          "(prefers-reduced-motion: reduce)",
+          "(prefers-reduced-motion: reduce)"
         ).matches;
 
         if (!document.startViewTransition || prefersReducedMotion) {
@@ -497,7 +497,9 @@ export const useThemeStore = create<ThemeState>()(
 
           // Add theme to allThemes if it's not already there
           let updatedAllThemes = [...allThemes];
-          const existingThemeIndex = allThemes.findIndex(t => t.id === theme.id);
+          const existingThemeIndex = allThemes.findIndex(
+            (t) => t.id === theme.id
+          );
           if (existingThemeIndex === -1) {
             updatedAllThemes.push(theme);
           } else {
@@ -540,7 +542,7 @@ export const useThemeStore = create<ThemeState>()(
         if (typeof window !== "undefined") {
           document.documentElement.style.setProperty(
             `--${key}`,
-            processedValue,
+            processedValue
           );
 
           // If it's a shadow property, recompute and apply shadow vars
@@ -563,7 +565,7 @@ export const useThemeStore = create<ThemeState>()(
             Object.entries(shadowVars).forEach(([shadowKey, shadowValue]) => {
               document.documentElement.style.setProperty(
                 `--${shadowKey}`,
-                shadowValue,
+                shadowValue
               );
             });
           }
@@ -610,7 +612,10 @@ export const useThemeStore = create<ThemeState>()(
             ...state.activeTheme,
             rawTheme: newTinteTheme,
             // Temporarily change author to force proper conversion for TweakCN
-            author: state.activeTheme.author === "tweakcn" ? "tinte" : state.activeTheme.author,
+            author:
+              state.activeTheme.author === "tweakcn"
+                ? "tinte"
+                : state.activeTheme.author,
           };
 
           // Force clear cached tokens
@@ -664,7 +669,7 @@ export const useThemeStore = create<ThemeState>()(
         if (!activeTheme || allThemes.length <= 1) return;
 
         const currentIndex = allThemes.findIndex(
-          (t) => t.id === activeTheme.id,
+          (t) => t.id === activeTheme.id
         );
         let nextTheme: ThemeData;
 
@@ -683,10 +688,10 @@ export const useThemeStore = create<ThemeState>()(
           }
           case "random": {
             const availableThemes = allThemes.filter(
-              (t) => t.id !== activeTheme.id,
+              (t) => t.id !== activeTheme.id
             );
             const randomIndex = Math.floor(
-              Math.random() * availableThemes.length,
+              Math.random() * availableThemes.length
             );
             nextTheme = availableThemes[randomIndex];
             break;
@@ -703,7 +708,7 @@ export const useThemeStore = create<ThemeState>()(
       addTheme: (theme: ThemeData) => {
         set((state) => {
           const existingIndex = state.allThemes.findIndex(
-            (t) => t.id === theme.id,
+            (t) => t.id === theme.id
           );
           if (existingIndex >= 0) {
             const updatedThemes = [...state.allThemes];
@@ -715,6 +720,6 @@ export const useThemeStore = create<ThemeState>()(
         });
       },
     })),
-    { name: "theme-store" },
-  ),
+    { name: "theme-store" }
+  )
 );
