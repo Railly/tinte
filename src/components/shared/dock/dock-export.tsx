@@ -1,4 +1,5 @@
 import { ArrowLeft, Code, Copy, Download, FileText, Terminal } from "lucide-react";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -24,7 +25,10 @@ export function DockExport({
   onCopyThemeAndReturn,
 }: DockExportProps) {
   return (
-    <div className="flex flex-col gap-2 p-3 min-w-48">
+    <motion.div
+      layoutId="dock-export-content"
+      className="flex flex-col gap-1 px-4 py-2"
+    >
       {/* Header with back button */}
       <div className="flex items-center gap-2 mb-2">
         <Button
@@ -47,10 +51,10 @@ export function DockExport({
               size="sm"
               onClick={onDownload}
               disabled={isExporting}
-              className="h-8 justify-start gap-2"
+              className="h-7 justify-start gap-2 text-xs"
             >
               <Download className="h-3 w-3" />
-              <span className="text-xs">Download File</span>
+              <span>Download File</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
@@ -64,10 +68,10 @@ export function DockExport({
               variant="ghost"
               size="sm"
               onClick={onCopyThemeAndReturn || onCopyTheme}
-              className="h-8 justify-start gap-2"
+              className="h-7 justify-start gap-2 text-xs"
             >
               <Copy className="h-3 w-3" />
-              <span className="text-xs">Copy Theme</span>
+              <span>Copy Theme</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
@@ -81,10 +85,10 @@ export function DockExport({
               variant="ghost"
               size="sm"
               onClick={onCopyCommand}
-              className="h-8 justify-start gap-2"
+              className="h-7 justify-start gap-2 text-xs"
             >
               <Terminal className="h-3 w-3" />
-              <span className="text-xs">Copy Command</span>
+              <span>Copy Command</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
@@ -98,10 +102,10 @@ export function DockExport({
               variant="ghost"
               size="sm"
               onClick={onShowInstallGuide}
-              className="h-8 justify-start gap-2"
+              className="h-7 justify-start gap-2 text-xs"
             >
               <FileText className="h-3 w-3" />
-              <span className="text-xs">Install Guide</span>
+              <span>Install Guide</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
@@ -109,6 +113,6 @@ export function DockExport({
           </TooltipContent>
         </Tooltip>
       </div>
-    </div>
+    </motion.div>
   );
 }

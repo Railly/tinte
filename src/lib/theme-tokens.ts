@@ -6,7 +6,7 @@ export interface ThemeData {
   provider: "tweakcn" | "rayso" | "tinte";
   downloads: number;
   likes: number;
-  views: number;
+  installs: number;
   createdAt: string;
   colors: {
     primary: string;

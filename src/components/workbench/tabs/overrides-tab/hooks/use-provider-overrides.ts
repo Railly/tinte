@@ -6,7 +6,7 @@ import { convertThemeToVSCode } from "@/lib/providers/vscode";
 
 export type ProviderType = "shadcn" | "vscode" | "shiki";
 
-export interface ProviderOverrideHook<T = Record<string, any>> {
+export interface ProviderOverrideHook<T extends object = Record<string, any>> {
   // Current override data for the active mode
   overrides: T;
   // All override data (both light and dark modes)
@@ -28,7 +28,9 @@ export interface ProviderOverrideHook<T = Record<string, any>> {
   // Check if any overrides exist
   hasAnyOverrides: boolean;
   // Merge base tokens with overrides for current mode
-  getMergedTokens: (baseTokens: Record<string, string>) => Record<string, string>;
+  getMergedTokens: (
+    baseTokens: Record<string, string>
+  ) => Record<string, string>;
 }
 
 /**
@@ -41,7 +43,7 @@ export interface ProviderOverrideHook<T = Record<string, any>> {
  * const shikiOverrides = useProviderOverrides("shiki");
  * ```
  */
-export function useProviderOverrides<T = Record<string, any>>(
+export function useProviderOverrides<T extends object = Record<string, any>>(
   provider: ProviderType
 ): ProviderOverrideHook<T> {
   const context = useThemeContext();
@@ -54,7 +56,7 @@ export function useProviderOverrides<T = Record<string, any>>(
     updateShadcnOverride,
     updateVscodeOverride,
     updateShikiOverride,
-    resetOverrides
+    resetOverrides,
   } = context;
 
   // Get the appropriate override data based on provider
@@ -84,7 +86,11 @@ export function useProviderOverrides<T = Record<string, any>>(
     if (provider !== "vscode" || !tinteTheme) return {};
 
     try {
-      const vscodeTheme = convertThemeToVSCode({ rawTheme: tinteTheme }, {} as any, {});
+      const vscodeTheme = convertThemeToVSCode(
+        { rawTheme: tinteTheme },
+        {} as any,
+        {}
+      );
       const currentTheme = vscodeTheme[currentMode];
       const values: Record<string, string> = {};
 
@@ -95,7 +101,7 @@ export function useProviderOverrides<T = Record<string, any>>(
 
       // Add token colors
       if (currentTheme?.tokenColors) {
-        currentTheme.tokenColors.forEach(tokenColor => {
+        currentTheme.tokenColors.forEach((tokenColor) => {
           if (tokenColor.name && tokenColor.settings?.foreground) {
             values[tokenColor.name] = tokenColor.settings.foreground;
           }
@@ -121,69 +127,89 @@ export function useProviderOverrides<T = Record<string, any>>(
       default:
         return () => {};
     }
-  }, [provider, updateShadcnOverride, updateVscodeOverride, updateShikiOverride]);
+  }, [
+    provider,
+    updateShadcnOverride,
+    updateVscodeOverride,
+    updateShikiOverride,
+  ]);
 
   // Check if override exists for a key
-  const hasOverride = useCallback((key: string): boolean => {
-    return key in overrides && overrides[key as keyof T] !== undefined;
-  }, [overrides]);
+  const hasOverride = useCallback(
+    (key: string): boolean => {
+      return key in overrides && overrides[key as keyof T] !== undefined;
+    },
+    [overrides]
+  );
 
   // Get value with fallback to base theme
-  const getValue = useCallback((key: string, fallback?: string): string | undefined => {
-    if (hasOverride(key)) {
-      const value = overrides[key as keyof T];
-      return typeof value === "string" ? value : fallback;
-    }
+  const getValue = useCallback(
+    (key: string, fallback?: string): string | undefined => {
+      if (hasOverride(key)) {
+        const value = overrides[key as keyof T];
+        return typeof value === "string" ? value : fallback;
+      }
 
-    // For VSCode provider, use base theme values as fallback
-    if (provider === "vscode" && baseThemeValues[key]) {
-      return baseThemeValues[key];
-    }
+      // For VSCode provider, use base theme values as fallback
+      if (provider === "vscode" && baseThemeValues[key]) {
+        return baseThemeValues[key];
+      }
 
-    return fallback;
-  }, [overrides, hasOverride, provider, baseThemeValues]);
+      return fallback;
+    },
+    [overrides, hasOverride, provider, baseThemeValues]
+  );
 
   // Set single override
-  const setOverride = useCallback((key: string, value: string) => {
-    const currentOverrides = allOverrides || {};
-    const modeOverrides = currentOverrides[currentMode] || {};
+  const setOverride = useCallback(
+    (key: string, value: string) => {
+      const currentOverrides = allOverrides || {};
+      const modeOverrides = currentOverrides[currentMode] || {};
 
-    updateFunction({
-      ...currentOverrides,
-      [currentMode]: {
-        ...modeOverrides,
-        [key]: value,
-      },
-    });
-  }, [allOverrides, currentMode, updateFunction]);
+      updateFunction({
+        ...currentOverrides,
+        [currentMode]: {
+          ...modeOverrides,
+          [key]: value,
+        },
+      });
+    },
+    [allOverrides, currentMode, updateFunction]
+  );
 
   // Set multiple overrides
-  const setOverrides = useCallback((newOverrides: Partial<T>) => {
-    const currentOverrides = allOverrides || {};
-    const modeOverrides = currentOverrides[currentMode] || {};
+  const setOverrides = useCallback(
+    (newOverrides: Partial<T>) => {
+      const currentOverrides = allOverrides || {};
+      const modeOverrides = currentOverrides[currentMode] || {};
 
-    updateFunction({
-      ...currentOverrides,
-      [currentMode]: {
-        ...modeOverrides,
-        ...newOverrides,
-      },
-    });
-  }, [allOverrides, currentMode, updateFunction]);
+      updateFunction({
+        ...currentOverrides,
+        [currentMode]: {
+          ...modeOverrides,
+          ...newOverrides,
+        },
+      });
+    },
+    [allOverrides, currentMode, updateFunction]
+  );
 
   // Clear single override
-  const clearOverride = useCallback((key: string) => {
-    if (!allOverrides || !allOverrides[currentMode]) return;
+  const clearOverride = useCallback(
+    (key: string) => {
+      if (!allOverrides || !allOverrides[currentMode]) return;
 
-    const currentOverrides = { ...allOverrides };
-    const modeOverrides = { ...currentOverrides[currentMode] };
-    delete modeOverrides[key];
+      const currentOverrides = { ...allOverrides };
+      const modeOverrides = { ...currentOverrides[currentMode] };
+      delete modeOverrides[key];
 
-    updateFunction({
-      ...currentOverrides,
-      [currentMode]: modeOverrides,
-    });
-  }, [allOverrides, currentMode, updateFunction]);
+      updateFunction({
+        ...currentOverrides,
+        [currentMode]: modeOverrides,
+      });
+    },
+    [allOverrides, currentMode, updateFunction]
+  );
 
   // Clear all overrides for current mode
   const clearAllOverrides = useCallback(() => {
@@ -204,26 +230,29 @@ export function useProviderOverrides<T = Record<string, any>>(
   const hasAnyOverrides = useMemo(() => {
     if (!allOverrides) return false;
 
-    return Object.keys(allOverrides).some(mode => {
+    return Object.keys(allOverrides).some((mode) => {
       const modeOverrides = allOverrides[mode];
       return modeOverrides && Object.keys(modeOverrides).length > 0;
     });
   }, [allOverrides]);
 
   // Merge base tokens with current mode overrides
-  const getMergedTokens = useCallback((baseTokens: Record<string, string>) => {
-    const merged = { ...baseTokens };
+  const getMergedTokens = useCallback(
+    (baseTokens: Record<string, string>) => {
+      const merged = { ...baseTokens };
 
-    if (overrides && typeof overrides === "object") {
-      Object.entries(overrides).forEach(([key, value]) => {
-        if (typeof value === "string") {
-          merged[key] = value;
-        }
-      });
-    }
+      if (overrides && typeof overrides === "object") {
+        Object.entries(overrides).forEach(([key, value]) => {
+          if (typeof value === "string") {
+            merged[key] = value;
+          }
+        });
+      }
 
-    return merged;
-  }, [overrides]);
+      return merged;
+    },
+    [overrides]
+  );
 
   return {
     overrides,

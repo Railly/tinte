@@ -1,5 +1,5 @@
 import { Copy, Download, MoreVertical, Redo, RotateCcw, Save, Settings, Undo } from "lucide-react";
-import type { MotionValue } from "motion/react";
+import { motion, type MotionValue } from "motion/react";
 import {
   Tooltip,
   TooltipContent,
@@ -67,7 +67,10 @@ export function DockMain({
   const PrimaryIcon = primaryActionConfig.icon;
 
   return (
-    <div className="flex items-end gap-0.5">
+    <motion.div
+      layoutId="dock-main-content"
+      className="flex items-center gap-2 px-3 py-2"
+    >
       {/* Undo/Redo Group */}
       <Tooltip>
         <TooltipTrigger asChild>
@@ -202,6 +205,6 @@ export function DockMain({
           <p>Theme settings</p>
         </TooltipContent>
       </Tooltip>
-    </div>
+    </motion.div>
   );
 }

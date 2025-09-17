@@ -1,4 +1,5 @@
 import { ArrowLeft, Copy, Edit3, Heart, UserPlus } from "lucide-react";
+import { motion } from "motion/react";
 import { AnonymousSignInButton } from "@/components/auth/anonymous-signin-button";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +34,10 @@ export function DockSettings({
   isOwnTheme,
 }: DockSettingsProps) {
   return (
-    <div className="flex flex-col gap-2 p-3 min-w-48">
+    <motion.div
+      layoutId="dock-settings-content"
+      className="flex flex-col gap-1 px-4 py-2"
+    >
       {/* Header with back button */}
       <div className="flex items-center gap-2 mb-2">
         <Button
@@ -55,7 +59,7 @@ export function DockSettings({
           <AnonymousSignInButton
             variant="default"
             size="sm"
-            className="h-8 justify-start gap-2"
+            className="h-7 justify-start gap-2 text-xs"
           >
             <UserPlus className="h-3 w-3" />
             <span className="text-xs">Sign in to Save</span>
@@ -75,7 +79,7 @@ export function DockSettings({
               className={`h-8 justify-start gap-2 ${!isOwnTheme ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <Edit3 className="h-3 w-3" />
-              <span className="text-xs">Rename Theme</span>
+              <span>Rename Theme</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
@@ -93,12 +97,12 @@ export function DockSettings({
               variant="ghost"
               size="sm"
               onClick={onToggleFavorite}
-              className="h-8 justify-start gap-2"
+              className="h-7 justify-start gap-2 text-xs"
             >
               <Heart
                 className={`h-3 w-3 ${isFavorite ? "fill-current text-red-600" : ""}`}
               />
-              <span className="text-xs">
+              <span>
                 {isFavorite ? "Remove Favorite" : "Add to Favorites"}
               </span>
             </Button>
@@ -114,10 +118,10 @@ export function DockSettings({
               variant="ghost"
               size="sm"
               onClick={onDuplicate}
-              className="h-8 justify-start gap-2"
+              className="h-7 justify-start gap-2 text-xs"
             >
               <Copy className="h-3 w-3" />
-              <span className="text-xs">Duplicate Theme</span>
+              <span>Duplicate Theme</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
@@ -125,6 +129,6 @@ export function DockSettings({
           </TooltipContent>
         </Tooltip>
       </div>
-    </div>
+    </motion.div>
   );
 }

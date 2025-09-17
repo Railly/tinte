@@ -14,7 +14,7 @@ interface RouteContext {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
-    console.log({id})
+    console.log({ id });
     // Get theme by ID - must be public for registry access
     const themeData = await db
       .select()
@@ -23,10 +23,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .limit(1);
 
     if (themeData.length === 0) {
-      return NextResponse.json(
-        { error: "Theme not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Theme not found" }, { status: 404 });
     }
 
     const themeRecord = themeData[0];
@@ -88,25 +85,43 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     // Create shadcn registry-compatible format
-    const registryItem = {
-      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-      "name": themeRecord.slug || themeRecord.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
-      "type": "registry:theme",
-      "title": themeRecord.name,
-      "description": `${themeRecord.name} - A custom theme created with Tinte`,
-      "author": "Tinte User",
-      "cssVars": {
-        "light": {},
-        "dark": {}
-      }
+    type RegistryItem = {
+      $schema: string;
+      name: string;
+      type: string;
+      title: string;
+      description: string;
+      author: string;
+      cssVars: {
+        light: Record<string, string>;
+        dark: Record<string, string>;
+      };
+    };
+
+    const registryItem: RegistryItem = {
+      $schema: "https://ui.shadcn.com/schema/registry-item.json",
+      name:
+        themeRecord.slug ||
+        themeRecord.name
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, ""),
+      type: "registry:theme",
+      title: themeRecord.name,
+      description: `${themeRecord.name} - A custom theme created with Tinte`,
+      author: "Tinte User",
+      cssVars: {
+        light: {},
+        dark: {},
+      },
     };
 
     // Convert theme colors to CSS variable format
     Object.entries(shadcnTheme.light).forEach(([key, value]) => {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         // Convert hex colors to oklch format if needed
         let cssValue = value;
-        if (value.startsWith('#')) {
+        if (value.startsWith("#")) {
           // For now, keep hex values as-is since shadcn supports them
           cssValue = value;
         }
@@ -115,9 +130,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
     });
 
     Object.entries(shadcnTheme.dark).forEach(([key, value]) => {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         let cssValue = value;
-        if (value.startsWith('#')) {
+        if (value.startsWith("#")) {
           cssValue = value;
         }
         registryItem.cssVars.dark[key] = cssValue;
@@ -126,11 +141,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json(registryItem, {
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
-      }
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=3600", // Cache for 1 hour
+      },
     });
-
   } catch (error) {
     console.error("Error generating registry theme:", error);
     return NextResponse.json(

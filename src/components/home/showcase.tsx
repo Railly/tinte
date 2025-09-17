@@ -35,7 +35,7 @@ export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [
       provider: "tweakcn" as const,
       downloads: 0,
       likes: 0,
-      views: 0,
+      installs: 0,
       tags: [
         themeData.name.split(" ")[0].toLowerCase(),
         "modern",
@@ -52,7 +52,7 @@ export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [
     provider: "rayso" as const,
     downloads: 0,
     likes: 0,
-    views: 0,
+    installs: 0,
     tags: [themeData.name.toLowerCase(), "rayso", "modern", "community"],
   }));
 
@@ -63,7 +63,7 @@ export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [
     provider: "tinte" as const,
     downloads: 0,
     likes: 0,
-    views: 0,
+    installs: 0,
     tags: [
       themeData.name.toLowerCase().split(" ")[0],
       "tinte",

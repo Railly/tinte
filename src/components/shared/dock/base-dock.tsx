@@ -8,6 +8,7 @@ import {
   useMotionValue,
   useSpring,
   useTransform,
+  AnimatePresence,
 } from "motion/react";
 import React, { type PropsWithChildren, useRef } from "react";
 
@@ -72,6 +73,30 @@ const MacDock = React.forwardRef<HTMLDivElement, DockProps>(
         ref={ref}
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
+        initial={{
+          opacity: 0,
+          scale: 0.8,
+          filter: "blur(5px)",
+          y: 20
+        }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          filter: "blur(0px)",
+          y: 0
+        }}
+        exit={{
+          opacity: 0,
+          scale: 0.7,
+          filter: "blur(5px)",
+          y: 20
+        }}
+        transition={{
+          type: "spring",
+          bounce: 0.35,
+          duration: 0.5
+        }}
+        layout
         {...props}
         className={cn(dockVariants({ className }), {
           "items-start": direction === "top",
@@ -128,14 +153,43 @@ const DockIcon = ({
 
   const scaleSize = useSpring(sizeTransform, {
     mass: 0.1,
-    stiffness: 150,
-    damping: 12,
+    stiffness: 200,
+    damping: 15,
+    bounce: 0.3,
   });
 
   return (
     <motion.div
       ref={ref}
       style={{ width: scaleSize, height: scaleSize, padding }}
+      initial={{
+        opacity: 0,
+        scale: 0.8,
+        filter: "blur(3px)"
+      }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)"
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0.7,
+        filter: "blur(3px)"
+      }}
+      transition={{
+        type: "spring",
+        bounce: 0.35,
+        duration: 0.4
+      }}
+      whileHover={{
+        scale: disableMagnification ? 1.05 : 1,
+        transition: { type: "spring", bounce: 0.4, duration: 0.2 }
+      }}
+      whileTap={{
+        scale: 0.95,
+        transition: { type: "spring", bounce: 0.5, duration: 0.1 }
+      }}
       className={cn(
         "flex aspect-square cursor-pointer items-center justify-center rounded-full",
         disableMagnification && "transition-colors hover:bg-muted-foreground",
@@ -143,7 +197,13 @@ const DockIcon = ({
       )}
       {...props}
     >
-      <div>{children}</div>
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.1, type: "spring", bounce: 0.4 }}
+      >
+        {children}
+      </motion.div>
     </motion.div>
   );
 };

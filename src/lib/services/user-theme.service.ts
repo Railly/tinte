@@ -2,15 +2,18 @@ import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { user, userFavorites } from "@/db/schema/user";
 import { eq, desc, count, and, sql } from "drizzle-orm";
-import type { 
-  DbTheme, 
-  UserThemeData, 
-  ThemeTransformOptions 
+import type {
+  DbTheme,
+  UserThemeData,
+  ThemeTransformOptions,
 } from "@/types/user-theme";
 import type { TinteBlock } from "@/types/tinte";
 
 export class UserThemeService {
-  static async getThemesWithUsers(limit?: number, currentUserId?: string): Promise<UserThemeData[]> {
+  static async getThemesWithUsers(
+    limit?: number,
+    currentUserId?: string
+  ): Promise<UserThemeData[]> {
     try {
       let baseQuery = db
         .select({
@@ -23,10 +26,11 @@ export class UserThemeService {
           },
           isFavorite: currentUserId
             ? sql`CASE WHEN ${userFavorites.userId} IS NOT NULL THEN true ELSE false END`
-            : sql`false`
+            : sql`false`,
         })
         .from(theme)
-        .leftJoin(user, eq(theme.user_id, user.id));
+        .leftJoin(user, eq(theme.user_id, user.id))
+        .orderBy(desc(theme.created_at));
 
       // Only add userFavorites join if currentUserId is provided
       if (currentUserId) {
@@ -39,17 +43,19 @@ export class UserThemeService {
         );
       }
 
-      baseQuery = baseQuery.orderBy(desc(theme.created_at));
-
       const results = await (limit ? baseQuery.limit(limit) : baseQuery);
 
-      return results.map(result =>
-        UserThemeService.transformDbThemeToUserTheme(result.theme, {
-          author: result.user?.name || "Anonymous",
-          description: `Theme by ${result.user?.name || "Anonymous"}`,
-          tags: ["user", "custom"],
-          isFavorite: Boolean(result.isFavorite)
-        }, result.user)
+      return results.map((result) =>
+        UserThemeService.transformDbThemeToUserTheme(
+          result.theme,
+          {
+            author: result.user?.name || "Anonymous",
+            description: `Theme by ${result.user?.name || "Anonymous"}`,
+            tags: ["user", "custom"],
+            isFavorite: Boolean(result.isFavorite),
+          },
+          result.user
+        )
       );
     } catch (error) {
       console.error("Error fetching themes with users:", error);
@@ -57,7 +63,16 @@ export class UserThemeService {
     }
   }
 
-  static async getUserThemes(userId: string, limit?: number, currentUser?: { id: string; name?: string | null; email?: string | null; image?: string | null }): Promise<UserThemeData[]> {
+  static async getUserThemes(
+    userId: string,
+    limit?: number,
+    currentUser?: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    }
+  ): Promise<UserThemeData[]> {
     try {
       const baseQuery = db
         .select()
@@ -68,17 +83,24 @@ export class UserThemeService {
       const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
 
       console.log("UserThemeService - DB themes count:", dbThemes.length);
-      
-      const transformedThemes = dbThemes.map(theme =>
-        UserThemeService.transformDbThemeToUserTheme(theme, {
-          author: "You",
-          description: `Custom theme created by you`,
-          tags: ["custom", "user"]
-        }, currentUser)
+
+      const transformedThemes = dbThemes.map((theme) =>
+        UserThemeService.transformDbThemeToUserTheme(
+          theme,
+          {
+            author: "You",
+            description: `Custom theme created by you`,
+            tags: ["custom", "user"],
+          },
+          currentUser
+        )
       );
-      
-      console.log("UserThemeService - Transformed themes:", transformedThemes.length);
-      
+
+      console.log(
+        "UserThemeService - Transformed themes:",
+        transformedThemes.length
+      );
+
       return transformedThemes;
     } catch (error) {
       console.error("Error fetching user themes:", error);
@@ -86,7 +108,11 @@ export class UserThemeService {
     }
   }
 
-  static async getPublicThemes(limit?: number, offset?: number, currentUserId?: string): Promise<UserThemeData[]> {
+  static async getPublicThemes(
+    limit?: number,
+    offset?: number,
+    currentUserId?: string
+  ): Promise<UserThemeData[]> {
     try {
       let baseQuery = db
         .select({
@@ -99,10 +125,12 @@ export class UserThemeService {
           },
           isFavorite: currentUserId
             ? sql`CASE WHEN ${userFavorites.userId} IS NOT NULL THEN true ELSE false END`
-            : sql`false`
+            : sql`false`,
         })
         .from(theme)
-        .leftJoin(user, eq(theme.user_id, user.id));
+        .leftJoin(user, eq(theme.user_id, user.id))
+        .where(eq(theme.is_public, true))
+        .orderBy(desc(theme.created_at));
 
       // Only add userFavorites join if currentUserId is provided
       if (currentUserId) {
@@ -115,36 +143,44 @@ export class UserThemeService {
         );
       }
 
-      baseQuery = baseQuery
-        .where(eq(theme.is_public, true))
-        .orderBy(desc(theme.created_at));
-
-      const results = await (
-        offset
-          ? (limit ? baseQuery.limit(limit).offset(offset) : baseQuery.offset(offset))
-          : (limit ? baseQuery.limit(limit) : baseQuery)
-      );
+      const results = await (offset
+        ? limit
+          ? baseQuery.limit(limit).offset(offset)
+          : baseQuery.offset(offset)
+        : limit
+        ? baseQuery.limit(limit)
+        : baseQuery);
 
       console.log("UserThemeService - Public themes count:", results.length);
 
-      const transformedThemes = results.map(result =>
-        UserThemeService.transformDbThemeToUserTheme(result.theme, {
-          author: result.user?.name || "Anonymous",
-          description: `Beautiful ${result.theme.name.toLowerCase()} theme ${result.user?.name ? `by ${result.user.name}` : 'shared by the community'}`,
-          tags: ["community", "public", "shared"],
-          isFavorite: Boolean(result.isFavorite)
-        }, result.user)
+      const transformedThemes = results.map((result) =>
+        UserThemeService.transformDbThemeToUserTheme(
+          result.theme,
+          {
+            author: result.user?.name || "Anonymous",
+            description: `Beautiful ${result.theme.name.toLowerCase()} theme ${
+              result.user?.name
+                ? `by ${result.user.name}`
+                : "shared by the community"
+            }`,
+            tags: ["community", "public", "shared"],
+            isFavorite: Boolean(result.isFavorite),
+          },
+          result.user
+        )
       );
-      
-      console.log("UserThemeService - Transformed public themes:", transformedThemes.length);
-      
+
+      console.log(
+        "UserThemeService - Transformed public themes:",
+        transformedThemes.length
+      );
+
       return transformedThemes;
     } catch (error) {
       console.error("Error fetching public themes:", error);
       return [];
     }
   }
-
 
   static async getPublicThemesCount(): Promise<number> {
     try {
@@ -170,24 +206,38 @@ export class UserThemeService {
             name: user.name,
             email: user.email,
             image: user.image,
-          }
+          },
         })
         .from(theme)
         .leftJoin(user, eq(theme.user_id, user.id))
         .where(eq(theme.is_public, true))
         .orderBy(desc(theme.created_at));
 
-      console.log("UserThemeService - All public themes count:", results.length);
-
-      const transformedThemes = results.map(result =>
-        UserThemeService.transformDbThemeToUserTheme(result.theme, {
-          author: result.user?.name || "Anonymous",
-          description: `Beautiful ${result.theme.name.toLowerCase()} theme ${result.user?.name ? `by ${result.user.name}` : 'shared by the community'}`,
-          tags: ["community", "public", "shared"]
-        }, result.user)
+      console.log(
+        "UserThemeService - All public themes count:",
+        results.length
       );
 
-      console.log("UserThemeService - Transformed all public themes:", transformedThemes.length);
+      const transformedThemes = results.map((result) =>
+        UserThemeService.transformDbThemeToUserTheme(
+          result.theme,
+          {
+            author: result.user?.name || "Anonymous",
+            description: `Beautiful ${result.theme.name.toLowerCase()} theme ${
+              result.user?.name
+                ? `by ${result.user.name}`
+                : "shared by the community"
+            }`,
+            tags: ["community", "public", "shared"],
+          },
+          result.user
+        )
+      );
+
+      console.log(
+        "UserThemeService - Transformed all public themes:",
+        transformedThemes.length
+      );
 
       return transformedThemes;
     } catch (error) {
@@ -206,7 +256,7 @@ export class UserThemeService {
             name: user.name,
             email: user.email,
             image: user.image,
-          }
+          },
         })
         .from(userFavorites)
         .innerJoin(theme, eq(userFavorites.themeId, theme.id))
@@ -214,18 +264,32 @@ export class UserThemeService {
         .where(eq(userFavorites.userId, userId))
         .orderBy(desc(userFavorites.createdAt));
 
-      console.log("UserThemeService - User favorite themes count:", results.length);
-
-      const transformedThemes = results.map(result =>
-        UserThemeService.transformDbThemeToUserTheme(result.theme, {
-          author: result.user?.name || "Anonymous",
-          description: `${result.theme.name} ${result.user?.name ? `by ${result.user.name}` : 'from the community'}`,
-          tags: ["favorite", "starred"],
-          isFavorite: true
-        }, result.user)
+      console.log(
+        "UserThemeService - User favorite themes count:",
+        results.length
       );
 
-      console.log("UserThemeService - Transformed favorite themes:", transformedThemes.length);
+      const transformedThemes = results.map((result) =>
+        UserThemeService.transformDbThemeToUserTheme(
+          result.theme,
+          {
+            author: result.user?.name || "Anonymous",
+            description: `${result.theme.name} ${
+              result.user?.name
+                ? `by ${result.user.name}`
+                : "from the community"
+            }`,
+            tags: ["favorite", "starred"],
+            isFavorite: true,
+          },
+          result.user
+        )
+      );
+
+      console.log(
+        "UserThemeService - Transformed favorite themes:",
+        transformedThemes.length
+      );
 
       return transformedThemes;
     } catch (error) {
@@ -237,13 +301,18 @@ export class UserThemeService {
   private static transformDbThemeToUserTheme(
     dbTheme: DbTheme,
     options: ThemeTransformOptions = {},
-    user?: { id: string; name?: string | null; email?: string | null; image?: string | null } | null
+    user?: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    } | null
   ): UserThemeData {
     const {
       author = "You",
       description = "Custom theme created by user",
       tags = ["custom", "user"],
-      isFavorite = false
+      isFavorite = false,
     } = options;
 
     return {
@@ -254,7 +323,6 @@ export class UserThemeService {
       provider: "tinte" as const,
       downloads: 0,
       likes: 0,
-      views: 0,
       installs: dbTheme.installs || 0,
       tags,
       createdAt: dbTheme.created_at?.toISOString() || new Date().toISOString(),
@@ -295,9 +363,12 @@ export class UserThemeService {
     };
   }
 
-  private static buildTinteBlock(dbTheme: DbTheme, mode: "light" | "dark"): TinteBlock {
+  private static buildTinteBlock(
+    dbTheme: DbTheme,
+    mode: "light" | "dark"
+  ): TinteBlock {
     const prefix = mode === "light" ? "light_" : "dark_";
-    
+
     return {
       bg: dbTheme[`${prefix}bg` as keyof DbTheme] as string,
       bg_2: dbTheme[`${prefix}bg_2` as keyof DbTheme] as string,
@@ -316,7 +387,7 @@ export class UserThemeService {
   }
 
   private static flattenThemeProperties(dbTheme: DbTheme) {
-    const { id, name, user_id, created_at, ...themeProps } = dbTheme;
+    const { id, name, user_id, created_at, installs, ...themeProps } = dbTheme;
     return themeProps;
   }
 }

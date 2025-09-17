@@ -1,4 +1,4 @@
-import { motion, useMotionValue } from "motion/react";
+import { AnimatePresence, motion, useMotionValue } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
@@ -145,9 +145,21 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     setShowSuccess(true);
   };
 
-  // Navigation handlers
-  const handleNavigateToExport = () => navigateTo("export");
-  const handleNavigateToSettings = () => navigateTo("settings");
+  // Navigation handlers with variant key tracking
+  const handleNavigateToExport = () => {
+    setVariantKey(`${dockState}-export`);
+    navigateTo("export");
+  };
+
+  const handleNavigateToSettings = () => {
+    setVariantKey(`${dockState}-settings`);
+    navigateTo("settings");
+  };
+
+  const handleNavigateBack = () => {
+    setVariantKey(`${dockState}-main`);
+    navigateBack();
+  };
 
   // Code action - shows install guide modal
   const handleCodeAction = () => {
@@ -200,6 +212,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
       showSuccessWithMessage("Theme copied!");
     }
     // Return to main dock after copying
+    setVariantKey("export-main");
     navigateTo("main");
   };
 
@@ -361,39 +374,102 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   const mouseX = useMotionValue(Infinity);
 
+  // Animation variants system inspired by Dynamic Island
+  const [variantKey, setVariantKey] = useState<string>("main");
+
+  const ANIMATION_VARIANTS = {
+    "main-export": { scale: 0.9, bounce: 0.35 },
+    "export-main": { scale: 1.1, bounce: 0.3 },
+    "main-settings": { scale: 0.9, bounce: 0.35 },
+    "settings-main": { scale: 1.1, bounce: 0.3 },
+    "export-settings": { scale: 1.0, bounce: 0.25 },
+    "settings-export": { scale: 1.0, bounce: 0.25 },
+  } as const;
+
+  const BOUNCE_VARIANTS = {
+    main: 0.3,
+    export: 0.25,
+    settings: 0.25,
+    "main-export": 0.35,
+    "export-main": 0.3,
+    "main-settings": 0.35,
+    "settings-main": 0.3,
+    "export-settings": 0.25,
+    "settings-export": 0.25,
+  } as const;
+
+  const dockVariants = {
+    initial: {
+      opacity: 0,
+      scale: 0.9,
+      filter: "blur(5px)",
+      y: 20,
+      x: "-50%",
+    },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      filter: "blur(0px)",
+      y: 0,
+      x: "-50%",
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.9,
+      filter: "blur(5px)",
+      y: 20,
+      x: "-50%",
+    },
+  };
+
   return (
     <TooltipProvider>
       {/* Main Dock */}
       <motion.div
         className="fixed bottom-4 left-1/2 z-50"
-        initial={{ opacity: 0, y: 20, x: "-50%" }}
-        animate={{ opacity: 1, y: 0, x: "-50%" }}
-        exit={{ opacity: 0, y: 20, x: "-50%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        variants={dockVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={{
+          type: "spring",
+          bounce: BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ?? 0.3
+        }}
       >
         <motion.div
           ref={dockRef}
+          layoutId="dock-container"
           onMouseMove={(e) => mouseX.set(e.pageX)}
           onMouseLeave={() => mouseX.set(Infinity)}
-          initial={false}
-          animate={{
-            width: dockState === "main" ? 350 : 220,
-          }}
+          layout
           transition={{
             type: "spring",
-            stiffness: 300,
-            damping: 30,
-            duration: 0.4,
+            bounce: BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ?? 0.3
           }}
-          style={{ borderRadius: dockState === "main" ? 200 : 30 }}
-          className="bg-foreground/90 text-background flex items-end justify-center p-4 backdrop-blur-md border border-foreground/20 shadow-2xl"
+          style={{ borderRadius: 32 }}
+          className="bg-foreground/90 text-background mx-auto w-fit min-w-[100px] overflow-hidden rounded-full border border-foreground/20 shadow-2xl backdrop-blur-md"
         >
           <motion.div
+            transition={{
+              type: "spring",
+              bounce: BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ?? 0.3
+            }}
+            initial={{
+              scale: 0.9,
+              opacity: 0,
+              filter: "blur(5px)",
+              originX: 0.5,
+              originY: 0.5,
+            }}
+            animate={{
+              scale: 1,
+              opacity: 1,
+              filter: "blur(0px)",
+              originX: 0.5,
+              originY: 0.5,
+              transition: { delay: 0.05 },
+            }}
             key={dockState}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2 }}
           >
             {dockState === "main" ? (
               <DockMain
@@ -425,16 +501,18 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
               />
             ) : dockState === "export" ? (
               <DockExport
-                onBack={navigateBack}
+                onBack={handleNavigateBack}
                 onDownload={async () => {
                   await handleExport();
                   showSuccessWithMessage("File downloaded!");
+                  setVariantKey("export-main");
                   navigateTo("main");
                 }}
                 onCopyTheme={handleCopyTheme}
                 onCopyThemeAndReturn={async () => {
                   await handleCopyTheme();
                   showSuccessWithMessage("Theme copied!");
+                  setVariantKey("export-main");
                   navigateTo("main");
                 }}
                 onCopyCommand={handleCopyCommandAction}
@@ -444,7 +522,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
               />
             ) : dockState === "settings" ? (
               <DockSettings
-                onBack={navigateBack}
+                onBack={handleNavigateBack}
                 onRename={() => setShowRenameDialog(true)}
                 onToggleFavorite={handleToggleFavorite}
                 onDuplicate={() => setShowDuplicateDialog(true)}
