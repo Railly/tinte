@@ -39,7 +39,7 @@ export function createPersistenceActions(get: any, set: any) {
           ...activeTheme,
           name: cleanName,
           id: activeTheme.id || `theme_${Date.now()}`,
-          tags: activeTheme.tags?.filter((tag) => tag !== "unsaved") || ["custom"],
+          tags: activeTheme.tags?.filter((tag: string) => tag !== "unsaved") || ["custom"],
         };
 
         const organizedTokens = organizeEditedTokens(editedTokens, currentMode);

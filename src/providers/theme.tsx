@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import { usePersistentTheme } from "@/hooks/use-persistent-theme";
-import { useTheme as useOriginalTheme } from "@/hooks/use-theme";
+import { useTheme } from "@/hooks/use-theme";
 
-type ThemeContextValue = ReturnType<typeof usePersistentTheme>;
+type ThemeContextValue = ReturnType<typeof useTheme>;
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 
@@ -17,7 +16,7 @@ export function useThemeContext(): ThemeContextValue {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const themeValue = usePersistentTheme();
+  const themeValue = useTheme();
 
   return (
     <ThemeContext.Provider value={themeValue}>
