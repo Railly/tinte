@@ -21,6 +21,7 @@ interface DuplicateThemeDialogProps {
   onDuplicate: (name: string, makePublic: boolean) => Promise<void>;
   defaultName?: string;
   isLoading?: boolean;
+  isBuiltInTheme?: boolean;
 }
 
 export function DuplicateThemeDialog({
@@ -29,6 +30,7 @@ export function DuplicateThemeDialog({
   onDuplicate,
   defaultName = "Copy of Theme",
   isLoading = false,
+  isBuiltInTheme = false,
 }: DuplicateThemeDialogProps) {
   const [themeName, setThemeName] = useState(defaultName);
   const [makePublic, setMakePublic] = useState(false);
@@ -65,10 +67,13 @@ export function DuplicateThemeDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Copy className="h-5 w-5" />
-            Duplicate Theme
+            {isBuiltInTheme ? "Save Theme" : "Duplicate Theme"}
           </DialogTitle>
           <DialogDescription>
-            Create a copy of this theme with a new name.
+            {isBuiltInTheme
+              ? "Save this built-in theme to your collection with a custom name."
+              : "Create a copy of this theme with a new name."
+            }
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -117,12 +122,12 @@ export function DuplicateThemeDialog({
             {isDuplicating || isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Duplicating...
+                {isBuiltInTheme ? "Saving..." : "Duplicating..."}
               </>
             ) : (
               <>
                 <Copy className="mr-2 h-4 w-4" />
-                Duplicate
+                {isBuiltInTheme ? "Save Theme" : "Duplicate"}
               </>
             )}
           </Button>

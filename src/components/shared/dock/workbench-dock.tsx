@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useMotionValue } from "motion/react";
+import {  motion, useMotionValue } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
@@ -12,7 +12,6 @@ import {
 import { useDockActions } from "@/hooks/use-dock-actions";
 import { useDockState } from "@/hooks/use-dock-state";
 import { useThemeHistory } from "@/hooks/use-theme-history";
-import { getFavoriteStatus, toggleFavorite } from "@/lib/actions/favorites";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
 import { exportTheme, getProvider } from "@/lib/providers";
 import { useThemeContext } from "@/providers/theme";
@@ -39,7 +38,6 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   const {
     updateTinteTheme,
@@ -53,20 +51,6 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     isSaving,
   } = useThemeContext();
 
-  useEffect(() => {
-    const checkFavoriteStatus = async () => {
-      if (!isAuthenticated || !activeTheme?.id) return;
-
-      try {
-        const data = await getFavoriteStatus(activeTheme.id);
-        setIsFavorite(data.isFavorite);
-      } catch (error) {
-        console.error("Error checking favorite status:", error);
-      }
-    };
-
-    checkFavoriteStatus();
-  }, [isAuthenticated, activeTheme?.id]);
 
   // Get override hooks for counting changes
   const shadcnOverrides = useShadcnOverrides();
@@ -197,7 +181,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const handleCopyCommandAction = async () => {
     if (providerId === "shadcn") {
       const baseUrl = window.location.origin;
-      const registryUrl = `${baseUrl}/api/r/${activeTheme?.id}`;
+      const registryUrl = `${baseUrl}/r/${activeTheme?.id}`;
       const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
       showSuccessWithMessage("Command copied!");
@@ -225,6 +209,22 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const isCustomTheme =
     activeTheme?.name?.includes("Custom") ||
     activeTheme?.id?.startsWith("custom_");
+
+  // Check if this is a built-in theme from preset files
+  const isBuiltInTheme = !activeTheme?.id ||
+    activeTheme.id.startsWith('rayso-') ||
+    activeTheme.id.startsWith('tinte-') ||
+    activeTheme.id.startsWith('tweakcn-') ||
+    activeTheme.id.startsWith('modern-minimal') ||
+    activeTheme.id.startsWith('violet-bloom') ||
+    activeTheme.id.startsWith('t3-chat') ||
+    activeTheme.id === 'twitter' ||
+    activeTheme.id === 'bubblegum' ||
+    activeTheme.id === 'catppuccin' ||
+    activeTheme.id === 'graphite' ||
+    activeTheme.id === 'supabase' ||
+    activeTheme.id === 'nature' ||
+    !activeTheme.id.startsWith('theme_');
 
   // Handle save theme - direct update for own themes, modal for custom unsaved
   const handleSaveTheme = async () => {
@@ -314,61 +314,40 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     }
   };
 
-  // Handle toggle favorite
-  const handleToggleFavorite = async () => {
-    try {
-      if (!isAuthenticated) {
-        toast.error("Please sign in to add favorites");
-        return;
-      }
-
-      if (!activeTheme?.id) {
-        toast.error("No theme selected");
-        return;
-      }
-
-      const result = await toggleFavorite(activeTheme.id);
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to update favorite");
-      }
-
-      setIsFavorite(result.isFavorite ?? false);
-
-      if (result.isFavorite) {
-        toast.success("Added to favorites!");
-      } else {
-        toast.success("Removed from favorites!");
-      }
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
-      toast.error("Failed to update favorite");
-    }
-  };
 
   // Handle duplicate theme
   const handleDuplicateTheme = async (name: string, makePublic: boolean) => {
     try {
-      if (!activeTheme?.id) {
-        throw new Error("No theme ID");
+      if (isBuiltInTheme) {
+        // For built-in themes, create new theme from current tokens
+        const success = await saveCurrentTheme(name, makePublic);
+        if (!success) {
+          throw new Error("Failed to save theme");
+        }
+        toast.success(`Theme saved as "${name}"!`);
+      } else {
+        // For database themes, duplicate existing
+        if (!activeTheme?.id) {
+          throw new Error("No theme ID");
+        }
+        const result = await duplicateTheme(activeTheme.id, name, makePublic);
+        if (!result.success) {
+          throw new Error(result.error || "Failed to duplicate theme");
+        }
+        toast.success(`Theme duplicated as "${name}"!`);
       }
-
-      const result = await duplicateTheme(activeTheme.id, name, makePublic);
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to duplicate theme");
-      }
-
-      toast.success(`Theme duplicated as "${name}"!`);
     } catch (error) {
-      console.error("Error duplicating theme:", error);
-      toast.error("Failed to duplicate theme");
+      console.error("Error duplicating/saving theme:", error);
+      toast.error(isBuiltInTheme ? "Failed to save theme" : "Failed to duplicate theme");
       throw error;
     }
   };
 
   // Get default duplicate name
   const getDuplicateName = () => {
+    if (isBuiltInTheme) {
+      return `My ${getDefaultThemeName()}`;
+    }
     return `Copy of ${getDefaultThemeName()}`;
   };
 
@@ -424,6 +403,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   return (
     <TooltipProvider>
+
       {/* Main Dock */}
       <motion.div
         className="fixed bottom-4 left-1/2 z-50"
@@ -491,16 +471,17 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
                 }}
                 isLoading={isExporting}
                 onSave={handleSaveTheme}
+                onReset={() => reset(theme)}
+                hasChanges={hasChanges}
                 canSave={canSave}
                 unsavedChanges={unsavedChanges}
                 isSaving={isSaving}
                 onNavigateToExport={handleNavigateToExport}
                 onNavigateToSettings={handleNavigateToSettings}
-                onReset={() => reset(theme)}
-                hasChanges={hasChanges}
               />
             ) : dockState === "export" ? (
               <DockExport
+                mouseX={mouseX}
                 onBack={handleNavigateBack}
                 onDownload={async () => {
                   await handleExport();
@@ -522,11 +503,10 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
               />
             ) : dockState === "settings" ? (
               <DockSettings
+                mouseX={mouseX}
                 onBack={handleNavigateBack}
                 onRename={() => setShowRenameDialog(true)}
-                onToggleFavorite={handleToggleFavorite}
                 onDuplicate={() => setShowDuplicateDialog(true)}
-                isFavorite={isFavorite}
                 isAuthenticated={isAuthenticated}
                 isAnonymous={isAnonymous}
                 isOwnTheme={isOwnTheme}
@@ -579,6 +559,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
         onDuplicate={handleDuplicateTheme}
         defaultName={getDuplicateName()}
         isLoading={false}
+        isBuiltInTheme={isBuiltInTheme}
       />
     </TooltipProvider>
   );

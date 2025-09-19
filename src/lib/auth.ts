@@ -23,7 +23,6 @@ export const auth = betterAuth({
   plugins: [
     anonymous({
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        // Move anonymous user themes to the new authenticated user
         try {
           await db
             .update(schema.theme)

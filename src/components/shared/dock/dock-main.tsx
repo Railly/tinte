@@ -1,11 +1,13 @@
 import { Copy, Download, MoreVertical, Redo, RotateCcw, Save, Settings, Undo } from "lucide-react";
 import { motion, type MotionValue } from "motion/react";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { DockIcon } from "./base-dock";
+import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 
 interface DockMainProps {
   // macOS dock mouse tracking
@@ -29,15 +31,13 @@ interface DockMainProps {
   onPrimaryAction: () => void;
   isLoading?: boolean;
 
-  // Quick actions
-  onSave: () => void;
-  onReset: () => void;
-
-  // Save state
-  canSave: boolean;
-  unsavedChanges: boolean;
-  isSaving: boolean;
-  hasChanges: boolean;
+  // Save/Reset actions
+  onSave?: () => void;
+  onReset?: () => void;
+  hasChanges?: boolean;
+  canSave?: boolean;
+  unsavedChanges?: boolean;
+  isSaving?: boolean;
 
   // Navigation
   onNavigateToExport: () => void;
@@ -57,10 +57,10 @@ export function DockMain({
   isLoading,
   onSave,
   onReset,
+  hasChanges,
   canSave,
   unsavedChanges,
   isSaving,
-  hasChanges,
   onNavigateToExport,
   onNavigateToSettings,
 }: DockMainProps) {
@@ -71,21 +71,23 @@ export function DockMain({
       layoutId="dock-main-content"
       className="flex items-center gap-2 px-3 py-2"
     >
-      {/* Undo/Redo Group */}
+      {/* Undo/Redo Group - Compact */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <DockIcon
-            mouseX={mouseX}
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onUndo}
-            className={`${!canUndo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} relative bg-background/10 border border-background/20`}
+            disabled={!canUndo}
+            className={`h-7 w-7 p-0 ${!canUndo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-accent/50"} relative rounded-full`}
           >
-            <Undo className="h-4 w-4" />
+            <Undo className="h-3.5 w-3.5" />
             {undoCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-3.5 h-3.5 flex items-center justify-center">
                 {undoCount > 9 ? "9+" : undoCount}
               </span>
             )}
-          </DockIcon>
+          </Button>
         </TooltipTrigger>
         <TooltipContent>
           <p>Undo {canUndo ? `(${undoCount})` : ""}</p>
@@ -94,18 +96,20 @@ export function DockMain({
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <DockIcon
-            mouseX={mouseX}
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onRedo}
-            className={`${!canRedo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} relative bg-background/10 border border-background/20`}
+            disabled={!canRedo}
+            className={`h-7 w-7 p-0 ${!canRedo ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-accent/50"} relative rounded-full`}
           >
-            <Redo className="h-4 w-4" />
+            <Redo className="h-3.5 w-3.5" />
             {redoCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-3.5 h-3.5 flex items-center justify-center">
                 {redoCount > 9 ? "9+" : redoCount}
               </span>
             )}
-          </DockIcon>
+          </Button>
         </TooltipTrigger>
         <TooltipContent>
           <p>Redo {canRedo ? `(${redoCount})` : ""}</p>
@@ -113,64 +117,80 @@ export function DockMain({
       </Tooltip>
 
       {/* Separator */}
-      <div className="w-px h-8 bg-background/20 mx-1" />
+      <div className="w-px h-8 bg-background/20 mx-2" />
+
+      {/* Save/Reset - only show when there are changes */}
+      {hasChanges && (
+        <>
+          {/* Save */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DockIcon
+                mouseX={mouseX}
+                onClick={onSave}
+                className={`${
+                  isSaving || !canSave || !unsavedChanges
+                    ? "opacity-30 cursor-not-allowed rounded-full border border-border/50"
+                    : "cursor-pointer hover:bg-primary/90 bg-primary text-primary-foreground rounded-full border border-primary/50"
+                } relative`}
+              >
+                <Save className="h-4 w-4" />
+                {unsavedChanges && canSave && (
+                  <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
+                    !
+                  </span>
+                )}
+              </DockIcon>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {isSaving
+                  ? "Saving..."
+                  : unsavedChanges
+                    ? "Save changes"
+                    : "No changes to save"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Reset */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DockIcon
+                mouseX={mouseX}
+                onClick={onReset}
+                className={`${!hasChanges ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-accent/50"} rounded-full border border-border/50`}
+              >
+                <RotateCcw className="h-4 w-4" />
+              </DockIcon>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Reset changes</p>
+            </TooltipContent>
+          </Tooltip>
+        </>
+      )}
 
       {/* Primary Action */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <DockIcon
-            mouseX={mouseX}
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onPrimaryAction}
-            className={`${isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} bg-background/10 border border-background/20`}
+            disabled={isLoading}
+            className={`h-10 px-3 text-xs rounded-full gap-1.5 border border-border/50 ${
+              isLoading
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer hover:bg-accent/50"
+            }`}
           >
-            <PrimaryIcon className="h-4 w-4" />
-          </DockIcon>
+            <PrimaryIcon className="h-3.5 w-3.5" />
+            <span>{primaryActionConfig.label}</span>
+          </Button>
         </TooltipTrigger>
         <TooltipContent>
           <p>{primaryActionConfig.description}</p>
-        </TooltipContent>
-      </Tooltip>
-
-      {/* Save */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DockIcon
-            mouseX={mouseX}
-            onClick={onSave}
-            className={`${isSaving || !canSave || !unsavedChanges ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} relative bg-background/10 border border-background/20`}
-          >
-            <Save className="h-4 w-4" />
-            {unsavedChanges && canSave && (
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
-                !
-              </span>
-            )}
-          </DockIcon>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>
-            {isSaving
-              ? "Saving..."
-              : unsavedChanges
-                ? "Save changes"
-                : "No changes to save"}
-          </p>
-        </TooltipContent>
-      </Tooltip>
-
-      {/* Reset */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DockIcon
-            mouseX={mouseX}
-            onClick={onReset}
-            className={`${!hasChanges ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-background/20"} bg-background/10 border border-background/20`}
-          >
-            <RotateCcw className="h-4 w-4" />
-          </DockIcon>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Reset changes</p>
         </TooltipContent>
       </Tooltip>
 
@@ -180,7 +200,7 @@ export function DockMain({
           <DockIcon
             mouseX={mouseX}
             onClick={onNavigateToExport}
-            className="cursor-pointer hover:bg-background/20 bg-background/10 border border-background/20"
+            className="cursor-pointer hover:bg-accent/50 rounded-full border border-border/50"
           >
             <Download className="h-4 w-4" />
           </DockIcon>
@@ -196,7 +216,7 @@ export function DockMain({
           <DockIcon
             mouseX={mouseX}
             onClick={onNavigateToSettings}
-            className="cursor-pointer hover:bg-background/20 bg-background/10 border border-background/20"
+            className="cursor-pointer hover:bg-accent/50 rounded-full border border-border/50"
           >
             <Settings className="h-4 w-4" />
           </DockIcon>

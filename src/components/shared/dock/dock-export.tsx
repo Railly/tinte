@@ -1,9 +1,14 @@
-import { ArrowLeft, Code, Copy, Download, FileText, Terminal } from "lucide-react";
-import { motion } from "motion/react";
+import { ArrowLeft, Copy, Download, FileText } from "lucide-react";
+import { motion, type MotionValue } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { DockIcon } from "./base-dock";
+import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 
 interface DockExportProps {
+  // macOS dock mouse tracking
+  mouseX: MotionValue<number>;
+
   onBack: () => void;
   onDownload: () => void;
   onCopyTheme: () => void;
@@ -15,6 +20,7 @@ interface DockExportProps {
 }
 
 export function DockExport({
+  mouseX,
   onBack,
   onDownload,
   onCopyTheme,
@@ -27,92 +33,87 @@ export function DockExport({
   return (
     <motion.div
       layoutId="dock-export-content"
-      className="flex flex-col gap-1 px-4 py-2"
+      className="flex items-center gap-3 px-3 py-2"
     >
-      {/* Header with back button */}
-      <div className="flex items-center gap-2 mb-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="h-6 w-6 p-0"
-        >
-          <ArrowLeft className="h-3 w-3" />
-        </Button>
-        <span className="text-sm font-medium text-muted-foreground">Export Options</span>
-      </div>
+      {/* Back Button */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            className="h-7 w-7 p-0 cursor-pointer hover:bg-accent/50 rounded-full"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Back to main</p>
+        </TooltipContent>
+      </Tooltip>
 
-      {/* Export actions */}
-      <div className="grid grid-cols-1 gap-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDownload}
-              disabled={isExporting}
-              className="h-7 justify-start gap-2 text-xs"
-            >
-              <Download className="h-3 w-3" />
-              <span>Download File</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Download {providerName} theme file</p>
-          </TooltipContent>
-        </Tooltip>
+      {/* Separator */}
+      <div className="w-px h-8 bg-background/20 mx-2" />
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onCopyThemeAndReturn || onCopyTheme}
-              className="h-7 justify-start gap-2 text-xs"
-            >
-              <Copy className="h-3 w-3" />
-              <span>Copy Theme</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Copy theme content to clipboard</p>
-          </TooltipContent>
-        </Tooltip>
+      {/* Download */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDownload}
+            disabled={isExporting}
+            className={`h-10 px-3 text-xs rounded-full gap-1.5 border border-border/50 ${
+              isExporting
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer hover:bg-accent/50"
+            }`}
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span>Download</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Download {providerName} file</p>
+        </TooltipContent>
+      </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onCopyCommand}
-              className="h-7 justify-start gap-2 text-xs"
-            >
-              <Terminal className="h-3 w-3" />
-              <span>Copy Command</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Copy installation command</p>
-          </TooltipContent>
-        </Tooltip>
+      {/* Copy Theme */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCopyThemeAndReturn || onCopyTheme}
+            className="h-10 px-3 text-xs cursor-pointer hover:bg-accent/50 rounded-full gap-1.5 border border-border/50"
+          >
+            <Copy className="h-3.5 w-3.5" />
+            <span>Copy Theme</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Copy theme content</p>
+        </TooltipContent>
+      </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onShowInstallGuide}
-              className="h-7 justify-start gap-2 text-xs"
-            >
-              <FileText className="h-3 w-3" />
-              <span>Install Guide</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Show installation instructions</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
+
+      {/* Install Guide */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onShowInstallGuide}
+            className="h-10 px-3 text-xs cursor-pointer hover:bg-accent/50 rounded-full gap-1.5 border border-border/50"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span>Install Guide</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Show install guide</p>
+        </TooltipContent>
+      </Tooltip>
     </motion.div>
   );
 }

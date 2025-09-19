@@ -1,9 +1,14 @@
 import { ArrowLeft, RotateCcw, Share, UserPlus } from "lucide-react";
+import { motion, type MotionValue } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnonymousSignInButton } from "@/components/auth/anonymous-signin-button";
+import { DockIcon } from "./base-dock";
 
 interface DockMoreProps {
+  // macOS dock mouse tracking
+  mouseX: MotionValue<number>;
+
   onBack: () => void;
   onReset: () => void;
   onShare: () => void;
@@ -16,6 +21,7 @@ interface DockMoreProps {
 }
 
 export function DockMore({
+  mouseX,
   onBack,
   onReset,
   onShare,
@@ -25,73 +31,97 @@ export function DockMore({
   isAnonymous,
 }: DockMoreProps) {
   return (
-    <div className="flex flex-col gap-2 p-3 min-w-48">
-      {/* Header with back button */}
-      <div className="flex items-center gap-2 mb-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="h-6 w-6 p-0"
-        >
-          <ArrowLeft className="h-3 w-3" />
-        </Button>
-        <span className="text-sm font-medium text-muted-foreground">More Actions</span>
-      </div>
+    <motion.div
+      layoutId="dock-more-content"
+      className="flex items-center gap-3 px-3 py-2"
+    >
+      {/* Back Button */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            className="h-7 w-7 p-0 cursor-pointer hover:bg-accent/50 rounded-full"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Back to main</p>
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Separator */}
+      <div className="w-px h-8 bg-background/20 mx-2" />
 
       {/* Authentication prompt */}
       {!isAuthenticated && !isAnonymous && (
-        <div className="grid grid-cols-1 gap-1 mb-2 pb-2 border-b border-border/50">
-          <AnonymousSignInButton
-            variant="default"
-            size="sm"
-            className="h-8 justify-start gap-2"
-          >
-            <UserPlus className="h-3 w-3" />
-            <span className="text-xs">Sign in to Save</span>
-          </AnonymousSignInButton>
-        </div>
+        <>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-10 px-3 text-xs cursor-pointer hover:bg-accent/50 rounded-full gap-1.5 border border-border/50"
+              >
+                <UserPlus className="h-3.5 w-3.5" />
+                <span>Sign in</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Sign in to save themes</p>
+            </TooltipContent>
+          </Tooltip>
+          <div className="w-px h-8 bg-background/20 mx-2" />
+        </>
       )}
 
-      {/* More actions */}
-      <div className="grid grid-cols-1 gap-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onReset}
-              disabled={!hasChanges}
-              className="h-8 justify-start gap-2"
-            >
-              <RotateCcw className="h-3 w-3" />
-              <span className="text-xs">Reset Changes</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Reset theme to original state</p>
-          </TooltipContent>
-        </Tooltip>
+      {/* Reset */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onReset}
+            disabled={!hasChanges}
+            className={`h-10 px-3 text-xs rounded-full gap-1.5 border border-border/50 ${
+              !hasChanges
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer hover:bg-accent/50"
+            }`}
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span>Reset</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Reset changes</p>
+        </TooltipContent>
+      </Tooltip>
 
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onShare}
-              disabled={isSharing}
-              className="h-8 justify-start gap-2"
-            >
-              <Share className="h-3 w-3" />
-              <span className="text-xs">Share Theme</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Share theme publicly or with URL</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
-    </div>
+      {/* Share */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onShare}
+            disabled={isSharing}
+            className={`h-10 px-3 text-xs rounded-full gap-1.5 border border-border/50 ${
+              isSharing
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer hover:bg-accent/50"
+            }`}
+          >
+            <Share className="h-3.5 w-3.5" />
+            <span>Share</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Share theme</p>
+        </TooltipContent>
+      </Tooltip>
+    </motion.div>
   );
 }

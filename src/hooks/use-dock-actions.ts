@@ -2,6 +2,7 @@ import { Copy, Download, Palette, Terminal } from "lucide-react";
 import { useState } from "react";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
 import { exportTheme } from "@/lib/providers";
+import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import type { TinteTheme } from "@/types/tinte";
 
 interface UseDockActionsProps {
@@ -113,7 +114,7 @@ export function useDockActions({
     if (providerId === "shadcn") {
       // Use the registry endpoint with the theme ID
       const baseUrl = window.location.origin;
-      const registryUrl = `${baseUrl}/api/r/${themeId}`;
+      const registryUrl = `${baseUrl}/r/${themeId}`;
       const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
     } else if (providerId === "vscode") {
@@ -131,11 +132,11 @@ export function useDockActions({
     if (providerId === "shadcn") {
       const baseUrl =
         typeof window !== "undefined" ? window.location.origin : "";
-      const registryUrl = themeId ? `${baseUrl}/api/r/${themeId}` : "theme";
+      const registryUrl = themeId ? `${baseUrl}/r/${themeId}` : "theme";
       return {
-        label: "Install",
+        label: "Copy Command",
         description: `npx shadcn@latest add ${registryUrl}`,
-        icon: Terminal,
+        icon: ShadcnIcon,
         variant: "default" as const,
       };
     } else if (providerId === "vscode") {
