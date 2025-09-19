@@ -1,4 +1,4 @@
-import { Copy, Download, MoreVertical, Redo, RotateCcw, Save, Settings, Undo } from "lucide-react";
+import { Copy, Download, MoreVertical, Redo, RotateCcw, Save, Settings, Share, Undo } from "lucide-react";
 import { motion, type MotionValue } from "motion/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,6 +42,9 @@ interface DockMainProps {
   // Navigation
   onNavigateToExport: () => void;
   onNavigateToSettings: () => void;
+
+  // Share
+  onShare?: () => void;
 }
 
 export function DockMain({
@@ -63,6 +66,7 @@ export function DockMain({
   isSaving,
   onNavigateToExport,
   onNavigateToSettings,
+  onShare,
 }: DockMainProps) {
   const PrimaryIcon = primaryActionConfig.icon;
 
@@ -193,6 +197,24 @@ export function DockMain({
           <p>{primaryActionConfig.description}</p>
         </TooltipContent>
       </Tooltip>
+
+      {/* Share */}
+      {onShare && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DockIcon
+              mouseX={mouseX}
+              onClick={onShare}
+              className="cursor-pointer hover:bg-accent/50 rounded-full border border-border/50"
+            >
+              <Share className="h-4 w-4" />
+            </DockIcon>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Share theme</p>
+          </TooltipContent>
+        </Tooltip>
+      )}
 
       {/* Export */}
       <Tooltip>

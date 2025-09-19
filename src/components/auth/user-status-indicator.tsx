@@ -67,8 +67,8 @@ export function UserStatusIndicator() {
   const handleSaveTheme = async () => {
     if (!canSave) return;
 
-    const success = await saveCurrentTheme();
-    if (success) {
+    const result = await saveCurrentTheme();
+    if (result.success) {
       toast.success("Theme saved!");
     } else {
       toast.error("Failed to save theme");

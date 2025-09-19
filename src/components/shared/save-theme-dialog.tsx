@@ -30,19 +30,23 @@ export function SaveThemeDialog({
   defaultName = "My Custom Theme",
   isLoading = false,
 }: SaveThemeDialogProps) {
-  const [themeName, setThemeName] = useState(defaultName);
+  const [themeName, setThemeName] = useState("");
   const [makePublic, setMakePublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Use defaultName as the actual default, but allow editing
+  const currentThemeName = themeName || defaultName;
+
   const handleSave = async () => {
-    if (!themeName.trim()) return;
+    const nameToUse = currentThemeName.trim();
+    if (!nameToUse) return;
 
     setIsSaving(true);
     try {
-      await onSave(themeName.trim(), makePublic);
+      await onSave(nameToUse, makePublic);
       onOpenChange(false);
       // Reset form
-      setThemeName(defaultName);
+      setThemeName("");
       setMakePublic(false);
     } catch (error) {
       console.error("Error saving theme:", error);
@@ -56,7 +60,7 @@ export function SaveThemeDialog({
     onOpenChange(open);
     if (!open) {
       // Reset form when closing
-      setThemeName(defaultName);
+      setThemeName("");
       setMakePublic(false);
     }
   };
@@ -78,12 +82,12 @@ export function SaveThemeDialog({
             <Label htmlFor="theme-name">Theme name</Label>
             <Input
               id="theme-name"
-              value={themeName}
+              value={currentThemeName}
               onChange={(e) => setThemeName(e.target.value)}
               placeholder="Enter theme name..."
               disabled={isSaving || isLoading}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && themeName.trim()) {
+                if (e.key === "Enter" && currentThemeName.trim()) {
                   handleSave();
                 }
               }}
@@ -113,7 +117,7 @@ export function SaveThemeDialog({
           <Button
             type="button"
             onClick={handleSave}
-            disabled={!themeName.trim() || isSaving || isLoading}
+            disabled={!currentThemeName.trim() || isSaving || isLoading}
             className="min-w-[100px]"
           >
             {isSaving || isLoading ? (

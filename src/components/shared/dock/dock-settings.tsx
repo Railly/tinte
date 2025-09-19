@@ -1,4 +1,4 @@
-import { ArrowLeft, Copy, Edit3, UserPlus } from "lucide-react";
+import { ArrowLeft, Copy, Edit3, Trash2, UserPlus } from "lucide-react";
 import { motion, type MotionValue } from "motion/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ interface DockSettingsProps {
   onBack: () => void;
   onRename: () => void;
   onDuplicate: () => void;
+  onDeleteClick: () => void;
 
   // Authentication props
   isAuthenticated?: boolean;
@@ -22,6 +23,9 @@ interface DockSettingsProps {
 
   // Ownership props
   isOwnTheme?: boolean;
+
+  // Theme info for deletion
+  themeName?: string;
 }
 
 export function DockSettings({
@@ -29,9 +33,11 @@ export function DockSettings({
   onBack,
   onRename,
   onDuplicate,
+  onDeleteClick,
   isAuthenticated,
   isAnonymous,
   isOwnTheme,
+  themeName,
 }: DockSettingsProps) {
   return (
     <motion.div
@@ -120,6 +126,30 @@ export function DockSettings({
           <p>Create a copy of this theme</p>
         </TooltipContent>
       </Tooltip>
+
+      {/* Delete */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDeleteClick}
+            disabled={!isOwnTheme}
+            className={`h-10 px-3 text-xs rounded-full gap-1.5 border ${
+              !isOwnTheme
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer bg-destructive text-destructive-foreground"
+            }`}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            <span>Delete</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{isOwnTheme ? "Delete theme" : "Only owners can delete"}</p>
+        </TooltipContent>
+      </Tooltip>
+
     </motion.div>
   );
 }

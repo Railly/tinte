@@ -1,9 +1,12 @@
 import {  motion, useMotionValue } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { DeleteThemeDialog } from "@/components/shared/delete-theme-dialog";
 import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
 import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
 import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
+import { ShareThemeDialog } from "@/components/shared/share-theme-dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   useShadcnOverrides,
@@ -23,12 +26,12 @@ import { InstallGuideModal } from "./install-guide-modal";
 import { SuccessAnimation } from "./success-animation";
 
 interface DockProps {
-  theme: TinteTheme;
   providerId: string;
   providerName: string;
 }
 
-export function Dock({ theme, providerId, providerName }: DockProps) {
+export function Dock({ providerId, providerName }: DockProps) {
+  const router = useRouter();
   const { dockState, navigateTo, navigateBack, canGoBack, dockRef } =
     useDockState();
 
@@ -36,8 +39,11 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isThemePublic, setIsThemePublic] = useState(false);
 
   const {
     updateTinteTheme,
@@ -47,10 +53,47 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     isAnonymous,
     canSave,
     saveCurrentTheme,
+    deleteTheme,
     unsavedChanges,
     isSaving,
+    updateShadcnOverride,
+    currentTokens,
+    currentMode,
+    allThemes,
+    userThemes,
+    selectTheme,
+    tinteTheme,
+    loadUserThemes,
   } = useThemeContext();
 
+  // Use theme from context instead of props
+  const theme = tinteTheme;
+
+  // Helper function to handle post-save navigation and theme list refresh
+  const handlePostSaveNavigation = async (savedTheme: any, action: string) => {
+    try {
+      // Refresh theme lists to include the new theme
+      await loadUserThemes();
+
+      // Select the saved theme
+      if (savedTheme) {
+        selectTheme(savedTheme);
+      }
+
+      // Navigate to the saved theme with shallow routing
+      if (savedTheme?.id) {
+        router.replace(`/workbench/${savedTheme.id}`);
+      }
+
+      console.log(`✅ ${action} completed:`, {
+        themeId: savedTheme?.id,
+        themeName: savedTheme?.name,
+        navigationUrl: `/workbench/${savedTheme?.id}`
+      });
+    } catch (error) {
+      console.error(`Error in post-${action.toLowerCase()} navigation:`, error);
+    }
+  };
 
   // Get override hooks for counting changes
   const shadcnOverrides = useShadcnOverrides();
@@ -96,13 +139,13 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
 
   // Reset history when switching to a different base theme
   useEffect(() => {
-    const currentThemeId = `${theme.light.pr}-${theme.light.sc}-${theme.light.bg}`;
+    const currentThemeId = `${activeTheme?.id || 'unknown'}-${theme.light.pr}-${theme.light.sc}-${theme.light.bg}`;
     if (themeIdRef.current && themeIdRef.current !== currentThemeId) {
       reset(theme);
       isInitialLoad.current = true;
     }
     themeIdRef.current = currentThemeId;
-  }, [theme, reset]);
+  }, [theme, reset, activeTheme?.id]);
 
   useEffect(() => {
     const themeString = JSON.stringify(theme);
@@ -151,12 +194,54 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   };
 
   // Count total override changes across all providers (memoized to prevent loops)
+  // For themes with natural overrides, don't count them as changes
   const shadcnCount = useMemo(() => {
+    // Check if theme has natural overrides (from TweakCN, DB themes, etc.)
+    const hasNaturalOverrides = (
+      activeTheme?.author === 'tweakcn' ||
+      (activeTheme as any)?.overrides?.shadcn ||
+      (activeTheme as any)?.shadcn_override
+    ) && activeTheme?.rawTheme;
+
+    if (hasNaturalOverrides) {
+      // Get original overrides from the theme data
+      const originalOverrides =
+        (activeTheme as any).overrides?.shadcn ||
+        (activeTheme as any).shadcn_override ||
+        {};
+      const currentOverrides = shadcnOverrides.allOverrides || {};
+
+      // Count only differences from original
+      let changeCount = 0;
+
+      ['light', 'dark'].forEach(mode => {
+        const original = originalOverrides[mode] || {};
+        const current = currentOverrides[mode] || {};
+
+        // Check for new overrides
+        Object.keys(current).forEach(key => {
+          if (!(key in original) || original[key] !== current[key]) {
+            changeCount++;
+          }
+        });
+
+        // Check for removed overrides
+        Object.keys(original).forEach(key => {
+          if (!(key in current)) {
+            changeCount++;
+          }
+        });
+      });
+
+      return changeCount;
+    }
+
+    // For themes without natural overrides, count all overrides as changes
     return Object.values(shadcnOverrides.allOverrides || {}).reduce(
       (total, modeOverrides) => total + Object.keys(modeOverrides || {}).length,
       0,
     );
-  }, [shadcnOverrides.allOverrides]);
+  }, [shadcnOverrides.allOverrides, activeTheme]);
 
   const vscodeCount = useMemo(() => {
     return Object.values(vscodeOverrides.allOverrides || {}).reduce(
@@ -226,6 +311,24 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     activeTheme.id === 'nature' ||
     !activeTheme.id.startsWith('theme_');
 
+  // Determine the preset type for ID prefix
+  const getPresetType = () => {
+    if (!activeTheme?.id) return 'tinte';
+
+    // TweakCN presets
+    if (activeTheme.author === 'tweakcn') {
+      return 'tweakcn';
+    }
+
+    // Rayso presets
+    if (activeTheme.author === 'ray.so') {
+      return 'rayso';
+    }
+
+    // Tinte presets (default)
+    return 'tinte';
+  };
+
   // Handle save theme - direct update for own themes, modal for custom unsaved
   const handleSaveTheme = async () => {
     if (!canSave) {
@@ -249,8 +352,8 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
     // If it's the user's own existing theme, update directly without modal
     if (isOwnExistingTheme) {
       try {
-        const success = await saveCurrentTheme();
-        if (success) {
+        const result = await saveCurrentTheme();
+        if (result.success) {
           toast.success("Theme updated successfully!");
         } else {
           toast.error("Failed to update theme");
@@ -269,9 +372,11 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   // Handle actual save with name from modal
   const handleSaveWithName = async (name: string, makePublic: boolean) => {
     try {
-      const success = await saveCurrentTheme(name, makePublic);
-      if (success) {
+      const result = await saveCurrentTheme(name, makePublic);
+      if (result.success && result.savedTheme) {
         toast.success("Theme saved successfully!");
+        // Handle navigation and theme list refresh
+        await handlePostSaveNavigation(result.savedTheme, "Save");
       } else {
         toast.error("Failed to save theme");
       }
@@ -306,6 +411,9 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
         throw new Error(result.error || "Failed to rename theme");
       }
 
+      // Refresh theme lists to show updated name
+      await loadUserThemes();
+
       toast.success(`Theme renamed to "${newName}"!`);
     } catch (error) {
       console.error("Error renaming theme:", error);
@@ -315,31 +423,200 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
   };
 
 
+  // Generate share link
+  const getShareLink = () => {
+    if (!activeTheme?.id) return "";
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/workbench/${activeTheme.id}`;
+  };
+
+  // Handle toggle public visibility
+  const handleTogglePublic = (makePublic: boolean) => {
+    try {
+      if (!activeTheme?.id) {
+        console.error("No theme ID");
+        toast.error("No theme selected");
+        return;
+      }
+
+      setIsThemePublic(makePublic);
+
+      // If making public, could update theme visibility here
+      if (makePublic && isOwnTheme) {
+        // Future: API call to make theme public
+        console.log("Making theme public:", activeTheme.id);
+        toast.success("✨ Theme is now public!");
+      } else if (!makePublic) {
+        console.log("Making theme private:", activeTheme.id);
+        toast.success("🔒 Theme is now private");
+      } else if (makePublic && !isOwnTheme) {
+        toast.error("Only theme owners can make themes public");
+        setIsThemePublic(false);
+      }
+    } catch (error) {
+      console.error("Error toggling theme visibility:", error);
+      toast.error("Failed to update theme visibility");
+      setIsThemePublic(!makePublic); // Revert on error
+    }
+  };
+
+  // Handle duplicate theme with custom ID prefix
+  const saveThemeWithPrefix = async (name: string, makePublic: boolean) => {
+    const presetType = getPresetType();
+    const customId = `${presetType}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    try {
+      // Temporarily modify the activeTheme ID before saving
+      const originalId = activeTheme.id;
+      const originalName = activeTheme.name;
+
+      // Update activeTheme with custom ID and name
+      activeTheme.id = customId;
+      activeTheme.name = name;
+
+      // For TweakCN themes, prepare shadcn_override with preset values
+      let shadcnOverrideToSave = null;
+      if (presetType === 'tweakcn' && activeTheme.rawTheme) {
+        // Use the original TweakCN preset values as shadcn overrides
+        shadcnOverrideToSave = {
+          light: activeTheme.rawTheme.light || {},
+          dark: activeTheme.rawTheme.dark || {}
+        };
+        console.log('🎨 Saving TweakCN theme with shadcn overrides:', {
+          themeId: activeTheme.id,
+          themeName: activeTheme.name,
+          lightKeys: Object.keys(shadcnOverrideToSave.light).length,
+          darkKeys: Object.keys(shadcnOverrideToSave.dark).length
+        });
+      }
+
+      // Save the theme with shadcn overrides if needed
+      const result = await saveCurrentTheme(name, makePublic, shadcnOverrideToSave);
+
+      // Restore original values
+      activeTheme.id = originalId;
+      activeTheme.name = originalName;
+
+      // Handle navigation and theme list refresh for successful saves
+      if (result.success && result.savedTheme) {
+        await handlePostSaveNavigation(result.savedTheme, "Save");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error saving theme with custom prefix:", error);
+      return { success: false, savedTheme: null };
+    }
+  };
+
   // Handle duplicate theme
   const handleDuplicateTheme = async (name: string, makePublic: boolean) => {
     try {
       if (isBuiltInTheme) {
-        // For built-in themes, create new theme from current tokens
-        const success = await saveCurrentTheme(name, makePublic);
-        if (!success) {
+        // For built-in themes, create new theme with appropriate prefix
+        const result = await saveThemeWithPrefix(name, makePublic);
+        if (!result.success) {
           throw new Error("Failed to save theme");
         }
         toast.success(`Theme saved as "${name}"!`);
+        // Navigation handled by saveThemeWithPrefix
       } else {
         // For database themes, duplicate existing
         if (!activeTheme?.id) {
           throw new Error("No theme ID");
         }
-        const result = await duplicateTheme(activeTheme.id, name, makePublic);
+
+        console.log("🔄 Calling duplicateTheme with:", {
+          themeId: activeTheme.id,
+          name,
+          makePublic,
+          activeThemeInfo: {
+            id: activeTheme.id,
+            name: activeTheme.name,
+            author: activeTheme.author,
+            provider: activeTheme.provider,
+            hasRawTheme: !!activeTheme.rawTheme,
+            keys: Object.keys(activeTheme)
+          },
+          originalThemeData: {
+            author: activeTheme.author,
+            provider: activeTheme.provider
+          }
+        });
+
+        const result = await duplicateTheme(
+          activeTheme.id,
+          name,
+          makePublic,
+          {
+            author: activeTheme.author,
+            provider: activeTheme.provider
+          }
+        );
         if (!result.success) {
           throw new Error(result.error || "Failed to duplicate theme");
         }
         toast.success(`Theme duplicated as "${name}"!`);
+        // Handle navigation and theme list refresh
+        if (result.theme) {
+          await handlePostSaveNavigation(result.theme, "Duplicate");
+        }
       }
     } catch (error) {
       console.error("Error duplicating/saving theme:", error);
       toast.error(isBuiltInTheme ? "Failed to save theme" : "Failed to duplicate theme");
       throw error;
+    }
+  };
+
+  // Handle delete theme
+  const handleDeleteTheme = async () => {
+    console.log("🗑️ Delete theme started");
+    console.log("📋 Theme:", activeTheme);
+    console.log("👤 User:", user);
+    console.log("🔐 isAuthenticated:", isAuthenticated);
+    console.log("👻 isAnonymous:", isAnonymous);
+    console.log("✅ isOwnTheme:", isOwnTheme);
+
+    try {
+      if (!activeTheme?.id) {
+        console.error("❌ No theme ID found");
+        throw new Error("No theme ID");
+      }
+
+      console.log("🔄 Calling deleteTheme API with ID:", activeTheme.id);
+      const success = await deleteTheme(activeTheme.id);
+      console.log("✅ Delete API result:", success);
+
+      if (!success) {
+        throw new Error("Failed to delete theme");
+      }
+
+      // Auto-select first available theme (store has been updated)
+      const remainingUserThemes = userThemes?.filter(t => t.id !== activeTheme.id) || [];
+      const remainingAllThemes = allThemes?.filter(t => t.id !== activeTheme.id) || [];
+
+      console.log("🔄 Auto-selecting from updated themes:", {
+        userThemes: remainingUserThemes.length,
+        allThemes: remainingAllThemes.length
+      });
+
+      // Prioritize user themes, then fallback to built-in themes
+      const themeToSelect = remainingUserThemes[0] || remainingAllThemes[0];
+
+      if (themeToSelect) {
+        console.log("🔄 Auto-selecting theme:", themeToSelect.name);
+        selectTheme(themeToSelect);
+      } else {
+        console.log("⚠️ No themes available to select");
+      }
+
+      // Return to main dock
+      navigateTo("main");
+      console.log("✅ Delete theme completed successfully");
+    } catch (error) {
+      console.error("❌ Error deleting theme:", error);
+      throw error; // Re-throw so dialog can handle error state
     }
   };
 
@@ -478,6 +755,7 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
                 isSaving={isSaving}
                 onNavigateToExport={handleNavigateToExport}
                 onNavigateToSettings={handleNavigateToSettings}
+                onShare={() => setShowShareDialog(true)}
               />
             ) : dockState === "export" ? (
               <DockExport
@@ -507,9 +785,11 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
                 onBack={handleNavigateBack}
                 onRename={() => setShowRenameDialog(true)}
                 onDuplicate={() => setShowDuplicateDialog(true)}
+                onDeleteClick={() => setShowDeleteDialog(true)}
                 isAuthenticated={isAuthenticated}
                 isAnonymous={isAnonymous}
                 isOwnTheme={isOwnTheme}
+                themeName={activeTheme?.name}
               />
             ) : null}
           </motion.div>
@@ -543,6 +823,15 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
         isLoading={isSaving}
       />
 
+      {/* Share Theme Dialog */}
+      <ShareThemeDialog
+        isOpen={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        onTogglePublic={handleTogglePublic}
+        shareLink={getShareLink()}
+        isPublic={isThemePublic}
+      />
+
       {/* Rename Theme Dialog */}
       <RenameThemeDialog
         isOpen={showRenameDialog}
@@ -560,6 +849,15 @@ export function Dock({ theme, providerId, providerName }: DockProps) {
         defaultName={getDuplicateName()}
         isLoading={false}
         isBuiltInTheme={isBuiltInTheme}
+      />
+
+      {/* Delete Theme Dialog */}
+      <DeleteThemeDialog
+        isOpen={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onDelete={handleDeleteTheme}
+        themeName={activeTheme?.name}
+        isLoading={false}
       />
     </TooltipProvider>
   );

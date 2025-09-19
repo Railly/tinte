@@ -56,7 +56,6 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
       <PreviewComponent theme={converted} />
 
       <WorkbenchDock
-        theme={theme}
         providerId={currentProvider.metadata.id}
         providerName={currentProvider.metadata.name}
       />

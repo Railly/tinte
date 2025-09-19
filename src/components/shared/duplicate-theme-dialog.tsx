@@ -32,18 +32,22 @@ export function DuplicateThemeDialog({
   isLoading = false,
   isBuiltInTheme = false,
 }: DuplicateThemeDialogProps) {
-  const [themeName, setThemeName] = useState(defaultName);
+  const [themeName, setThemeName] = useState("");
   const [makePublic, setMakePublic] = useState(false);
   const [isDuplicating, setIsDuplicating] = useState(false);
 
+  // Use defaultName as the actual default, but allow editing
+  const currentThemeName = themeName || defaultName;
+
   const handleDuplicate = async () => {
-    if (!themeName.trim()) return;
+    const nameToUse = currentThemeName.trim();
+    if (!nameToUse) return;
 
     setIsDuplicating(true);
     try {
-      await onDuplicate(themeName.trim(), makePublic);
+      await onDuplicate(nameToUse, makePublic);
       onOpenChange(false);
-      setThemeName(defaultName);
+      setThemeName("");
       setMakePublic(false);
     } catch (error) {
       console.error("Error duplicating theme:", error);
@@ -56,7 +60,7 @@ export function DuplicateThemeDialog({
     if (isDuplicating || isLoading) return;
     onOpenChange(open);
     if (!open) {
-      setThemeName(defaultName);
+      setThemeName("");
       setMakePublic(false);
     }
   };
@@ -81,12 +85,12 @@ export function DuplicateThemeDialog({
             <Label htmlFor="theme-name">Theme name</Label>
             <Input
               id="theme-name"
-              value={themeName}
+              value={currentThemeName}
               onChange={(e) => setThemeName(e.target.value)}
               placeholder="Enter theme name..."
               disabled={isDuplicating || isLoading}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && themeName.trim()) {
+                if (e.key === "Enter" && currentThemeName.trim()) {
                   handleDuplicate();
                 }
               }}
@@ -116,7 +120,7 @@ export function DuplicateThemeDialog({
           <Button
             type="button"
             onClick={handleDuplicate}
-            disabled={!themeName.trim() || isDuplicating || isLoading}
+            disabled={!currentThemeName.trim() || isDuplicating || isLoading}
             className="min-w-[100px]"
           >
             {isDuplicating || isLoading ? (

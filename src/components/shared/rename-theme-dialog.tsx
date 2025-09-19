@@ -29,15 +29,19 @@ export function RenameThemeDialog({
   currentName = "",
   isLoading = false,
 }: RenameThemeDialogProps) {
-  const [themeName, setThemeName] = useState(currentName);
+  const [themeName, setThemeName] = useState("");
   const [isRenaming, setIsRenaming] = useState(false);
 
+  // Use currentName as the actual default, but allow editing
+  const currentThemeName = themeName || currentName;
+
   const handleRename = async () => {
-    if (!themeName.trim()) return;
+    const nameToUse = currentThemeName.trim();
+    if (!nameToUse) return;
 
     setIsRenaming(true);
     try {
-      await onRename(themeName.trim());
+      await onRename(nameToUse);
       onOpenChange(false);
     } catch (error) {
       console.error("Error renaming theme:", error);
@@ -50,7 +54,7 @@ export function RenameThemeDialog({
     if (isRenaming || isLoading) return;
     onOpenChange(open);
     if (!open) {
-      setThemeName(currentName);
+      setThemeName("");
     }
   };
 
@@ -71,12 +75,12 @@ export function RenameThemeDialog({
             <Label htmlFor="theme-name">Theme name</Label>
             <Input
               id="theme-name"
-              value={themeName}
+              value={currentThemeName}
               onChange={(e) => setThemeName(e.target.value)}
               placeholder="Enter theme name..."
               disabled={isRenaming || isLoading}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && themeName.trim()) {
+                if (e.key === "Enter" && currentThemeName.trim()) {
                   handleRename();
                 }
               }}
@@ -95,7 +99,7 @@ export function RenameThemeDialog({
           <Button
             type="button"
             onClick={handleRename}
-            disabled={!themeName.trim() || isRenaming || isLoading}
+            disabled={!currentThemeName.trim() || isRenaming || isLoading}
             className="min-w-[100px]"
           >
             {isRenaming || isLoading ? (

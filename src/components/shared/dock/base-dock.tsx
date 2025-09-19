@@ -162,26 +162,7 @@ const DockIcon = ({
     <motion.div
       ref={ref}
       style={{ width: scaleSize, height: scaleSize, padding }}
-      initial={{
-        opacity: 0,
-        scale: 0.8,
-        filter: "blur(3px)"
-      }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-        filter: "blur(0px)"
-      }}
-      exit={{
-        opacity: 0,
-        scale: 0.7,
-        filter: "blur(3px)"
-      }}
-      transition={{
-        type: "spring",
-        bounce: 0.35,
-        duration: 0.4
-      }}
+      initial={false}
       whileHover={{
         scale: disableMagnification ? 1.05 : 1,
         transition: { type: "spring", bounce: 0.4, duration: 0.2 }
@@ -197,13 +178,7 @@ const DockIcon = ({
       )}
       {...props}
     >
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.1, type: "spring", bounce: 0.4 }}
-      >
-        {children}
-      </motion.div>
+      {children}
     </motion.div>
   );
 };

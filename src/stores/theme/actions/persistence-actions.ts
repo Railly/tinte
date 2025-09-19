@@ -8,7 +8,7 @@ import { getThemeOwnershipInfo } from "../utils/theme-ownership";
 
 export function createPersistenceActions(get: any, set: any) {
   return {
-    saveTheme: async (name?: string, makePublic = false) => {
+    saveTheme: async (name?: string, makePublic = false, additionalShadcnOverride?: any) => {
       const {
         activeTheme,
         tinteTheme,
@@ -45,7 +45,7 @@ export function createPersistenceActions(get: any, set: any) {
         const organizedTokens = organizeEditedTokens(editedTokens, currentMode);
 
         const overrides = {
-          shadcn: {
+          shadcn: additionalShadcnOverride || {
             ...shadcnOverride,
             ...(organizedTokens.shadcn
               ? {
@@ -152,10 +152,10 @@ export function createPersistenceActions(get: any, set: any) {
           });
         }
 
-        return success;
+        return { success, savedTheme: success ? themeToSave : null };
       } catch (error) {
         console.error("Error saving theme:", error);
-        return false;
+        return { success: false, savedTheme: null };
       } finally {
         set({ isSaving: false });
       }
@@ -164,24 +164,78 @@ export function createPersistenceActions(get: any, set: any) {
     deleteTheme: async (themeId: string) => {
       const { isAuthenticated, isAnonymous, userThemes } = get();
 
+      console.log("🗑️ deleteTheme persistence action called");
+      console.log("🔐 isAuthenticated:", isAuthenticated);
+      console.log("👻 isAnonymous:", isAnonymous);
+      console.log("📋 themeId:", themeId);
+      console.log("👥 userThemes count:", userThemes?.length || 0);
+
       try {
         if (isAuthenticated) {
+          console.log("🔄 Making DELETE request to API");
           const response = await fetch(`/api/themes/${themeId}`, {
             method: "DELETE",
           });
-          if (!response.ok) return false;
+          console.log("📡 API response status:", response.status);
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("❌ API delete failed:", errorText);
+            return false;
+          }
+          console.log("✅ API delete successful");
         } else if (isAnonymous) {
+          console.log("🔄 Deleting from anonymous storage");
           const updatedUserThemes = userThemes.filter(
             (t: ThemeData) => t.id !== themeId,
           );
           saveAnonymousThemes(updatedUserThemes);
           set({ userThemes: updatedUserThemes });
+          console.log("✅ Anonymous delete successful");
+        } else {
+          console.error("❌ User is neither authenticated nor anonymous");
+          return false;
         }
 
+        console.log("🔄 Updating store after deletion");
+
+        // Update userThemes and rebuild allThemes
+        const currentState = get();
+        const updatedUserThemes = currentState.userThemes.filter((t: any) => t.id !== themeId);
+
+        // Rebuild allThemes the same way as in initialize()
+        const { DEFAULT_THEME } = await import("@/utils/tinte-presets");
+        const updatedAllThemes = [
+          DEFAULT_THEME,
+          ...currentState.tinteThemes,
+          ...currentState.raysoThemes,
+          ...currentState.tweakcnThemes,
+          ...updatedUserThemes,
+        ].filter(
+          (theme, index, arr) =>
+            arr.findIndex((t) => t.id === theme.id) === index
+        );
+
+        set({
+          userThemes: updatedUserThemes,
+          allThemes: updatedAllThemes
+        });
+
+        console.log("📊 Store updated:", {
+          userThemes: updatedUserThemes.length,
+          allThemes: updatedAllThemes.length
+        });
+
+        // Also reload from server to ensure consistency
         await get().loadUserThemes();
+
+        // Force a small delay to ensure all React updates are processed
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        console.log("✅ Theme deletion and store update completed successfully");
         return true;
       } catch (error) {
-        console.error("Error deleting theme:", error);
+        console.error("❌ Error deleting theme:", error);
         return false;
       }
     },

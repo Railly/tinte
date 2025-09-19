@@ -71,6 +71,10 @@ export function ThemeSelector({
 
   // Organize themes into sections
   const organizedThemes = React.useMemo(() => {
+    console.log("🎨 ThemeSelector organizing themes:", {
+      totalThemes: themes.length,
+      themeIds: themes.map(t => t.id)
+    });
     const combined = [...themes];
 
     // Add selected search theme if it's not already in the themes list
@@ -154,6 +158,7 @@ export function ThemeSelector({
     favoriteThemes,
     isAuthenticated,
   ]);
+
 
   // Find active theme in ALL available themes (user + built-in + search results)
   const active = React.useMemo(() => {

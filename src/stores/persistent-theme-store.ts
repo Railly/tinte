@@ -94,7 +94,7 @@ interface PersistentThemeState {
   resetOverrides: (provider?: "shadcn" | "vscode" | "shiki") => void;
 
   // Persistence actions
-  saveTheme: (name?: string, makePublic?: boolean) => Promise<boolean>;
+  saveTheme: (name?: string, makePublic?: boolean, additionalShadcnOverride?: any) => Promise<{ success: boolean; savedTheme: any | null }>;
   deleteTheme: (themeId: string) => Promise<boolean>;
   loadUserThemes: () => Promise<void>;
   createNewTheme: (name: string) => void;
@@ -630,6 +630,20 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               }
             } catch (error) {
               console.warn("Error checking localStorage theme:", error);
+            }
+          }
+
+          // Navigate to workbench with theme ID
+          if (typeof window !== "undefined" && theme.id) {
+            const currentPath = window.location.pathname;
+            if (currentPath.startsWith("/workbench/")) {
+              import("next/navigation").then(({ useRouter }) => {
+                try {
+                  window.history.replaceState(null, "", `/workbench/${theme.id}`);
+                } catch (error) {
+                  console.warn("Error updating URL:", error);
+                }
+              });
             }
           }
 

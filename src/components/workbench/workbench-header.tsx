@@ -113,6 +113,7 @@ export function WorkbenchHeader({
         <Slash className="w-4 h-4 text-border -rotate-[15deg] hidden sm:block" />
         <div className="flex items-center gap-2 min-w-0">
           <ThemeSelector
+            key={`theme-selector-${allThemes.length}`}
             themes={allThemes}
             activeId={activeId}
             activeTheme={activeTheme}

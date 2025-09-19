@@ -124,33 +124,32 @@ export function Toast({
                     {currentState.text}
                   </motion.span>
                 </AnimatePresence>
-              </motion.div>
 
-              <AnimatePresence>
-                {state === "initial" && hasChanges && (
-                  <motion.div
-                    className="inline-flex items-center gap-2 pl-0 pr-px py-0"
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                  >
-                    <Button
-                      variant="ghost"
-                      className="h-7 px-3 text-[13px] text-white hover:bg-white/10 hover:text-white rounded-[99px] transition-colors duration-200"
-                      onClick={onReset}
-                      disabled={!hasChanges}
+                <AnimatePresence>
+                  {state === "initial" && hasChanges && (
+                    <motion.div
+                      className="inline-flex items-center gap-2 pl-0 pr-px py-0"
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
                     >
-                      Reset
-                    </Button>
-                    <SaveButton onClick={handleSave} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
+                      <Button
+                        variant="ghost"
+                        className="h-7 px-3 text-[13px] text-white hover:bg-white/10 hover:text-white rounded-[99px] transition-colors duration-200"
+                        onClick={onReset}
+                        disabled={!hasChanges}
+                      >
+                        Reset
+                      </Button>
+                      <SaveButton onClick={handleSave} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
           </div>
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

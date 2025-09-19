@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { auth } from "@/lib/auth";
+import type { ShadcnTheme } from "@/types/shadcn";
 
 export async function incrementThemeInstalls(themeId: string) {
   try {
@@ -94,6 +95,7 @@ export async function duplicateTheme(
   themeId: string,
   name: string,
   makePublic: boolean,
+  originalThemeData?: { author?: string; provider?: string }
 ) {
   try {
     const headersList = await headers();
@@ -121,6 +123,93 @@ export async function duplicateTheme(
     }
 
     const original = originalTheme[0];
+
+    // Check if this is a TweakCN theme
+    const isTweakCNTheme = originalThemeData?.author === 'tweakcn' ||
+                          originalThemeData?.provider === 'tweakcn';
+
+    console.log("🔍 DuplicateTheme Debug:", {
+      themeId,
+      originalThemeData,
+      isTweakCNTheme,
+      author: originalThemeData?.author,
+      provider: originalThemeData?.provider
+    });
+
+    // For TweakCN themes, ALWAYS generate shadcn overrides (mandatory)
+    let shadcnOverrideToSave = original.shadcn_override;
+
+    if (isTweakCNTheme) {
+      console.log("🎨 Duplicating TweakCN theme - generating mandatory shadcn_overrides from canonical values");
+      // Import convertTheme function to generate shadcn theme
+      const { convertTheme } = await import("@/lib/providers");
+
+      // Build the TinteTheme object from the database colors
+      const tinteTheme = {
+        light: {
+          bg: original.light_bg,
+          bg_2: original.light_bg_2,
+          ui: original.light_ui,
+          ui_2: original.light_ui_2,
+          ui_3: original.light_ui_3,
+          tx: original.light_tx,
+          tx_2: original.light_tx_2,
+          tx_3: original.light_tx_3,
+          pr: original.light_pr,
+          sc: original.light_sc,
+          ac_1: original.light_ac_1,
+          ac_2: original.light_ac_2,
+          ac_3: original.light_ac_3,
+        },
+        dark: {
+          bg: original.dark_bg,
+          bg_2: original.dark_bg_2,
+          ui: original.dark_ui,
+          ui_2: original.dark_ui_2,
+          ui_3: original.dark_ui_3,
+          tx: original.dark_tx,
+          tx_2: original.dark_tx_2,
+          tx_3: original.dark_tx_3,
+          pr: original.dark_pr,
+          sc: original.dark_sc,
+          ac_1: original.dark_ac_1,
+          ac_2: original.dark_ac_2,
+          ac_3: original.dark_ac_3,
+        },
+      };
+
+      try {
+        // Generate complete shadcn theme from TinteTheme canonical values
+        // This is MANDATORY for all TweakCN themes - we always regenerate from canonical
+        const shadcnTheme = convertTheme<ShadcnTheme>("shadcn", tinteTheme);
+        if (shadcnTheme) {
+          shadcnOverrideToSave = {
+            palettes: shadcnTheme,
+            // Complete shadcn overrides structure including fonts and styling
+            fonts: {
+              sans: "ui-sans-serif, system-ui, sans-serif",
+              serif: "ui-serif, Georgia, serif",
+              mono: "ui-monospace, monospace",
+            },
+            radius: "0.5rem",
+            shadow: {
+              color: "0 0 0",
+              opacity: "0.1",
+              blur: "3px",
+              spread: "0px",
+              offset_x: "0px",
+              offset_y: "1px",
+            },
+            letter_spacing: "0",
+          };
+          console.log("✅ Successfully generated mandatory shadcn_overrides for TweakCN theme");
+        }
+      } catch (error) {
+        console.error("Error generating mandatory shadcn overrides for TweakCN theme:", error);
+        // For TweakCN themes, if conversion fails, we still try to preserve existing override
+        // but this should not happen in normal circumstances
+      }
+    }
 
     // Create the duplicate
     const newThemeId = `theme_${nanoid()}`;
@@ -171,12 +260,19 @@ export async function duplicateTheme(
         is_public: makePublic,
         installs: 0,
 
-        // Copy overrides
-        shadcn_override: original.shadcn_override,
+        // Copy overrides - use generated shadcn override for TweakCN themes
+        shadcn_override: shadcnOverrideToSave,
         vscode_override: original.vscode_override,
         shiki_override: original.shiki_override,
       })
       .returning();
+
+    console.log("💾 Theme saved to DB:", {
+      id: duplicatedTheme[0].id,
+      name: duplicatedTheme[0].name,
+      hasShadcnOverride: !!duplicatedTheme[0].shadcn_override,
+      shadcnOverrideKeys: duplicatedTheme[0].shadcn_override ? Object.keys(duplicatedTheme[0].shadcn_override) : null
+    });
 
     return {
       success: true,
