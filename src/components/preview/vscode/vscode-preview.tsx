@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { codeTemplates, type VSCodeTheme } from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
-import { MonacoLikePreview } from "./monaco-like-preview";
+import { MonacoLikeEditor } from "./monaco-like-editor";
 
 interface VSCodePreviewProps {
   theme: { light: VSCodeTheme; dark: VSCodeTheme };
@@ -42,7 +42,7 @@ export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
     >
       {/* Content */}
       <div className="flex-1 overflow-hidden">
-        <MonacoLikePreview
+        <MonacoLikeEditor
           themeSet={currentThemeSet}
           currentMode={currentMode}
           template={currentTemplate}

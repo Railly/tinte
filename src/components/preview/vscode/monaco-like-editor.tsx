@@ -26,7 +26,7 @@ import {
 } from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
 
-interface MonacoLikePreviewProps {
+interface MonacoLikeEditorProps {
   themeSet: { light: VSCodeTheme; dark: VSCodeTheme };
   currentMode: "light" | "dark";
   template: CodeTemplate;
@@ -36,7 +36,7 @@ interface MonacoLikePreviewProps {
   onTemplateChange?: (index: number) => void;
 }
 
-export function MonacoLikePreview({
+export function MonacoLikeEditor({
   themeSet,
   currentMode,
   template,
@@ -44,7 +44,7 @@ export function MonacoLikePreview({
   className,
   selectedTemplate = 0,
   onTemplateChange = () => {},
-}: MonacoLikePreviewProps) {
+}: MonacoLikeEditorProps) {
   const getFileExtension = (language: string): string => {
     const languageToExtension: Record<string, string> = {
       javascript: "js",
