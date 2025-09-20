@@ -706,7 +706,7 @@ export function MonacoLikePreview({
               {/* Monaco Editor */}
               <div className="flex-1 overflow-hidden relative">
                 {isViewTransitioning && (
-                  <div className="absolute inset-0 z-10 bg-background/95 backdrop-blur-[2px] transition-opacity duration-150" />
+                  <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-[1px] transition-opacity duration-100" />
                 )}
                 <Editor
                   height="100%"

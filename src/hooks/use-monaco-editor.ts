@@ -41,13 +41,29 @@ export function useMonacoEditor({
   }, [currentMode]);
 
   // View transition to prevent flickering during theme changes
+  const prevThemeVersionRef = useRef<number>(-1);
+  const prevModeRef = useRef<string>("");
+
   useEffect(() => {
-    if (isReady && editorRef.current && !isInitialLoad) {
+    const hasThemeVersionChanged = prevThemeVersionRef.current !== themeVersion;
+    const hasModeChanged = prevModeRef.current !== currentMode;
+    const hasRealChange = hasThemeVersionChanged || hasModeChanged;
+
+    if (isReady && editorRef.current && !isInitialLoad && hasRealChange) {
       setIsViewTransitioning(true);
-      const timer = setTimeout(() => setIsViewTransitioning(false), 150); // Optimal for preventing flicker
+      const timer = setTimeout(() => setIsViewTransitioning(false), 100); // Faster transition to reduce flash
+
+      // Update refs
+      prevThemeVersionRef.current = themeVersion;
+      prevModeRef.current = currentMode;
+
       return () => clearTimeout(timer);
+    } else if (isInitialLoad) {
+      // Initialize refs on first load
+      prevThemeVersionRef.current = themeVersion;
+      prevModeRef.current = currentMode;
     }
-  }, [isReady, isInitialLoad]);
+  }, [isReady, isInitialLoad, themeVersion, currentMode]);
 
   const createThemeData = useCallback(
     (mode: "light" | "dark") => {
@@ -171,11 +187,9 @@ export function useMonacoEditor({
       console.log("Monaco: Theme/mode changed, updating themes");
 
       initializeMonaco(monacoRef.current).then(() => {
-        // Faster theme application for subsequent changes
-        setTimeout(() => {
-          console.log("Monaco: Applying updated theme:", currentThemeName);
-          applyTheme(editorRef.current, monacoRef.current);
-        }, 25); // Reduced from 50ms
+        // Immediate theme application for subsequent changes to prevent flash
+        console.log("Monaco: Applying updated theme:", currentThemeName);
+        applyTheme(editorRef.current, monacoRef.current);
       });
     }
   }, [currentThemeName, initializeMonaco, applyTheme, isInitialLoad]);
