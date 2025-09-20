@@ -7,6 +7,7 @@ import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog
 import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
 import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
 import { ShareThemeDialog } from "@/components/shared/share-theme-dialog";
+import { ImportThemeDialog } from "@/components/shared/import-theme-dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   useShadcnOverrides,
@@ -17,6 +18,7 @@ import { useDockState } from "@/hooks/use-dock-state";
 import { useThemeHistory } from "@/hooks/use-theme-history";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
 import { exportTheme, getProvider } from "@/lib/providers";
+import { importShadcnTheme } from "@/lib/import-theme";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteTheme } from "@/types/tinte";
 import { DockExport } from "./dock-export";
@@ -40,6 +42,7 @@ export function Dock({ providerId, providerName }: DockProps) {
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -64,6 +67,7 @@ export function Dock({ providerId, providerName }: DockProps) {
     selectTheme,
     tinteTheme,
     loadUserThemes,
+    addTheme,
   } = useThemeContext();
 
   // Use theme from context instead of props
@@ -423,14 +427,70 @@ export function Dock({ providerId, providerName }: DockProps) {
   };
 
 
-  // Generate share link
   const getShareLink = () => {
     if (!activeTheme?.id) return "";
+    if (typeof window === 'undefined') return "";
     const baseUrl = window.location.origin;
     return `${baseUrl}/workbench/${activeTheme.id}`;
   };
 
-  // Handle toggle public visibility
+  const handleImportTheme = async (name: string, css: string, makePublic: boolean) => {
+    try {
+      // Parse the CSS to get theme data
+      const { tinteTheme, shadcnTheme } = importShadcnTheme(css);
+
+      // Create theme data for DB
+      const themeToSave = {
+        id: `theme_${Date.now()}`,
+        name,
+        description: `Imported theme: ${name}`,
+        author: "You",
+        provider: "tinte" as const,
+        downloads: 0,
+        likes: 0,
+        installs: 0,
+        tags: ["custom", "imported"],
+        createdAt: new Date().toISOString(),
+        colors: {
+          primary: tinteTheme.light.pr,
+          secondary: tinteTheme.light.sc,
+          background: tinteTheme.light.bg,
+        },
+        rawTheme: tinteTheme,
+      };
+
+      // Apply shadcn overrides for the imported CSS first
+      if (shadcnTheme) {
+        updateShadcnOverride(shadcnTheme);
+      }
+
+      // Add to themes list in memory temporarily
+      addTheme(themeToSave);
+
+      // Select this theme
+      selectTheme(themeToSave);
+
+      // Save to database with shadcn overrides
+      const result = await saveCurrentTheme(name, makePublic, shadcnTheme);
+
+      if (result.success && result.savedTheme) {
+        // Refresh theme lists to include the saved theme
+        await loadUserThemes();
+
+        // Select the saved theme
+        selectTheme(result.savedTheme);
+
+        toast.success(`"${name}" imported and saved successfully!`);
+      } else {
+        toast.error("Failed to save imported theme");
+      }
+    } catch (error) {
+      console.error("Error importing theme:", error);
+      toast.error("Failed to import theme");
+      throw error;
+    }
+  };
+
   const handleTogglePublic = (makePublic: boolean) => {
     try {
       if (!activeTheme?.id) {
@@ -441,7 +501,6 @@ export function Dock({ providerId, providerName }: DockProps) {
 
       setIsThemePublic(makePublic);
 
-      // If making public, could update theme visibility here
       if (makePublic && isOwnTheme) {
         // Future: API call to make theme public
         console.log("Making theme public:", activeTheme.id);
@@ -756,6 +815,7 @@ export function Dock({ providerId, providerName }: DockProps) {
                 onNavigateToExport={handleNavigateToExport}
                 onNavigateToSettings={handleNavigateToSettings}
                 onShare={() => setShowShareDialog(true)}
+                onImport={() => setShowImportDialog(true)}
               />
             ) : dockState === "export" ? (
               <DockExport
@@ -830,6 +890,14 @@ export function Dock({ providerId, providerName }: DockProps) {
         onTogglePublic={handleTogglePublic}
         shareLink={getShareLink()}
         isPublic={isThemePublic}
+      />
+
+      {/* Import Theme Dialog */}
+      <ImportThemeDialog
+        isOpen={showImportDialog}
+        onOpenChange={setShowImportDialog}
+        onImport={handleImportTheme}
+        isLoading={false}
       />
 
       {/* Rename Theme Dialog */}

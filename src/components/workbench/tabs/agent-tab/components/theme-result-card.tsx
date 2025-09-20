@@ -1,8 +1,10 @@
 "use client";
 
-import { Copy, Palette, Sparkles } from "lucide-react";
+import { Copy, Palette, Sparkles, Save } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useThemeContext } from "@/providers/theme";
 import { DEFAULT_OPEN_SECTIONS } from "../constants";
 import { ColorsSection } from "./theme-sections/colors-section";
 import { RadiusSection } from "./theme-sections/radius-section";
@@ -23,12 +25,54 @@ export function ThemeResultCard({
   onApplyTheme,
 }: ThemeResultCardProps) {
   const [openSections, setOpenSections] = useState(DEFAULT_OPEN_SECTIONS);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const {
+    saveCurrentTheme,
+    canSave,
+    isAuthenticated,
+    loadUserThemes,
+    selectTheme
+  } = useThemeContext();
 
   const toggleSection = (section: keyof typeof DEFAULT_OPEN_SECTIONS) => {
     setOpenSections((prev) => ({
       ...prev,
       [section]: !prev[section],
     }));
+  };
+
+  const handleSaveTheme = async () => {
+    if (!canSave) {
+      toast.error("Please sign in to save themes");
+      return;
+    }
+
+    // Apply theme first to ensure it's current
+    await onApplyTheme(themeOutput);
+
+    setIsSaving(true);
+    try {
+      const themeName = themeOutput.title || "AI Generated Theme";
+      const result = await saveCurrentTheme(themeName, false); // Save as private by default
+
+      if (result.success && result.savedTheme) {
+        // Refresh theme lists to include the new theme
+        await loadUserThemes();
+
+        // Select the saved theme
+        selectTheme(result.savedTheme);
+
+        toast.success(`"${themeName}" saved successfully!`);
+      } else {
+        toast.error("Failed to save theme");
+      }
+    } catch (error) {
+      console.error("Error saving theme:", error);
+      toast.error("Error saving theme");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -97,15 +141,12 @@ export function ThemeResultCard({
           <Button
             size="sm"
             variant="outline"
-            onClick={() => {
-              navigator.clipboard.writeText(
-                JSON.stringify(themeOutput, null, 2),
-              );
-            }}
+            onClick={handleSaveTheme}
+            disabled={!canSave || isSaving}
             className="h-8 px-3"
           >
-            <Copy className="h-3 w-3 mr-1.5" />
-            Copy JSON
+            <Save className="h-3 w-3 mr-1.5" />
+            {isSaving ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>

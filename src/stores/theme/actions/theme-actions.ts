@@ -69,16 +69,49 @@ export function createThemeActions(get: any, set: any) {
 
     addTheme: (theme: ThemeData) => {
       set((state: any) => {
+        const { user } = state;
+
+        // Update allThemes
         const existingIndex = state.allThemes.findIndex(
           (t: ThemeData) => t.id === theme.id
         );
+        let updatedAllThemes;
         if (existingIndex >= 0) {
-          const updatedThemes = [...state.allThemes];
-          updatedThemes[existingIndex] = theme;
-          return { allThemes: updatedThemes };
+          updatedAllThemes = [...state.allThemes];
+          updatedAllThemes[existingIndex] = theme;
         } else {
-          return { allThemes: [...state.allThemes, theme] };
+          updatedAllThemes = [...state.allThemes, theme];
         }
+
+        // Determine if this is a user theme
+        const isOwnTheme = theme.user?.id === user?.id;
+        const isCustomTheme = theme.author === "You" || theme.name?.includes("Custom") || theme.name?.includes("(unsaved)");
+        const isUserCreated = theme.provider === "tinte" && (isOwnTheme || isCustomTheme);
+
+        // Update userThemes if this is a user theme
+        let updatedUserThemes = [...state.userThemes];
+        if (isUserCreated || isOwnTheme) {
+          const userThemeIndex = updatedUserThemes.findIndex(
+            (t: ThemeData) => t.id === theme.id
+          );
+          if (userThemeIndex >= 0) {
+            updatedUserThemes[userThemeIndex] = theme;
+          } else {
+            updatedUserThemes = [theme, ...updatedUserThemes]; // Add to beginning
+          }
+
+          // Sort user themes by creation date (newest first)
+          updatedUserThemes.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return dateB.getTime() - dateA.getTime();
+          });
+        }
+
+        return {
+          allThemes: updatedAllThemes,
+          userThemes: updatedUserThemes
+        };
       });
     },
 
