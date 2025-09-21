@@ -24,12 +24,16 @@ interface WorkbenchHeaderProps {
   chatId: string;
   userThemes?: UserThemeData[];
   tweakCNThemes?: UserThemeData[];
+  tinteThemes?: UserThemeData[];
+  raysoThemes?: UserThemeData[];
 }
 
 export function WorkbenchHeader({
   chatId,
   userThemes = [],
   tweakCNThemes = [],
+  tinteThemes = [],
+  raysoThemes = [],
 }: WorkbenchHeaderProps) {
   const {
     allThemes,
@@ -77,7 +81,29 @@ export function WorkbenchHeader({
         addTheme(themeData);
       }
     });
-  }, [userThemes, tweakCNThemes, allThemes, addTheme]);
+
+    // Add Tinte themes
+    tinteThemes.forEach((tinteTheme) => {
+      const existingTheme = allThemes.find((t) => t.id === tinteTheme.id);
+      if (!existingTheme) {
+        const themeData: ThemeData = {
+          ...tinteTheme,
+        };
+        addTheme(themeData);
+      }
+    });
+
+    // Add Rayso themes
+    raysoThemes.forEach((raysoTheme) => {
+      const existingTheme = allThemes.find((t) => t.id === raysoTheme.id);
+      if (!existingTheme) {
+        const themeData: ThemeData = {
+          ...raysoTheme,
+        };
+        addTheme(themeData);
+      }
+    });
+  }, [userThemes, tweakCNThemes, tinteThemes, raysoThemes, allThemes, addTheme]);
 
   // Get current favorite state using global store
   const isFavorite =

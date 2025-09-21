@@ -8,7 +8,7 @@ import { shadcnToTinte } from "@/lib/shadcn-to-tinte";
 import type { ThemeData } from "@/lib/theme-tokens";
 import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteTheme } from "@/types/tinte";
-import { DEFAULT_THEME } from "@/utils/tinte-presets";
+import { DEFAULT_THEME } from "@/utils/default-theme";
 import type { ThemeMode, ThemeOverrides } from "../types";
 
 export const convertColorToHex = (colorValue: string): string => {

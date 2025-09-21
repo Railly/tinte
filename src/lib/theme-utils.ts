@@ -2,7 +2,7 @@
 
 import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteTheme } from "@/types/tinte";
-import { DEFAULT_THEME } from "@/utils/tinte-presets";
+import { DEFAULT_THEME } from "@/utils/default-theme";
 import {
   downloadFile,
   downloadJSON,

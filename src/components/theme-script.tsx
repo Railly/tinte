@@ -1,6 +1,6 @@
 "use client";
 
-import { DEFAULT_THEME } from "@/utils/tinte-presets";
+import { DEFAULT_THEME } from "@/utils/default-theme";
 
 export function TinteThemeScript() {
   const scriptContent = `(function() {

@@ -28,9 +28,7 @@ import { useThemeContext } from "@/providers/theme";
 import { useThemeSearch } from "@/hooks/use-theme-search";
 import type { SessionData } from "@/types/auth";
 import type { UserThemeData } from "@/types/user-theme";
-import { extractRaysoThemeData } from "@/utils/rayso-presets";
-import { extractTinteThemeData } from "@/utils/tinte-presets";
-// Removed tweakcn-presets import - using database themes passed as props
+// All static preset imports removed - using database themes passed as props
 
 interface BrowseThemesProps {
   session: SessionData;
@@ -38,6 +36,8 @@ interface BrowseThemesProps {
   publicThemes: UserThemeData[];
   favoriteThemes: UserThemeData[];
   tweakCNThemes: UserThemeData[];
+  tinteThemes: UserThemeData[];
+  raysoThemes: UserThemeData[];
   publicThemesCount: number;
   initialCategory?: string;
   initialSearch?: string;
@@ -49,6 +49,8 @@ export function BrowseThemes({
   publicThemes,
   favoriteThemes,
   tweakCNThemes,
+  tinteThemes,
+  raysoThemes,
   publicThemesCount,
   initialCategory = "community",
   initialSearch = "",
@@ -93,32 +95,7 @@ export function BrowseThemes({
 
   // TweakCN themes now come from database as props
 
-  const raysoThemes = extractRaysoThemeData(isDark).map((themeData, index) => ({
-    ...themeData,
-    description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
-    author: "ray.so",
-    provider: "rayso" as const,
-    downloads: 0,
-    likes: 0,
-    views: 0,
-    tags: [themeData.name.toLowerCase(), "rayso", "modern", "community"],
-  }));
-
-  const tinteThemes = extractTinteThemeData(isDark).map((themeData, index) => ({
-    ...themeData,
-    description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
-    author: "tinte",
-    provider: "tinte" as const,
-    downloads: 0,
-    likes: 0,
-    views: 0,
-    tags: [
-      themeData.name.toLowerCase().split(" ")[0],
-      "tinte",
-      "premium",
-      "design",
-    ],
-  }));
+  // All themes now come from database via props (no more static extraction)
 
   // Get themes based on search state - using API search when searching
   const getFilteredThemes = () => {

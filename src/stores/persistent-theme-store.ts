@@ -7,8 +7,8 @@ import { shadcnToTinte } from "@/lib/shadcn-to-tinte";
 import type { ThemeData } from "@/lib/theme-tokens";
 import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";
-import { extractRaysoThemeData } from "@/utils/rayso-presets";
-import { DEFAULT_THEME, extractTinteThemeData } from "@/utils/tinte-presets";
+// All static preset imports removed - theme data now comes from database
+import { DEFAULT_THEME } from "@/utils/default-theme";
 
 // Import refactored modules
 import type { ThemeMode, ThemeOverrides } from "./theme/types";
@@ -275,44 +275,11 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           const isAuthenticated = !!user && !user.isAnonymous;
           const isAnonymous = !!user?.isAnonymous;
 
-          // Load theme collections
+          // Load theme collections from database (empty arrays for now)
+          // These will be populated by passing props from server components
           const tweakcnThemes: ThemeData[] = [];
-
-          const raysoThemes = extractRaysoThemeData(false).map(
-            (themeData, index) => ({
-              ...themeData,
-              description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so`,
-              author: "ray.so",
-              provider: "rayso" as const,
-              downloads: 6000 + index * 400,
-              likes: 300 + index * 40,
-              installs: 1500 + index * 150,
-              tags: [
-                themeData.name.toLowerCase(),
-                "rayso",
-                "modern",
-                "community",
-              ],
-            })
-          );
-
-          const tinteThemes = extractTinteThemeData(false).map(
-            (themeData, index) => ({
-              ...themeData,
-              description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte`,
-              author: "tinte",
-              provider: "tinte" as const,
-              downloads: 5000 + index * 350,
-              likes: 250 + index * 35,
-              installs: 1000 + index * 100,
-              tags: [
-                themeData.name.toLowerCase().split(" ")[0],
-                "tinte",
-                "premium",
-                "design",
-              ],
-            })
-          );
+          const raysoThemes: ThemeData[] = [];
+          const tinteThemes: ThemeData[] = [];
 
           // Load user themes
           let userThemes: ThemeData[] = [];

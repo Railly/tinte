@@ -16,9 +16,11 @@ interface WorkbenchMainProps {
   defaultTab?: WorkbenchTab;
   userThemes?: UserThemeData[];
   tweakCNThemes?: UserThemeData[];
+  tinteThemes?: UserThemeData[];
+  raysoThemes?: UserThemeData[];
 }
 
-export function WorkbenchMain({ chatId, defaultTab, userThemes = [], tweakCNThemes = [] }: WorkbenchMainProps) {
+export function WorkbenchMain({ chatId, defaultTab, userThemes = [], tweakCNThemes = [], tinteThemes = [], raysoThemes = [] }: WorkbenchMainProps) {
   const initializeWorkbench = useWorkbenchStore(
     (state) => state.initializeWorkbench,
   );
@@ -37,7 +39,7 @@ export function WorkbenchMain({ chatId, defaultTab, userThemes = [], tweakCNThem
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="h-screen w-full flex flex-col">
-        <WorkbenchHeader chatId={chatId} userThemes={userThemes} tweakCNThemes={tweakCNThemes} />
+        <WorkbenchHeader chatId={chatId} userThemes={userThemes} tweakCNThemes={tweakCNThemes} tinteThemes={tinteThemes} raysoThemes={raysoThemes} />
         <div className="flex flex-1">
           <WorkbenchSidebar defaultTab={defaultTab} />
           <SidebarInset className="flex flex-col">

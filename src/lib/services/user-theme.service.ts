@@ -340,6 +340,88 @@ export class UserThemeService {
     }
   }
 
+  static async getTinteThemes(limit?: number): Promise<UserThemeData[]> {
+    try {
+      const baseQuery = db
+        .select()
+        .from(theme)
+        .where(eq(theme.vendor, VENDORS.TINTE))
+        .orderBy(desc(theme.created_at));
+
+      const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
+
+      console.log("UserThemeService - Tinte themes count:", dbThemes.length);
+
+      const transformedThemes = dbThemes.map((theme) =>
+        UserThemeService.transformDbThemeToUserTheme(
+          theme,
+          {
+            author: "tinte",
+            description: `Beautiful ${theme.name.toLowerCase()} theme with modern design principles`,
+            tags: [
+              theme.name.split(" ")[0].toLowerCase(),
+              "modern",
+              "preset",
+              "official",
+            ],
+          },
+          null
+        )
+      );
+
+      console.log(
+        "UserThemeService - Transformed Tinte themes:",
+        transformedThemes.length
+      );
+
+      return transformedThemes;
+    } catch (error) {
+      console.error("Error fetching Tinte themes:", error);
+      return [];
+    }
+  }
+
+  static async getRaysoThemes(limit?: number): Promise<UserThemeData[]> {
+    try {
+      const baseQuery = db
+        .select()
+        .from(theme)
+        .where(eq(theme.vendor, VENDORS.RAYSO))
+        .orderBy(desc(theme.created_at));
+
+      const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
+
+      console.log("UserThemeService - Rayso themes count:", dbThemes.length);
+
+      const transformedThemes = dbThemes.map((theme) =>
+        UserThemeService.transformDbThemeToUserTheme(
+          theme,
+          {
+            author: "ray.so",
+            description: `Beautiful ${theme.name.toLowerCase()} theme inspired by ray.so aesthetics`,
+            tags: [
+              theme.name.split(" ")[0].toLowerCase(),
+              "rayso",
+              "preset",
+              "community",
+            ],
+          },
+          null
+        )
+      );
+
+      console.log(
+        "UserThemeService - Transformed Rayso themes:",
+        transformedThemes.length
+      );
+
+      return transformedThemes;
+    } catch (error) {
+      console.error("Error fetching Rayso themes:", error);
+      return [];
+    }
+  }
+
   private static transformDbThemeToUserTheme(
     dbTheme: DbTheme,
     options: ThemeTransformOptions = {},

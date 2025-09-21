@@ -33,6 +33,8 @@ export default async function WorkbenchIdPage({
   // Fetch themes with user data server-side, including favorite status
   const userThemes = await UserThemeService.getThemesWithUsers(20, currentUserId);
   const tweakCNThemes = await UserThemeService.getTweakCNThemes();
+  const tinteThemes = await UserThemeService.getTinteThemes();
+  const raysoThemes = await UserThemeService.getRaysoThemes();
 
-  return <WorkbenchMain chatId={id} defaultTab={defaultTab} userThemes={userThemes} tweakCNThemes={tweakCNThemes} />;
+  return <WorkbenchMain chatId={id} defaultTab={defaultTab} userThemes={userThemes} tweakCNThemes={tweakCNThemes} tinteThemes={tinteThemes} raysoThemes={raysoThemes} />;
 }

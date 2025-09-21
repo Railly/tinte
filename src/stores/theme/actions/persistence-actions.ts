@@ -213,7 +213,7 @@ export function createPersistenceActions(get: any, set: any) {
         const updatedUserThemes = currentState.userThemes.filter((t: any) => t.id !== themeId);
 
         // Rebuild allThemes the same way as in initialize()
-        const { DEFAULT_THEME } = await import("@/utils/tinte-presets");
+        const { DEFAULT_THEME } = await import("@/utils/default-theme");
         const updatedAllThemes = [
           DEFAULT_THEME,
           ...currentState.tinteThemes,

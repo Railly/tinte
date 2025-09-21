@@ -36,6 +36,8 @@ export default async function ThemesPage({
   const publicThemes = await UserThemeService.getPublicThemes(20);
   const publicThemesCount = await UserThemeService.getPublicThemesCount();
   const tweakCNThemes = await UserThemeService.getTweakCNThemes();
+  const tinteThemes = await UserThemeService.getTinteThemes();
+  const raysoThemes = await UserThemeService.getRaysoThemes();
 
   return (
     <BrowseThemes
@@ -44,6 +46,8 @@ export default async function ThemesPage({
       publicThemes={publicThemes}
       favoriteThemes={favoriteThemes}
       tweakCNThemes={tweakCNThemes}
+      tinteThemes={tinteThemes}
+      raysoThemes={raysoThemes}
       publicThemesCount={publicThemesCount}
       initialCategory={category as string}
       initialSearch={search as string}

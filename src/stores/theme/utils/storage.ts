@@ -1,5 +1,5 @@
 import type { ThemeData } from "@/lib/theme-tokens";
-import { DEFAULT_THEME } from "@/utils/tinte-presets";
+import { DEFAULT_THEME } from "@/utils/default-theme";
 import type { ThemeMode, ThemeOverrides } from "../types";
 import { computeThemeTokens } from "./theme-computation";
 

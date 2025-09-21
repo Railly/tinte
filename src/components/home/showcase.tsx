@@ -9,8 +9,6 @@ import { ThemeCard, ThemeCardSkeleton } from "@/components/shared/theme-card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useThemeContext } from "@/providers/theme";
-import { extractRaysoThemeData } from "@/utils/rayso-presets";
-import { extractTinteThemeData } from "@/utils/tinte-presets";
 import type { UserThemeData } from "@/types/user-theme";
 import type { SessionData } from "@/types/auth";
 
@@ -20,40 +18,15 @@ interface ShowcaseProps {
   publicThemes: UserThemeData[];
   favoriteThemes?: UserThemeData[];
   tweakCNThemes: UserThemeData[];
+  tinteThemes: UserThemeData[];
+  raysoThemes: UserThemeData[];
 }
 
-export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [], tweakCNThemes }: ShowcaseProps) {
+export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [], tweakCNThemes, tinteThemes, raysoThemes }: ShowcaseProps) {
   const [activeTab, setActiveTab] = useState("community");
   const { isDark, handleThemeSelect, mounted } = useThemeContext();
 
-  // Static theme data for showcase (no SSR issues)
-
-  const raysoThemes = extractRaysoThemeData(isDark).map((themeData, index) => ({
-    ...themeData,
-    description: `Beautiful ${themeData.name.toLowerCase()} theme from ray.so with carefully crafted color combinations`,
-    author: "ray.so",
-    provider: "rayso" as const,
-    downloads: 0,
-    likes: 0,
-    installs: 0,
-    tags: [themeData.name.toLowerCase(), "rayso", "modern", "community"],
-  }));
-
-  const tinteThemes = extractTinteThemeData(isDark).map((themeData, index) => ({
-    ...themeData,
-    description: `Stunning ${themeData.name.toLowerCase()} theme created by tinte with modern design principles`,
-    author: "tinte",
-    provider: "tinte" as const,
-    downloads: 0,
-    likes: 0,
-    installs: 0,
-    tags: [
-      themeData.name.toLowerCase().split(" ")[0],
-      "tinte",
-      "premium",
-      "design",
-    ],
-  }));
+  // All themes now come from database via props
 
   // Show skeletons while theme context is mounting
   const shouldShowSkeletons = !mounted;
