@@ -139,6 +139,8 @@ export function Dock({ providerId, providerName }: DockProps) {
     provider,
     themeId: activeTheme?.id,
     canSave,
+    themeName: activeTheme?.name,
+    vscodeOverrides: vscodeOverrides.allOverrides,
   });
 
   const prevThemeRef = useRef<string>(null);
@@ -855,6 +857,8 @@ export function Dock({ providerId, providerName }: DockProps) {
                   await handlePrimaryAction();
                   if (providerId === "shadcn") {
                     showSuccessWithMessage("Command copied!");
+                  } else if (providerId === "vscode") {
+                    showSuccessWithMessage("VSIX downloaded!");
                   } else {
                     showSuccessWithMessage("Theme copied!");
                   }
@@ -878,7 +882,11 @@ export function Dock({ providerId, providerName }: DockProps) {
                 onBack={handleNavigateBack}
                 onDownload={async () => {
                   await handleExport();
-                  showSuccessWithMessage("File downloaded!");
+                  if (providerId === "vscode") {
+                    showSuccessWithMessage("VSIX downloaded!");
+                  } else {
+                    showSuccessWithMessage("File downloaded!");
+                  }
                   setVariantKey("export-main");
                   navigateTo("main");
                 }}
@@ -893,6 +901,7 @@ export function Dock({ providerId, providerName }: DockProps) {
                 onShowInstallGuide={handleCodeAction}
                 isExporting={isExporting}
                 providerName={providerName}
+                providerId={providerId}
               />
             ) : dockState === "settings" ? (
               <DockSettings

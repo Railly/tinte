@@ -2,7 +2,9 @@ import { Copy, Download, Palette, Terminal, Save } from "lucide-react";
 import { useState } from "react";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
 import { exportTheme } from "@/lib/providers";
+import { downloadVSCodeTheme } from "@/lib/download-vscode-theme";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
+import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import type { TinteTheme } from "@/types/tinte";
 
 interface UseDockActionsProps {
@@ -12,6 +14,8 @@ interface UseDockActionsProps {
   provider: any;
   themeId?: string;
   canSave?: boolean;
+  themeName?: string;
+  vscodeOverrides?: Record<string, Record<string, any>> | null;
 }
 
 export function useDockActions({
@@ -21,6 +25,8 @@ export function useDockActions({
   provider,
   themeId,
   canSave,
+  themeName,
+  vscodeOverrides,
 }: UseDockActionsProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
@@ -31,7 +37,7 @@ export function useDockActions({
     return (
       id.startsWith("ai-generated-") ||
       id.startsWith("custom_") ||
-      id.match(/^theme_\d+$/) || // Temporary import IDs like theme_1758412202896
+      !!id.match(/^theme_\d+$/) || // Temporary import IDs like theme_1758412202896
       id === "theme" ||
       id === "default"
     );
@@ -50,20 +56,31 @@ export function useDockActions({
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const output = exportTheme(providerId, theme);
-      if (!output) {
-        throw new Error(`Failed to export theme for ${providerName}`);
-      }
+      // Special handling for VS Code - download VSIX instead of JSON
+      if (providerId === "vscode") {
+        await downloadVSCodeTheme({
+          tinteTheme: theme,
+          themeName: themeName || "Custom Theme",
+          variant: "dark", // Default to dark, could be made configurable
+          overrides: vscodeOverrides?.dark || undefined,
+        });
+      } else {
+        // Regular export for other providers
+        const output = exportTheme(providerId, theme);
+        if (!output) {
+          throw new Error(`Failed to export theme for ${providerName}`);
+        }
 
-      const blob = new Blob([output.content], { type: output.mimeType });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = output.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+        const blob = new Blob([output.content], { type: output.mimeType });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = output.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
 
       // Track the install
       await incrementInstalls();
@@ -132,11 +149,8 @@ export function useDockActions({
       const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
     } else if (providerId === "vscode") {
-      // Use the VS Code registry endpoint
-      const baseUrl = window.location.origin;
-      const registryUrl = `${baseUrl}/api/v/${themeId}`;
-      const command = `npx shadcn@latest add ${registryUrl}`;
-      await handleCopyCommand(command);
+      // Download VSIX file directly
+      await handleExport();
     } else {
       await handleCopyTheme();
     }
@@ -168,13 +182,10 @@ export function useDockActions({
         variant: "default" as const,
       };
     } else if (providerId === "vscode") {
-      const baseUrl =
-        typeof window !== "undefined" ? window.location.origin : "";
-      const registryUrl = `${baseUrl}/api/v/${themeId}`;
       return {
-        label: "Install",
-        description: `npx shadcn@latest add ${registryUrl}`,
-        icon: Terminal,
+        label: "Download VSIX",
+        description: "Download VS Code extension file",
+        icon: VSCodeIcon,
         variant: "default" as const,
       };
     } else {

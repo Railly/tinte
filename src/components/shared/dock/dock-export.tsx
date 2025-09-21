@@ -16,6 +16,7 @@ interface DockExportProps {
   onShowInstallGuide: () => void;
   isExporting?: boolean;
   providerName: string;
+  providerId?: string;
   onCopyThemeAndReturn?: () => void;
 }
 
@@ -28,6 +29,7 @@ export function DockExport({
   onShowInstallGuide,
   isExporting,
   providerName,
+  providerId,
   onCopyThemeAndReturn,
 }: DockExportProps) {
   return (
@@ -74,27 +76,29 @@ export function DockExport({
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Download {providerName} file</p>
+          <p>Download {providerId === "vscode" ? "VSIX extension" : `${providerName} file`}</p>
         </TooltipContent>
       </Tooltip>
 
-      {/* Copy Theme */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onCopyThemeAndReturn || onCopyTheme}
-            className="h-10 px-3 text-xs cursor-pointer hover:bg-accent/50 rounded-full gap-1.5 border border-border/50"
-          >
-            <Copy className="h-3.5 w-3.5" />
-            <span>Copy Theme</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Copy theme content</p>
-        </TooltipContent>
-      </Tooltip>
+      {/* Copy Theme - Hide for VS Code since we want to emphasize downloading VSIX */}
+      {providerId !== "vscode" && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onCopyThemeAndReturn || onCopyTheme}
+              className="h-10 px-3 text-xs cursor-pointer hover:bg-accent/50 rounded-full gap-1.5 border border-border/50"
+            >
+              <Copy className="h-3.5 w-3.5" />
+              <span>Copy Theme</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Copy theme content</p>
+          </TooltipContent>
+        </Tooltip>
+      )}
 
 
       {/* Install Guide */}
