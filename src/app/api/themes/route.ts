@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, tinteTheme, overrides, isPublic = false }: {
+    const { name, tinteTheme, overrides, isPublic = false, concept }: {
       name: string;
       tinteTheme: TinteTheme;
       overrides: {
@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
         shiki?: any;
       };
       isPublic: boolean;
+      concept?: string;
     } = body;
 
     if (!name || !tinteTheme) {
@@ -75,6 +76,7 @@ export async function POST(request: NextRequest) {
       user_id: session.user.id,
       name,
       slug: uniqueSlug,
+      concept: concept || null,
 
       // Light mode colors
       light_bg: tinteTheme.light.bg,

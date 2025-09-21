@@ -8,7 +8,7 @@ import { getThemeOwnershipInfo } from "../utils/theme-ownership";
 
 export function createPersistenceActions(get: any, set: any) {
   return {
-    saveTheme: async (name?: string, makePublic = false, additionalShadcnOverride?: any) => {
+    saveTheme: async (name?: string, makePublic = false, additionalShadcnOverride?: any, concept?: string) => {
       const {
         activeTheme,
         tinteTheme,
@@ -103,6 +103,7 @@ export function createPersistenceActions(get: any, set: any) {
             overrides,
             makePublic,
             Boolean(isUpdate),
+            concept,
           );
 
           success = result.success;

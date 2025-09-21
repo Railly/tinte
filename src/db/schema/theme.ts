@@ -80,6 +80,7 @@ export const theme = pgTable("theme", {
 
   name: text("name").notNull(),
   slug: text("slug").unique().notNull(),
+  concept: text("concept"), // AI-generated theme description/mood
 
   // Light mode
   light_bg: text("light_bg").notNull(),

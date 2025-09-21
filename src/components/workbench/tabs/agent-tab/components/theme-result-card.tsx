@@ -54,7 +54,8 @@ export function ThemeResultCard({
     setIsSaving(true);
     try {
       const themeName = themeOutput.title || "AI Generated Theme";
-      const result = await saveCurrentTheme(themeName, false); // Save as private by default
+      const concept = themeOutput.concept; // Extract concept from AI output
+      const result = await saveCurrentTheme(themeName, false, undefined, concept); // Save as private by default with concept
 
       if (result.success && result.savedTheme) {
         // Refresh theme lists to include the new theme

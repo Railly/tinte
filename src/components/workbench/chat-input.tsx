@@ -205,32 +205,32 @@ export function ChatInput({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem
-                    onClick={() => openDialog("url")}
-                    className="flex items-center gap-2"
+                    disabled
+                    className="flex items-center gap-2 opacity-50 cursor-not-allowed"
                   >
                     <Globe className="size-4" />
-                    Add web page
+                    Web page
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleImageUpload}
                     className="flex items-center gap-2"
                   >
                     <Image className="size-4" />
-                    Add image
+                    Image
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => openDialog("tailwind")}
                     className="flex items-center gap-2"
                   >
                     <TailwindIcon className="size-4" />
-                    Add Tailwind config
+                    Tailwind config
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => openDialog("cssvars")}
                     className="flex items-center gap-2"
                   >
                     <CSSIcon className="size-4" />
-                    Add globals.css
+                    globals.css
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -1,13 +1,6 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { codeTemplates, type VSCodeTheme } from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
 import { MonacoLikeEditor } from "./monaco-like-editor";

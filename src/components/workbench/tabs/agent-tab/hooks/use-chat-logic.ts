@@ -6,11 +6,26 @@ import { DefaultChatTransport } from "ai";
 import type { PastedItem } from "@/lib/input-detection";
 import { useWorkbenchStore } from "@/stores/workbench-store";
 import { clearSeed } from "@/utils/anon-seed";
+import { useThemeContext } from "@/providers/theme";
 
 export function useChatLogic() {
+  const { tinteTheme, currentMode, fonts, radius, shadows } = useThemeContext();
+
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: {
+        currentTheme: {
+          tinteTheme,
+          currentMode,
+          fonts,
+          radius,
+          shadows,
+        },
+      },
     }),
   });
 
@@ -101,7 +116,7 @@ export function useChatLogic() {
     return messages.some((message) =>
       message.parts.some(
         (part) =>
-          part.type === "tool-generateTheme" &&
+          (part.type === "tool-generateTheme" || part.type === "tool-getCurrentTheme") &&
           (part.state === "input-available" ||
             part.state === "input-streaming"),
       ),

@@ -94,7 +94,7 @@ interface PersistentThemeState {
   resetOverrides: (provider?: "shadcn" | "vscode" | "shiki") => void;
 
   // Persistence actions
-  saveTheme: (name?: string, makePublic?: boolean, additionalShadcnOverride?: any) => Promise<{ success: boolean; savedTheme: any | null }>;
+  saveTheme: (name?: string, makePublic?: boolean, additionalShadcnOverride?: any, concept?: string) => Promise<{ success: boolean; savedTheme: any | null }>;
   deleteTheme: (themeId: string) => Promise<boolean>;
   loadUserThemes: () => Promise<void>;
   createNewTheme: (name: string) => void;

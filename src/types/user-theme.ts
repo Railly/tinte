@@ -20,6 +20,7 @@ export interface VSCodeOverride {
 export interface DbTheme {
   id: string;
   name: string;
+  concept?: string | null;
   user_id: string | null;
   created_at: Date | null;
   light_bg: string;

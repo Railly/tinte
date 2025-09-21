@@ -33,7 +33,7 @@ export function useTheme() {
     navigateTheme: store.navigateTheme,
 
     // Persistence functionality
-    saveCurrentTheme: (name?: string, makePublic?: boolean, additionalShadcnOverride?: any) => store.saveTheme(name, makePublic, additionalShadcnOverride),
+    saveCurrentTheme: (name?: string, makePublic?: boolean, additionalShadcnOverride?: any, concept?: string) => store.saveTheme(name, makePublic, additionalShadcnOverride, concept),
     deleteTheme: store.deleteTheme,
     loadUserThemes: store.loadUserThemes,
     createNewTheme: store.createNewTheme,

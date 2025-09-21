@@ -16,6 +16,7 @@ export async function saveThemeToDatabase(
   },
   isPublic: boolean = false,
   isUpdate: boolean = false,
+  concept?: string,
 ): Promise<SaveThemeResult> {
   try {
     let response;
@@ -29,6 +30,7 @@ export async function saveThemeToDatabase(
           tinteTheme,
           overrides,
           isPublic,
+          concept,
         }),
       });
     } else {
@@ -40,6 +42,7 @@ export async function saveThemeToDatabase(
           tinteTheme,
           overrides,
           isPublic,
+          concept,
         }),
       });
     }

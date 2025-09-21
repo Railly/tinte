@@ -106,7 +106,7 @@ export function ImportThemeDialog({
             Import Theme
           </DialogTitle>
           <DialogDescription>
-            Paste your shadcn CSS variables to create a new theme. A temporary workspace will be created.
+            Paste your shadcn CSS variables to create a new theme
           </DialogDescription>
         </DialogHeader>
 

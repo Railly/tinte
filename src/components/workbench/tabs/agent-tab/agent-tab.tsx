@@ -55,6 +55,7 @@ export function AgentTab() {
                   (part.type.startsWith("tool-") && part.type !== "step-start"),
               );
 
+
               if (!hasContent) return null;
 
               return (
@@ -116,8 +117,32 @@ export function AgentTab() {
 
                         {/* Tool calls - Enhanced with better state handling */}
                         {message.parts
-                          .filter((part) => part.type === "tool-generateTheme")
+                          .filter((part) => part.type === "tool-generateTheme" || part.type === "tool-getCurrentTheme")
                           .map((part, index) => {
+                            if (part.type === "tool-getCurrentTheme") {
+                              // Handle getCurrentTheme tool silently - just show brief status
+                              switch (part.state) {
+                                case "input-available":
+                                case "input-streaming":
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="pl-2 flex items-center py-2 w-full max-w-md"
+                                    >
+                                      <span className="text-xs text-muted-foreground animate-pulse">
+                                        Retrieving current theme...
+                                      </span>
+                                    </div>
+                                  );
+                                case "output-available":
+                                case "output-error":
+                                  // Don't show anything for getCurrentTheme completion - it's used internally
+                                  return null;
+                                default:
+                                  return null;
+                              }
+                            }
+
                             if (part.type !== "tool-generateTheme") return null;
 
                             switch (part.state) {

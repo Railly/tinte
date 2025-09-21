@@ -122,5 +122,3 @@ export function importShadcnTheme(css: string): {
   return { tinteTheme, shadcnTheme };
 }
 
-// Simply export the importShadcnTheme function for direct use
-export { importShadcnTheme };

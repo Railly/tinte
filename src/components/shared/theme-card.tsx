@@ -193,7 +193,7 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
                 )}
               </div>
               <p className="text-xs text-muted-foreground line-clamp-1">
-                {theme.description}
+                {theme.concept || theme.description}
               </p>
             </div>
 
@@ -332,7 +332,7 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
             {theme.name}
           </h3>
           <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 leading-relaxed">
-            {theme.description}
+            {theme.concept || theme.description}
           </p>
         </div>
 

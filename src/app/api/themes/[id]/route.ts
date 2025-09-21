@@ -64,6 +64,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
       tinteTheme,
       overrides,
       isPublic,
+      concept,
     }: {
       name?: string;
       tinteTheme?: TinteTheme;
@@ -73,6 +74,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
         shiki?: any;
       };
       isPublic?: boolean;
+      concept?: string;
     } = body;
 
     // Check if theme exists and belongs to user
@@ -134,6 +136,10 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
     if (typeof isPublic === "boolean") {
       updates.is_public = isPublic;
+    }
+
+    if (concept !== undefined) {
+      updates.concept = concept;
     }
 
     if (overrides) {
@@ -252,7 +258,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const userTheme = {
       id: themeRecord.id,
       name: themeRecord.name,
-      description: `Theme ${themeRecord.name}`,
+      description: themeRecord.concept || `Theme ${themeRecord.name}`,
+      concept: themeRecord.concept,
       author: "User",
       provider: "tinte" as const,
       downloads: 0,

@@ -318,7 +318,8 @@ export class UserThemeService {
     return {
       id: dbTheme.id,
       name: dbTheme.name,
-      description,
+      description: dbTheme.concept || description,
+      concept: dbTheme.concept,
       author,
       provider: "tinte" as const,
       downloads: 0,
