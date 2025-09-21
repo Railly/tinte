@@ -1,18 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
+import { and, eq, ne } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
+import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 import { theme } from "@/db/schema/theme";
 import { auth } from "@/lib/auth";
-import { eq, and, ne } from "drizzle-orm";
 import type { TinteTheme } from "@/types/tinte";
-import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 
 // Helper function to generate unique slug (excluding current theme)
-async function generateUniqueSlug(baseName: string, excludeId?: string): Promise<string> {
-  const baseSlug = baseName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+async function generateUniqueSlug(
+  baseName: string,
+  excludeId?: string,
+): Promise<string> {
+  const baseSlug = baseName
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
   // First, try the base slug
   const query = excludeId
-    ? db.select().from(theme).where(and(eq(theme.slug, baseSlug), ne(theme.id, excludeId))).limit(1)
+    ? db
+        .select()
+        .from(theme)
+        .where(and(eq(theme.slug, baseSlug), ne(theme.id, excludeId)))
+        .limit(1)
     : db.select().from(theme).where(eq(theme.slug, baseSlug)).limit(1);
 
   const existingTheme = await query;
@@ -25,7 +35,11 @@ async function generateUniqueSlug(baseName: string, excludeId?: string): Promise
   while (true) {
     const candidateSlug = `${baseSlug}-${counter}`;
     const query = excludeId
-      ? db.select().from(theme).where(and(eq(theme.slug, candidateSlug), ne(theme.id, excludeId))).limit(1)
+      ? db
+          .select()
+          .from(theme)
+          .where(and(eq(theme.slug, candidateSlug), ne(theme.id, excludeId)))
+          .limit(1)
       : db.select().from(theme).where(eq(theme.slug, candidateSlug)).limit(1);
 
     const existing = await query;
@@ -88,7 +102,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     if (existingTheme.length === 0) {
       return NextResponse.json(
         { error: "Theme not found or unauthorized" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -163,7 +177,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     if (updatedTheme.length === 0) {
       return NextResponse.json(
         { error: "Failed to update theme" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -175,7 +189,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     console.error("Error updating theme:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -201,7 +215,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     if (existingTheme.length === 0) {
       return NextResponse.json(
         { error: "Theme not found or unauthorized" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -214,7 +228,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     console.error("Error deleting theme:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -245,16 +259,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
       if (!session?.user || session.user.id !== themeRecord.user_id) {
         return NextResponse.json(
           { error: "Theme not found or unauthorized" },
-          { status: 404 }
+          { status: 404 },
         );
       }
     }
 
     // Transform to UserThemeData format
-    const { UserThemeService } = await import(
-      "@/lib/services/user-theme.service"
-    );
-    // We can't call the private method directly, so we'll reconstruct the theme data
+    // Reconstruct the theme data manually
     const userTheme = {
       id: themeRecord.id,
       name: themeRecord.name,
@@ -318,7 +329,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     console.error("Error fetching theme:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

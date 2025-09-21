@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { UserThemeService } from "@/lib/services/user-theme.service";
+import { getUserThemes } from "@/lib/user-themes";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       ? parseInt(searchParams.get("limit")!)
       : undefined;
 
-    const userThemes = await UserThemeService.getUserThemes(session.user.id, limit, session.user);
+    const userThemes = await getUserThemes(session.user.id, limit, session.user);
 
     return NextResponse.json(userThemes);
 

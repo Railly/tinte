@@ -1,4 +1,11 @@
-import { boolean, integer, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import z from "zod";
 
 import { user } from "./user";
@@ -80,8 +87,8 @@ export const theme = pgTable("theme", {
 
   name: text("name").notNull(),
   slug: text("slug").unique().notNull(),
-  concept: text("concept"), // AI-generated theme description/mood
-  vendor: text("vendor"), // Theme source: "tweakcn", "rayso", "tinte"
+  concept: text("concept"), // can be null
+  vendor: text("vendor"), // "tweakcn" | "rayso" | "tinte"
 
   // Light mode
   light_bg: text("light_bg").notNull(),

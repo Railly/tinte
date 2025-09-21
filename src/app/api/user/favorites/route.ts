@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
-import { UserThemeService } from "@/lib/services/user-theme.service";
+import { getUserFavoriteThemes } from "@/lib/user-themes";
 import { headers } from "next/headers";
 
 export async function GET(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const favoriteThemes = await UserThemeService.getUserFavoriteThemes(session.user.id);
+    const favoriteThemes = await getUserFavoriteThemes(session.user.id);
 
     return Response.json(favoriteThemes);
   } catch (error) {

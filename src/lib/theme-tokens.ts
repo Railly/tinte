@@ -1,40 +1,20 @@
-export interface ThemeData {
-  id: string;
-  name: string;
-  description: string;
-  concept?: string;
-  author: string;
-  provider: "tweakcn" | "rayso" | "tinte";
-  downloads: number;
-  likes: number;
-  installs: number;
-  createdAt: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    background: string;
-    foreground: string;
-  };
-  tags: string[];
-  rawTheme?: any;
-  user?: {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  } | null;
-}
+// Re-export unified types from theme-types
+export type {
+  Theme,
+  ThemeWithMetadata,
+  ThemeColors,
+  ThemeOverrides,
+  ProviderThemeData,
+  ThemeTransformOptions,
+} from "@/lib/theme-types";
 
-export interface ThemeColors {
-  primary: string;
-  secondary: string;
-  accent: string;
-  background: string;
-  foreground: string;
-}
+import type { ProviderThemeData, ThemeColors } from "@/lib/theme-types";
 
-export interface TinteThemeData extends ThemeData {
+// Legacy compatibility (deprecated - use ProviderThemeData instead)
+export type ThemeData = ProviderThemeData;
+
+// Legacy compatibility (deprecated - use ThemeWithMetadata instead)
+export interface TinteThemeData extends ProviderThemeData {
   computedTokens?: {
     light: ThemeColors;
     dark?: ThemeColors;

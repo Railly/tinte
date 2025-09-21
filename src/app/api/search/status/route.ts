@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { searchService } from "@/lib/services/search.service";
-import { UserThemeService } from "@/lib/services/user-theme.service";
+import { getAllPublicThemes } from "@/lib/user-themes";
 
 export async function GET() {
   try {
     console.log("Checking upload status...");
     
     // Get all themes from database
-    const allThemes = await UserThemeService.getAllPublicThemes();
+    const allThemes = await getAllPublicThemes();
     
     // Get uploaded theme count estimate
     const uploadedCount = await searchService.getUploadedThemeCount();

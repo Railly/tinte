@@ -146,13 +146,13 @@ export async function GET(request: NextRequest) {
 
     if (isPublic) {
       // Get public themes - no auth required
-      const { UserThemeService } = await import("@/lib/services/user-theme.service");
+      const { getPublicThemes, getAllPublicThemes } = await import("@/lib/user-themes");
 
       if (limit !== undefined && offset !== undefined) {
-        const themes = await UserThemeService.getPublicThemes(limit, offset);
+        const themes = await getPublicThemes(limit, offset);
         return NextResponse.json(themes);
       } else {
-        const themes = await UserThemeService.getAllPublicThemes();
+        const themes = await getAllPublicThemes();
         return NextResponse.json(themes);
       }
     }
@@ -166,8 +166,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { UserThemeService } = await import("@/lib/services/user-theme.service");
-    const themes = await UserThemeService.getUserThemes(session.user.id, limit, session.user);
+    const { getUserThemes } = await import("@/lib/user-themes");
+    const themes = await getUserThemes(session.user.id, limit, session.user);
 
     return NextResponse.json(themes);
 

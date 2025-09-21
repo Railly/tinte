@@ -1,88 +1,17 @@
-import type { ThemeData } from "@/lib/theme-tokens";
-import type { TinteBlock } from "./tinte";
-import type { ShadcnOverrideSchema } from "@/db/schema/theme";
-import type { ShikiCssTheme } from "./shiki";
+// Re-export unified types from theme-types for backwards compatibility
+export type {
+  Theme,
+  ThemeWithMetadata,
+  ThemeColors,
+  ThemeOverrides,
+  VSCodeOverride,
+  ThemeTransformOptions,
+} from "@/lib/theme-types";
 
-// VS Code theme color customizations
-export interface VSCodeOverride {
-  colors?: Record<string, string>; // workbench colors like "editor.background", "sideBar.background", etc.
-  tokenColors?: Array<{
-    name?: string;
-    scope: string | string[];
-    settings: {
-      foreground?: string;
-      background?: string;
-      fontStyle?: string;
-    };
-  }>;
-}
+import type { Theme, ThemeWithMetadata } from "@/lib/theme-types";
 
-export interface DbTheme {
-  id: string;
-  name: string;
-  concept?: string | null;
-  user_id: string | null;
-  created_at: Date | null;
-  light_bg: string;
-  light_bg_2: string;
-  light_ui: string;
-  light_ui_2: string;
-  light_ui_3: string;
-  light_tx: string;
-  light_tx_2: string;
-  light_tx_3: string;
-  light_pr: string;
-  light_sc: string;
-  light_ac_1: string;
-  light_ac_2: string;
-  light_ac_3: string;
-  dark_bg: string;
-  dark_bg_2: string;
-  dark_ui: string;
-  dark_ui_2: string;
-  dark_ui_3: string;
-  dark_tx: string;
-  dark_tx_2: string;
-  dark_tx_3: string;
-  dark_pr: string;
-  dark_sc: string;
-  dark_ac_1: string;
-  dark_ac_2: string;
-  dark_ac_3: string;
-  installs: number;
-  shadcn_override?: any;
-  vscode_override?: any;
-  shiki_override?: any;
-}
+// Legacy compatibility (deprecated - use Theme instead)
+export type DbTheme = Theme;
 
-export interface UserThemeData extends ThemeData {
-  provider: "tinte";
-  isFavorite?: boolean;
-  user?: {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  } | null;
-  overrides?: {
-    shadcn?: {
-      light?: Partial<ShadcnOverrideSchema>;
-      dark?: Partial<ShadcnOverrideSchema>;
-    };
-    vscode?: {
-      light?: VSCodeOverride;
-      dark?: VSCodeOverride;
-    };
-    shiki?: {
-      light?: ShikiCssTheme;
-      dark?: ShikiCssTheme;
-    };
-  };
-}
-
-export interface ThemeTransformOptions {
-  author?: string;
-  description?: string;
-  tags?: string[];
-  isFavorite?: boolean;
-}
+// Legacy compatibility (deprecated - use ThemeWithMetadata instead)
+export type UserThemeData = ThemeWithMetadata;

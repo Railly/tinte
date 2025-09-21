@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { searchService } from "@/lib/services/search.service";
-import { UserThemeService } from "@/lib/services/user-theme.service";
+import { getAllPublicThemes } from "@/lib/user-themes";
 
 export async function POST() {
   try {
     console.log("Starting theme upload to Upstash Search...");
     
     // Get all public themes from the database
-    const publicThemes = await UserThemeService.getAllPublicThemes();
+    const publicThemes = await getAllPublicThemes();
     
     console.log(`Found ${publicThemes.length} themes to upload`);
     

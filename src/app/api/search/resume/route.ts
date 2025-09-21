@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { searchService } from "@/lib/services/search.service";
-import { UserThemeService } from "@/lib/services/user-theme.service";
+import { getAllPublicThemes } from "@/lib/user-themes";
 
 export async function POST() {
   try {
     console.log("Starting resume upload...");
     
     // Get all themes from database
-    const allThemes = await UserThemeService.getAllPublicThemes();
+    const allThemes = await getAllPublicThemes();
     
     // Resume upload for missing themes
     const result = await searchService.resumeUpload(allThemes);

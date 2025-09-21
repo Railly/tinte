@@ -6,7 +6,7 @@ import { Roadmap } from "@/components/home/roadmap";
 import { Showcase } from "@/components/home/showcase";
 import { Footer } from "@/components/shared/footer";
 import { auth } from "@/lib/auth";
-import { UserThemeService } from "@/lib/services/user-theme.service";
+import { getUserThemes, getUserFavoriteThemes, getPublicThemes, getTweakCNThemes, getTinteThemes, getRaysoThemes } from "@/lib/user-themes";
 
 export default async function Home() {
   const session = await auth.api.getSession({
@@ -14,17 +14,17 @@ export default async function Home() {
   });
 
   const userThemes = session
-    ? await UserThemeService.getUserThemes(session.user.id, 8, session.user)
+    ? await getUserThemes(session.user.id, 8, session.user)
     : [];
 
   const favoriteThemes = session
-    ? await UserThemeService.getUserFavoriteThemes(session.user.id)
+    ? await getUserFavoriteThemes(session.user.id)
     : [];
 
-  const publicThemes = await UserThemeService.getPublicThemes(8);
-  const tweakCNThemes = await UserThemeService.getTweakCNThemes(8);
-  const tinteThemes = await UserThemeService.getTinteThemes(8);
-  const raysoThemes = await UserThemeService.getRaysoThemes(8);
+  const publicThemes = await getPublicThemes(8);
+  const tweakCNThemes = await getTweakCNThemes(8);
+  const tinteThemes = await getTinteThemes(8);
+  const raysoThemes = await getRaysoThemes(8);
 
   return (
     <div className="min-h-screen">
