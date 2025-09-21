@@ -633,13 +633,16 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             }
           }
 
-          // Navigate to workbench with theme ID
+          // Navigate to workbench with theme ID, preserving query parameters
           if (typeof window !== "undefined" && theme.id) {
             const currentPath = window.location.pathname;
             if (currentPath.startsWith("/workbench/")) {
               import("next/navigation").then(({ useRouter }) => {
                 try {
-                  window.history.replaceState(null, "", `/workbench/${theme.id}`);
+                  // Preserve existing query parameters
+                  const currentSearch = window.location.search;
+                  const newUrl = `/workbench/${theme.id}${currentSearch}`;
+                  window.history.replaceState(null, "", newUrl);
                 } catch (error) {
                   console.warn("Error updating URL:", error);
                 }

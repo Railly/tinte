@@ -58,7 +58,7 @@ export function ImportThemeDialog({
     setIsImporting(true);
     try {
       await onImport(nameToUse, cssToUse, makePublic);
-      toast.success("Theme imported successfully!");
+      // Success toast is handled by the parent component (workbench-dock)
       onOpenChange(false);
       // Reset form
       setThemeName("");

@@ -2,8 +2,37 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { auth } from "@/lib/auth";
+import { eq } from "drizzle-orm";
 import type { TinteTheme } from "@/types/tinte";
 import type { ShadcnOverrideSchema } from "@/db/schema/theme";
+
+// Helper function to generate unique slug
+async function generateUniqueSlug(baseName: string): Promise<string> {
+  const baseSlug = baseName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+
+  // First, try the base slug
+  const existingTheme = await db.select().from(theme).where(eq(theme.slug, baseSlug)).limit(1);
+  if (existingTheme.length === 0) {
+    return baseSlug;
+  }
+
+  // If base slug exists, try with incremental numbers
+  let counter = 1;
+  while (true) {
+    const candidateSlug = `${baseSlug}-${counter}`;
+    const existing = await db.select().from(theme).where(eq(theme.slug, candidateSlug)).limit(1);
+    if (existing.length === 0) {
+      return candidateSlug;
+    }
+    counter++;
+
+    // Safety limit to prevent infinite loops
+    if (counter > 1000) {
+      // Fallback: use timestamp
+      return `${baseSlug}-${Date.now()}`;
+    }
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,9 +63,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate theme ID
+    // Generate theme ID and unique slug
     const themeId = `theme_${session.user.id}_${Date.now()}`;
     const legacyId = `legacy_${Date.now()}`;
+    const uniqueSlug = await generateUniqueSlug(name);
 
     // Create theme record
     const newTheme = await db.insert(theme).values({
@@ -44,7 +74,7 @@ export async function POST(request: NextRequest) {
       legacy_id: legacyId,
       user_id: session.user.id,
       name,
-      slug: name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+      slug: uniqueSlug,
 
       // Light mode colors
       light_bg: tinteTheme.light.bg,

@@ -59,6 +59,31 @@ export function ThemeSelector({
   const [selectedSearchTheme, setSelectedSearchTheme] =
     React.useState<ThemeData | null>(null);
 
+  // Helper function to detect temporary themes that need saving first
+  const isTemporaryTheme = (id?: string): boolean => {
+    if (!id) return true;
+    return (
+      id.startsWith("ai-generated-") ||
+      id.startsWith("custom_") ||
+      id.match(/^theme_\d+$/) || // Temporary import IDs like theme_1758412202896
+      id === "theme" ||
+      id === "default"
+    );
+  };
+
+  // Helper function to get display name with (unsaved) indicator
+  const getDisplayName = (theme: ThemeData): string => {
+    const isTemp = isTemporaryTheme(theme.id);
+    const name = theme.name || "Unnamed Theme";
+
+    // If it's temporary and doesn't already show (unsaved), add it
+    if (isTemp && !name.includes("(unsaved)")) {
+      return `${name} (unsaved)`;
+    }
+
+    return name;
+  };
+
   const handleThemeSelect = React.useCallback(
     (theme: ThemeData) => {
       if (searchResults.some((t) => t.id === theme.id)) {
@@ -245,7 +270,7 @@ export function ThemeSelector({
                     maxColors={3}
                   />
                 )}
-                <span className="truncate">{active ? active.name : label}</span>
+                <span className="truncate">{active ? getDisplayName(active) : label}</span>
               </>
             )}
           </div>
@@ -266,7 +291,7 @@ export function ThemeSelector({
               <>
                 <div className="flex items-center justify-between w-full min-w-0">
                   <span className="text-xs font-medium truncate">
-                    {active ? active.name : label}
+                    {active ? getDisplayName(active) : label}
                   </span>
                 </div>
                 {active && (

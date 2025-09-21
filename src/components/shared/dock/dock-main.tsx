@@ -48,6 +48,9 @@ interface DockMainProps {
 
   // Import
   onImport?: () => void;
+
+  // Primary action state for temporary themes
+  isPrimaryActionDisabled?: boolean;
 }
 
 export function DockMain({
@@ -71,6 +74,7 @@ export function DockMain({
   onNavigateToSettings,
   onShare,
   onImport,
+  isPrimaryActionDisabled,
 }: DockMainProps) {
   const PrimaryIcon = primaryActionConfig.icon;
 
@@ -186,9 +190,9 @@ export function DockMain({
             variant="ghost"
             size="sm"
             onClick={onPrimaryAction}
-            disabled={isLoading}
+            disabled={isLoading || isPrimaryActionDisabled}
             className={`h-10 px-3 text-xs rounded-full gap-1.5 border border-border/50 ${
-              isLoading
+              isLoading || isPrimaryActionDisabled
                 ? "opacity-50 cursor-not-allowed"
                 : "cursor-pointer hover:bg-accent/50"
             }`}

@@ -1,4 +1,4 @@
-import { Copy, Download, Palette, Terminal } from "lucide-react";
+import { Copy, Download, Palette, Terminal, Save } from "lucide-react";
 import { useState } from "react";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
 import { exportTheme } from "@/lib/providers";
@@ -11,6 +11,7 @@ interface UseDockActionsProps {
   providerName: string;
   provider: any;
   themeId?: string;
+  canSave?: boolean;
 }
 
 export function useDockActions({
@@ -19,9 +20,22 @@ export function useDockActions({
   providerName,
   provider,
   themeId,
+  canSave,
 }: UseDockActionsProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+
+  // Helper function to detect temporary themes that need saving first
+  const isTemporaryTheme = (id?: string): boolean => {
+    if (!id) return true;
+    return (
+      id.startsWith("ai-generated-") ||
+      id.startsWith("custom_") ||
+      id.match(/^theme_\d+$/) || // Temporary import IDs like theme_1758412202896
+      id === "theme" ||
+      id === "default"
+    );
+  };
 
   const incrementInstalls = async () => {
     if (themeId) {
@@ -129,10 +143,24 @@ export function useDockActions({
   };
 
   const getPrimaryActionConfig = () => {
+    const needsSaving = isTemporaryTheme(themeId);
+
+    if (needsSaving) {
+      // For temporary themes, show save-first action
+      return {
+        label: "Save to Copy",
+        description: canSave === false
+          ? "Sign in to save theme and generate install command"
+          : "Save theme first to generate install command",
+        icon: Save,
+        variant: "outline" as const,
+      };
+    }
+
     if (providerId === "shadcn") {
       const baseUrl =
         typeof window !== "undefined" ? window.location.origin : "";
-      const registryUrl = themeId ? `${baseUrl}/r/${themeId}` : "theme";
+      const registryUrl = `${baseUrl}/r/${themeId}`;
       return {
         label: "Copy Command",
         description: `npx shadcn@latest add ${registryUrl}`,
@@ -142,7 +170,7 @@ export function useDockActions({
     } else if (providerId === "vscode") {
       const baseUrl =
         typeof window !== "undefined" ? window.location.origin : "";
-      const registryUrl = themeId ? `${baseUrl}/api/v/${themeId}` : "theme";
+      const registryUrl = `${baseUrl}/api/v/${themeId}`;
       return {
         label: "Install",
         description: `npx shadcn@latest add ${registryUrl}`,
@@ -168,5 +196,6 @@ export function useDockActions({
     handleCopyCommand,
     handlePrimaryAction,
     getPrimaryActionConfig,
+    isTemporaryTheme: () => isTemporaryTheme(themeId),
   };
 }

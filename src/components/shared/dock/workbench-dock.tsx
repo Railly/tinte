@@ -47,6 +47,7 @@ export function Dock({ providerId, providerName }: DockProps) {
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isThemePublic, setIsThemePublic] = useState(false);
+  const [shouldCopyAfterSave, setShouldCopyAfterSave] = useState(false);
 
   const {
     updateTinteTheme,
@@ -130,12 +131,14 @@ export function Dock({ providerId, providerName }: DockProps) {
     handleCopyCommand,
     handlePrimaryAction,
     getPrimaryActionConfig,
+    isTemporaryTheme,
   } = useDockActions({
     theme,
     providerId,
     providerName,
     provider,
     themeId: activeTheme?.id,
+    canSave,
   });
 
   const prevThemeRef = useRef<string>(null);
@@ -381,12 +384,28 @@ export function Dock({ providerId, providerName }: DockProps) {
         toast.success("Theme saved successfully!");
         // Handle navigation and theme list refresh
         await handlePostSaveNavigation(result.savedTheme, "Save");
+
+        // If this save was triggered by a "Save to Copy" action, auto-copy the command
+        if (shouldCopyAfterSave) {
+          setShouldCopyAfterSave(false);
+          // Small delay to let the theme ID update
+          setTimeout(async () => {
+            await handlePrimaryAction();
+            if (providerId === "shadcn") {
+              showSuccessWithMessage("Command copied!");
+            } else {
+              showSuccessWithMessage("Theme copied!");
+            }
+          }, 100);
+        }
       } else {
         toast.error("Failed to save theme");
+        setShouldCopyAfterSave(false);
       }
     } catch (error) {
       console.error("Error saving theme:", error);
       toast.error("Error saving theme");
+      setShouldCopyAfterSave(false);
       throw error; // Re-throw so modal can handle error state
     }
   };
@@ -439,7 +458,7 @@ export function Dock({ providerId, providerName }: DockProps) {
       // Parse the CSS to get theme data
       const { tinteTheme, shadcnTheme } = importShadcnTheme(css);
 
-      // Create theme data for DB
+      // Create theme data with proper user association
       const themeToSave = {
         id: `theme_${Date.now()}`,
         name,
@@ -457,6 +476,13 @@ export function Dock({ providerId, providerName }: DockProps) {
           background: tinteTheme.light.bg,
         },
         rawTheme: tinteTheme,
+        // Ensure proper user association for ownership detection
+        user: user ? {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        } : null,
       };
 
       // Apply shadcn overrides for the imported CSS first
@@ -464,21 +490,37 @@ export function Dock({ providerId, providerName }: DockProps) {
         updateShadcnOverride(shadcnTheme);
       }
 
-      // Add to themes list in memory temporarily
+      // Add to themes list and select it first to make it the active theme
       addTheme(themeToSave);
-
-      // Select this theme
       selectTheme(themeToSave);
 
-      // Save to database with shadcn overrides
+      // Now save the active theme to database with proper overrides
       const result = await saveCurrentTheme(name, makePublic, shadcnTheme);
 
       if (result.success && result.savedTheme) {
         // Refresh theme lists to include the saved theme
         await loadUserThemes();
 
-        // Select the saved theme
-        selectTheme(result.savedTheme);
+        // Update the local theme with the saved theme data (with proper DB ID)
+        const updatedSavedTheme = {
+          ...result.savedTheme,
+          // Ensure user association is preserved
+          user: user ? {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          } : null,
+          // Ensure overrides are preserved
+          overrides: {
+            shadcn: shadcnTheme,
+            vscode: result.savedTheme.overrides?.vscode,
+            shiki: result.savedTheme.overrides?.shiki,
+          },
+        };
+
+        // Select the updated saved theme
+        selectTheme(updatedSavedTheme);
 
         toast.success(`"${name}" imported and saved successfully!`);
       } else {
@@ -798,6 +840,18 @@ export function Dock({ providerId, providerName }: DockProps) {
                 redoCount={redoCount}
                 primaryActionConfig={primaryActionConfig}
                 onPrimaryAction={async () => {
+                  // If it's a temporary theme, show save dialog instead
+                  if (isTemporaryTheme()) {
+                    if (!canSave) {
+                      toast.error("Please sign in to save themes and generate install commands");
+                      return;
+                    }
+                    setShouldCopyAfterSave(true);
+                    setShowSaveDialog(true);
+                    return;
+                  }
+
+                  // Otherwise, proceed with normal action
                   await handlePrimaryAction();
                   if (providerId === "shadcn") {
                     showSuccessWithMessage("Command copied!");
@@ -816,6 +870,7 @@ export function Dock({ providerId, providerName }: DockProps) {
                 onNavigateToSettings={handleNavigateToSettings}
                 onShare={() => setShowShareDialog(true)}
                 onImport={() => setShowImportDialog(true)}
+                isPrimaryActionDisabled={isTemporaryTheme() && !canSave}
               />
             ) : dockState === "export" ? (
               <DockExport
@@ -877,7 +932,12 @@ export function Dock({ providerId, providerName }: DockProps) {
       {/* Save Theme Dialog */}
       <SaveThemeDialog
         isOpen={showSaveDialog}
-        onOpenChange={setShowSaveDialog}
+        onOpenChange={(open) => {
+          setShowSaveDialog(open);
+          if (!open) {
+            setShouldCopyAfterSave(false);
+          }
+        }}
         onSave={handleSaveWithName}
         defaultName={getDefaultThemeName()}
         isLoading={isSaving}

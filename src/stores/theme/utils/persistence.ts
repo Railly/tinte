@@ -55,6 +55,14 @@ export async function saveThemeToDatabase(
             data.theme.created_at ||
             data.theme.createdAt ||
             new Date().toISOString(),
+          // Preserve the overrides that were saved
+          overrides: {
+            shadcn: overrides.shadcn,
+            vscode: overrides.vscode,
+            shiki: overrides.shiki,
+          },
+          // Ensure proper user data for ownership detection
+          author: "You",
         };
         return { success: true, savedTheme };
       }

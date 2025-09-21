@@ -83,12 +83,13 @@ function mapBlock(
   const fg = block.tx || bestTextFor(bg);
 
   const neutralRamp = buildNeutralRamp(block);
-  const primaryRamp = buildRamp(block.sc);
-  const accentRamp = buildRamp(block.pr || block.ac_2 || block.sc);
+  const primaryRamp = buildRamp(block.pr);
+  const secondaryRamp = buildRamp(block.sc);
+  const accentRamp = buildRamp(block.ac_1 || block.ac_2 || block.pr);
 
   const A = ANCHORS[mode];
   const primary = pick(primaryRamp, A.primary);
-  const secondary = pick(accentRamp, mode === "light" ? 500 : 400);
+  const secondary = pick(secondaryRamp, mode === "light" ? 500 : 400);
   const accent = pick(accentRamp, A.accent);
   const muted = pick(neutralRamp, A.muted);
   const border = pick(neutralRamp, A.border);

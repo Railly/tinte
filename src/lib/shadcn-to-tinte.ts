@@ -55,10 +55,11 @@ function mapToTinte(block: ShadcnBlock, mode: "light" | "dark"): TinteBlock {
   // Build ramps like rayso-to-shadcn (this is the key difference!)
   const neutralRamp = buildNeutralRamp(block);
   const primaryRamp = buildRamp(block.primary);
+  const secondaryRamp = buildRamp(block.secondary);
 
   // Build accent ramp from chart colors or fallbacks (same priority as rayso-to-shadcn)
   const accentRamp = buildRamp(
-    block["chart-2"] || block.accent || block.secondary || primary,
+    block["chart-2"] || block.accent || primary,
   );
 
   // Get anchors for current mode
@@ -74,7 +75,7 @@ function mapToTinte(block: ShadcnBlock, mode: "light" | "dark"): TinteBlock {
     pick(accentRamp, mode === "light" ? 700 : 300);
 
   // Secondary follows rayso-to-shadcn pattern: pick from accentRamp, NOT original token
-  const secondary = pick(accentRamp, mode === "light" ? 500 : 400);
+  const secondary = pick(secondaryRamp, mode === "light" ? 500 : 400);
 
   return {
     // Flexoki continuous scale using direct token mapping
@@ -88,11 +89,11 @@ function mapToTinte(block: ShadcnBlock, mode: "light" | "dark"): TinteBlock {
     tx: fg,
 
     // Accent system - now uses ramp-generated colors like rayso-to-shadcn
-    sc: pick(primaryRamp, mode === "light" ? 600 : 400), // Match rayso-to-shadcn anchors
-    pr: accent, // Generated from accentRamp
+    sc: pick(secondaryRamp, mode === "light" ? 600 : 400), // Match shadcn secondary
+    pr: pick(primaryRamp, mode === "light" ? 600 : 400), // Match shadcn primary
     ac_2: accent_2, // chart-4 or generated
     ac_3: accent_3, // chart-3 or generated
-    ac_1: secondary, // Generated from accentRamp (NOT original token!)
+    ac_1: accent, // Generated from accentRamp
   };
 }
 

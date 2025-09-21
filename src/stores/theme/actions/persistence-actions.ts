@@ -84,10 +84,18 @@ export function createPersistenceActions(get: any, set: any) {
 
         if (isAuthenticated) {
           const ownership = getThemeOwnershipInfo(activeTheme, user);
+
+          // Check if this is an actual database theme or just a temporary one
+          // Real DB themes have format: theme_${userId}_${timestamp}
+          // Temporary themes have format: theme_${timestamp}
+          const isActualDbTheme = activeTheme.id &&
+            !activeTheme.id.startsWith("custom_") &&
+            activeTheme.id.includes("_") &&
+            activeTheme.id.split("_").length >= 3; // theme_userId_timestamp has at least 3 parts
+
           const isUpdate =
             ownership.isUserOwnedTheme &&
-            activeTheme.id &&
-            !activeTheme.id.startsWith("custom_");
+            isActualDbTheme;
 
           const result = await saveThemeToDatabase(
             themeToSave,

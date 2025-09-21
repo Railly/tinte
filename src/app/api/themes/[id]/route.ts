@@ -2,9 +2,45 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { auth } from "@/lib/auth";
-import { eq, and } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 import type { TinteTheme } from "@/types/tinte";
 import type { ShadcnOverrideSchema } from "@/db/schema/theme";
+
+// Helper function to generate unique slug (excluding current theme)
+async function generateUniqueSlug(baseName: string, excludeId?: string): Promise<string> {
+  const baseSlug = baseName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+
+  // First, try the base slug
+  const query = excludeId
+    ? db.select().from(theme).where(and(eq(theme.slug, baseSlug), ne(theme.id, excludeId))).limit(1)
+    : db.select().from(theme).where(eq(theme.slug, baseSlug)).limit(1);
+
+  const existingTheme = await query;
+  if (existingTheme.length === 0) {
+    return baseSlug;
+  }
+
+  // If base slug exists, try with incremental numbers
+  let counter = 1;
+  while (true) {
+    const candidateSlug = `${baseSlug}-${counter}`;
+    const query = excludeId
+      ? db.select().from(theme).where(and(eq(theme.slug, candidateSlug), ne(theme.id, excludeId))).limit(1)
+      : db.select().from(theme).where(eq(theme.slug, candidateSlug)).limit(1);
+
+    const existing = await query;
+    if (existing.length === 0) {
+      return candidateSlug;
+    }
+    counter++;
+
+    // Safety limit to prevent infinite loops
+    if (counter > 1000) {
+      // Fallback: use timestamp
+      return `${baseSlug}-${Date.now()}`;
+    }
+  }
+}
 
 interface RouteContext {
   params: Promise<{
@@ -61,10 +97,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
     if (name) {
       updates.name = name;
-      updates.slug = name
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "");
+      updates.slug = await generateUniqueSlug(name, id);
     }
 
     if (tinteTheme) {
