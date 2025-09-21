@@ -324,7 +324,6 @@ export function Dock({ providerId, providerName }: DockProps) {
   const getPresetType = () => {
     if (!activeTheme?.id) return 'tinte';
 
-    // TweakCN presets
     if (activeTheme.author === 'tweakcn') {
       return 'tweakcn';
     }
@@ -577,10 +576,8 @@ export function Dock({ providerId, providerName }: DockProps) {
       activeTheme.id = customId;
       activeTheme.name = name;
 
-      // For TweakCN themes, prepare shadcn_override with preset values
       let shadcnOverrideToSave = null;
       if (presetType === 'tweakcn' && activeTheme.rawTheme) {
-        // Use the original TweakCN preset values as shadcn overrides
         shadcnOverrideToSave = {
           light: activeTheme.rawTheme.light || {},
           dark: activeTheme.rawTheme.dark || {}

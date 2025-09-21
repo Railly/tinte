@@ -35,7 +35,6 @@ export default function BingoPage() {
   };
 
   const handleApplyRayso = () => {
-    // Apply the original tweakcn theme to see the difference
     const originalTokens = currentTweakcn[mode];
     applyTheme(originalTokens);
   };
