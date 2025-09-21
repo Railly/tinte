@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CSSIcon } from "@/components/shared/icons/css";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { ThemeSelector } from "@/components/shared/theme-selector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,91 +21,27 @@ import { usePastedItems } from "@/hooks/use-pasted-items";
 import { cn } from "@/lib";
 import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
 import { generateTailwindPalette } from "@/lib/palette-generator";
+import type { ThemeData } from "@/lib/theme-tokens";
 import { useThemeContext } from "@/providers/theme";
 import { writeSeed } from "@/utils/anon-seed";
 import { mapPastedToAttachments } from "@/utils/seed-mapper";
 import { Button } from "../../ui/button";
+import {
+  type PalettePreset,
+  PROMPT_INPUT_PALETTE_PRESETS,
+  PROMPT_INPUT_PRESETS,
+} from "./constants";
 import { PasteDialog } from "./paste-dialog";
 import { PastedItemsList } from "./pasted-items-list";
-import { ThemeSelector } from "@/components/shared/theme-selector";
 import { ThemeSelectorDialog } from "./theme-selector-dialog";
-import type { ThemeData } from "@/lib/theme-tokens";
 
 interface PromptInputProps {
   onSubmit?: (kind: Kind, raw: string) => void;
 }
 
-interface PalettePreset {
-  name: string;
-  baseColor: string;
-  description: string;
-}
-
-
 export default function PromptInput({ onSubmit }: PromptInputProps) {
   const [prompt, setPrompt] = useState("");
   const router = useRouter();
-
-  const presets = [
-    {
-      icon: "🏢",
-      text: "Corporate Blue Theme",
-      primaryColor: "#1e40af",
-      neutralColor: "#64748b",
-      backgroundColor: "#ffffff",
-      prompt:
-        "Create a professional corporate theme with trustworthy blue tones. Focus on accessibility, clean typography, and a business-appropriate aesthetic. Use blues ranging from navy to lighter shades, with neutral grays for balance. Ensure high contrast for readability and a polished, enterprise-ready appearance.",
-    },
-    {
-      icon: "🌅",
-      text: "Warm Sunset Palette",
-      primaryColor: "#f97316",
-      neutralColor: "#a3a3a3",
-      backgroundColor: "#fefefe",
-      prompt:
-        "Design a warm, inviting theme inspired by golden hour sunsets. Use rich oranges, warm yellows, and soft coral tones. Create a cozy, energetic feeling with gradients that evoke the beauty of a sunset sky. Include complementary warm neutrals and ensure the palette feels optimistic and welcoming.",
-    },
-    {
-      icon: "🌙",
-      text: "Minimal Dark Mode",
-      primaryColor: "#6366f1",
-      neutralColor: "#71717a",
-      backgroundColor: "#0f0f23",
-      prompt:
-        "Create an elegant, minimal dark theme with sophisticated gray tones. Focus on reducing eye strain with carefully balanced contrast ratios. Use deep grays as the foundation with subtle blue or purple undertones. Emphasize clean lines, ample whitespace, and a modern, sleek aesthetic perfect for extended use.",
-    },
-    {
-      icon: "⚡",
-      text: "Vibrant Neon Colors",
-      primaryColor: "#8b5cf6",
-      neutralColor: "#737373",
-      backgroundColor: "#0a0a0a",
-      prompt:
-        "Design an energetic, modern theme with vibrant neon-inspired colors. Use electric purples, bright magentas, and cyber-punk aesthetics. Create high-impact visuals with bold contrasts and glowing effects. Balance the intensity with darker backgrounds to make the neon colors pop while maintaining usability.",
-    },
-    {
-      icon: "🌿",
-      text: "Natural Green Tones",
-      primaryColor: "#10b981",
-      neutralColor: "#78716c",
-      backgroundColor: "#fafaf9",
-      prompt:
-        "Create a calming, nature-inspired theme with organic green tones. Use forest greens, sage, and mint colors that evoke growth, harmony, and sustainability. Include earthy neutrals and natural textures. Design for a peaceful, eco-friendly aesthetic that promotes focus and well-being.",
-    },
-  ];
-
-  const palettePresets: PalettePreset[] = [
-    { name: "Blue", baseColor: "#3b82f6", description: "Classic blue" },
-    { name: "Green", baseColor: "#10b981", description: "Fresh green" },
-    { name: "Purple", baseColor: "#8b5cf6", description: "Rich purple" },
-    { name: "Orange", baseColor: "#f97316", description: "Vibrant orange" },
-    { name: "Pink", baseColor: "#ec4899", description: "Bright pink" },
-    { name: "Red", baseColor: "#ef4444", description: "Bold red" },
-    { name: "Yellow", baseColor: "#eab308", description: "Sunny yellow" },
-    { name: "Teal", baseColor: "#14b8a6", description: "Cool teal" },
-    { name: "Gray", baseColor: "#6b7280", description: "Neutral gray" },
-  ];
-
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<
     "url" | "tailwind" | "cssvars" | "palette"
@@ -113,7 +50,9 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
   const [customColor, setCustomColor] = useState("");
   const [paletteDropdownOpen, setPaletteDropdownOpen] = useState(false);
   const [themeSelectorOpen, setThemeSelectorOpen] = useState(false);
-  const [selectedThemeItem, setSelectedThemeItem] = useState<PastedItem | null>(null);
+  const [selectedThemeItem, setSelectedThemeItem] = useState<PastedItem | null>(
+    null,
+  );
   const colorInputRef = useRef<HTMLInputElement>(null);
   const {
     pastedItems,
@@ -132,7 +71,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
       }, 100);
     }
   }, [paletteDropdownOpen]);
-
 
   function handlePaste(e: React.ClipboardEvent) {
     const clipboardData = e.clipboardData;
@@ -304,11 +242,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
     if (validColors.length > 0) {
       // Create content with colors included so they show visually
       const contentWithColors = `${theme.name} theme: ${validColors.join(" ")}`;
-      addPastedItem(
-        contentWithColors,
-        "palette",
-        validColors,
-      );
+      addPastedItem(contentWithColors, "palette", validColors);
     }
   }
 
@@ -331,7 +265,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
     return /^#[0-9a-f]{3,8}$/i.test(color);
   }
 
-  function handlePresetClick(preset: (typeof presets)[0]) {
+  function handlePresetClick(preset: (typeof PROMPT_INPUT_PRESETS)[0]) {
     setPrompt(preset.prompt);
     // Clear existing palette items and replace with new ones
     const nonPaletteItems = pastedItems.filter(
@@ -413,7 +347,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
     );
   }
 
-
   return (
     <>
       <div className="relative">
@@ -422,7 +355,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
           className={cn(
             "relative",
             pastedItems.length > 0 &&
-            "rounded-lg border border-border/70 focus-within:border-border/90 focus-within:shadow-sm",
+              "rounded-lg border border-border/70 focus-within:border-border/90 focus-within:shadow-sm",
           )}
         >
           {/* Textarea container with controls */}
@@ -495,7 +428,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
                   </div>
                   <div className="p-3">
                     <div className="grid grid-cols-3 gap-2">
-                      {palettePresets.map((preset) => (
+                      {PROMPT_INPUT_PALETTE_PRESETS.map((preset) => (
                         <button
                           key={preset.name}
                           onClick={() => handlePaletteSelect(preset)}
@@ -591,7 +524,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
       <div className="mt-6">
         {/* Mobile: Single row with all buttons */}
         <div className="flex flex-wrap justify-center gap-2 sm:hidden">
-          {presets.map((preset, index) => (
+          {PROMPT_INPUT_PRESETS.map((preset, index) => (
             <button
               key={index}
               onClick={() => handlePresetClick(preset)}
@@ -610,7 +543,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
         <div className="hidden sm:block space-y-3">
           {/* First row - 2 buttons */}
           <div className="flex justify-center gap-3">
-            {presets.slice(0, 2).map((preset, index) => (
+            {PROMPT_INPUT_PRESETS.slice(0, 2).map((preset, index) => (
               <button
                 key={index}
                 onClick={() => handlePresetClick(preset)}
@@ -627,7 +560,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
 
           {/* Second row - 3 buttons */}
           <div className="flex justify-center gap-3">
-            {presets.slice(2, 5).map((preset, index) => (
+            {PROMPT_INPUT_PRESETS.slice(2, 5).map((preset, index) => (
               <button
                 key={index + 2}
                 onClick={() => handlePresetClick(preset)}

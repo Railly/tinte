@@ -91,13 +91,10 @@ export function TinteCommandMenu({
     command();
   }, []);
 
-  // Custom keyboard shortcuts handler
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Detect cmd key by checking metaKey (works on any keyboard layout)
       if (!e.metaKey) return;
 
-      // Check exact key characters for shortcuts
       switch (e.key.toLowerCase()) {
         case "k":
         case "/":
