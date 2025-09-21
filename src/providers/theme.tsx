@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
+import { useThemeStore } from "@/stores/theme";
+import { useAuthStore } from "@/stores/auth";
 
 type ThemeContextValue = ReturnType<typeof useTheme>;
 
@@ -16,7 +18,22 @@ export function useThemeContext(): ThemeContextValue {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const themeStore = useThemeStore();
+  const authStore = useAuthStore();
   const themeValue = useTheme();
+
+  // Handle initialization at provider level to prevent infinite loops
+  useEffect(() => {
+    if (!themeStore.mounted) {
+      themeStore.initialize();
+    }
+  }, [themeStore.mounted]);
+
+  useEffect(() => {
+    if (!authStore.mounted) {
+      authStore.initialize();
+    }
+  }, [authStore.mounted]);
 
   return (
     <ThemeContext.Provider value={themeValue}>

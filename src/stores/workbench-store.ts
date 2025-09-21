@@ -87,8 +87,22 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
   ),
 );
 
-export const useWorkbenchState = (
-  selector?: (state: WorkbenchStore) => any,
-) => {
-  return useWorkbenchStore(selector || ((state) => state));
+export const useWorkbenchActions = () => {
+  const setChatId = useWorkbenchStore((state) => state.setChatId);
+  const setLoading = useWorkbenchStore((state) => state.setLoading);
+  const setSeed = useWorkbenchStore((state) => state.setSeed);
+  const setDrawerOpen = useWorkbenchStore((state) => state.setDrawerOpen);
+  const initializeWorkbench = useWorkbenchStore((state) => state.initializeWorkbench);
+  const toggleDrawer = useWorkbenchStore((state) => state.toggleDrawer);
+  const reset = useWorkbenchStore((state) => state.reset);
+
+  return {
+    setChatId,
+    setLoading,
+    setSeed,
+    setDrawerOpen,
+    initializeWorkbench,
+    toggleDrawer,
+    reset,
+  };
 };

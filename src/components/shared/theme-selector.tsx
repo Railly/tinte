@@ -124,12 +124,20 @@ export function ThemeSelector({
       };
     }
 
-    // Separate themes into categories
+    // Create a set of favorite theme IDs to avoid duplicates
+    const favoriteThemeIds = new Set(favoriteThemes.map(t => t.id));
+
+    // Separate themes into categories, excluding those already in favorites
     const userThemes: ThemeData[] = [];
     const communityThemes: ThemeData[] = [];
     const builtInThemes: ThemeData[] = [];
 
     combined.forEach((theme) => {
+      // Skip if this theme is already in favorites section
+      if (favoriteThemeIds.has(theme.id)) {
+        return;
+      }
+
       // Check if theme belongs to current user
       const isOwnTheme = theme.user?.id === user?.id;
       const isCustomTheme =

@@ -40,7 +40,7 @@ export function WorkbenchHeader({
     activeTheme,
     handleThemeSelect,
     navigateTheme,
-    addTheme,
+    addThemes,
     unsavedChanges,
     isSaving,
     canSave,
@@ -56,54 +56,21 @@ export function WorkbenchHeader({
   } = useThemeContext();
   const { data: session } = authClient.useSession();
   const activeId = activeTheme?.id || null;
-  // Add user themes and TweakCN themes to the theme context
+  // Add themes to store once on mount
   useEffect(() => {
-    // Add user themes
-    userThemes.forEach((userTheme) => {
-      const existingTheme = allThemes.find((t) => t.id === userTheme.id);
-      if (!existingTheme) {
-        // Add user data to the theme before adding to context
-        const themeWithUser: ThemeData = {
-          ...userTheme,
-          user: userTheme.user,
-        };
-        addTheme(themeWithUser);
-      }
-    });
+    if (!mounted) return;
 
-    // Add TweakCN themes
-    tweakCNThemes.forEach((tweakcnTheme) => {
-      const existingTheme = allThemes.find((t) => t.id === tweakcnTheme.id);
-      if (!existingTheme) {
-        const themeData: ThemeData = {
-          ...tweakcnTheme,
-        };
-        addTheme(themeData);
-      }
-    });
+    const allNewThemes: ThemeData[] = [
+      ...userThemes.map(theme => ({ ...theme, user: theme.user })),
+      ...tweakCNThemes,
+      ...tinteThemes,
+      ...raysoThemes
+    ];
 
-    // Add Tinte themes
-    tinteThemes.forEach((tinteTheme) => {
-      const existingTheme = allThemes.find((t) => t.id === tinteTheme.id);
-      if (!existingTheme) {
-        const themeData: ThemeData = {
-          ...tinteTheme,
-        };
-        addTheme(themeData);
-      }
-    });
-
-    // Add Rayso themes
-    raysoThemes.forEach((raysoTheme) => {
-      const existingTheme = allThemes.find((t) => t.id === raysoTheme.id);
-      if (!existingTheme) {
-        const themeData: ThemeData = {
-          ...raysoTheme,
-        };
-        addTheme(themeData);
-      }
-    });
-  }, [userThemes, tweakCNThemes, tinteThemes, raysoThemes, allThemes, addTheme]);
+    if (allNewThemes.length > 0) {
+      addThemes(allNewThemes);
+    }
+  }, [mounted]); // Only depend on mounted to run once
 
   // Get current favorite state using global store
   const isFavorite =

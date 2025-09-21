@@ -32,11 +32,25 @@ export function computeThemeTokens(theme: ThemeData): {
 
   let computedTokens: { light: any; dark: any };
 
-  if (theme.author === "tweakcn" && theme.rawTheme) {
+  // Check if we have shadcn overrides (this should take precedence)
+  // First check if overrides are already structured (from transformOverridesFromDb)
+  const structuredOverrides = (theme as any).overrides?.shadcn;
+  if (structuredOverrides?.light?.palettes) {
     computedTokens = {
-      light: theme.rawTheme.light,
-      dark: theme.rawTheme.dark,
+      light: structuredOverrides.light.palettes.light,
+      dark: structuredOverrides.light.palettes.dark,
     };
+  }
+  // Then check direct shadcn_override from database (this is the most common case for TweakCN themes)
+  else if ((theme as any).shadcn_override?.palettes) {
+    computedTokens = {
+      light: (theme as any).shadcn_override.palettes.light,
+      dark: (theme as any).shadcn_override.palettes.dark,
+    };
+  }
+  // Fallback to old format for backwards compatibility
+  else if ((theme as any).shadcn_overrides) {
+    computedTokens = (theme as any).shadcn_overrides;
   } else if (theme.rawTheme) {
     try {
       const shadcnTheme = convertTheme("shadcn", theme.rawTheme) as ShadcnTheme;
@@ -44,7 +58,7 @@ export function computeThemeTokens(theme: ThemeData): {
         light: shadcnTheme.light,
         dark: shadcnTheme.dark,
       };
-    } catch {
+    } catch (error) {
       computedTokens = DEFAULT_THEME.computedTokens;
     }
   } else {
