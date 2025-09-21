@@ -19,7 +19,10 @@ interface UserDropdownProps {
   avatarSize?: "sm" | "md";
 }
 
-export function UserDropdown({ className, avatarSize = "md" }: UserDropdownProps) {
+export function UserDropdown({
+  className,
+  avatarSize = "md",
+}: UserDropdownProps) {
   const { data: session, isPending } = authClient.useSession();
 
   const avatarSizeClass = avatarSize === "sm" ? "h-8 w-8" : "h-10 w-10";
@@ -35,16 +38,18 @@ export function UserDropdown({ className, avatarSize = "md" }: UserDropdownProps
     return (
       <Button
         size="sm"
-        className="h-8 px-3 text-xs"
+        className="h-7 px-3 text-xs"
+        variant="outline"
         onClick={() => authClient.signIn.social({ provider: "github" })}
       >
-        <User className="h-3 w-3 mr-1" />
         Sign In
       </Button>
     );
   }
 
-  const userInitial = (session.user.name || session.user.email || "U").charAt(0).toUpperCase();
+  const userInitial = (session.user.name || session.user.email || "U")
+    .charAt(0)
+    .toUpperCase();
   const displayName = session.user.name || session.user.email || "User";
 
   return (
@@ -53,7 +58,9 @@ export function UserDropdown({ className, avatarSize = "md" }: UserDropdownProps
         <Button variant="ghost" className={`p-0 ${className}`}>
           <Avatar className={avatarSizeClass}>
             <AvatarImage src={session.user.image || ""} alt={displayName} />
-            <AvatarFallback className={avatarSize === "sm" ? "text-xs" : "text-sm"}>
+            <AvatarFallback
+              className={avatarSize === "sm" ? "text-xs" : "text-sm"}
+            >
               {userInitial}
             </AvatarFallback>
           </Avatar>
