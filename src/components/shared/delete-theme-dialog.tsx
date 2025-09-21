@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Trash2, Loader2 } from "lucide-react";
 
 interface DeleteThemeDialogProps {
   isOpen: boolean;
@@ -31,16 +31,12 @@ export function DeleteThemeDialog({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    console.log("🚀 Delete dialog: Starting delete for theme:", themeName);
     setIsDeleting(true);
     try {
-      console.log("🔄 Delete dialog: Calling onDelete function");
       await onDelete();
-      console.log("✅ Delete dialog: onDelete completed successfully");
       toast.success(`Theme "${themeName}" deleted successfully!`);
       // Close dialog after a short delay to show the success state
       setTimeout(() => {
-        console.log("🔄 Delete dialog: Closing dialog");
         onOpenChange(false);
         setIsDeleting(false);
       }, 500);
@@ -65,7 +61,8 @@ export function DeleteThemeDialog({
             Delete Theme
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete "<strong>{themeName}</strong>"? This action cannot be undone.
+            Are you sure you want to delete "<strong>{themeName}</strong>"? This
+            action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

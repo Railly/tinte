@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { PLANNED_PROVIDERS } from "@/config/providers";
+import { ALL_FORMATTED_PROVIDERS } from "@/config/providers";
 import { getAvailableProviders } from "@/lib/providers";
 
 interface ProviderSwitcherProps {
@@ -42,7 +42,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
 
   const plannedProviders = React.useMemo(() => {
     const availableIds = new Set(availableProviders.map((p) => p.id));
-    return PLANNED_PROVIDERS.filter((p) => !availableIds.has(p.id)).map(
+    return ALL_FORMATTED_PROVIDERS.filter((p) => !availableIds.has(p.id)).map(
       (p) => ({
         ...p,
         available: false,
@@ -50,18 +50,24 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
     );
   }, [availableProviders]);
 
-  const allProviders = React.useMemo(() => [...availableProviders, ...plannedProviders], [availableProviders, plannedProviders]);
-  
+  const allProviders = React.useMemo(
+    () => [...availableProviders, ...plannedProviders],
+    [availableProviders, plannedProviders],
+  );
+
   const activeProvider = React.useMemo(() => {
     return allProviders.find((p) => p.id === provider) || availableProviders[0];
   }, [allProviders, provider, availableProviders]);
 
-  const handleProviderSelect = React.useCallback((providerId: string) => {
-    if (provider !== providerId) {
-      setProvider(providerId);
-    }
-    setOpen(false);
-  }, [provider, setProvider]);
+  const handleProviderSelect = React.useCallback(
+    (providerId: string) => {
+      if (provider !== providerId) {
+        setProvider(providerId);
+      }
+      setOpen(false);
+    },
+    [provider, setProvider],
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -75,12 +81,12 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
         >
           <div className="flex items-center gap-2 min-w-0">
             {activeProvider.icon && (
-              <activeProvider.icon 
+              <activeProvider.icon
                 key={activeProvider.id}
-                className="h-4 w-4 shrink-0 transition-all duration-150" 
+                className="h-4 w-4 shrink-0 transition-all duration-150"
               />
             )}
-            <span 
+            <span
               key={`${activeProvider.id}-name`}
               className="font-medium max-w-[8ch] md:max-w-none truncate transition-all duration-150"
             >

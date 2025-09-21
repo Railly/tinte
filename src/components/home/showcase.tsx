@@ -34,6 +34,7 @@ export function Showcase({
   const [activeTab, setActiveTab] = useState("community");
   const { handleThemeSelect, mounted } = useThemeContext();
   const shouldShowSkeletons = !mounted;
+  console.log({ tweakCNThemes, userThemes })
 
   return (
     <div className="w-full space-y-8 p-4 mx-auto">
@@ -279,19 +280,19 @@ export function Showcase({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {shouldShowSkeletons
               ? Array.from({ length: 8 }).map((_, index) => (
-                  <ThemeCardSkeleton key={index} />
-                ))
+                <ThemeCardSkeleton key={index} />
+              ))
               : tweakCNThemes
-                  .slice(0, 8)
-                  .map((theme, index) => (
-                    <ThemeCard
-                      key={theme.id}
-                      theme={theme}
-                      index={index}
-                      onThemeSelect={handleThemeSelect}
-                      showUserInfo={false}
-                    />
-                  ))}
+                .slice(0, 8)
+                .map((theme, index) => (
+                  <ThemeCard
+                    key={theme.id}
+                    theme={theme}
+                    index={index}
+                    onThemeSelect={handleThemeSelect}
+                    showUserInfo={false}
+                  />
+                ))}
           </div>
         )}
 
@@ -299,19 +300,19 @@ export function Showcase({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {shouldShowSkeletons
               ? Array.from({ length: 8 }).map((_, index) => (
-                  <ThemeCardSkeleton key={index} />
-                ))
+                <ThemeCardSkeleton key={index} />
+              ))
               : raysoThemes
-                  .slice(0, 8)
-                  .map((theme, index) => (
-                    <ThemeCard
-                      key={theme.id}
-                      theme={theme}
-                      index={index}
-                      onThemeSelect={handleThemeSelect}
-                      showUserInfo={false}
-                    />
-                  ))}
+                .slice(0, 8)
+                .map((theme, index) => (
+                  <ThemeCard
+                    key={theme.id}
+                    theme={theme}
+                    index={index}
+                    onThemeSelect={handleThemeSelect}
+                    showUserInfo={false}
+                  />
+                ))}
           </div>
         )}
 
@@ -319,19 +320,19 @@ export function Showcase({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {shouldShowSkeletons
               ? Array.from({ length: 8 }).map((_, index) => (
-                  <ThemeCardSkeleton key={index} />
-                ))
+                <ThemeCardSkeleton key={index} />
+              ))
               : tinteThemes
-                  .slice(0, 8)
-                  .map((theme, index) => (
-                    <ThemeCard
-                      key={theme.id}
-                      theme={theme}
-                      index={index}
-                      onThemeSelect={handleThemeSelect}
-                      showUserInfo={false}
-                    />
-                  ))}
+                .slice(0, 8)
+                .map((theme, index) => (
+                  <ThemeCard
+                    key={theme.id}
+                    theme={theme}
+                    index={index}
+                    onThemeSelect={handleThemeSelect}
+                    showUserInfo={false}
+                  />
+                ))}
           </div>
         )}
       </div>

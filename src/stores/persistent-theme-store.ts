@@ -7,10 +7,8 @@ import { shadcnToTinte } from "@/lib/shadcn-to-tinte";
 import type { ThemeData } from "@/lib/theme-tokens";
 import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";
-// All static preset imports removed - theme data now comes from database
 import { DEFAULT_THEME } from "@/utils/default-theme";
 
-// Import refactored modules
 import type { ThemeMode, ThemeOverrides } from "./theme/types";
 import {
   computeThemeTokens,
@@ -64,9 +62,6 @@ interface PersistentThemeState {
 
   // Theme collections
   allThemes: ThemeData[];
-  tweakcnThemes: ThemeData[];
-  raysoThemes: ThemeData[];
-  tinteThemes: ThemeData[];
   userThemes: ThemeData[];
   favoriteThemes: ThemeData[];
   tinteTheme: TinteTheme;
@@ -93,7 +88,12 @@ interface PersistentThemeState {
   resetOverrides: (provider?: "shadcn" | "vscode" | "shiki") => void;
 
   // Persistence actions
-  saveTheme: (name?: string, makePublic?: boolean, additionalShadcnOverride?: any, concept?: string) => Promise<{ success: boolean; savedTheme: any | null }>;
+  saveTheme: (
+    name?: string,
+    makePublic?: boolean,
+    additionalShadcnOverride?: any,
+    concept?: string
+  ) => Promise<{ success: boolean; savedTheme: any | null }>;
   deleteTheme: (themeId: string) => Promise<boolean>;
   loadUserThemes: () => Promise<void>;
   createNewTheme: (name: string) => void;
@@ -218,9 +218,6 @@ const getInitialState = () => {
       theme.id === DEFAULT_THEME.id ? DEFAULT_THEME : theme,
       DEFAULT_THEME,
     ],
-    tweakcnThemes: [],
-    raysoThemes: [],
-    tinteThemes: [],
     userThemes: [],
     favoriteThemes: [],
     tinteTheme,
@@ -274,12 +271,6 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           const user = session?.user || null;
           const isAuthenticated = !!user && !user.isAnonymous;
           const isAnonymous = !!user?.isAnonymous;
-
-          // Load theme collections from database (empty arrays for now)
-          // These will be populated by passing props from server components
-          const tweakcnThemes: ThemeData[] = [];
-          const raysoThemes: ThemeData[] = [];
-          const tinteThemes: ThemeData[] = [];
 
           // Load user themes
           let userThemes: ThemeData[] = [];
@@ -349,13 +340,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             }
           }
 
-          const allThemes = [
-            DEFAULT_THEME,
-            ...tinteThemes,
-            ...raysoThemes,
-            ...tweakcnThemes,
-            ...userThemes,
-          ].filter(
+          const allThemes = [DEFAULT_THEME, ...userThemes].filter(
             (theme, index, arr) =>
               arr.findIndex((t) => t.id === theme.id) === index
           );
@@ -457,9 +442,6 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
             unsavedChanges: false,
             canSave: isAuthenticated || isAnonymous,
             allThemes,
-            tweakcnThemes,
-            raysoThemes,
-            tinteThemes,
             userThemes,
             favoriteThemes,
             tinteTheme,
@@ -863,10 +845,9 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
               overrides
             );
 
-            // Handle tweakcn conversion if needed
             let finalActiveTheme = updatedTheme;
             if (
-              state.activeTheme.author === "tweakcn" &&
+              state.activeTheme.provider === "tweakcn" &&
               !ownership.isUserOwnedTheme
             ) {
               const {

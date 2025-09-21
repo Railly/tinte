@@ -1,6 +1,6 @@
 import { useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { PROVIDERS, type Provider } from "@/config/providers";
+import { ALL_PROVIDERS, type Provider } from "@/config/providers";
 
 export function useLoop(): [Provider, React.RefObject<HTMLDivElement | null>] {
   const ref = useRef<HTMLDivElement>(null);
@@ -11,11 +11,11 @@ export function useLoop(): [Provider, React.RefObject<HTMLDivElement | null>] {
     if (!isInView) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % PROVIDERS.length);
+      setCurrentIndex((prev) => (prev + 1) % ALL_PROVIDERS.length);
     }, 3000);
 
     return () => clearInterval(interval);
   }, [isInView]);
 
-  return [PROVIDERS[currentIndex], ref];
+  return [ALL_PROVIDERS[currentIndex], ref];
 }
