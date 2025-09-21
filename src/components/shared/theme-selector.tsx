@@ -5,6 +5,7 @@ import * as React from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
 import Logo from "@/components/shared/logo";
+import InvertedLogo from "@/components/shared/inverted-logo";
 import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -82,6 +83,52 @@ export function ThemeSelector({
     }
 
     return name;
+  };
+
+  // Helper function to render author icon
+  const renderAuthorIcon = (theme: ThemeData, size: number = 12) => {
+    // Check for vendor-specific themes first
+    if (theme.author === "tweakcn" || theme.provider === "tweakcn") {
+      return <TweakCNIcon className="w-3 h-3" />;
+    }
+
+    if (theme.author === "ray.so" || theme.provider === "rayso") {
+      return <RaycastIcon className="w-3 h-3" />;
+    }
+
+    if (theme.author === "tinte" || theme.provider === "tinte") {
+      // If user has an image, show their avatar
+      if (theme.user?.image) {
+        return (
+          <Avatar className="w-3 h-3">
+            <AvatarImage
+              src={theme.user.image}
+              alt={theme.user.name || "User"}
+            />
+            <AvatarFallback className="text-[8px]">
+              {(theme.user.name?.[0] || "U").toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        );
+      }
+
+      // If no user image but has user ID, show anonymous avatar
+      if (theme.user?.id) {
+        return (
+          <Avatar className="w-3 h-3">
+            <AvatarFallback className="text-[8px]">
+              {(theme.user.name?.[0] || "U").toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        );
+      }
+
+      // Anonymous theme - show InvertedLogo
+      return <InvertedLogo size={12} />;
+    }
+
+    // Fallback for other providers - show InvertedLogo for anonymous themes
+    return <InvertedLogo size={12} />;
   };
 
   const handleThemeSelect = React.useCallback(
@@ -375,39 +422,9 @@ export function ThemeSelector({
                             {theme.name}
                           </span>
                           <div className="flex items-center gap-1">
-                            {theme.author && (
-                              <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                                {theme.author === "tweakcn" ? (
-                                  <TweakCNIcon className="w-3 h-3" />
-                                ) : theme.author === "ray.so" ? (
-                                  <RaycastIcon className="w-3 h-3" />
-                                ) : theme.author === "tinte" ? (
-                                  <Logo size={12} className="invert" />
-                                ) : (
-                                  <>
-                                    {theme.author && (
-                                      <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                                        {theme.user?.image ? (
-                                          <Avatar className="w-3 h-3">
-                                            <AvatarImage
-                                              src={theme.user.image}
-                                              alt={theme.user.name || "User"}
-                                            />
-                                            <AvatarFallback className="text-[8px]">
-                                              {(
-                                                theme.user.name?.[0] || "U"
-                                              ).toUpperCase()}
-                                            </AvatarFallback>
-                                          </Avatar>
-                                        ) : (
-                                          <UserX className="w-3 h-3" />
-                                        )}
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            )}
+                            <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                              {renderAuthorIcon(theme, 12)}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -420,39 +437,9 @@ export function ThemeSelector({
                           </span>
                           <div className="flex items-center gap-1">
                             <Heart className="w-3 h-3 fill-current text-red-500" />
-                            {theme.author && (
-                              <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                                {theme.author === "tweakcn" ? (
-                                  <TweakCNIcon className="w-3 h-3" />
-                                ) : theme.author === "ray.so" ? (
-                                  <RaycastIcon className="w-3 h-3" />
-                                ) : theme.author === "tinte" ? (
-                                  <Logo size={12} />
-                                ) : (
-                                  <>
-                                    {theme.author && (
-                                      <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                                        {theme.user?.image ? (
-                                          <Avatar className="w-3 h-3">
-                                            <AvatarImage
-                                              src={theme.user.image}
-                                              alt={theme.user.name || "User"}
-                                            />
-                                            <AvatarFallback className="text-[8px]">
-                                              {(
-                                                theme.user.name?.[0] || "U"
-                                              ).toUpperCase()}
-                                            </AvatarFallback>
-                                          </Avatar>
-                                        ) : (
-                                          <UserX className="w-3 h-3" />
-                                        )}
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            )}
+                            <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                              {renderAuthorIcon(theme, 12)}
+                            </div>
                           </div>
                         </div>
                         <ThemeColorPreview
@@ -532,25 +519,9 @@ export function ThemeSelector({
                           <span className="text-xs font-medium truncate">
                             {theme.name}
                           </span>
-                          {theme.author && (
-                            <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                              {theme.user?.image ? (
-                                <Avatar className="w-3 h-3">
-                                  <AvatarImage
-                                    src={theme.user.image}
-                                    alt={theme.user.name || "User"}
-                                  />
-                                  <AvatarFallback className="text-[8px]">
-                                    {(
-                                      theme.user.name?.[0] || "U"
-                                    ).toUpperCase()}
-                                  </AvatarFallback>
-                                </Avatar>
-                              ) : (
-                                <UserX className="w-3 h-3" />
-                              )}
-                            </div>
-                          )}
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                            {renderAuthorIcon(theme, 12)}
+                          </div>
                         </div>
                       </div>
 
@@ -560,25 +531,9 @@ export function ThemeSelector({
                           <span className="text-xs font-medium truncate">
                             {theme.name}
                           </span>
-                          {theme.author && (
-                            <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
-                              {theme.user?.image ? (
-                                <Avatar className="w-3 h-3">
-                                  <AvatarImage
-                                    src={theme.user.image}
-                                    alt={theme.user.name || "User"}
-                                  />
-                                  <AvatarFallback className="text-[8px]">
-                                    {(
-                                      theme.user.name?.[0] || "U"
-                                    ).toUpperCase()}
-                                  </AvatarFallback>
-                                </Avatar>
-                              ) : (
-                                <UserX className="w-3 h-3" />
-                              )}
-                            </div>
-                          )}
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
+                            {renderAuthorIcon(theme, 12)}
+                          </div>
                         </div>
                         <ThemeColorPreview
                           colors={extractThemeColors(theme, currentMode)}
@@ -616,39 +571,9 @@ export function ThemeSelector({
                           <span className="text-xs font-medium truncate">
                             {theme.name}
                           </span>
-                          {theme.author && (
-                            <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                              {theme.author === "tweakcn" ? (
-                                <TweakCNIcon className="w-3 h-3" />
-                              ) : theme.author === "ray.so" ? (
-                                <RaycastIcon className="w-3 h-3" />
-                              ) : theme.author === "tinte" ? (
-                                <Logo size={12} className="invert" />
-                              ) : (
-                                <>
-                                  {theme.author && (
-                                    <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                                      {theme.user?.image ? (
-                                        <Avatar className="w-3 h-3">
-                                          <AvatarImage
-                                            src={theme.user.image}
-                                            alt={theme.user.name || "User"}
-                                          />
-                                          <AvatarFallback className="text-[8px]">
-                                            {(
-                                              theme.user.name?.[0] || "U"
-                                            ).toUpperCase()}
-                                          </AvatarFallback>
-                                        </Avatar>
-                                      ) : (
-                                        <UserX className="w-3 h-3" />
-                                      )}
-                                    </div>
-                                  )}
-                                </>
-                              )}
-                            </div>
-                          )}
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                            {renderAuthorIcon(theme, 12)}
+                          </div>
                         </div>
                       </div>
 
@@ -658,39 +583,9 @@ export function ThemeSelector({
                           <span className="text-xs font-medium truncate">
                             {theme.name}
                           </span>
-                          {theme.author && (
-                            <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
-                              {theme.author === "tweakcn" ? (
-                                <TweakCNIcon className="w-3 h-3" />
-                              ) : theme.author === "ray.so" ? (
-                                <RaycastIcon className="w-3 h-3" />
-                              ) : theme.author === "tinte" ? (
-                                <Logo size={12} />
-                              ) : (
-                                <>
-                                  {theme.author && (
-                                    <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                                      {theme.user?.image ? (
-                                        <Avatar className="w-3 h-3">
-                                          <AvatarImage
-                                            src={theme.user.image}
-                                            alt={theme.user.name || "User"}
-                                          />
-                                          <AvatarFallback className="text-[8px]">
-                                            {(
-                                              theme.user.name?.[0] || "U"
-                                            ).toUpperCase()}
-                                          </AvatarFallback>
-                                        </Avatar>
-                                      ) : (
-                                        <UserX className="w-3 h-3" />
-                                      )}
-                                    </div>
-                                  )}
-                                </>
-                              )}
-                            </div>
-                          )}
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
+                            {renderAuthorIcon(theme, 12)}
+                          </div>
                         </div>
                         <ThemeColorPreview
                           colors={extractThemeColors(theme, currentMode)}
@@ -729,34 +624,9 @@ export function ThemeSelector({
                         <span className="text-xs font-medium truncate">
                           {theme.name}
                         </span>
-                        {theme.author && (
-                          <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                            {theme.author === "tweakcn" ? (
-                              <TweakCNIcon className="w-3 h-3" />
-                            ) : theme.author === "ray.so" ? (
-                              <RaycastIcon className="w-3 h-3" />
-                            ) : theme.author === "tinte" ? (
-                              <Logo size={12} className="invert" />
-                            ) : theme.provider === "tinte" &&
-                              theme.user?.image ? (
-                              // User-created theme with avatar
-                              <Avatar className="w-3 h-3">
-                                <AvatarImage
-                                  src={theme.user.image}
-                                  alt={theme.user.name || "User"}
-                                />
-                                <AvatarFallback className="text-[8px]">
-                                  {(theme.user.name?.[0] || "U").toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-                            ) : theme.provider === "tinte" ? (
-                              // User-created theme without avatar (anonymous)
-                              <UserX className="w-3 h-3" />
-                            ) : (
-                              theme.author
-                            )}
-                          </div>
-                        )}
+                        <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                          {renderAuthorIcon(theme, 12)}
+                        </div>
                       </div>
                     </div>
 
@@ -766,34 +636,9 @@ export function ThemeSelector({
                         <span className="text-xs font-medium truncate">
                           {theme.name}
                         </span>
-                        {theme.author && (
-                          <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
-                            {theme.author === "tweakcn" ? (
-                              <TweakCNIcon className="w-3 h-3" />
-                            ) : theme.author === "ray.so" ? (
-                              <RaycastIcon className="w-3 h-3" />
-                            ) : theme.author === "tinte" ? (
-                              <Logo size={12} />
-                            ) : theme.provider === "tinte" &&
-                              theme.user?.image ? (
-                              // User-created theme with avatar
-                              <Avatar className="w-3 h-3">
-                                <AvatarImage
-                                  src={theme.user.image}
-                                  alt={theme.user.name || "User"}
-                                />
-                                <AvatarFallback className="text-[8px]">
-                                  {(theme.user.name?.[0] || "U").toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-                            ) : theme.provider === "tinte" ? (
-                              // User-created theme without avatar (anonymous)
-                              <UserX className="w-3 h-3" />
-                            ) : (
-                              theme.author
-                            )}
-                          </div>
-                        )}
+                        <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
+                          {renderAuthorIcon(theme, 12)}
+                        </div>
                       </div>
                       <ThemeColorPreview
                         colors={extractThemeColors(theme, currentMode)}

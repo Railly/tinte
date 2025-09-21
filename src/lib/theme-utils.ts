@@ -26,8 +26,20 @@ export function computeThemeTokens(theme: ThemeData): {
   light: Record<string, string>;
   dark: Record<string, string>;
 } {
+  // Safety check for theme
+  if (!theme) {
+    return DEFAULT_THEME.computedTokens;
+  }
+
   if ((theme as any).computedTokens) {
-    return (theme as any).computedTokens;
+    const tokens = (theme as any).computedTokens;
+    // Ensure the tokens have the required structure
+    if (tokens.light && tokens.dark) {
+      return {
+        light: tokens.light || {},
+        dark: tokens.dark || {},
+      };
+    }
   }
 
   let computedTokens: { light: any; dark: any };
@@ -37,35 +49,48 @@ export function computeThemeTokens(theme: ThemeData): {
   const structuredOverrides = (theme as any).overrides?.shadcn;
   if (structuredOverrides?.light?.palettes) {
     computedTokens = {
-      light: structuredOverrides.light.palettes.light,
-      dark: structuredOverrides.light.palettes.dark,
+      light: structuredOverrides.light.palettes.light || {},
+      dark: structuredOverrides.light.palettes.dark || {},
     };
   }
   // Then check direct shadcn_override from database (this is the most common case for TweakCN themes)
   else if ((theme as any).shadcn_override?.palettes) {
     computedTokens = {
-      light: (theme as any).shadcn_override.palettes.light,
-      dark: (theme as any).shadcn_override.palettes.dark,
+      light: (theme as any).shadcn_override.palettes.light || {},
+      dark: (theme as any).shadcn_override.palettes.dark || {},
     };
   }
   // Fallback to old format for backwards compatibility
   else if ((theme as any).shadcn_overrides) {
-    computedTokens = (theme as any).shadcn_overrides;
+    const overrides = (theme as any).shadcn_overrides;
+    computedTokens = {
+      light: overrides.light || {},
+      dark: overrides.dark || {},
+    };
   } else if (theme.rawTheme) {
     try {
       const shadcnTheme = convertTheme("shadcn", theme.rawTheme) as ShadcnTheme;
-      computedTokens = {
-        light: shadcnTheme.light,
-        dark: shadcnTheme.dark,
-      };
+      if (shadcnTheme && shadcnTheme.light && shadcnTheme.dark) {
+        computedTokens = {
+          light: shadcnTheme.light,
+          dark: shadcnTheme.dark,
+        };
+      } else {
+        computedTokens = DEFAULT_THEME.computedTokens;
+      }
     } catch (error) {
+      console.warn("Error converting theme to shadcn:", error);
       computedTokens = DEFAULT_THEME.computedTokens;
     }
   } else {
     computedTokens = DEFAULT_THEME.computedTokens;
   }
 
-  return computedTokens;
+  // Final safety check to ensure we always return valid objects
+  return {
+    light: computedTokens.light || {},
+    dark: computedTokens.dark || {},
+  };
 }
 
 export function extractThemeColors(

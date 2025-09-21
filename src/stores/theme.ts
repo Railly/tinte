@@ -101,9 +101,12 @@ const computeTokens = (theme: ThemeData, mode: ThemeMode, overrides: ThemeOverri
   const baseTokens = computeThemeTokens(theme)[mode];
   const processedTokens: Record<string, string> = {};
 
-  for (const [key, value] of Object.entries(baseTokens)) {
-    if (typeof value === "string") {
-      processedTokens[key] = convertColorToHex(value);
+  // Safety check for baseTokens
+  if (baseTokens && typeof baseTokens === 'object') {
+    for (const [key, value] of Object.entries(baseTokens)) {
+      if (typeof value === "string") {
+        processedTokens[key] = convertColorToHex(value);
+      }
     }
   }
 
