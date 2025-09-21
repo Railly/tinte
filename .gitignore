@@ -43,3 +43,6 @@ next-env.d.ts
 # zed
 .zed/
 .cursor/
+
+# Local Netlify folder
+.netlify
