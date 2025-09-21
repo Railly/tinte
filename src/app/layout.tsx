@@ -1,12 +1,13 @@
+import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "sonner";
 import { TinteThemeScript } from "@/components/theme-script";
 import { META_THEME_COLORS, siteConfig } from "@/config/site";
 import { QueryProvider } from "@/providers/query";
 import { ThemeProvider } from "@/providers/theme";
-import "./globals.css";
-import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -109,7 +110,10 @@ export default function RootLayout({
       >
         <NuqsAdapter>
           <QueryProvider>
-            <ThemeProvider>{children}</ThemeProvider>
+            <ThemeProvider>
+              {children}
+              <Analytics />
+            </ThemeProvider>
           </QueryProvider>
         </NuqsAdapter>
         <Toaster />
