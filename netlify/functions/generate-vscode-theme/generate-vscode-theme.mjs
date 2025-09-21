@@ -1,5 +1,34 @@
 import fs from "fs";
 import path from "path";
+
+// Polyfill for missing format implementation
+if (!global.TextDecoder) {
+  global.TextDecoder = class TextDecoder {
+    decode(input) {
+      return Buffer.from(input).toString('utf8');
+    }
+  };
+}
+
+// Mock the missing format module that jsonc-parser is trying to load
+const formatModule = {
+  format: () => '',
+  isEOL: () => false,
+  edit: () => [],
+  modify: () => [],
+  applyEdits: () => ''
+};
+
+// Create a module mock for the format implementation
+const Module = require('module');
+const originalRequire = Module.prototype.require;
+Module.prototype.require = function(id) {
+  if (id === './impl/format' || id.includes('impl/format')) {
+    return formatModule;
+  }
+  return originalRequire.apply(this, arguments);
+};
+
 import { createVSIX } from "@vscode/vsce";
 
 // Token to scope mapping from current VS Code provider
