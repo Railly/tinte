@@ -102,6 +102,14 @@ export interface ProviderThemeData {
   colors: ThemeColors;
   tags: string[];
   rawTheme?: any;
+  user?: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } | null;
+  overrides?: ThemeOverrides;
+  isFavorite?: boolean;
 }
 
 // Export schema types for validation

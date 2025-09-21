@@ -45,15 +45,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, tinteTheme, overrides, isPublic = false, concept }: {
+    const { name, tinteTheme, overrides = {}, isPublic = false, concept }: {
       name: string;
       tinteTheme: TinteTheme;
-      overrides: {
+      overrides?: {
         shadcn?: ShadcnOverrideSchema;
         vscode?: any;
         shiki?: any;
       };
-      isPublic: boolean;
+      isPublic?: boolean;
       concept?: string;
     } = body;
 

@@ -6,6 +6,17 @@ import type {
 import { convertTinteToShadcn } from "@/lib/providers/shadcn";
 
 export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {
+  // Safety check for theme
+  if (!theme) {
+    return {
+      primary: "#000000",
+      secondary: "#666666",
+      accent: "#0066cc",
+      foreground: "#000000",
+      background: "#ffffff",
+    };
+  }
+
   const tinteTheme = theme as TinteThemeData;
 
   // First check for computedTokens (tinte themes)
@@ -16,15 +27,40 @@ export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {
       secondary: tokens.secondary || "#666666",
       accent: tokens.accent || "#0066cc",
       foreground: tokens.foreground || "#000000",
+      background: tokens.background || "#ffffff",
     };
   }
 
-  // Use standard colors object (all themes have this)
+  // Check for colors object with null safety
+  if (theme.colors) {
+    return {
+      primary: theme.colors.primary || "#000000",
+      secondary: theme.colors.secondary || "#666666",
+      accent: theme.colors.accent || "#0066cc",
+      foreground: theme.colors.foreground || "#000000",
+      background: theme.colors.background || "#ffffff",
+    };
+  }
+
+  // Fallback to rawTheme if available
+  if (theme.rawTheme?.light) {
+    const rawTokens = theme.rawTheme.light;
+    return {
+      primary: rawTokens.pr || "#000000",
+      secondary: rawTokens.sc || "#666666",
+      accent: rawTokens.ac_1 || "#0066cc",
+      foreground: rawTokens.tx || "#000000",
+      background: rawTokens.bg || "#ffffff",
+    };
+  }
+
+  // Final fallback
   return {
-    primary: theme.colors.primary || "#000000",
-    secondary: theme.colors.secondary || "#666666",
-    accent: theme.colors.accent || "#0066cc",
-    foreground: theme.colors.foreground || "#000000",
+    primary: "#000000",
+    secondary: "#666666",
+    accent: "#0066cc",
+    foreground: "#000000",
+    background: "#ffffff",
   };
 }
 

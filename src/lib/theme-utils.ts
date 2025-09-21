@@ -72,16 +72,87 @@ export function extractThemeColors(
   theme: ThemeData,
   mode: ThemeMode = "light",
 ): Record<string, string> {
-  const computed = computeThemeTokens(theme);
-  const tokens = computed[mode];
+  // Safety check for theme
+  if (!theme) {
+    return {
+      primary: "#000000",
+      secondary: "#666666",
+      accent: "#0066cc",
+      background: "#ffffff",
+      foreground: "#000000",
+    };
+  }
 
-  return {
-    primary: tokens.primary || "#000000",
-    secondary: tokens.secondary || "#666666",
-    accent: tokens.accent || "#0066cc",
-    background: tokens.background || "#ffffff",
-    foreground: tokens.foreground || "#000000",
-  };
+  // Check if theme already has colors property (direct color extraction)
+  if ((theme as any).colors) {
+    const themeColors = (theme as any).colors;
+    return {
+      primary: themeColors.primary || "#000000",
+      secondary: themeColors.secondary || "#666666",
+      accent: themeColors.accent || "#0066cc",
+      background: themeColors.background || "#ffffff",
+      foreground: themeColors.foreground || "#000000",
+    };
+  }
+
+  try {
+    const computed = computeThemeTokens(theme);
+    const tokens = computed?.[mode];
+
+    if (!tokens) {
+      // Fallback to rawTheme if computeThemeTokens fails
+      if (theme.rawTheme?.[mode]) {
+        const rawTokens = theme.rawTheme[mode];
+        return {
+          primary: rawTokens.pr || "#000000",
+          secondary: rawTokens.sc || "#666666",
+          accent: rawTokens.ac_1 || "#0066cc",
+          background: rawTokens.bg || "#ffffff",
+          foreground: rawTokens.tx || "#000000",
+        };
+      }
+
+      // Final fallback
+      return {
+        primary: "#000000",
+        secondary: "#666666",
+        accent: "#0066cc",
+        background: "#ffffff",
+        foreground: "#000000",
+      };
+    }
+
+    return {
+      primary: tokens.primary || "#000000",
+      secondary: tokens.secondary || "#666666",
+      accent: tokens.accent || "#0066cc",
+      background: tokens.background || "#ffffff",
+      foreground: tokens.foreground || "#000000",
+    };
+  } catch (error) {
+    console.warn("Error extracting theme colors:", error);
+
+    // Try fallback to rawTheme direct access
+    if (theme.rawTheme?.[mode]) {
+      const rawTokens = theme.rawTheme[mode];
+      return {
+        primary: rawTokens.pr || "#000000",
+        secondary: rawTokens.sc || "#666666",
+        accent: rawTokens.ac_1 || "#0066cc",
+        background: rawTokens.bg || "#ffffff",
+        foreground: rawTokens.tx || "#000000",
+      };
+    }
+
+    // Final fallback
+    return {
+      primary: "#000000",
+      secondary: "#666666",
+      accent: "#0066cc",
+      background: "#ffffff",
+      foreground: "#000000",
+    };
+  }
 }
 
 export function useThemeAdapters() {

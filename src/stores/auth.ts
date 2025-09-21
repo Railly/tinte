@@ -140,7 +140,7 @@ export const useAuthStore = create<AuthStore>()(
         if (!isAuthenticated) return;
 
         try {
-          const response = await fetch("/api/user/themes");
+          const response = await fetch("/api/themes");
           if (response.ok) {
             const themes = await response.json();
             set({ userThemes: themes });
@@ -274,14 +274,21 @@ export const useAuthStore = create<AuthStore>()(
           }
 
           if (isAuthenticated) {
-            const response = await fetch("/api/user/themes", {
+            const response = await fetch("/api/themes", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ theme: themeToSave, makePublic }),
+              body: JSON.stringify({
+                name: cleanName,
+                tinteTheme: themeToSave.rawTheme,
+                overrides: themeToSave.overrides || {},
+                isPublic: makePublic,
+                concept: themeToSave.concept,
+              }),
             });
 
             if (response.ok) {
-              const savedTheme = await response.json();
+              const result = await response.json();
+              const savedTheme = result.theme;
               await get().loadUserThemes();
               set({ lastSaved: new Date() });
               return { success: true, savedTheme };
@@ -311,7 +318,7 @@ export const useAuthStore = create<AuthStore>()(
           }
 
           if (isAuthenticated) {
-            const response = await fetch(`/api/user/themes/${themeId}`, {
+            const response = await fetch(`/api/themes/${themeId}`, {
               method: "DELETE",
             });
 
