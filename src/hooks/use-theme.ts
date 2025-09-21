@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 import { useThemeExport } from "@/lib/theme-utils";
-import { usePersistentThemeStore } from "@/stores/persistent-theme-store";
+import { useThemeStore } from "@/stores/theme-store";
 
 export function useTheme() {
-  const store = usePersistentThemeStore();
+  const store = useThemeStore();
   const themeExport = useThemeExport(store.tinteTheme);
 
   useEffect(() => {
@@ -33,7 +33,12 @@ export function useTheme() {
     navigateTheme: store.navigateTheme,
 
     // Persistence functionality
-    saveCurrentTheme: (name?: string, makePublic?: boolean, additionalShadcnOverride?: any, concept?: string) => store.saveTheme(name, makePublic, additionalShadcnOverride, concept),
+    saveCurrentTheme: (
+      name?: string,
+      makePublic?: boolean,
+      additionalShadcnOverride?: any,
+      concept?: string,
+    ) => store.saveTheme(name, makePublic, additionalShadcnOverride, concept),
     deleteTheme: store.deleteTheme,
     loadUserThemes: store.loadUserThemes,
     createNewTheme: store.createNewTheme,
