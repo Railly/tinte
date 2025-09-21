@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, User, Users, Heart } from "lucide-react";
+import { ArrowRight, Heart, User, Users } from "lucide-react";
 import { useState } from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
@@ -9,8 +9,8 @@ import { ThemeCard, ThemeCardSkeleton } from "@/components/shared/theme-card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useThemeContext } from "@/providers/theme";
-import type { UserThemeData } from "@/types/user-theme";
 import type { SessionData } from "@/types/auth";
+import type { UserThemeData } from "@/types/user-theme";
 
 interface ShowcaseProps {
   session: SessionData;
@@ -22,13 +22,17 @@ interface ShowcaseProps {
   raysoThemes: UserThemeData[];
 }
 
-export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [], tweakCNThemes, tinteThemes, raysoThemes }: ShowcaseProps) {
+export function Showcase({
+  session,
+  userThemes,
+  publicThemes,
+  favoriteThemes = [],
+  tweakCNThemes,
+  tinteThemes,
+  raysoThemes,
+}: ShowcaseProps) {
   const [activeTab, setActiveTab] = useState("community");
-  const { isDark, handleThemeSelect, mounted } = useThemeContext();
-
-  // All themes now come from database via props
-
-  // Show skeletons while theme context is mounting
+  const { handleThemeSelect, mounted } = useThemeContext();
   const shouldShowSkeletons = !mounted;
 
   return (
@@ -57,24 +61,36 @@ export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [
                   )}
                 </div>
                 <h2 className="text-xl font-medium">
-                  {activeTab === "community" ? "From the Community" :
-                    activeTab === "tinte" ? "Tinte Themes" :
-                      activeTab === "user" ? "My Themes" :
-                        activeTab === "favorites" ? "My Favorites" :
-                          activeTab === "tweakcn" ? "tweakcn Themes" :
-                            activeTab === "rayso" ? "ray.so Themes" :
-                              "From the Community"}
+                  {activeTab === "community"
+                    ? "From the Community"
+                    : activeTab === "tinte"
+                      ? "Tinte Themes"
+                      : activeTab === "user"
+                        ? "My Themes"
+                        : activeTab === "favorites"
+                          ? "My Favorites"
+                          : activeTab === "tweakcn"
+                            ? "tweakcn Themes"
+                            : activeTab === "rayso"
+                              ? "ray.so Themes"
+                              : "From the Community"}
                 </h2>
               </div>
             </div>
             <p className="text-muted-foreground text-sm">
-              {activeTab === "community" ? "Explore what the community is crafting with Tinte." :
-                activeTab === "tinte" ? "Beautiful themes created by the Tinte team." :
-                  activeTab === "user" ? "Your personal theme collection." :
-                    activeTab === "favorites" ? "Themes you've marked as favorites." :
-                      activeTab === "tweakcn" ? "Curated themes from tweakcn.com." :
-                        activeTab === "rayso" ? "Modern themes from ray.so." :
-                          "Explore what the community is crafting with Tinte."}
+              {activeTab === "community"
+                ? "Explore what the community is crafting with Tinte."
+                : activeTab === "tinte"
+                  ? "Beautiful themes created by the Tinte team."
+                  : activeTab === "user"
+                    ? "Your personal theme collection."
+                    : activeTab === "favorites"
+                      ? "Themes you've marked as favorites."
+                      : activeTab === "tweakcn"
+                        ? "Curated themes from tweakcn.com."
+                        : activeTab === "rayso"
+                          ? "Modern themes from ray.so."
+                          : "Explore what the community is crafting with Tinte."}
             </p>
           </div>
           <Tabs
@@ -104,7 +120,11 @@ export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [
                     className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
                   >
                     {session.user.image ? (
-                      <img src={session.user.image} alt="Profile" className="w-3 h-3 rounded-full" />
+                      <img
+                        src={session.user.image}
+                        alt="Profile"
+                        className="w-3 h-3 rounded-full"
+                      />
                     ) : (
                       <User className="w-3 h-3" />
                     )}
@@ -166,7 +186,9 @@ export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [
               <div className="text-center py-12 space-y-4">
                 <Users className="w-12 h-12 mx-auto text-muted-foreground" />
                 <div className="space-y-2">
-                  <h3 className="text-lg font-medium">No community themes yet</h3>
+                  <h3 className="text-lg font-medium">
+                    No community themes yet
+                  </h3>
                   <p className="text-muted-foreground text-sm">
                     Be the first to share a theme with the community!
                   </p>
@@ -255,80 +277,84 @@ export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [
 
         {activeTab === "tweakcn" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {shouldShowSkeletons ? (
-              Array.from({ length: 8 }).map((_, index) => (
-                <ThemeCardSkeleton key={index} />
-              ))
-            ) : (
-              tweakCNThemes.slice(0, 8).map((theme, index) => (
-                <ThemeCard
-                  key={theme.id}
-                  theme={theme}
-                  index={index}
-                  onThemeSelect={handleThemeSelect}
-                  showUserInfo={false}
-                />
-              ))
-            )}
+            {shouldShowSkeletons
+              ? Array.from({ length: 8 }).map((_, index) => (
+                  <ThemeCardSkeleton key={index} />
+                ))
+              : tweakCNThemes
+                  .slice(0, 8)
+                  .map((theme, index) => (
+                    <ThemeCard
+                      key={theme.id}
+                      theme={theme}
+                      index={index}
+                      onThemeSelect={handleThemeSelect}
+                      showUserInfo={false}
+                    />
+                  ))}
           </div>
         )}
 
         {activeTab === "rayso" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {shouldShowSkeletons ? (
-              Array.from({ length: 8 }).map((_, index) => (
-                <ThemeCardSkeleton key={index} />
-              ))
-            ) : (
-              raysoThemes.slice(0, 8).map((theme, index) => (
-                <ThemeCard
-                  key={theme.id}
-                  theme={theme}
-                  index={index}
-                  onThemeSelect={handleThemeSelect}
-                  showUserInfo={false}
-                />
-              ))
-            )}
+            {shouldShowSkeletons
+              ? Array.from({ length: 8 }).map((_, index) => (
+                  <ThemeCardSkeleton key={index} />
+                ))
+              : raysoThemes
+                  .slice(0, 8)
+                  .map((theme, index) => (
+                    <ThemeCard
+                      key={theme.id}
+                      theme={theme}
+                      index={index}
+                      onThemeSelect={handleThemeSelect}
+                      showUserInfo={false}
+                    />
+                  ))}
           </div>
         )}
 
         {activeTab === "tinte" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {shouldShowSkeletons ? (
-              Array.from({ length: 8 }).map((_, index) => (
-                <ThemeCardSkeleton key={index} />
-              ))
-            ) : (
-              tinteThemes.slice(0, 8).map((theme, index) => (
-                <ThemeCard
-                  key={theme.id}
-                  theme={theme}
-                  index={index}
-                  onThemeSelect={handleThemeSelect}
-                  showUserInfo={false}
-                />
-              ))
-            )}
+            {shouldShowSkeletons
+              ? Array.from({ length: 8 }).map((_, index) => (
+                  <ThemeCardSkeleton key={index} />
+                ))
+              : tinteThemes
+                  .slice(0, 8)
+                  .map((theme, index) => (
+                    <ThemeCard
+                      key={theme.id}
+                      theme={theme}
+                      index={index}
+                      onThemeSelect={handleThemeSelect}
+                      showUserInfo={false}
+                    />
+                  ))}
           </div>
         )}
       </div>
 
       {/* Browse All Button */}
       <div className="flex justify-center pb-4">
-        <Button
-          variant="outline"
-          className="gap-2 h-10 px-6"
-          asChild
-        >
+        <Button variant="outline" className="gap-2 h-10 px-6" asChild>
           <a href={`/themes?category=${activeTab}`}>
-            Browse All {activeTab === "community" ? "Community" :
-              activeTab === "tinte" ? "Tinte" :
-                activeTab === "user" ? "My" :
-                  activeTab === "favorites" ? "Favorite" :
-                    activeTab === "tweakcn" ? "tweakcn" :
-                      activeTab === "rayso" ? "ray.so" :
-                        "Community"} Themes
+            Browse All{" "}
+            {activeTab === "community"
+              ? "Community"
+              : activeTab === "tinte"
+                ? "Tinte"
+                : activeTab === "user"
+                  ? "My"
+                  : activeTab === "favorites"
+                    ? "Favorite"
+                    : activeTab === "tweakcn"
+                      ? "tweakcn"
+                      : activeTab === "rayso"
+                        ? "ray.so"
+                        : "Community"}{" "}
+            Themes
             <ArrowRight className="w-4 h-4" />
           </a>
         </Button>
