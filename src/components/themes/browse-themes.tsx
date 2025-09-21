@@ -30,13 +30,14 @@ import type { SessionData } from "@/types/auth";
 import type { UserThemeData } from "@/types/user-theme";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
 import { extractTinteThemeData } from "@/utils/tinte-presets";
-import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
+// Removed tweakcn-presets import - using database themes passed as props
 
 interface BrowseThemesProps {
   session: SessionData;
   userThemes: UserThemeData[];
   publicThemes: UserThemeData[];
   favoriteThemes: UserThemeData[];
+  tweakCNThemes: UserThemeData[];
   publicThemesCount: number;
   initialCategory?: string;
   initialSearch?: string;
@@ -47,6 +48,7 @@ export function BrowseThemes({
   userThemes,
   publicThemes,
   favoriteThemes,
+  tweakCNThemes,
   publicThemesCount,
   initialCategory = "community",
   initialSearch = "",
@@ -89,23 +91,7 @@ export function BrowseThemes({
     sentinelId: "infinite-scroll-sentinel-browse",
   });
 
-  // Get all themes
-  const tweakcnThemes = extractTweakcnThemeData(isDark).map(
-    (themeData, index) => ({
-      ...themeData,
-      description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
-      author: "tweakcn",
-      provider: "tweakcn" as const,
-      downloads: 0,
-      likes: 0,
-      tags: [
-        themeData.name.split(" ")[0].toLowerCase(),
-        "modern",
-        "preset",
-        "community",
-      ],
-    }),
-  );
+  // TweakCN themes now come from database as props
 
   const raysoThemes = extractRaysoThemeData(isDark).map((themeData, index) => ({
     ...themeData,
@@ -169,7 +155,7 @@ export function BrowseThemes({
         allThemes = favoriteThemes;
         break;
       case "tweakcn":
-        allThemes = tweakcnThemes;
+        allThemes = tweakCNThemes;
         break;
       case "rayso":
         allThemes = raysoThemes;
@@ -198,7 +184,7 @@ export function BrowseThemes({
   const totalThemes =
     publicThemesCount +
     userThemes.length +
-    tweakcnThemes.length +
+    tweakCNThemes.length +
     raysoThemes.length +
     tinteThemes.length;
 

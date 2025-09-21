@@ -22,6 +22,7 @@ export default async function Home() {
     : [];
 
   const publicThemes = await UserThemeService.getPublicThemes(8);
+  const tweakCNThemes = await UserThemeService.getTweakCNThemes(8);
 
   return (
     <div className="min-h-screen">
@@ -43,6 +44,7 @@ export default async function Home() {
         userThemes={userThemes}
         publicThemes={publicThemes}
         favoriteThemes={favoriteThemes}
+        tweakCNThemes={tweakCNThemes}
       />
       <Roadmap />
       <FAQ />

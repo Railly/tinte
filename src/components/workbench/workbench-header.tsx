@@ -23,11 +23,13 @@ import { Separator } from "../ui/separator";
 interface WorkbenchHeaderProps {
   chatId: string;
   userThemes?: UserThemeData[];
+  tweakCNThemes?: UserThemeData[];
 }
 
 export function WorkbenchHeader({
   chatId,
   userThemes = [],
+  tweakCNThemes = [],
 }: WorkbenchHeaderProps) {
   const {
     allThemes,
@@ -50,8 +52,9 @@ export function WorkbenchHeader({
   } = useThemeContext();
   const { data: session } = authClient.useSession();
   const activeId = activeTheme?.id || null;
-  // Add user themes to the theme context
+  // Add user themes and TweakCN themes to the theme context
   useEffect(() => {
+    // Add user themes
     userThemes.forEach((userTheme) => {
       const existingTheme = allThemes.find((t) => t.id === userTheme.id);
       if (!existingTheme) {
@@ -63,7 +66,18 @@ export function WorkbenchHeader({
         addTheme(themeWithUser);
       }
     });
-  }, [userThemes, allThemes, addTheme]);
+
+    // Add TweakCN themes
+    tweakCNThemes.forEach((tweakcnTheme) => {
+      const existingTheme = allThemes.find((t) => t.id === tweakcnTheme.id);
+      if (!existingTheme) {
+        const themeData: ThemeData = {
+          ...tweakcnTheme,
+        };
+        addTheme(themeData);
+      }
+    });
+  }, [userThemes, tweakCNThemes, allThemes, addTheme]);
 
   // Get current favorite state using global store
   const isFavorite =

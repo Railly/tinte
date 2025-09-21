@@ -9,7 +9,6 @@ import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
 import { DEFAULT_THEME, extractTinteThemeData } from "@/utils/tinte-presets";
-import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
 
 // Import refactored modules
 import type { ThemeMode, ThemeOverrides } from "./theme/types";
@@ -277,23 +276,7 @@ export const usePersistentThemeStore = create<PersistentThemeState>()(
           const isAnonymous = !!user?.isAnonymous;
 
           // Load theme collections
-          const tweakcnThemes = extractTweakcnThemeData(false).map(
-            (themeData, index) => ({
-              ...themeData,
-              description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
-              author: "tweakcn",
-              provider: "tweakcn" as const,
-              downloads: 8000 + index * 500,
-              likes: 400 + index * 50,
-              installs: 2000 + index * 200,
-              tags: [
-                themeData.name.split(" ")[0].toLowerCase(),
-                "modern",
-                "preset",
-                "community",
-              ],
-            })
-          );
+          const tweakcnThemes: ThemeData[] = [];
 
           const raysoThemes = extractRaysoThemeData(false).map(
             (themeData, index) => ({

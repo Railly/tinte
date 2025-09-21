@@ -81,6 +81,7 @@ export const theme = pgTable("theme", {
   name: text("name").notNull(),
   slug: text("slug").unique().notNull(),
   concept: text("concept"), // AI-generated theme description/mood
+  vendor: text("vendor"), // Theme source: "tweakcn", "rayso", "tinte"
 
   // Light mode
   light_bg: text("light_bg").notNull(),

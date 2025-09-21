@@ -11,7 +11,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useThemeContext } from "@/providers/theme";
 import { extractRaysoThemeData } from "@/utils/rayso-presets";
 import { extractTinteThemeData } from "@/utils/tinte-presets";
-import { extractTweakcnThemeData } from "@/utils/tweakcn-presets";
 import type { UserThemeData } from "@/types/user-theme";
 import type { SessionData } from "@/types/auth";
 
@@ -20,30 +19,14 @@ interface ShowcaseProps {
   userThemes: UserThemeData[];
   publicThemes: UserThemeData[];
   favoriteThemes?: UserThemeData[];
+  tweakCNThemes: UserThemeData[];
 }
 
-export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [] }: ShowcaseProps) {
+export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [], tweakCNThemes }: ShowcaseProps) {
   const [activeTab, setActiveTab] = useState("community");
   const { isDark, handleThemeSelect, mounted } = useThemeContext();
 
   // Static theme data for showcase (no SSR issues)
-  const tweakcnThemes = extractTweakcnThemeData(isDark).map(
-    (themeData, index) => ({
-      ...themeData,
-      description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
-      author: "tweakcn",
-      provider: "tweakcn" as const,
-      downloads: 0,
-      likes: 0,
-      installs: 0,
-      tags: [
-        themeData.name.split(" ")[0].toLowerCase(),
-        "modern",
-        "preset",
-        "community",
-      ],
-    }),
-  );
 
   const raysoThemes = extractRaysoThemeData(isDark).map((themeData, index) => ({
     ...themeData,
@@ -304,7 +287,7 @@ export function Showcase({ session, userThemes, publicThemes, favoriteThemes = [
                 <ThemeCardSkeleton key={index} />
               ))
             ) : (
-              tweakcnThemes.slice(0, 8).map((theme, index) => (
+              tweakCNThemes.slice(0, 8).map((theme, index) => (
                 <ThemeCard
                   key={theme.id}
                   theme={theme}

@@ -65,7 +65,7 @@ export function ThemeSelector({
     return (
       id.startsWith("ai-generated-") ||
       id.startsWith("custom_") ||
-      id.match(/^theme_\d+$/) || // Temporary import IDs like theme_1758412202896
+      Boolean(id.match(/^theme_\d+$/)) || // Temporary import IDs like theme_1758412202896
       id === "theme" ||
       id === "default"
     );

@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { user, userFavorites } from "@/db/schema/user";
 import { eq, desc, count, and, sql } from "drizzle-orm";
+import { VENDORS } from "@/lib/vendors";
 import type {
   DbTheme,
   UserThemeData,
@@ -298,6 +299,47 @@ export class UserThemeService {
     }
   }
 
+  static async getTweakCNThemes(limit?: number): Promise<UserThemeData[]> {
+    try {
+      const baseQuery = db
+        .select()
+        .from(theme)
+        .where(eq(theme.vendor, VENDORS.TWEAKCN))
+        .orderBy(desc(theme.created_at));
+
+      const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
+
+      console.log("UserThemeService - TweakCN themes count:", dbThemes.length);
+
+      const transformedThemes = dbThemes.map((theme) =>
+        UserThemeService.transformDbThemeToUserTheme(
+          theme,
+          {
+            author: "tweakcn",
+            description: `Beautiful ${theme.name.toLowerCase()} theme with carefully crafted color combinations`,
+            tags: [
+              theme.name.split(" ")[0].toLowerCase(),
+              "modern",
+              "preset",
+              "community",
+            ],
+          },
+          null
+        )
+      );
+
+      console.log(
+        "UserThemeService - Transformed TweakCN themes:",
+        transformedThemes.length
+      );
+
+      return transformedThemes;
+    } catch (error) {
+      console.error("Error fetching TweakCN themes:", error);
+      return [];
+    }
+  }
+
   private static transformDbThemeToUserTheme(
     dbTheme: DbTheme,
     options: ThemeTransformOptions = {},
@@ -371,19 +413,19 @@ export class UserThemeService {
     const prefix = mode === "light" ? "light_" : "dark_";
 
     return {
-      bg: dbTheme[`${prefix}bg` as keyof DbTheme] as string,
-      bg_2: dbTheme[`${prefix}bg_2` as keyof DbTheme] as string,
-      ui: dbTheme[`${prefix}ui` as keyof DbTheme] as string,
-      ui_2: dbTheme[`${prefix}ui_2` as keyof DbTheme] as string,
-      ui_3: dbTheme[`${prefix}ui_3` as keyof DbTheme] as string,
-      tx: dbTheme[`${prefix}tx` as keyof DbTheme] as string,
-      tx_2: dbTheme[`${prefix}tx_2` as keyof DbTheme] as string,
-      tx_3: dbTheme[`${prefix}tx_3` as keyof DbTheme] as string,
-      pr: dbTheme[`${prefix}pr` as keyof DbTheme] as string,
-      sc: dbTheme[`${prefix}sc` as keyof DbTheme] as string,
-      ac_1: dbTheme[`${prefix}ac_1` as keyof DbTheme] as string,
-      ac_2: dbTheme[`${prefix}ac_2` as keyof DbTheme] as string,
-      ac_3: dbTheme[`${prefix}ac_3` as keyof DbTheme] as string,
+      bg: (dbTheme[`${prefix}bg` as keyof DbTheme] as string) || "",
+      bg_2: (dbTheme[`${prefix}bg_2` as keyof DbTheme] as string) || "",
+      ui: (dbTheme[`${prefix}ui` as keyof DbTheme] as string) || "",
+      ui_2: (dbTheme[`${prefix}ui_2` as keyof DbTheme] as string) || "",
+      ui_3: (dbTheme[`${prefix}ui_3` as keyof DbTheme] as string) || "",
+      tx: (dbTheme[`${prefix}tx` as keyof DbTheme] as string) || "",
+      tx_2: (dbTheme[`${prefix}tx_2` as keyof DbTheme] as string) || "",
+      tx_3: (dbTheme[`${prefix}tx_3` as keyof DbTheme] as string) || "",
+      pr: (dbTheme[`${prefix}pr` as keyof DbTheme] as string) || "",
+      sc: (dbTheme[`${prefix}sc` as keyof DbTheme] as string) || "",
+      ac_1: (dbTheme[`${prefix}ac_1` as keyof DbTheme] as string) || "",
+      ac_2: (dbTheme[`${prefix}ac_2` as keyof DbTheme] as string) || "",
+      ac_3: (dbTheme[`${prefix}ac_3` as keyof DbTheme] as string) || "",
     };
   }
 
