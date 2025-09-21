@@ -13,6 +13,10 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import RaycastIcon from "@/components/shared/icons/raycast";
+import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import Logo from "@/components/shared/logo";
+import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,15 +30,11 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { Separator } from "@/components/ui/separator";
-import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
-import RaycastIcon from "@/components/shared/icons/raycast";
-import TweakCNIcon from "@/components/shared/icons/tweakcn";
-import Logo from "@/components/shared/logo";
-import { ALL_PROVIDERS } from "@/config/providers";
-import { cn } from "@/lib/utils";
-import { extractThemeColors } from "@/lib/theme-utils";
-import { useThemeContext } from "@/providers/theme";
+import { ALL_FORMATTED_PROVIDERS } from "@/config/providers";
 import { useThemeSearch } from "@/hooks/use-theme-search";
+import { extractThemeColors } from "@/lib/theme-utils";
+import { cn } from "@/lib/utils";
+import { useThemeContext } from "@/providers/theme";
 
 const NAVIGATION_ITEMS = [
   {
@@ -172,7 +172,9 @@ export function TinteCommandMenu({
               </div>
             )}
             <CommandEmpty>
-              {searchQuery.trim() ? "No themes or actions found." : "No results found."}
+              {searchQuery.trim()
+                ? "No themes or actions found."
+                : "No results found."}
             </CommandEmpty>
 
             {/* Navigation */}
@@ -229,7 +231,9 @@ export function TinteCommandMenu({
 
             {/* Search Results */}
             {searchQuery.trim() && searchResults.length > 0 && (
-              <CommandGroup heading={`Search Results (${searchResults.length})`}>
+              <CommandGroup
+                heading={`Search Results (${searchResults.length})`}
+              >
                 {searchResults.map((themeData) => (
                   <CommandItem
                     key={themeData.id}
@@ -272,7 +276,8 @@ export function TinteCommandMenu({
                                 <RaycastIcon className="w-3.5 h-3.5" />
                                 <span>Ray.so</span>
                               </>
-                            ) : themeData.provider === "tinte" && (themeData as any).user?.image ? (
+                            ) : themeData.provider === "tinte" &&
+                              (themeData as any).user?.image ? (
                               <>
                                 <Avatar className="w-3.5 h-3.5">
                                   <AvatarImage
@@ -280,10 +285,15 @@ export function TinteCommandMenu({
                                     alt={(themeData as any).user.name || "User"}
                                   />
                                   <AvatarFallback className="text-[8px]">
-                                    {((themeData as any).user.name?.[0] || "U").toUpperCase()}
+                                    {(
+                                      (themeData as any).user.name?.[0] || "U"
+                                    ).toUpperCase()}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span>by {(themeData as any).user.name || "Anonymous"}</span>
+                                <span>
+                                  by{" "}
+                                  {(themeData as any).user.name || "Anonymous"}
+                                </span>
                               </>
                             ) : themeData.provider === "tinte" ? (
                               <>
@@ -322,7 +332,9 @@ export function TinteCommandMenu({
                     />
                     <div className="flex flex-col min-w-0 flex-1 gap-1">
                       <div className="flex items-center gap-2 w-full min-w-0">
-                        <span className="text-sm font-medium leading-none truncate">{themeData.name}</span>
+                        <span className="text-sm font-medium leading-none truncate">
+                          {themeData.name}
+                        </span>
                       </div>
                       <div className="flex items-center justify-between w-full">
                         <span className="text-xs text-muted-foreground">
@@ -345,7 +357,8 @@ export function TinteCommandMenu({
                                 <RaycastIcon className="w-3.5 h-3.5" />
                                 <span>Ray.so</span>
                               </>
-                            ) : themeData.provider === "tinte" && (themeData as any).user?.image ? (
+                            ) : themeData.provider === "tinte" &&
+                              (themeData as any).user?.image ? (
                               <>
                                 <Avatar className="w-3.5 h-3.5">
                                   <AvatarImage
@@ -353,10 +366,15 @@ export function TinteCommandMenu({
                                     alt={(themeData as any).user.name || "User"}
                                   />
                                   <AvatarFallback className="text-[8px]">
-                                    {((themeData as any).user.name?.[0] || "U").toUpperCase()}
+                                    {(
+                                      (themeData as any).user.name?.[0] || "U"
+                                    ).toUpperCase()}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span>by {(themeData as any).user.name || "Anonymous"}</span>
+                                <span>
+                                  by{" "}
+                                  {(themeData as any).user.name || "Anonymous"}
+                                </span>
                               </>
                             ) : themeData.provider === "tinte" ? (
                               <>
@@ -378,7 +396,7 @@ export function TinteCommandMenu({
             {/* Export Providers */}
             {!searchQuery.trim() && (
               <CommandGroup heading="Export Formats">
-                {ALL_PROVIDERS.slice(0, 4).map((provider) => {
+                {ALL_FORMATTED_PROVIDERS.slice(0, 4).map((provider) => {
                   const Icon = provider.icon;
                   return (
                     <CommandItem

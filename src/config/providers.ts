@@ -18,19 +18,7 @@ import { WarpIcon } from "@/components/shared/icons/warp";
 import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
 import { ZedIcon } from "@/components/shared/icons/zed";
 
-export function getAvailableProviders() {
-  return [];
-}
-
-export function getPreviewableProviders() {
-  return [];
-}
-
-export function getProvidersByCategory(_category: string) {
-  return [];
-}
-
-export const LEGACY_PROVIDERS = [
+export const ALL_PROVIDERS = [
   "shadcn/ui",
   "VS Code",
   "Warp",
@@ -48,10 +36,10 @@ export const LEGACY_PROVIDERS = [
   "GIMP",
 ] as const;
 
-export type LegacyProvider = (typeof LEGACY_PROVIDERS)[number];
+export type Provider = (typeof ALL_PROVIDERS)[number];
 
-export const LEGACY_PROVIDER_ICONS: Record<
-  LegacyProvider,
+export const PROVIDER_ICONS: Record<
+  Provider,
   React.ComponentType<{ className?: string }>
 > = {
   "shadcn/ui": ShadcnIcon,
@@ -71,7 +59,10 @@ export const LEGACY_PROVIDER_ICONS: Record<
   GIMP: GIMPIcon,
 };
 
-export const PLANNED_PROVIDERS = [
+export const ALL_FORMATTED_PROVIDERS = [
+  { id: "shadcn", name: "shadcn/ui", icon: ShadcnIcon },
+  { id: "vscode", name: "VS Code", icon: VSCodeIcon },
+  { id: "shiki", name: "Shiki", icon: ShikiIcon, category: "editor" },
   { id: "banana", name: "Nano Banana", icon: BananaIcon, category: "other" },
   { id: "zed", name: "Zed", icon: ZedIcon, category: "editor" },
   { id: "warp", name: "Warp", icon: WarpIcon, category: "terminal" },
@@ -101,15 +92,4 @@ export const PLANNED_PROVIDERS = [
   { id: "neovim", name: "Neovim", icon: NeovimIcon, category: "editor" },
   { id: "cursor", name: "Cursor", icon: CursorIcon, category: "editor" },
   { id: "gimp", name: "GIMP", icon: GIMPIcon, category: "design" },
-];
-
-// Legacy compatibility exports
-export const PROVIDERS = LEGACY_PROVIDERS;
-export type Provider = LegacyProvider;
-export const PROVIDER_ICONS = LEGACY_PROVIDER_ICONS;
-export const ALL_PROVIDERS = [
-  { id: "shadcn", name: "shadcn/ui", icon: ShadcnIcon },
-  { id: "vscode", name: "VS Code", icon: VSCodeIcon },
-  { id: "shiki", name: "Shiki", icon: ShikiIcon, category: "editor" },
-  ...PLANNED_PROVIDERS,
 ];

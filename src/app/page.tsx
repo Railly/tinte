@@ -29,17 +29,6 @@ export default async function Home() {
   return (
     <div className="min-h-screen">
       <Header />
-      {session && (
-        <div className="bg-muted/50 border-b">
-          <div className="px-4 py-2">
-            <div className="text-center text-sm text-muted-foreground">
-              🎉 Welcome back,{" "}
-              <strong>{session.user.name || session.user.email}</strong>!
-              You&apos;re signed in and ready to create amazing themes.
-            </div>
-          </div>
-        </div>
-      )}
       <Hero />
       <Showcase
         session={session}
