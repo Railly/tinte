@@ -16,7 +16,7 @@ export async function downloadVSCodeTheme({
 }: DownloadVSCodeThemeOptions): Promise<void> {
   try {
     // Use the deployed Netlify function URL
-    const endpoint = "https://www.tinte.dev/api/generate-vscode-theme";
+    const endpoint = "https://tinte-rh.netlify.app/api/generate-vscode-theme";
 
     // Call our Netlify function
     const response = await fetch(endpoint, {

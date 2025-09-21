@@ -301,7 +301,7 @@ function convertTinteToVSCode(tinteTheme, name = "Tinte Theme", overrides) {
   return { light: lightTheme, dark: darkTheme };
 }
 
-const allowedOrigins = ["https://www.tinte.dev", "https://tinte.railly.dev", "http://localhost:3000"];
+const allowedOrigins = ["https://tinte-rh.netlify.app", "https://www.tinte.dev", "https://tinte.railly.dev", "http://localhost:3000"];
 
 export async function handler(event) {
   const origin = event.headers.origin;
