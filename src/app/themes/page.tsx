@@ -4,9 +4,47 @@ import { BrowseThemes } from "@/components/themes/browse-themes";
 import { auth } from "@/lib/auth";
 import { getUserThemes, getUserFavoriteThemes, getPublicThemes, getPublicThemesCount, getTweakCNThemes, getTinteThemes, getRaysoThemes } from "@/lib/user-themes";
 
+import { siteConfig } from "@/config/site";
+
 export const metadata: Metadata = {
-  title: "Browse Themes | Tinte",
-  description: "Explore and discover beautiful themes created by the community",
+  title: "Browse Community Themes",
+  description: "Explore and discover beautiful themes created by the community. Browse themes for VS Code, shadcn/ui, terminals, and more. Get inspired by community creations and find the perfect theme for your workflow.",
+  keywords: [
+    ...siteConfig.keywords,
+    "browse themes",
+    "community themes",
+    "theme gallery",
+    "theme showcase",
+    "user themes",
+    "theme inspiration",
+    "theme collection",
+  ],
+  alternates: {
+    canonical: `${siteConfig.url}/themes`,
+  },
+  openGraph: {
+    title: "Browse Community Themes | Tinte",
+    description: "Explore and discover beautiful themes created by the community. Browse themes for VS Code, shadcn/ui, terminals, and more.",
+    url: `${siteConfig.url}/themes`,
+    type: "website",
+    images: [
+      {
+        url: `${siteConfig.url}/og-themes.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Browse community themes on Tinte - Theme gallery and showcase",
+      },
+    ],
+  },
+  twitter: {
+    title: "Browse Community Themes | Tinte",
+    description: "Explore beautiful themes created by the community. Find inspiration for your next theme.",
+    images: [`${siteConfig.url}/og-themes.jpg`],
+  },
+  other: {
+    "article:section": "Gallery",
+    "article:tag": "themes,community,gallery,showcase",
+  },
 };
 
 export default async function ThemesPage({

@@ -1,6 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/shadcn",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/vscode",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.md$/,

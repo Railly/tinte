@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { FAQ } from "@/components/home/faq";
 import { Header } from "@/components/home/header";
@@ -7,6 +8,40 @@ import { Showcase } from "@/components/home/showcase";
 import { Footer } from "@/components/shared/footer";
 import { auth } from "@/lib/auth";
 import { getUserThemes, getUserFavoriteThemes, getPublicThemes, getTweakCNThemes, getTinteThemes, getRaysoThemes } from "@/lib/user-themes";
+import { siteConfig } from "@/config/site";
+import { generatePageSchema, generateOrganizationSchema } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: "Multi-Platform Theme Generator & Converter",
+  description: siteConfig.longDescription,
+  keywords: siteConfig.keywords,
+  alternates: {
+    canonical: siteConfig.url,
+  },
+  openGraph: {
+    title: `${siteConfig.name} - Multi-Platform Theme Generator & Converter`,
+    description: siteConfig.longDescription,
+    url: siteConfig.url,
+    type: "website",
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} - Create and convert themes for VS Code, shadcn/ui, terminals and more`,
+      },
+    ],
+  },
+  twitter: {
+    title: `${siteConfig.name} - Multi-Platform Theme Generator`,
+    description: siteConfig.longDescription,
+    images: [siteConfig.ogImage],
+  },
+  other: {
+    "article:section": "Technology",
+    "article:tag": siteConfig.keywords.slice(0, 10).join(","),
+  },
+};
 
 export default async function Home() {
   const session = await auth.api.getSession({
@@ -26,22 +61,45 @@ export default async function Home() {
   const tinteThemes = await getTinteThemes(8);
   const raysoThemes = await getRaysoThemes(8);
 
+  const pageSchema = generatePageSchema({
+    title: "Multi-Platform Theme Generator & Converter",
+    description: siteConfig.longDescription,
+    url: siteConfig.url,
+    type: "WebApplication",
+  });
+
+  const organizationSchema = generateOrganizationSchema();
+
   return (
-    <div className="min-h-screen">
-      <Header />
-      <Hero />
-      <Showcase
-        session={session}
-        userThemes={userThemes}
-        publicThemes={publicThemes}
-        favoriteThemes={favoriteThemes}
-        tweakCNThemes={tweakCNThemes}
-        tinteThemes={tinteThemes}
-        raysoThemes={raysoThemes}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(pageSchema),
+        }}
       />
-      <Roadmap />
-      <FAQ />
-      <Footer />
-    </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationSchema),
+        }}
+      />
+      <div className="min-h-screen">
+        <Header />
+        <Hero />
+        <Showcase
+          session={session}
+          userThemes={userThemes}
+          publicThemes={publicThemes}
+          favoriteThemes={favoriteThemes}
+          tweakCNThemes={tweakCNThemes}
+          tinteThemes={tinteThemes}
+          raysoThemes={raysoThemes}
+        />
+        <Roadmap />
+        <FAQ />
+        <Footer />
+      </div>
+    </>
   );
 }

@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
@@ -20,52 +20,79 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: META_THEME_COLORS.light },
+    { media: "(prefers-color-scheme: dark)", color: META_THEME_COLORS.dark },
+  ],
+  colorScheme: "light dark",
+};
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    template: `%s | ${siteConfig.name}`,
   },
   metadataBase: new URL(siteConfig.url),
-  description: siteConfig.description,
-  keywords: [
-    "theme generator",
-    "color palette",
-    "theme converter",
-    "VS Code themes",
-    "Rayso themes",
-    "TweakCN themes",
-    "OKLCH colors",
-    "syntax highlighting",
-  ],
+  description: siteConfig.longDescription,
+  keywords: siteConfig.keywords,
   authors: [
     {
-      name: "Railly Hugo",
-      url: "https://raillyhugo.dev",
+      name: siteConfig.author.name,
+      url: siteConfig.author.url,
     },
   ],
-  creator: "Railly Hugo",
+  creator: siteConfig.author.name,
+  publisher: siteConfig.author.name,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: siteConfig.url,
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: siteConfig.longDescription,
     siteName: siteConfig.name,
     images: [
       {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: `${siteConfig.name} - Multi-platform theme generator`,
+        type: "image/jpeg",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: siteConfig.longDescription,
     images: [siteConfig.ogImage],
-    creator: "@raillyhugo",
+    creator: siteConfig.author.twitter,
+    site: siteConfig.author.twitter,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   icons: {
     icon: "/icon.png",
@@ -73,6 +100,17 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   manifest: `${siteConfig.url}/site.webmanifest`,
+  category: siteConfig.categories[0],
+  classification: siteConfig.categories.join(", "),
+  other: {
+    "application-name": siteConfig.name,
+    "apple-mobile-web-app-title": siteConfig.name,
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "mobile-web-app-capable": "yes",
+    "msapplication-TileColor": "#000000",
+    "msapplication-tap-highlight": "no",
+  },
 };
 
 export default function RootLayout({
