@@ -1,5 +1,9 @@
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
-import { theme, shadcnOverrideSchema, type ShadcnOverrideSchema } from "@/db/schema/theme";
+import {
+  theme,
+  shadcnOverrideSchema,
+  type ShadcnOverrideSchema,
+} from "@/db/schema/theme";
 import type { TinteBlock } from "@/types/tinte";
 import type { ShikiCssTheme } from "@/types/shiki";
 
@@ -21,7 +25,6 @@ export interface VSCodeOverride {
   }>;
 }
 
-// Theme override structure (unified for all modes)
 export interface ThemeOverrides {
   shadcn?: {
     light?: Partial<ShadcnOverrideSchema>;

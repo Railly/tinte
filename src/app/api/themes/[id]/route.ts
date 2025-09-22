@@ -237,7 +237,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     // Get theme by ID - can be public or user's own theme
     const { id } = await context.params;
-    console.log({ id });
     const themeData = await db
       .select()
       .from(theme)

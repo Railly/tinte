@@ -98,8 +98,12 @@ const convertColorToHex = (color: string): string => {
 };
 
 const computeTokens = (theme: ThemeData, mode: ThemeMode, overrides: ThemeOverrides, editedTokens: Record<string, string>): Record<string, string> => {
+  console.log("🎯 computeTokens called with:", { mode, overrides, editedTokens });
+
   const baseTokens = computeThemeTokens(theme)[mode];
   const processedTokens: Record<string, string> = {};
+
+  console.log("Base tokens for", mode, ":", baseTokens);
 
   // Safety check for baseTokens
   if (baseTokens && typeof baseTokens === 'object') {
@@ -110,24 +114,80 @@ const computeTokens = (theme: ThemeData, mode: ThemeMode, overrides: ThemeOverri
     }
   }
 
-  // Apply overrides from shadcn
-  if (overrides.shadcn?.[mode]) {
-    Object.entries(overrides.shadcn[mode]).forEach(([key, value]) => {
-      if (typeof value === "string") {
-        const isColorValue = key.includes("color") || key.includes("background") || key.includes("foreground") ||
-                           key.includes("border") || key.includes("ring") || key.includes("primary") ||
-                           key.includes("secondary") || key.includes("accent") || key.includes("destructive") ||
-                           key.includes("muted") || key.includes("card") || key.includes("popover") ||
-                           key.includes("sidebar") || key.includes("chart");
+  console.log("After base tokens processing:", processedTokens);
 
-        processedTokens[key] = isColorValue ? convertColorToHex(value) : value;
+  // Apply overrides from shadcn - handle different override structures
+  if (overrides.shadcn) {
+    console.log("Found shadcn overrides:", overrides.shadcn);
+
+    // Handle new schema: overrides.shadcn.palettes[mode]
+    if (overrides.shadcn.palettes?.[mode]) {
+      console.log("Using new schema format for shadcn overrides");
+      Object.entries(overrides.shadcn.palettes[mode]).forEach(([key, value]) => {
+        if (typeof value === "string") {
+          const isColorValue = key.includes("color") || key.includes("background") || key.includes("foreground") ||
+                             key.includes("border") || key.includes("ring") || key.includes("primary") ||
+                             key.includes("secondary") || key.includes("accent") || key.includes("destructive") ||
+                             key.includes("muted") || key.includes("card") || key.includes("popover") ||
+                             key.includes("sidebar") || key.includes("chart");
+
+          processedTokens[key] = isColorValue ? convertColorToHex(value) : value;
+        }
+      });
+    }
+    // Handle legacy schema: overrides.shadcn[mode]
+    else if (overrides.shadcn[mode]) {
+      console.log("Using legacy schema format for shadcn overrides");
+      Object.entries(overrides.shadcn[mode]).forEach(([key, value]) => {
+        if (typeof value === "string") {
+          const isColorValue = key.includes("color") || key.includes("background") || key.includes("foreground") ||
+                             key.includes("border") || key.includes("ring") || key.includes("primary") ||
+                             key.includes("secondary") || key.includes("accent") || key.includes("destructive") ||
+                             key.includes("muted") || key.includes("card") || key.includes("popover") ||
+                             key.includes("sidebar") || key.includes("chart");
+
+          processedTokens[key] = isColorValue ? convertColorToHex(value) : value;
+        }
+      });
+    }
+    // Handle current DB structure: overrides.shadcn.light/dark.palettes.light/dark
+    else if (overrides.shadcn.light || overrides.shadcn.dark) {
+      console.log("Using DB structure format for shadcn overrides");
+      const modeOverrides = overrides.shadcn[mode];
+      if (modeOverrides?.palettes?.[mode]) {
+        Object.entries(modeOverrides.palettes[mode]).forEach(([key, value]) => {
+          if (typeof value === "string") {
+            const isColorValue = key.includes("color") || key.includes("background") || key.includes("foreground") ||
+                               key.includes("border") || key.includes("ring") || key.includes("primary") ||
+                               key.includes("secondary") || key.includes("accent") || key.includes("destructive") ||
+                               key.includes("muted") || key.includes("card") || key.includes("popover") ||
+                               key.includes("sidebar") || key.includes("chart");
+
+            processedTokens[key] = isColorValue ? convertColorToHex(value) : value;
+          }
+        });
       }
-    });
+    }
   }
 
-  // Apply extended properties from theme
-  const extendedProps = (theme as any).shadcn_override || overrides.shadcn?.[mode];
+  // Apply extended properties from theme - handle different override structures
+  let extendedProps = null;
+
+  // Try different sources for extended properties
+  if ((theme as any).shadcn_override) {
+    extendedProps = (theme as any).shadcn_override;
+    console.log("Using theme.shadcn_override for extended props:", extendedProps);
+  } else if (overrides.shadcn?.[mode]) {
+    extendedProps = overrides.shadcn[mode];
+    console.log("Using overrides.shadcn[mode] for extended props:", extendedProps);
+  } else if (overrides.shadcn?.light || overrides.shadcn?.dark) {
+    extendedProps = overrides.shadcn[mode];
+    console.log("Using overrides.shadcn from DB structure for extended props:", extendedProps);
+  }
+
   if (extendedProps) {
+    console.log("Applying extended properties:", extendedProps);
+
     if (extendedProps.fonts) {
       if (extendedProps.fonts.sans) processedTokens["font-sans"] = extendedProps.fonts.sans;
       if (extendedProps.fonts.serif) processedTokens["font-serif"] = extendedProps.fonts.serif;
@@ -149,13 +209,17 @@ const computeTokens = (theme: ThemeData, mode: ThemeMode, overrides: ThemeOverri
   // Merge edited tokens and generate shadow variables once at the end
   const finalTokens = { ...processedTokens, ...editedTokens };
 
+  console.log("Final processed tokens before shadow generation:", finalTokens);
+
   // Generate computed shadow variables if any shadow properties exist
   const hasShadowProps = Object.keys(finalTokens).some(key => key.startsWith("shadow-"));
   if (hasShadowProps) {
     const shadowVars = computeShadowVars(finalTokens);
     Object.assign(finalTokens, shadowVars);
+    console.log("Shadow variables generated:", shadowVars);
   }
 
+  console.log("Final tokens to return:", finalTokens);
   return finalTokens;
 };
 
@@ -213,14 +277,19 @@ const extractTinteTheme = (theme: ThemeData): TinteTheme => {
 const applyToDOM = (theme: ThemeData, mode: ThemeMode, tokens: Record<string, string>) => {
   if (typeof window === "undefined") return;
 
+  console.log("🎨 applyToDOM called with:", { mode, tokenCount: Object.keys(tokens).length });
+
   const root = document.documentElement;
   root.setAttribute("data-theme", mode);
 
+  console.log("Set data-theme attribute to:", mode);
 
   // Apply all tokens (colors, fonts, shadows, radius, etc.)
   Object.entries(tokens).forEach(([key, value]) => {
     root.style.setProperty(`--${key}`, value);
   });
+
+  console.log("✅ DOM updated with", Object.keys(tokens).length, "CSS variables");
 
   (window as any).__TINTE_THEME__ = { theme, mode };
 };
@@ -303,15 +372,40 @@ export const useThemeStore = create<ThemeStore>()(
         },
 
         selectTheme: (theme) => {
+          console.log("🎨 Theme Store selectTheme called with:", theme);
+          console.log("Theme shadcn_override:", (theme as any).shadcn_override);
+          console.log("Theme vscode_override:", (theme as any).vscode_override);
+          console.log("Theme shiki_override:", (theme as any).shiki_override);
+
           const themeOverrides = (theme as any).overrides || {};
+
+          // Check if we have database overrides and map them correctly
+          const dbOverrides = {
+            shadcn: (theme as any).shadcn_override || null,
+            vscode: (theme as any).vscode_override || null,
+            shiki: (theme as any).shiki_override || null,
+          };
+
+          console.log("Extracted DB overrides:", dbOverrides);
+          console.log("Legacy theme.overrides:", themeOverrides);
+
+          const finalOverrides = {
+            ...themeOverrides,
+            ...Object.fromEntries(
+              Object.entries(dbOverrides).filter(([_, value]) => value !== null)
+            )
+          };
+
+          console.log("Final overrides to use:", finalOverrides);
+
           const { mode } = get();
-          const newTokens = computeTokens(theme, mode, themeOverrides, {});
+          const newTokens = computeTokens(theme, mode, finalOverrides, {});
           const newTinteTheme = extractTinteTheme(theme);
 
           set({
             activeTheme: theme,
             editedTokens: {},
-            overrides: themeOverrides,
+            overrides: finalOverrides,
             unsavedChanges: false,
             currentTokens: newTokens,
             hasEdits: false,
@@ -392,11 +486,16 @@ export const useThemeStore = create<ThemeStore>()(
 
         updateOverride: (provider, override) => {
           set((state) => {
+            console.log(`🔧 Theme Store updateOverride for ${provider}:`, override);
+            console.log("Current overrides before update:", state.overrides);
+
             const updatedTheme = createThemeForEdit(state.activeTheme);
             const newOverrides = {
               ...state.overrides,
               [provider]: { ...state.overrides[provider], ...override },
             };
+
+            console.log("New overrides after update:", newOverrides);
 
             const newTokens = computeTokens(updatedTheme, state.mode, newOverrides, state.editedTokens);
 

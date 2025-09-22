@@ -26,71 +26,86 @@ export function computeThemeTokens(theme: ThemeData): {
   light: Record<string, string>;
   dark: Record<string, string>;
 } {
+  console.log("📊 computeThemeTokens called with theme:", theme);
+
   // Safety check for theme
   if (!theme) {
     return DEFAULT_THEME.computedTokens;
   }
 
-  if ((theme as any).computedTokens) {
-    const tokens = (theme as any).computedTokens;
-    // Ensure the tokens have the required structure
-    if (tokens.light && tokens.dark) {
-      return {
-        light: tokens.light || {},
-        dark: tokens.dark || {},
-      };
+  // Extract color properties, filtering out font, shadow, and other non-color properties
+  const filterColorProperties = (obj: any) => {
+    const colorProps = {};
+    for (const [key, value] of Object.entries(obj || {})) {
+      // Include all properties that are color-related (exclude font, shadow, radius properties)
+      if (!key.startsWith('font-') &&
+          !key.startsWith('shadow-') &&
+          key !== 'radius' &&
+          typeof value === 'string') {
+        colorProps[key] = value;
+      }
     }
-  }
+    return colorProps;
+  };
 
-  let computedTokens: { light: any; dark: any };
+  // Step 1: Start with converting rawTheme if available
+  let baseTokens: { light: any; dark: any } | null = null;
 
-  // Check if we have shadcn overrides (this should take precedence)
-  // First check if overrides are already structured (from transformOverridesFromDb)
-  const structuredOverrides = (theme as any).overrides?.shadcn;
-  if (structuredOverrides?.light?.palettes) {
-    computedTokens = {
-      light: structuredOverrides.light.palettes.light || {},
-      dark: structuredOverrides.light.palettes.dark || {},
-    };
-  }
-  // Then check direct shadcn_override from database (this is the most common case for TweakCN themes)
-  else if ((theme as any).shadcn_override?.palettes) {
-    computedTokens = {
-      light: (theme as any).shadcn_override.palettes.light || {},
-      dark: (theme as any).shadcn_override.palettes.dark || {},
-    };
-  }
-  // Fallback to old format for backwards compatibility
-  else if ((theme as any).shadcn_overrides) {
-    const overrides = (theme as any).shadcn_overrides;
-    computedTokens = {
-      light: overrides.light || {},
-      dark: overrides.dark || {},
-    };
-  } else if (theme.rawTheme) {
+  if (theme.rawTheme) {
     try {
+      console.log("Converting rawTheme to shadcn format:", theme.rawTheme);
       const shadcnTheme = convertTheme("shadcn", theme.rawTheme) as ShadcnTheme;
       if (shadcnTheme && shadcnTheme.light && shadcnTheme.dark) {
-        computedTokens = {
+        console.log("Successfully converted rawTheme to shadcn:", shadcnTheme);
+        baseTokens = {
           light: shadcnTheme.light,
           dark: shadcnTheme.dark,
         };
-      } else {
-        computedTokens = DEFAULT_THEME.computedTokens;
       }
     } catch (error) {
       console.warn("Error converting theme to shadcn:", error);
-      computedTokens = DEFAULT_THEME.computedTokens;
     }
-  } else {
-    computedTokens = DEFAULT_THEME.computedTokens;
   }
 
-  // Final safety check to ensure we always return valid objects
-  return {
-    light: computedTokens.light || {},
-    dark: computedTokens.dark || {},
-  };
+  // Step 2: Apply overrides granularly if they exist
+  if ((theme as any).shadcn_override?.palettes) {
+    const palettes = (theme as any).shadcn_override.palettes;
+    const hasValidPalettes = (palettes.light && Object.keys(palettes.light).length > 0) ||
+                            (palettes.dark && Object.keys(palettes.dark).length > 0);
+
+    if (hasValidPalettes) {
+      console.log("Applying shadcn_override.palettes with granular precedence");
+
+      // Start with base tokens or empty objects
+      const lightTokens = { ...(baseTokens?.light || {}) };
+      const darkTokens = { ...(baseTokens?.dark || {}) };
+
+      // Override with filtered color properties from overrides
+      const lightOverrides = filterColorProperties(palettes.light);
+      const darkOverrides = filterColorProperties(palettes.dark);
+
+      // Apply overrides granularly (individual properties override base)
+      Object.assign(lightTokens, lightOverrides);
+      Object.assign(darkTokens, darkOverrides);
+
+      const computedTokens = {
+        light: lightTokens,
+        dark: darkTokens,
+      };
+
+      console.log("Final computedTokens with overrides applied:", computedTokens);
+      return computedTokens;
+    }
+  }
+
+  // Step 3: Return base tokens if we have them, otherwise default
+  if (baseTokens) {
+    console.log("Using base tokens from rawTheme conversion");
+    return baseTokens;
+  }
+
+  console.log("No valid theme data found, using default");
+  return DEFAULT_THEME.computedTokens;
 }
 
 export function extractThemeColors(

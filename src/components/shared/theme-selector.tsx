@@ -4,8 +4,8 @@ import { ChevronsUpDown, Heart, Loader2, Users, UserX } from "lucide-react";
 import * as React from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
-import Logo from "@/components/shared/logo";
 import InvertedLogo from "@/components/shared/inverted-logo";
+import Logo from "@/components/shared/logo";
 import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -143,10 +143,6 @@ export function ThemeSelector({
 
   // Organize themes into sections
   const organizedThemes = React.useMemo(() => {
-    console.log("🎨 ThemeSelector organizing themes:", {
-      totalThemes: themes.length,
-      themeIds: themes.map(t => t.id)
-    });
     const combined = [...themes];
 
     // Add selected search theme if it's not already in the themes list
@@ -172,7 +168,7 @@ export function ThemeSelector({
     }
 
     // Create a set of favorite theme IDs to avoid duplicates
-    const favoriteThemeIds = new Set(favoriteThemes.map(t => t.id));
+    const favoriteThemeIds = new Set(favoriteThemes.map((t) => t.id));
 
     // Separate themes into categories, excluding those already in favorites
     const userThemes: ThemeData[] = [];
@@ -201,7 +197,7 @@ export function ThemeSelector({
       // Check if it's a built-in theme (only official presets)
       const isBuiltInTheme =
         (["tweakcn", "ray.so", "tinte"].includes(theme.author || "") ||
-         ["tweakcn", "rayso", "tinte"].includes(theme.provider || "")) &&
+          ["tweakcn", "rayso", "tinte"].includes(theme.provider || "")) &&
         !theme.user?.id;
 
       if (isUserCreated || isOwnTheme) {
@@ -238,7 +234,6 @@ export function ThemeSelector({
     favoriteThemes,
     isAuthenticated,
   ]);
-
 
   // Find active theme in ALL available themes (user + built-in + search results)
   const active = React.useMemo(() => {
@@ -325,7 +320,9 @@ export function ThemeSelector({
                     maxColors={3}
                   />
                 )}
-                <span className="truncate">{active ? getDisplayName(active) : label}</span>
+                <span className="truncate">
+                  {active ? getDisplayName(active) : label}
+                </span>
               </>
             )}
           </div>

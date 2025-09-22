@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { eq } from "drizzle-orm";
 import { convertTinteToShadcn } from "@/lib/providers/shadcn";
 import type { TinteTheme } from "@/types/tinte";
 
@@ -14,7 +14,6 @@ interface RouteContext {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
-    console.log({ id });
     // Get theme by ID - must be public for registry access
     const themeData = await db
       .select()
@@ -149,7 +148,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     console.error("Error generating registry theme:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
