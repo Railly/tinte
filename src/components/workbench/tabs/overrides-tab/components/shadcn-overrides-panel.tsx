@@ -343,8 +343,8 @@ export function ShadcnOverridesPanel({
 
     // Check different override structures for fonts - prioritize top-level fonts from AI generation
     const fonts = currentOverrides.fonts ||
-                  currentOverrides[currentMode]?.fonts ||
-                  defaultFonts;
+      currentOverrides[currentMode]?.fonts ||
+      defaultFonts;
 
     console.log("Fonts for", currentMode, ":", fonts);
     const fontTokens = Object.entries(fonts)
@@ -356,8 +356,8 @@ export function ShadcnOverridesPanel({
 
     // Handle radius - provide default - prioritize top-level radius from AI generation
     const radius = currentOverrides.radius ||
-                   currentOverrides[currentMode]?.radius ||
-                   "0.5rem";
+      currentOverrides[currentMode]?.radius ||
+      "0.5rem";
 
     console.log("Radius for", currentMode, ":", radius);
 
@@ -374,7 +374,7 @@ export function ShadcnOverridesPanel({
     // Always show radius group
     groups.push({
       label: 'Border Radius',
-      tokens: radiusTokens,
+      tokens: radiusTokens as [string, string][],
       type: 'base'
     });
 
@@ -388,9 +388,9 @@ export function ShadcnOverridesPanel({
       offset_y: "1px"
     };
     const shadow = currentOverrides.shadows || // AI generation uses 'shadows'
-                   currentOverrides.shadow ||   // Legacy uses 'shadow'
-                   currentOverrides[currentMode]?.shadow ||
-                   defaultShadow;
+      currentOverrides.shadow ||   // Legacy uses 'shadow'
+      currentOverrides[currentMode]?.shadow ||
+      defaultShadow;
 
     console.log("Shadow for", currentMode, ":", shadow);
     // Always show shadows group
@@ -402,8 +402,8 @@ export function ShadcnOverridesPanel({
 
     // Handle letter spacing - provide default
     const letterSpacing = currentOverrides.letter_spacing ||
-                          currentOverrides[currentMode]?.letter_spacing ||
-                          "0em";
+      currentOverrides[currentMode]?.letter_spacing ||
+      "0em";
 
     console.log("Letter spacing for", currentMode, ":", letterSpacing);
     // Always show letter spacing group
@@ -522,13 +522,13 @@ export function ShadcnOverridesPanel({
                               currentTokens={
                                 group.type === "shadow-properties"
                                   ? {
-                                      "shadow-color": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.color || "0 0 0",
-                                      "shadow-opacity": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.opacity || "0.1",
-                                      "shadow-blur": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.blur || "3px",
-                                      "shadow-spread": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.spread || "0px",
-                                      "shadow-offset-x": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.offsetX || (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.offset_x || "0px",
-                                      "shadow-offset-y": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.offsetY || (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.offset_y || "1px",
-                                    }
+                                    "shadow-color": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.color || "0 0 0",
+                                    "shadow-opacity": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.opacity || "0.1",
+                                    "shadow-blur": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.blur || "3px",
+                                    "shadow-spread": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.spread || "0px",
+                                    "shadow-offset-x": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.offsetX || (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.offset_x || "0px",
+                                    "shadow-offset-y": (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.offsetY || (shadcnOverride?.shadows || shadcnOverride?.shadow || shadcnOverride?.[currentMode]?.shadow)?.offset_y || "1px",
+                                  }
                                   : currentTokens
                               }
                               onEdit={handleTokenEdit}
