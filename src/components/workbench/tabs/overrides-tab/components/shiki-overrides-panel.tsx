@@ -17,6 +17,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useShikiOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-clear-overrides";
+import { ClearOverridesAlert } from "./clear-overrides-alert";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 
@@ -180,12 +182,18 @@ export function ShikiOverridesPanel({
 }: ShikiOverridesPanelProps) {
   const { currentMode, mounted, tinteTheme } = useThemeContext();
   const shikiOverrides = useShikiOverrides();
+  const clearOverrides = useClearOverrides({
+    provider: "shiki",
+    providerHook: shikiOverrides,
+    providerDisplayName: "Shiki",
+  });
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     SHIKI_VARIABLE_GROUPS.reduce(
       (acc, group) => ({ ...acc, [group.label]: true }),
       {},
     ),
   );
+
 
   // Initialize default values from current theme - ensure hex colors
   const getDefaultValue = React.useCallback(
@@ -401,6 +409,7 @@ export function ShikiOverridesPanel({
     );
   };
 
+
   return (
     <div className="flex flex-col h-full">
       {onSearchChange && (
@@ -419,6 +428,14 @@ export function ShikiOverridesPanel({
         indicatorType="shadow"
       >
         <div className="space-y-4 pb-2">
+          {/* Clear Shiki Overrides Alert */}
+          {clearOverrides.hasOverrides && (
+            <ClearOverridesAlert
+              providerDisplayName="Shiki"
+              isClearing={clearOverrides.isClearing}
+              onClear={clearOverrides.handleClearOverrides}
+            />
+          )}
           {searchQuery.trim() && filteredGroups.length === 0 && (
             <div className="p-4 text-center text-muted-foreground bg-muted/20 rounded-md">
               <p className="text-sm">
