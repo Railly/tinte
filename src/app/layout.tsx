@@ -114,7 +114,7 @@ export default function RootLayout({
             <ThemeProvider>
               {children}
               <BetaBanner />
-              <Toaster position="bottom-left" />
+              <Toaster position="bottom-right" />
               <Analytics />
             </ThemeProvider>
           </QueryProvider>
