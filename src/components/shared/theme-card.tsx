@@ -24,7 +24,7 @@ interface ThemeCardProps {
 
 export function ThemeCardListSkeleton() {
   return (
-    <div className="bg-white dark:bg-gray-50/5 rounded-lg border border-gray-200/60 dark:border-gray-800/60 overflow-hidden animate-pulse">
+    <div className="bg-background/50 rounded-lg border border-border/60 overflow-hidden animate-pulse">
       <div className="p-4">
         {/* Top section skeleton */}
         <div className="flex items-start justify-between mb-3">
@@ -74,7 +74,7 @@ export function ThemeCardListSkeleton() {
 
 export function ThemeCardSkeleton() {
   return (
-    <div className="group relative bg-white dark:bg-gray-50/5 rounded-xl border border-gray-200/60 dark:border-gray-800/60 overflow-hidden animate-pulse">
+    <div className="group relative bg-background/50 rounded-xl border border-border/60 overflow-hidden animate-pulse">
       {/* Color preview dots skeleton */}
       <div className="absolute top-3 right-3 flex gap-1 z-10">
         {Array.from({ length: 4 }).map((_, i) => (
@@ -86,21 +86,21 @@ export function ThemeCardSkeleton() {
       </div>
 
       {/* Theme Preview skeleton */}
-      <div className="relative h-40 bg-gray-100 dark:bg-gray-800" />
+      <div className="relative h-40 bg-muted/30" />
 
       {/* Theme Info skeleton */}
-      <div className="p-4 space-y-3 bg-white dark:bg-gray-50/5">
+      <div className="p-4 space-y-3 bg-background/80">
         <div className="space-y-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+          <div className="h-4 bg-muted rounded w-3/4" />
+          <div className="h-3 bg-muted/60 rounded w-full" />
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8" />
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8" />
+            <div className="h-3 bg-muted rounded w-8" />
+            <div className="h-3 bg-muted rounded w-8" />
           </div>
-          <div className="w-3.5 h-3.5 bg-gray-200 dark:bg-gray-700 rounded" />
+          <div className="w-3.5 h-3.5 bg-muted rounded" />
         </div>
       </div>
     </div>
@@ -148,7 +148,7 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
       <motion.div
         whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="group relative bg-white dark:bg-gray-50/5 rounded-lg border border-gray-200/60 dark:border-gray-800/60 hover:border-gray-300/80 dark:hover:border-gray-700/80 hover:shadow-sm cursor-pointer overflow-hidden"
+        className="group relative bg-background/50 backdrop-blur-sm rounded-lg border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
         onClick={handleThemeClick}
         style={{ ...shadcnColors, ...shadcnFonts } as React.CSSProperties}
       >
@@ -278,7 +278,7 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
     <motion.div
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="group relative bg-white dark:bg-gray-50/5 rounded-xl border border-gray-200/60 dark:border-gray-800/60 hover:border-gray-300/80 dark:hover:border-gray-700/80 hover:shadow-sm cursor-pointer overflow-hidden"
+      className="group relative bg-background/50 backdrop-blur-sm rounded-xl border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
       onClick={handleThemeClick}
       style={{ ...shadcnColors, ...shadcnFonts } as React.CSSProperties}
     >
@@ -326,18 +326,18 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
       </div>
 
       {/* Theme Info */}
-      <div className="p-4 space-y-3 bg-white dark:bg-gray-50/5">
+      <div className="p-4 space-y-3 bg-background/80">
         <div className="space-y-1">
-          <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm leading-tight">
+          <h3 className="font-medium text-foreground text-sm leading-tight">
             {theme.name}
           </h3>
-          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 leading-relaxed">
+          <p className="text-xs text-muted-foreground line-clamp-1 leading-relaxed">
             {theme.concept || theme.description}
           </p>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <Heart className="w-3 h-3" />
               {formatNumber(theme.likes || 0)}

@@ -3,7 +3,8 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
+import { BetaBanner } from "@/components/beta-banner";
 import { TinteThemeScript } from "@/components/theme-script";
 import { META_THEME_COLORS, siteConfig } from "@/config/site";
 import { QueryProvider } from "@/providers/query";
@@ -112,11 +113,12 @@ export default function RootLayout({
           <QueryProvider>
             <ThemeProvider>
               {children}
+              <BetaBanner />
+              <Toaster position="bottom-left" />
               <Analytics />
             </ThemeProvider>
           </QueryProvider>
         </NuqsAdapter>
-        <Toaster />
       </body>
     </html>
   );
