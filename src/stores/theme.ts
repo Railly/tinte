@@ -472,6 +472,19 @@ export const useThemeStore = create<ThemeStore>()(
 
           applyToDOM(theme, mode, newTokens);
           saveToStorage(theme, mode, themeOverrides);
+
+          // Reset save state in auth store when switching themes
+          // This needs to be imported dynamically to avoid circular dependency
+          if (typeof window !== "undefined") {
+            import("@/stores/auth").then(({ useAuthStore }) => {
+              const authStore = useAuthStore.getState();
+              // Use Zustand's set method to properly update the store
+              useAuthStore.setState({
+                isSaving: false,
+                lastSaved: null,
+              });
+            });
+          }
         },
 
         editToken: (key, value) => {
@@ -607,6 +620,7 @@ export const useThemeStore = create<ThemeStore>()(
 
           const { activeTheme, mode, overrides, currentTokens } = get();
           applyToDOM(activeTheme, mode, currentTokens);
+          console.log("💾 [resetOverrides] Saving to localStorage with cleared overrides:", overrides);
           saveToStorage(activeTheme, mode, overrides);
         },
 

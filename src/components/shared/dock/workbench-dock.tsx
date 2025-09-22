@@ -1,13 +1,13 @@
-import {  motion, useMotionValue } from "motion/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, useMotionValue } from "motion/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { DeleteThemeDialog } from "@/components/shared/delete-theme-dialog";
 import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
+import { ImportThemeDialog } from "@/components/shared/import-theme-dialog";
 import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
 import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
 import { ShareThemeDialog } from "@/components/shared/share-theme-dialog";
-import { ImportThemeDialog } from "@/components/shared/import-theme-dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   useShadcnOverrides,
@@ -17,8 +17,8 @@ import { useDockActions } from "@/hooks/use-dock-actions";
 import { useDockState } from "@/hooks/use-dock-state";
 import { useThemeHistory } from "@/hooks/use-theme-history";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
-import { exportTheme, getProvider } from "@/lib/providers";
 import { importShadcnTheme } from "@/lib/import-theme";
+import { exportTheme, getProvider } from "@/lib/providers";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteTheme } from "@/types/tinte";
 import { DockExport } from "./dock-export";
@@ -70,6 +70,7 @@ export function Dock({ providerId, providerName }: DockProps) {
     tinteTheme,
     loadUserThemes,
     addTheme,
+    overrides,
   } = useThemeContext();
 
   // Use theme from context instead of props
@@ -94,7 +95,7 @@ export function Dock({ providerId, providerName }: DockProps) {
       console.log(`✅ ${action} completed:`, {
         themeId: savedTheme?.id,
         themeName: savedTheme?.name,
-        navigationUrl: `/workbench/${savedTheme?.id}`
+        navigationUrl: `/workbench/${savedTheme?.id}`,
       });
     } catch (error) {
       console.error(`Error in post-${action.toLowerCase()} navigation:`, error);
@@ -149,7 +150,7 @@ export function Dock({ providerId, providerName }: DockProps) {
 
   // Reset history when switching to a different base theme
   useEffect(() => {
-    const currentThemeId = `${activeTheme?.id || 'unknown'}-${theme.light.pr}-${theme.light.sc}-${theme.light.bg}`;
+    const currentThemeId = `${activeTheme?.id || "unknown"}-${theme.light.pr}-${theme.light.sc}-${theme.light.bg}`;
     if (themeIdRef.current && themeIdRef.current !== currentThemeId) {
       reset(theme);
       isInitialLoad.current = true;
@@ -206,17 +207,31 @@ export function Dock({ providerId, providerName }: DockProps) {
   // Count total override changes across all providers (memoized to prevent loops)
   // For themes with natural overrides, don't count them as changes
   const shadcnCount = useMemo(() => {
-    console.log("🔢 [Override Count] Calculating shadcnCount for theme:", activeTheme?.name);
-    console.log("🔢 [Override Count] Current shadcn overrides:", shadcnOverrides.allOverrides);
+    console.log(
+      "🔢 [Override Count] Calculating shadcnCount for theme:",
+      activeTheme?.name,
+    );
+    console.log(
+      "🔢 [Override Count] Current shadcn overrides:",
+      shadcnOverrides.allOverrides,
+    );
+
+    // Get current overrides from the theme store (the source of truth)
+    const storeOverrides = overrides?.shadcn || {};
 
     // Check if theme has natural overrides (from TweakCN, DB themes, etc.)
-    const hasNaturalOverrides = (
-      activeTheme?.author === 'tweakcn' ||
-      (activeTheme as any)?.overrides?.shadcn ||
-      (activeTheme as any)?.shadcn_override
-    ) && activeTheme?.rawTheme;
+    const hasNaturalOverrides =
+      (activeTheme?.author === "tweakcn" ||
+        activeTheme?.provider === "tweakcn" ||
+        (activeTheme as any)?.overrides?.shadcn ||
+        (activeTheme as any)?.shadcn_override) &&
+      activeTheme?.rawTheme;
 
-    console.log("🔢 [Override Count] Has natural overrides:", hasNaturalOverrides);
+    console.log(
+      "🔢 [Override Count] Has natural overrides:",
+      hasNaturalOverrides,
+    );
+    console.log("🔢 [Override Count] Store overrides:", storeOverrides);
 
     if (hasNaturalOverrides) {
       // Get original overrides from the theme data
@@ -224,28 +239,70 @@ export function Dock({ providerId, providerName }: DockProps) {
         (activeTheme as any).overrides?.shadcn ||
         (activeTheme as any).shadcn_override ||
         {};
-      const currentOverrides = shadcnOverrides.allOverrides || {};
 
       console.log("🔢 [Override Count] Original overrides:", originalOverrides);
-      console.log("🔢 [Override Count] Current overrides:", currentOverrides);
 
-      // Count only differences from original
-      let changeCount = 0;
-
-      ['light', 'dark'].forEach(mode => {
-        const original = originalOverrides[mode] || {};
-        const current = currentOverrides[mode] || {};
-
-        // Check for new overrides
-        Object.keys(current).forEach(key => {
-          if (!(key in original) || original[key] !== current[key]) {
-            changeCount++;
+      // Deep compare original vs current to see if there are actual user changes
+      // Normalize both objects for comparison (handle undefined/null)
+      const normalizeOverrides = (obj: any) => {
+        if (!obj || typeof obj !== "object") return {};
+        const normalized: any = {};
+        ["light", "dark"].forEach((mode) => {
+          if (obj[mode] && typeof obj[mode] === "object") {
+            normalized[mode] = { ...obj[mode] };
           }
         });
+        return normalized;
+      };
 
-        // Check for removed overrides
-        Object.keys(original).forEach(key => {
-          if (!(key in current)) {
+      const normalizedOriginal = normalizeOverrides(originalOverrides);
+      const normalizedCurrent = normalizeOverrides(storeOverrides);
+
+      // If store overrides are empty but original has data, treat as no changes (initial load state)
+      const storeIsEmpty = Object.keys(normalizedCurrent).length === 0 ||
+        (Object.keys(normalizedCurrent).every(mode => Object.keys(normalizedCurrent[mode] || {}).length === 0));
+      const originalHasData = Object.keys(normalizedOriginal).length > 0;
+
+      if (storeIsEmpty && originalHasData) {
+        console.log("🔢 [Override Count] Store is empty but original has data - treating as initial load (no changes)");
+        return 0;
+      }
+
+      const isExactMatch =
+        JSON.stringify(normalizedOriginal) ===
+        JSON.stringify(normalizedCurrent);
+
+      console.log(
+        "🔢 [Override Count] Normalized original:",
+        normalizedOriginal,
+      );
+      console.log("🔢 [Override Count] Normalized current:", normalizedCurrent);
+      console.log("🔢 [Override Count] Is exact match:", isExactMatch);
+
+      if (isExactMatch) {
+        console.log("🔢 [Override Count] Exact match - no changes");
+        return 0;
+      }
+
+      // Count only differences from original using store overrides (source of truth)
+      let changeCount = 0;
+
+      ["light", "dark"].forEach((mode) => {
+        const original = originalOverrides[mode] || {};
+        const current = storeOverrides[mode] || {};
+
+        // Get all unique keys from both objects
+        const allKeys = new Set([
+          ...Object.keys(original),
+          ...Object.keys(current),
+        ]);
+
+        allKeys.forEach((key) => {
+          const originalValue = original[key];
+          const currentValue = current[key];
+
+          // Count as change if values are different or key exists in only one
+          if (originalValue !== currentValue) {
             changeCount++;
           }
         });
@@ -256,34 +313,62 @@ export function Dock({ providerId, providerName }: DockProps) {
     }
 
     // For themes without natural overrides, count all overrides as changes
-    const totalChanges = Object.values(shadcnOverrides.allOverrides || {}).reduce(
+    const totalChanges = Object.values(storeOverrides || {}).reduce(
       (total, modeOverrides) => total + Object.keys(modeOverrides || {}).length,
       0,
     );
-    console.log("🔢 [Override Count] No natural overrides, total changes:", totalChanges);
+    console.log(
+      "🔢 [Override Count] No natural overrides, total changes:",
+      totalChanges,
+    );
     return totalChanges;
-  }, [shadcnOverrides.allOverrides, activeTheme]);
+  }, [overrides?.shadcn, activeTheme]);
 
   const vscodeCount = useMemo(() => {
-    return Object.values(vscodeOverrides.allOverrides || {}).reduce(
+    // Use store overrides as source of truth
+    const storeOverrides = overrides?.vscode || {};
+    return Object.values(storeOverrides).reduce(
       (total, modeOverrides) => total + Object.keys(modeOverrides || {}).length,
       0,
     );
-  }, [vscodeOverrides.allOverrides]);
+  }, [overrides?.vscode]);
 
   const overrideChanges = useMemo(() => {
+    console.log(
+      "🔢 [Override Count] Total change count:",
+      shadcnCount,
+      "1",
+      vscodeCount,
+      "2",
+    );
     return shadcnCount + vscodeCount;
   }, [shadcnCount, vscodeCount]);
 
   const totalChanges = useMemo(() => {
     const total = undoCount + overrideChanges;
-    console.log("📊 [Total Changes] undoCount:", undoCount, "overrideChanges:", overrideChanges, "total:", total);
+    console.log({ undoCount, overrideChanges, total });
+    console.log(
+      "📊 [Total Changes] undoCount:",
+      undoCount,
+      "overrideChanges:",
+      overrideChanges,
+      "total:",
+      total,
+    );
     return total;
   }, [undoCount, overrideChanges]);
 
   const hasChanges = totalChanges > 0 || unsavedChanges;
-  console.log("💾 [Has Changes]", hasChanges, "totalChanges:", totalChanges, "unsavedChanges:", unsavedChanges);
-  console.log("🔍 [Dock Debug] Combined hasChanges calculation:", { totalChanges, unsavedChanges, result: hasChanges });
+  console.log("🔍 [Dock Debug] Combined hasChanges calculation:", {
+    totalChanges,
+    unsavedChanges,
+    result: hasChanges,
+  });
+  console.log("🔍 [Dock Debug] Combined hasChanges calculation:", {
+    totalChanges,
+    unsavedChanges,
+    result: hasChanges,
+  });
 
   const exportedTheme = exportTheme(providerId, theme);
   const primaryActionConfig = getPrimaryActionConfig();
@@ -321,36 +406,37 @@ export function Dock({ providerId, providerName }: DockProps) {
     activeTheme?.id?.startsWith("custom_");
 
   // Check if this is a built-in theme from preset files
-  const isBuiltInTheme = !activeTheme?.id ||
-    activeTheme.id.startsWith('rayso-') ||
-    activeTheme.id.startsWith('tinte-') ||
-    activeTheme.id.startsWith('tweakcn-') ||
-    activeTheme.id.startsWith('modern-minimal') ||
-    activeTheme.id.startsWith('violet-bloom') ||
-    activeTheme.id.startsWith('t3-chat') ||
-    activeTheme.id === 'twitter' ||
-    activeTheme.id === 'bubblegum' ||
-    activeTheme.id === 'catppuccin' ||
-    activeTheme.id === 'graphite' ||
-    activeTheme.id === 'supabase' ||
-    activeTheme.id === 'nature' ||
-    !activeTheme.id.startsWith('theme_');
+  const isBuiltInTheme =
+    !activeTheme?.id ||
+    activeTheme.id.startsWith("rayso-") ||
+    activeTheme.id.startsWith("tinte-") ||
+    activeTheme.id.startsWith("tweakcn-") ||
+    activeTheme.id.startsWith("modern-minimal") ||
+    activeTheme.id.startsWith("violet-bloom") ||
+    activeTheme.id.startsWith("t3-chat") ||
+    activeTheme.id === "twitter" ||
+    activeTheme.id === "bubblegum" ||
+    activeTheme.id === "catppuccin" ||
+    activeTheme.id === "graphite" ||
+    activeTheme.id === "supabase" ||
+    activeTheme.id === "nature" ||
+    !activeTheme.id.startsWith("theme_");
 
   // Determine the preset type for ID prefix
   const getPresetType = () => {
-    if (!activeTheme?.id) return 'tinte';
+    if (!activeTheme?.id) return "tinte";
 
-    if (activeTheme.author === 'tweakcn') {
-      return 'tweakcn';
+    if (activeTheme.author === "tweakcn") {
+      return "tweakcn";
     }
 
     // Rayso presets
-    if (activeTheme.author === 'ray.so') {
-      return 'rayso';
+    if (activeTheme.author === "ray.so") {
+      return "rayso";
     }
 
     // Tinte presets (default)
-    return 'tinte';
+    return "tinte";
   };
 
   // Handle save theme - direct update for own themes, modal for custom unsaved
@@ -373,7 +459,7 @@ export function Dock({ providerId, providerName }: DockProps) {
       themeUserID: activeTheme?.user?.id,
       currentUserID: user?.id,
       themeIdStartsWithTheme: activeTheme?.id?.startsWith("theme_"),
-      activeTheme: activeTheme
+      activeTheme: activeTheme,
     });
 
     // If it's the user's own theme (regardless of unsaved status), update directly without modal
@@ -473,15 +559,18 @@ export function Dock({ providerId, providerName }: DockProps) {
     }
   };
 
-
   const getShareLink = () => {
     if (!activeTheme?.id) return "";
-    if (typeof window === 'undefined') return "";
+    if (typeof window === "undefined") return "";
     const baseUrl = window.location.origin;
     return `${baseUrl}/workbench/${activeTheme.id}`;
   };
 
-  const handleImportTheme = async (name: string, css: string, makePublic: boolean) => {
+  const handleImportTheme = async (
+    name: string,
+    css: string,
+    makePublic: boolean,
+  ) => {
     try {
       // Parse the CSS to get theme data
       const { tinteTheme, shadcnTheme } = importShadcnTheme(css);
@@ -502,15 +591,19 @@ export function Dock({ providerId, providerName }: DockProps) {
           primary: tinteTheme.light.pr,
           secondary: tinteTheme.light.sc,
           background: tinteTheme.light.bg,
+          accent: tinteTheme.light.ac_1,
+          foreground: tinteTheme.light.tx,
         },
         rawTheme: tinteTheme,
         // Ensure proper user association for ownership detection
-        user: user ? {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-        } : null,
+        user: user
+          ? {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            }
+          : null,
       };
 
       // Apply shadcn overrides for the imported CSS first
@@ -533,12 +626,14 @@ export function Dock({ providerId, providerName }: DockProps) {
         const updatedSavedTheme = {
           ...result.savedTheme,
           // Ensure user association is preserved
-          user: user ? {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            image: user.image,
-          } : null,
+          user: user
+            ? {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              }
+            : null,
           // Ensure overrides are preserved
           overrides: {
             shadcn: shadcnTheme,
@@ -604,21 +699,25 @@ export function Dock({ providerId, providerName }: DockProps) {
       activeTheme.name = name;
 
       let shadcnOverrideToSave = null;
-      if (presetType === 'tweakcn' && activeTheme.rawTheme) {
+      if (presetType === "tweakcn" && activeTheme.rawTheme) {
         shadcnOverrideToSave = {
           light: activeTheme.rawTheme.light || {},
-          dark: activeTheme.rawTheme.dark || {}
+          dark: activeTheme.rawTheme.dark || {},
         };
-        console.log('🎨 Saving TweakCN theme with shadcn overrides:', {
+        console.log("🎨 Saving TweakCN theme with shadcn overrides:", {
           themeId: activeTheme.id,
           themeName: activeTheme.name,
           lightKeys: Object.keys(shadcnOverrideToSave.light).length,
-          darkKeys: Object.keys(shadcnOverrideToSave.dark).length
+          darkKeys: Object.keys(shadcnOverrideToSave.dark).length,
         });
       }
 
       // Save the theme with shadcn overrides if needed
-      const result = await saveCurrentTheme(name, makePublic, shadcnOverrideToSave);
+      const result = await saveCurrentTheme(
+        name,
+        makePublic,
+        shadcnOverrideToSave,
+      );
 
       // Restore original values
       activeTheme.id = originalId;
@@ -665,23 +764,18 @@ export function Dock({ providerId, providerName }: DockProps) {
             author: activeTheme.author,
             provider: activeTheme.provider,
             hasRawTheme: !!activeTheme.rawTheme,
-            keys: Object.keys(activeTheme)
+            keys: Object.keys(activeTheme),
           },
           originalThemeData: {
             author: activeTheme.author,
-            provider: activeTheme.provider
-          }
+            provider: activeTheme.provider,
+          },
         });
 
-        const result = await duplicateTheme(
-          activeTheme.id,
-          name,
-          makePublic,
-          {
-            author: activeTheme.author,
-            provider: activeTheme.provider
-          }
-        );
+        const result = await duplicateTheme(activeTheme.id, name, makePublic, {
+          author: activeTheme.author,
+          provider: activeTheme.provider,
+        });
         if (!result.success) {
           throw new Error(result.error || "Failed to duplicate theme");
         }
@@ -693,7 +787,9 @@ export function Dock({ providerId, providerName }: DockProps) {
       }
     } catch (error) {
       console.error("Error duplicating/saving theme:", error);
-      toast.error(isBuiltInTheme ? "Failed to save theme" : "Failed to duplicate theme");
+      toast.error(
+        isBuiltInTheme ? "Failed to save theme" : "Failed to duplicate theme",
+      );
       throw error;
     }
   };
@@ -722,12 +818,14 @@ export function Dock({ providerId, providerName }: DockProps) {
       }
 
       // Auto-select first available theme (store has been updated)
-      const remainingUserThemes = userThemes?.filter(t => t.id !== activeTheme.id) || [];
-      const remainingAllThemes = allThemes?.filter(t => t.id !== activeTheme.id) || [];
+      const remainingUserThemes =
+        userThemes?.filter((t) => t.id !== activeTheme.id) || [];
+      const remainingAllThemes =
+        allThemes?.filter((t) => t.id !== activeTheme.id) || [];
 
       console.log("🔄 Auto-selecting from updated themes:", {
         userThemes: remainingUserThemes.length,
-        allThemes: remainingAllThemes.length
+        allThemes: remainingAllThemes.length,
       });
 
       // Prioritize user themes, then fallback to built-in themes
@@ -809,7 +907,6 @@ export function Dock({ providerId, providerName }: DockProps) {
 
   return (
     <TooltipProvider>
-
       {/* Main Dock */}
       <motion.div
         className="fixed bottom-4 left-1/2 z-50"
@@ -819,7 +916,8 @@ export function Dock({ providerId, providerName }: DockProps) {
         exit="exit"
         transition={{
           type: "spring",
-          bounce: BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ?? 0.3
+          bounce:
+            BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ?? 0.3,
         }}
       >
         <motion.div
@@ -830,7 +928,9 @@ export function Dock({ providerId, providerName }: DockProps) {
           layout
           transition={{
             type: "spring",
-            bounce: BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ?? 0.3
+            bounce:
+              BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ??
+              0.3,
           }}
           style={{ borderRadius: 32 }}
           className="bg-foreground/90 text-background mx-auto w-fit min-w-[100px] overflow-hidden rounded-full border border-foreground/20 shadow-2xl backdrop-blur-md"
@@ -838,7 +938,9 @@ export function Dock({ providerId, providerName }: DockProps) {
           <motion.div
             transition={{
               type: "spring",
-              bounce: BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ?? 0.3
+              bounce:
+                BOUNCE_VARIANTS[variantKey as keyof typeof BOUNCE_VARIANTS] ??
+                0.3,
             }}
             initial={{
               scale: 0.9,
@@ -871,7 +973,9 @@ export function Dock({ providerId, providerName }: DockProps) {
                   // If it's a temporary theme, show save dialog instead
                   if (isTemporaryTheme()) {
                     if (!canSave) {
-                      toast.error("Please sign in to save themes and generate install commands");
+                      toast.error(
+                        "Please sign in to save themes and generate install commands",
+                      );
                       return;
                     }
                     setShouldCopyAfterSave(true);

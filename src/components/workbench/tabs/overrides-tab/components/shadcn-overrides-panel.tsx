@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Info } from "lucide-react";
+import { ChevronDown, Info, Trash2 } from "lucide-react";
 import * as React from "react";
 import { EnhancedTokenInput } from "@/components/shared/enhanced-token-input";
 import { TokenSearch } from "@/components/shared/token-search";
@@ -9,6 +9,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -27,6 +29,7 @@ import { convertTinteToShadcn } from "@/lib/providers/shadcn";
 import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";
+import { toast } from "sonner";
 
 declare global {
   interface Window {
@@ -49,7 +52,7 @@ export function ShadcnOverridesPanel({
   onSearchChange,
   searchPlaceholder = "Search tokens...",
 }: ShadcnOverridesPanelProps) {
-  const { currentTokens, mounted, currentMode, updateShadcnOverride, tinteTheme, shadcnOverride } = useThemeContext();
+  const { currentTokens, mounted, currentMode, updateShadcnOverride, resetOverrides, tinteTheme, shadcnOverride, activeTheme, saveCurrentTheme, selectTheme } = useThemeContext();
   const shadcnOverrides = useShadcnOverrides();
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(() => ({
     'Backgrounds': true,
@@ -64,12 +67,60 @@ export function ShadcnOverridesPanel({
     'Letter Spacing': true,
   }));
 
+  const [isClearing, setIsClearing] = React.useState(false);
+
   const toggleGroup = (groupName: string) => {
     setOpenGroups((prev) => ({
       ...prev,
       [groupName]: !prev[groupName],
     }));
   };
+
+  // Clear all shadcn overrides from both store and database
+  const handleClearOverrides = React.useCallback(async () => {
+    if (!activeTheme?.id || !activeTheme.id.startsWith("theme_")) {
+      toast.error("Can only clear overrides for saved themes");
+      return;
+    }
+
+    setIsClearing(true);
+    try {
+      console.log("🗑️ [Clear Overrides] Clearing shadcn overrides for theme:", activeTheme.id);
+
+      // Clear from local store first (both methods to ensure complete cleanup)
+      updateShadcnOverride(null);
+      resetOverrides("shadcn"); // This also clears localStorage automatically
+
+      // Clear from database by saving with null shadcn overrides
+      const result = await saveCurrentTheme(activeTheme.name, activeTheme.is_public, null);
+
+      if (result.success) {
+        // Force UI repaint by re-selecting the theme without overrides
+        const cleanTheme = {
+          ...activeTheme,
+          shadcn_override: null, // Remove DB overrides
+          overrides: {
+            ...activeTheme.overrides,
+            shadcn: null // Remove local overrides
+          }
+        };
+
+        console.log("🔄 [Clear Overrides] Re-selecting theme to force UI repaint");
+        selectTheme(cleanTheme);
+
+        toast.success("Cleared all shadcn overrides");
+        console.log("✅ [Clear Overrides] Successfully cleared overrides and repainted UI");
+      } else {
+        toast.error("Failed to clear overrides from database");
+        console.error("❌ [Clear Overrides] Failed to clear from DB");
+      }
+    } catch (error) {
+      console.error("💥 [Clear Overrides] Error:", error);
+      toast.error("Error clearing overrides");
+    } finally {
+      setIsClearing(false);
+    }
+  }, [activeTheme, updateShadcnOverride, resetOverrides, saveCurrentTheme, selectTheme]);
 
   const handleTokenEdit = React.useCallback(
     (key: string, value: string) => {
@@ -377,6 +428,27 @@ export function ShadcnOverridesPanel({
     return groups;
   }, [mounted, shadcnOverride, currentMode, tinteTheme]);
 
+  // Check if there are any overrides to show the clear button
+  // This includes both local changes and existing DB overrides
+  const hasOverrides = React.useMemo(() => {
+    // Check local store overrides
+    const hasLocalOverrides = shadcnOverride && Object.keys(shadcnOverride).length > 0;
+
+    // Check if theme has DB overrides
+    const hasDbOverrides = (activeTheme as any)?.shadcn_override &&
+                          Object.keys((activeTheme as any).shadcn_override).length > 0;
+
+    console.log("🔍 [hasOverrides] Check:", {
+      hasLocalOverrides,
+      hasDbOverrides,
+      shadcnOverride,
+      dbOverrides: (activeTheme as any)?.shadcn_override,
+      result: hasLocalOverrides || hasDbOverrides
+    });
+
+    return hasLocalOverrides || hasDbOverrides;
+  }, [shadcnOverride, activeTheme]);
+
   // Filter tokens based on search query
   const filteredTokens = React.useMemo(() => {
     if (!searchQuery.trim()) return organizedTokens;
@@ -418,6 +490,27 @@ export function ShadcnOverridesPanel({
         indicatorType="shadow"
       >
         <div className="space-y-4 pb-2">
+          {/* Clear Overrides Alert */}
+          {hasOverrides && activeTheme?.id?.startsWith("theme_") && (
+            <Alert className="border-destructive/50 bg-destructive/5">
+              <Trash2 className="h-4 w-4 text-destructive" />
+              <AlertDescription className="flex items-center justify-between">
+                <span className="text-sm">
+                  Clear all shadcn overrides from this theme permanently.
+                </span>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleClearOverrides}
+                  disabled={isClearing}
+                  className="ml-3 h-8 px-3"
+                >
+                  {isClearing ? "Clearing..." : "Clear All"}
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="space-y-4">
             {filteredTokens.map((group) => (
               <Collapsible

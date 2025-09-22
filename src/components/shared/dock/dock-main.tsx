@@ -1,5 +1,17 @@
-import { Copy, Download, FileText, Share2, MoreVertical, Redo, RotateCcw, Save, Settings, Undo } from "lucide-react";
-import { motion, type MotionValue } from "motion/react";
+import {
+  Copy,
+  Download,
+  FileText,
+  MoreVertical,
+  Redo,
+  RotateCcw,
+  Save,
+  Settings,
+  Share2,
+  Undo,
+} from "lucide-react";
+import { type MotionValue, motion } from "motion/react";
+import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -7,7 +19,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { DockIcon } from "./base-dock";
-import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 
 interface DockMainProps {
   // macOS dock mouse tracking
@@ -68,7 +79,6 @@ export function DockMain({
   onReset,
   hasChanges,
   canSave,
-  unsavedChanges,
   isSaving,
   onNavigateToExport,
   onNavigateToSettings,
@@ -155,11 +165,7 @@ export function DockMain({
               </DockIcon>
             </TooltipTrigger>
             <TooltipContent>
-              <p>
-                {isSaving
-                  ? "Saving..."
-                  : "Save changes"}
-              </p>
+              <p>{isSaving ? "Saving..." : "Save changes"}</p>
             </TooltipContent>
           </Tooltip>
 

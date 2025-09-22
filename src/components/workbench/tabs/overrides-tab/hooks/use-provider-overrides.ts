@@ -63,11 +63,11 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
   const allOverrides = useMemo(() => {
     switch (provider) {
       case "shadcn":
-        return shadcnOverride;
+        return shadcnOverride || null;
       case "vscode":
-        return vscodeOverride;
+        return vscodeOverride || null;
       case "shiki":
-        return shikiOverride;
+        return shikiOverride || null;
       default:
         return null;
     }
