@@ -690,7 +690,7 @@ export function Dock({ providerId, providerName }: DockProps) {
     if (!activeTheme?.id) return "";
     if (typeof window === "undefined") return "";
     const baseUrl = window.location.origin;
-    return `${baseUrl}/workbench/${activeTheme.id}`;
+    return `${baseUrl}/r/${activeTheme.id}`;
   };
 
   const handleImportTheme = async (
@@ -725,11 +725,11 @@ export function Dock({ providerId, providerName }: DockProps) {
         // Ensure proper user association for ownership detection
         user: user
           ? {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            }
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          }
           : null,
       };
 
@@ -755,11 +755,11 @@ export function Dock({ providerId, providerName }: DockProps) {
           // Ensure user association is preserved
           user: user
             ? {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                image: user.image,
-              }
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            }
             : null,
           // Ensure overrides are preserved
           overrides: {
