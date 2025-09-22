@@ -32,7 +32,8 @@ export function ThemeResultCard({
     canSave,
     isAuthenticated,
     loadUserThemes,
-    selectTheme
+    selectTheme,
+    shadcnOverride
   } = useThemeContext();
 
   const toggleSection = (section: keyof typeof DEFAULT_OPEN_SECTIONS) => {
@@ -43,36 +44,67 @@ export function ThemeResultCard({
   };
 
   const handleSaveTheme = async () => {
+    console.log("🚀 [AI Save] Starting save process");
+
     if (!canSave) {
       toast.error("Please sign in to save themes");
       return;
     }
 
+    console.log("🎨 [AI Save] About to apply theme:", themeOutput);
     // Apply theme first to ensure it's current
     await onApplyTheme(themeOutput);
+    console.log("✅ [AI Save] Theme applied, current shadcnOverride:", shadcnOverride);
 
     setIsSaving(true);
     try {
       const themeName = themeOutput.title || "AI Generated Theme";
       const concept = themeOutput.concept; // Extract concept from AI output
-      const result = await saveCurrentTheme(themeName, false, undefined, concept); // Save as private by default with concept
+
+      console.log("💾 [AI Save] About to save with:", {
+        themeName,
+        shadcnOverride,
+        concept
+      });
+
+      const result = await saveCurrentTheme(themeName, false, shadcnOverride); // Save as private by default with concept from theme
+
+      console.log("📥 [AI Save] Save result:", result);
 
       if (result.success && result.savedTheme) {
+        console.log("🔄 [AI Save] Refreshing theme lists...");
         // Refresh theme lists to include the new theme
         await loadUserThemes();
+        console.log("✅ [AI Save] Theme lists refreshed");
 
-        // Select the saved theme
-        selectTheme(result.savedTheme);
+        // Small delay to ensure all operations are complete
+        setTimeout(() => {
+          console.log("🎯 [AI Save] About to select saved theme:", result.savedTheme);
+
+          // Select the saved theme
+          selectTheme(result.savedTheme);
+
+          console.log("🌐 [AI Save] Theme selected, updating URL...");
+
+          // Update URL without navigation to prevent page reload
+          if (result.savedTheme.id && result.savedTheme.id !== "default" && result.savedTheme.id !== "theme") {
+            const newUrl = `/workbench/${result.savedTheme.id}`;
+            window.history.replaceState(null, '', newUrl);
+            console.log("🔗 [AI Save] URL updated to:", newUrl);
+          }
+        }, 100);
 
         toast.success(`"${themeName}" saved successfully!`);
       } else {
+        console.error("❌ [AI Save] Save failed:", result);
         toast.error("Failed to save theme");
       }
     } catch (error) {
-      console.error("Error saving theme:", error);
+      console.error("💥 [AI Save] Error saving theme:", error);
       toast.error("Error saving theme");
     } finally {
       setIsSaving(false);
+      console.log("🏁 [AI Save] Save process completed");
     }
   };
 

@@ -237,6 +237,10 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       saveTheme: async (theme: ThemeData, name?: string, makePublic = false) => {
+        console.log("🚀 [Auth Store] saveTheme called with:", { theme, name, makePublic });
+        console.log("🔍 [Auth Store] theme.rawTheme:", theme.rawTheme);
+        console.log("🔍 [Auth Store] theme.concept:", theme.concept);
+
         const { isAuthenticated, isAnonymous, userThemes, user } = get();
 
         if (!isAuthenticated && !isAnonymous) {
@@ -274,24 +278,62 @@ export const useAuthStore = create<AuthStore>()(
           }
 
           if (isAuthenticated) {
-            const response = await fetch("/api/themes", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
+            // Check if this is an existing theme owned by the user that should be updated
+            // Exclude AI-generated themes which should always create new themes
+            const isExistingOwnTheme =
+              themeToSave.id &&
+              themeToSave.id.startsWith("theme_") &&
+              !themeToSave.id.startsWith("ai-generated-") &&
+              (themeToSave.user?.id === user?.id || themeToSave.author === "You");
+
+            if (isExistingOwnTheme) {
+              // Update existing theme using PUT
+              const response = await fetch(`/api/themes/${themeToSave.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name: cleanName,
+                  tinteTheme: themeToSave.rawTheme,
+                  overrides: themeToSave.overrides || {},
+                  isPublic: makePublic,
+                  concept: themeToSave.concept,
+                }),
+              });
+
+              if (response.ok) {
+                const result = await response.json();
+                const savedTheme = result.theme;
+                await get().loadUserThemes();
+                set({ lastSaved: new Date() });
+                return { success: true, savedTheme };
+              }
+            } else {
+              // Create new theme using POST
+              const payload = {
                 name: cleanName,
                 tinteTheme: themeToSave.rawTheme,
                 overrides: themeToSave.overrides || {},
                 isPublic: makePublic,
                 concept: themeToSave.concept,
-              }),
-            });
+              };
 
-            if (response.ok) {
-              const result = await response.json();
-              const savedTheme = result.theme;
-              await get().loadUserThemes();
-              set({ lastSaved: new Date() });
-              return { success: true, savedTheme };
+              console.log("📤 [Auth Store] POST payload being sent:", payload);
+              console.log("📤 [Auth Store] themeToSave.rawTheme:", themeToSave.rawTheme);
+              console.log("📤 [Auth Store] themeToSave.concept:", themeToSave.concept);
+
+              const response = await fetch("/api/themes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+
+              if (response.ok) {
+                const result = await response.json();
+                const savedTheme = result.theme;
+                await get().loadUserThemes();
+                set({ lastSaved: new Date() });
+                return { success: true, savedTheme };
+              }
             }
           }
 

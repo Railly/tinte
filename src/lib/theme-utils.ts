@@ -26,7 +26,9 @@ export function computeThemeTokens(theme: ThemeData): {
   light: Record<string, string>;
   dark: Record<string, string>;
 } {
-  console.log("📊 computeThemeTokens called with theme:", theme);
+  console.log("📊 [Theme Utils] computeThemeTokens called with theme:", theme);
+  console.log("📊 [Theme Utils] Theme has shadcn_override:", !!(theme as any).shadcn_override);
+  console.log("📊 [Theme Utils] Theme has rawTheme:", !!theme.rawTheme);
 
   // Safety check for theme
   if (!theme) {
@@ -98,9 +100,61 @@ export function computeThemeTokens(theme: ThemeData): {
     }
   }
 
-  // Step 3: Return base tokens if we have them, otherwise default
+  // Step 3: If no rawTheme but we have individual database columns, convert them
+  if (!baseTokens && (theme as any).light_bg) {
+    console.log("Converting database color columns to rawTheme format");
+    try {
+      const dbTheme = theme as any;
+      const rawTheme = {
+        light: {
+          bg: dbTheme.light_bg,
+          bg_2: dbTheme.light_bg_2,
+          ui: dbTheme.light_ui,
+          ui_2: dbTheme.light_ui_2,
+          ui_3: dbTheme.light_ui_3,
+          tx: dbTheme.light_tx,
+          tx_2: dbTheme.light_tx_2,
+          tx_3: dbTheme.light_tx_3,
+          pr: dbTheme.light_pr,
+          sc: dbTheme.light_sc,
+          ac_1: dbTheme.light_ac_1,
+          ac_2: dbTheme.light_ac_2,
+          ac_3: dbTheme.light_ac_3,
+        },
+        dark: {
+          bg: dbTheme.dark_bg,
+          bg_2: dbTheme.dark_bg_2,
+          ui: dbTheme.dark_ui,
+          ui_2: dbTheme.dark_ui_2,
+          ui_3: dbTheme.dark_ui_3,
+          tx: dbTheme.dark_tx,
+          tx_2: dbTheme.dark_tx_2,
+          tx_3: dbTheme.dark_tx_3,
+          pr: dbTheme.dark_pr,
+          sc: dbTheme.dark_sc,
+          ac_1: dbTheme.dark_ac_1,
+          ac_2: dbTheme.dark_ac_2,
+          ac_3: dbTheme.dark_ac_3,
+        },
+      };
+
+      console.log("Converted database theme to rawTheme:", rawTheme);
+      const shadcnTheme = convertTheme("shadcn", rawTheme) as ShadcnTheme;
+      if (shadcnTheme && shadcnTheme.light && shadcnTheme.dark) {
+        console.log("Successfully converted database theme to shadcn:", shadcnTheme);
+        baseTokens = {
+          light: shadcnTheme.light,
+          dark: shadcnTheme.dark,
+        };
+      }
+    } catch (error) {
+      console.warn("Error converting database theme:", error);
+    }
+  }
+
+  // Step 4: Return base tokens if we have them, otherwise default
   if (baseTokens) {
-    console.log("Using base tokens from rawTheme conversion");
+    console.log("Using base tokens from database conversion");
     return baseTokens;
   }
 

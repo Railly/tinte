@@ -59,6 +59,7 @@ export function Dock({ providerId, providerName }: DockProps) {
     saveCurrentTheme,
     deleteTheme,
     unsavedChanges,
+    markAsSaved,
     isSaving,
     updateShadcnOverride,
     currentTokens,
@@ -205,12 +206,17 @@ export function Dock({ providerId, providerName }: DockProps) {
   // Count total override changes across all providers (memoized to prevent loops)
   // For themes with natural overrides, don't count them as changes
   const shadcnCount = useMemo(() => {
+    console.log("🔢 [Override Count] Calculating shadcnCount for theme:", activeTheme?.name);
+    console.log("🔢 [Override Count] Current shadcn overrides:", shadcnOverrides.allOverrides);
+
     // Check if theme has natural overrides (from TweakCN, DB themes, etc.)
     const hasNaturalOverrides = (
       activeTheme?.author === 'tweakcn' ||
       (activeTheme as any)?.overrides?.shadcn ||
       (activeTheme as any)?.shadcn_override
     ) && activeTheme?.rawTheme;
+
+    console.log("🔢 [Override Count] Has natural overrides:", hasNaturalOverrides);
 
     if (hasNaturalOverrides) {
       // Get original overrides from the theme data
@@ -219,6 +225,9 @@ export function Dock({ providerId, providerName }: DockProps) {
         (activeTheme as any).shadcn_override ||
         {};
       const currentOverrides = shadcnOverrides.allOverrides || {};
+
+      console.log("🔢 [Override Count] Original overrides:", originalOverrides);
+      console.log("🔢 [Override Count] Current overrides:", currentOverrides);
 
       // Count only differences from original
       let changeCount = 0;
@@ -242,14 +251,17 @@ export function Dock({ providerId, providerName }: DockProps) {
         });
       });
 
+      console.log("🔢 [Override Count] Total change count:", changeCount);
       return changeCount;
     }
 
     // For themes without natural overrides, count all overrides as changes
-    return Object.values(shadcnOverrides.allOverrides || {}).reduce(
+    const totalChanges = Object.values(shadcnOverrides.allOverrides || {}).reduce(
       (total, modeOverrides) => total + Object.keys(modeOverrides || {}).length,
       0,
     );
+    console.log("🔢 [Override Count] No natural overrides, total changes:", totalChanges);
+    return totalChanges;
   }, [shadcnOverrides.allOverrides, activeTheme]);
 
   const vscodeCount = useMemo(() => {
@@ -264,10 +276,14 @@ export function Dock({ providerId, providerName }: DockProps) {
   }, [shadcnCount, vscodeCount]);
 
   const totalChanges = useMemo(() => {
-    return undoCount + overrideChanges;
+    const total = undoCount + overrideChanges;
+    console.log("📊 [Total Changes] undoCount:", undoCount, "overrideChanges:", overrideChanges, "total:", total);
+    return total;
   }, [undoCount, overrideChanges]);
 
-  const hasChanges = totalChanges > 0;
+  const hasChanges = totalChanges > 0 || unsavedChanges;
+  console.log("💾 [Has Changes]", hasChanges, "totalChanges:", totalChanges, "unsavedChanges:", unsavedChanges);
+  console.log("🔍 [Dock Debug] Combined hasChanges calculation:", { totalChanges, unsavedChanges, result: hasChanges });
 
   const exportedTheme = exportTheme(providerId, theme);
   const primaryActionConfig = getPrimaryActionConfig();
@@ -349,20 +365,27 @@ export function Dock({ providerId, providerName }: DockProps) {
       return;
     }
 
-    // Check if this is the user's own theme that already exists in the database
-    const isOwnExistingTheme =
-      isOwnTheme &&
-      activeTheme?.id &&
-      !activeTheme.id.startsWith("custom_") &&
-      (activeTheme.id.startsWith("theme_") ||
-        activeTheme.user?.id === user?.id);
+    // Debug ownership detection
+    console.log("🔍 Save Debug Info:", {
+      isOwnTheme,
+      themeId: activeTheme?.id,
+      themeAuthor: activeTheme?.author,
+      themeUserID: activeTheme?.user?.id,
+      currentUserID: user?.id,
+      themeIdStartsWithTheme: activeTheme?.id?.startsWith("theme_"),
+      activeTheme: activeTheme
+    });
 
-    // If it's the user's own existing theme, update directly without modal
-    if (isOwnExistingTheme) {
+    // If it's the user's own theme (regardless of unsaved status), update directly without modal
+    if (isOwnTheme && activeTheme?.id && activeTheme.id.startsWith("theme_")) {
       try {
         const result = await saveCurrentTheme();
         if (result.success) {
           toast.success("Theme updated successfully!");
+          // Reset undo/redo history since saved state is now the baseline
+          reset(theme);
+          // Clear unsaved changes state
+          markAsSaved();
         } else {
           toast.error("Failed to update theme");
         }
@@ -373,7 +396,7 @@ export function Dock({ providerId, providerName }: DockProps) {
       return;
     }
 
-    // For custom unsaved themes or new themes, show the modal
+    // For new themes or non-owned themes, show the modal
     setShowSaveDialog(true);
   };
 
@@ -383,6 +406,10 @@ export function Dock({ providerId, providerName }: DockProps) {
       const result = await saveCurrentTheme(name, makePublic);
       if (result.success && result.savedTheme) {
         toast.success("Theme saved successfully!");
+        // Reset undo/redo history since saved state is now the baseline
+        reset(theme);
+        // Clear unsaved changes state
+        markAsSaved();
         // Handle navigation and theme list refresh
         await handlePostSaveNavigation(result.savedTheme, "Save");
 
@@ -599,6 +626,8 @@ export function Dock({ providerId, providerName }: DockProps) {
 
       // Handle navigation and theme list refresh for successful saves
       if (result.success && result.savedTheme) {
+        // Clear unsaved changes state
+        markAsSaved();
         await handlePostSaveNavigation(result.savedTheme, "Save");
       }
 

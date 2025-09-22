@@ -57,6 +57,7 @@ export function useThemeApplication() {
         },
         tags: ["ai-generated", "custom"],
         rawTheme: extendedRawTheme,
+        concept: toolResult.concept, // Store concept as a property
       };
 
       addTheme(themeData);

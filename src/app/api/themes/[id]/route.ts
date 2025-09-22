@@ -270,7 +270,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       name: themeRecord.name,
       description: themeRecord.concept || `Theme ${themeRecord.name}`,
       concept: themeRecord.concept,
-      author: "User",
+      author: "You",
       provider: "tinte" as const,
       downloads: 0,
       likes: 0,

@@ -74,10 +74,18 @@ export function ThemeSelector({
 
   // Helper function to get display name with (unsaved) indicator
   const getDisplayName = (theme: ThemeData): string => {
-    const isTemp = isTemporaryTheme(theme.id);
     const name = theme.name || "Unnamed Theme";
 
-    // If it's temporary and doesn't already show (unsaved), add it
+    // Check if theme has been properly saved (has a database ID starting with "theme_")
+    const isSaved = theme.id && theme.id.startsWith("theme_") && !theme.id.includes("custom_");
+
+    // If it's saved, remove any (unsaved) indicator
+    if (isSaved && name.includes("(unsaved)")) {
+      return name.replace(" (unsaved)", "").replace("(unsaved)", "").trim();
+    }
+
+    // For unsaved/temporary themes, add (unsaved) if not already present
+    const isTemp = isTemporaryTheme(theme.id);
     if (isTemp && !name.includes("(unsaved)")) {
       return `${name} (unsaved)`;
     }
@@ -136,7 +144,15 @@ export function ThemeSelector({
       if (searchResults.some((t) => t.id === theme.id)) {
         setSelectedSearchTheme(theme);
       }
+
+      // Call the original onSelect callback
       onSelect(theme);
+
+      // Update URL without navigation to prevent page reload
+      if (theme.id && theme.id !== "default" && theme.id !== "theme") {
+        const newUrl = `/workbench/${theme.id}`;
+        window.history.replaceState(null, '', newUrl);
+      }
     },
     [searchResults, onSelect],
   );

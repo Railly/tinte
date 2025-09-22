@@ -58,6 +58,7 @@ export function useTheme() {
     updateTinteTheme: themeStore.updateTinteTheme,
     updateOverride: themeStore.updateOverride,
     resetOverrides: themeStore.resetOverrides,
+    markAsSaved: themeStore.markAsSaved,
     signInAnonymously: authStore.signInAnonymously,
     linkAccount: authStore.linkAccount,
     loadUserThemes: authStore.loadUserThemes,
@@ -100,7 +101,30 @@ export function useTheme() {
     updateShadcnOverride: (override: any) => themeStore.updateOverride("shadcn", override),
     updateVscodeOverride: (override: any) => themeStore.updateOverride("vscode", override),
     updateShikiOverride: (override: any) => themeStore.updateOverride("shiki", override),
-    saveCurrentTheme: (name?: string, makePublic?: boolean) => authStore.saveTheme(themeStore.activeTheme, name, makePublic),
+    saveCurrentTheme: (name?: string, makePublic?: boolean, shadcnOverride?: any) => {
+      // Create theme with current overrides from store
+      console.log("🔍 [saveCurrentTheme] activeTheme:", themeStore.activeTheme);
+      console.log("🔍 [saveCurrentTheme] activeTheme.rawTheme:", themeStore.activeTheme?.rawTheme);
+      console.log("🔍 [saveCurrentTheme] activeTheme.concept:", themeStore.activeTheme?.concept);
+
+      const themeWithOverrides = {
+        ...themeStore.activeTheme,
+        rawTheme: themeStore.activeTheme?.rawTheme, // Explicitly preserve rawTheme
+        concept: themeStore.activeTheme?.concept, // Explicitly preserve concept
+        overrides: {
+          ...themeStore.activeTheme.overrides,
+          shadcn: shadcnOverride || themeStore.overrides.shadcn,
+          vscode: themeStore.overrides.vscode,
+          shiki: themeStore.overrides.shiki,
+        },
+      };
+
+      console.log("🔍 [saveCurrentTheme] themeWithOverrides:", themeWithOverrides);
+      console.log("🔍 [saveCurrentTheme] themeWithOverrides.rawTheme:", themeWithOverrides.rawTheme);
+      console.log("🔍 [saveCurrentTheme] themeWithOverrides.concept:", themeWithOverrides.concept);
+
+      return authStore.saveTheme(themeWithOverrides, name, makePublic);
+    },
     syncAnonymousThemes: () => authStore.initialize(),
   };
 }
@@ -115,7 +139,19 @@ export const useThemeActions = () => {
     updateShadcnOverride: (override: any) => themeStore.updateOverride("shadcn", override),
     updateVscodeOverride: (override: any) => themeStore.updateOverride("vscode", override),
     updateShikiOverride: (override: any) => themeStore.updateOverride("shiki", override),
-    saveCurrentTheme: (name?: string, makePublic?: boolean) => authStore.saveTheme(themeStore.activeTheme, name, makePublic),
+    saveCurrentTheme: (name?: string, makePublic?: boolean, shadcnOverride?: any) => {
+      // Create theme with current overrides from store
+      const themeWithOverrides = {
+        ...themeStore.activeTheme,
+        overrides: {
+          ...themeStore.activeTheme.overrides,
+          shadcn: shadcnOverride || themeStore.overrides.shadcn,
+          vscode: themeStore.overrides.vscode,
+          shiki: themeStore.overrides.shiki,
+        },
+      };
+      return authStore.saveTheme(themeWithOverrides, name, makePublic);
+    },
     addTheme: (theme: any) => themeStore.selectTheme(theme),
     syncAnonymousThemes: () => authStore.initialize(),
     navigateTheme: (direction: "prev" | "next" | "random") => {

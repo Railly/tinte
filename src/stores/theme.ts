@@ -37,6 +37,7 @@ interface ThemeActions {
   updateTinteTheme: (mode: ThemeMode, updates: Partial<TinteBlock>) => void;
   updateOverride: (provider: keyof ThemeOverrides, override: any) => void;
   resetOverrides: (provider?: keyof ThemeOverrides) => void;
+  markAsSaved: () => void;
 }
 
 interface ThemeComputed {
@@ -299,9 +300,16 @@ const createThemeForEdit = (theme: ThemeData): ThemeData => {
     return theme;
   }
 
+  // Check if this is a user's own theme (starts with "theme_" or has proper user info)
+  const isOwnTheme =
+    theme.id?.startsWith("theme_") ||
+    theme.author === "You" ||
+    (theme.user?.id && theme.id && !theme.id.startsWith("custom_"));
+
   return {
     ...theme,
-    id: `custom_${Date.now()}`,
+    // Preserve original ID for owned themes, create custom ID for built-in themes
+    id: isOwnTheme ? theme.id : `custom_${Date.now()}`,
     name: theme.name === "Custom" ? "Custom (unsaved)" : `${theme.name} (unsaved)`,
   };
 };
@@ -372,18 +380,66 @@ export const useThemeStore = create<ThemeStore>()(
         },
 
         selectTheme: (theme) => {
-          console.log("🎨 Theme Store selectTheme called with:", theme);
-          console.log("Theme shadcn_override:", (theme as any).shadcn_override);
-          console.log("Theme vscode_override:", (theme as any).vscode_override);
-          console.log("Theme shiki_override:", (theme as any).shiki_override);
+          console.log("🎨 [Theme Store] selectTheme called with:", theme);
+          console.log("🔍 [Theme Store] theme.rawTheme:", theme.rawTheme);
+          console.log("🔍 [Theme Store] theme.concept:", theme.concept);
+          console.log("📊 [Theme Store] Theme shadcn_override:", (theme as any).shadcn_override);
+          console.log("📊 [Theme Store] Theme vscode_override:", (theme as any).vscode_override);
+          console.log("📊 [Theme Store] Theme shiki_override:", (theme as any).shiki_override);
+          console.log("📊 [Theme Store] Theme overrides property:", (theme as any).overrides);
 
-          const themeOverrides = (theme as any).overrides || {};
+          // If theme doesn't have rawTheme but has database columns, construct it
+          let themeWithRawTheme = theme;
+          if (!theme.rawTheme && (theme as any).light_bg) {
+            console.log("🔧 [Theme Store] Constructing rawTheme from database columns");
+            const dbTheme = theme as any;
+            const rawTheme = {
+              light: {
+                bg: dbTheme.light_bg,
+                bg_2: dbTheme.light_bg_2,
+                ui: dbTheme.light_ui,
+                ui_2: dbTheme.light_ui_2,
+                ui_3: dbTheme.light_ui_3,
+                tx: dbTheme.light_tx,
+                tx_2: dbTheme.light_tx_2,
+                tx_3: dbTheme.light_tx_3,
+                pr: dbTheme.light_pr,
+                sc: dbTheme.light_sc,
+                ac_1: dbTheme.light_ac_1,
+                ac_2: dbTheme.light_ac_2,
+                ac_3: dbTheme.light_ac_3,
+              },
+              dark: {
+                bg: dbTheme.dark_bg,
+                bg_2: dbTheme.dark_bg_2,
+                ui: dbTheme.dark_ui,
+                ui_2: dbTheme.dark_ui_2,
+                ui_3: dbTheme.dark_ui_3,
+                tx: dbTheme.dark_tx,
+                tx_2: dbTheme.dark_tx_2,
+                tx_3: dbTheme.dark_tx_3,
+                pr: dbTheme.dark_pr,
+                sc: dbTheme.dark_sc,
+                ac_1: dbTheme.dark_ac_1,
+                ac_2: dbTheme.dark_ac_2,
+                ac_3: dbTheme.dark_ac_3,
+              },
+            };
+
+            themeWithRawTheme = {
+              ...theme,
+              rawTheme: rawTheme
+            };
+            console.log("✅ [Theme Store] Constructed rawTheme:", rawTheme);
+          }
+
+          const themeOverrides = (themeWithRawTheme as any).overrides || {};
 
           // Check if we have database overrides and map them correctly
           const dbOverrides = {
-            shadcn: (theme as any).shadcn_override || null,
-            vscode: (theme as any).vscode_override || null,
-            shiki: (theme as any).shiki_override || null,
+            shadcn: (themeWithRawTheme as any).shadcn_override || null,
+            vscode: (themeWithRawTheme as any).vscode_override || null,
+            shiki: (themeWithRawTheme as any).shiki_override || null,
           };
 
           console.log("Extracted DB overrides:", dbOverrides);
@@ -396,14 +452,16 @@ export const useThemeStore = create<ThemeStore>()(
             )
           };
 
-          console.log("Final overrides to use:", finalOverrides);
+          console.log("🔧 [Theme Store] Final overrides to use:", finalOverrides);
 
           const { mode } = get();
-          const newTokens = computeTokens(theme, mode, finalOverrides, {});
-          const newTinteTheme = extractTinteTheme(theme);
+          console.log("🎯 [Theme Store] Computing tokens for mode:", mode);
+          const newTokens = computeTokens(themeWithRawTheme, mode, finalOverrides, {});
+          console.log("🎨 [Theme Store] Computed tokens:", newTokens);
+          const newTinteTheme = extractTinteTheme(themeWithRawTheme);
 
           set({
-            activeTheme: theme,
+            activeTheme: themeWithRawTheme,
             editedTokens: {},
             overrides: finalOverrides,
             unsavedChanges: false,
@@ -485,27 +543,38 @@ export const useThemeStore = create<ThemeStore>()(
         },
 
         updateOverride: (provider, override) => {
+          console.log(`🔧 [updateOverride] Called for ${provider}:`, override);
           set((state) => {
-            console.log(`🔧 Theme Store updateOverride for ${provider}:`, override);
-            console.log("Current overrides before update:", state.overrides);
+            console.log("🔍 [updateOverride] Current state before update:", {
+              unsavedChanges: state.unsavedChanges,
+              hasEdits: state.hasEdits,
+              overrides: state.overrides
+            });
 
-            const updatedTheme = createThemeForEdit(state.activeTheme);
+            // DON'T create a new theme for overrides - just update the override state
             const newOverrides = {
               ...state.overrides,
               [provider]: { ...state.overrides[provider], ...override },
             };
 
-            console.log("New overrides after update:", newOverrides);
+            console.log("🆕 [updateOverride] New overrides after update:", newOverrides);
 
-            const newTokens = computeTokens(updatedTheme, state.mode, newOverrides, state.editedTokens);
+            const newTokens = computeTokens(state.activeTheme, state.mode, newOverrides, state.editedTokens);
 
-            return {
-              activeTheme: updatedTheme,
+            const newState = {
+              // Keep the same activeTheme - don't create a new one
               overrides: newOverrides,
               currentTokens: newTokens,
               unsavedChanges: true,
               hasEdits: true,
             };
+
+            console.log("✅ [updateOverride] Setting new state:", {
+              unsavedChanges: newState.unsavedChanges,
+              hasEdits: newState.hasEdits
+            });
+
+            return newState;
           });
 
           const { activeTheme, mode, overrides, currentTokens } = get();
@@ -539,6 +608,16 @@ export const useThemeStore = create<ThemeStore>()(
           const { activeTheme, mode, overrides, currentTokens } = get();
           applyToDOM(activeTheme, mode, currentTokens);
           saveToStorage(activeTheme, mode, overrides);
+        },
+
+        // Mark current theme as saved (clear unsaved changes)
+        markAsSaved: () => {
+          console.log("🧹 [markAsSaved] Clearing unsaved changes");
+          set({
+            unsavedChanges: false,
+            hasEdits: false,
+          });
+          console.log("✅ [markAsSaved] State cleared");
         },
       };
     }),

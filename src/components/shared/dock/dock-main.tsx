@@ -141,13 +141,13 @@ export function DockMain({
                 mouseX={mouseX}
                 onClick={onSave}
                 className={`${
-                  isSaving || !canSave || !unsavedChanges
+                  isSaving || !canSave
                     ? "opacity-30 cursor-not-allowed rounded-full border border-border/50"
                     : "cursor-pointer hover:bg-primary/90 bg-primary text-primary-foreground rounded-full border border-primary/50"
                 } relative`}
               >
                 <Save className="h-4 w-4" />
-                {unsavedChanges && canSave && (
+                {canSave && (
                   <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
                     !
                   </span>
@@ -158,9 +158,7 @@ export function DockMain({
               <p>
                 {isSaving
                   ? "Saving..."
-                  : unsavedChanges
-                    ? "Save changes"
-                    : "No changes to save"}
+                  : "Save changes"}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -171,7 +169,7 @@ export function DockMain({
               <DockIcon
                 mouseX={mouseX}
                 onClick={onReset}
-                className={`${!hasChanges ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-accent/50"} rounded-full border border-border/50`}
+                className="cursor-pointer hover:bg-accent/50 rounded-full border border-border/50"
               >
                 <RotateCcw className="h-4 w-4" />
               </DockIcon>
