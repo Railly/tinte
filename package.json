@@ -102,6 +102,7 @@
     "zustand": "^5.0.7"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "5.7.0",
     "@tailwindcss/postcss": "^4",
     "@types/culori": "^4.0.0",
     "@types/node": "^20",

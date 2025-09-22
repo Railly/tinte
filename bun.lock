@@ -93,6 +93,7 @@
         "zustand": "^5.0.7",
       },
       "devDependencies": {
+        "@netlify/plugin-nextjs": "5.7.0",
         "@tailwindcss/postcss": "^4",
         "@types/culori": "^4.0.0",
         "@types/node": "^20",
@@ -454,6 +455,8 @@
     "@netlify/open-api": ["@netlify/open-api@2.38.0", "", {}, "sha512-CiTfXV226itvGRzFCNCwegblJd9fUl+ZgrI6/9JEDH6b11uI0y+gZnk+eT8onOias/rq0ep0DCwIElG6vMbCTw=="],
 
     "@netlify/opentelemetry-utils": ["@netlify/opentelemetry-utils@2.0.1", "", { "peerDependencies": { "@opentelemetry/api": "~1.8.0" } }, "sha512-SE9dZZR620yTYky8By/8h+UaTMugxue8oL51aRUrvtDg7y8Ed6fYKC8VY5JExCkLWQ1k3874qktwfc5gdMVx+w=="],
+
+    "@netlify/plugin-nextjs": ["@netlify/plugin-nextjs@5.7.0", "", {}, "sha512-HFZBHz70oDmw/5tKXH3F6WX4X01/DgY9etjLXjfDSxYl+AiNKwL+1kePUMp73zMFN5M+TU/TsEaFr38wmE6EVQ=="],
 
     "@netlify/plugins-list": ["@netlify/plugins-list@6.80.0", "", {}, "sha512-bCKLI51UZ70ziIWsf2nvgPd4XuG6m8AMCoHiYtl/BSsiaSBfmryZnTTqdRXerH09tBRpbPPwzaEgUJwyU9o8Qw=="],
 

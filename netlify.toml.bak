@@ -1,0 +1,18 @@
+[build]
+  command = "mv next.config.ts next.config.ts.bak && bun run build && mv next.config.ts.bak next.config.ts"
+  publish = ".next"
+
+[context.production.environment]
+  NODE_VERSION = "20"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+
+[[redirects]]
+  from = "/api/generate-vscode-theme"
+  to = "/.netlify/functions/generate-vscode-theme"
+  status = 200
