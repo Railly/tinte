@@ -45,6 +45,22 @@ export function useTheme() {
     vscodeOverride: themeStore.overrides.vscode,
     shikiOverride: themeStore.overrides.shiki,
 
+    // Typography and styling properties
+    fonts: {
+      sans: themeStore.currentTokens["font-sans"] || "Inter, ui-sans-serif, system-ui, sans-serif",
+      serif: themeStore.currentTokens["font-serif"] || "Georgia, Cambria, \"Times New Roman\", serif",
+      mono: themeStore.currentTokens["font-mono"] || "JetBrains Mono, ui-monospace, SFMono-Regular, monospace",
+    },
+    radius: themeStore.currentTokens["radius"] || "0.5rem",
+    shadows: {
+      color: themeStore.currentTokens["shadow-color"] || "hsl(0 0% 0%)",
+      opacity: themeStore.currentTokens["shadow-opacity"] || "0.1",
+      blur: themeStore.currentTokens["shadow-blur"] || "4px",
+      spread: themeStore.currentTokens["shadow-spread"] || "0px",
+      offsetX: themeStore.currentTokens["shadow-offset-x"] || "0px",
+      offsetY: themeStore.currentTokens["shadow-offset-y"] || "2px",
+    },
+
     // Export functionality removed to prevent infinite re-renders
     // Use useThemeExport directly in components that need it
 

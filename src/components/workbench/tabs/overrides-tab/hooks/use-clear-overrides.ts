@@ -85,10 +85,8 @@ export function useClearOverrides({
       // Clear from database by saving with null override for this provider
       const result = await saveCurrentTheme(
         activeTheme.name,
-        activeTheme.is_public,
-        shadcnOverride,
-        vscodeOverride,
-        shikiOverride
+        activeTheme.is_public ?? false,
+        shadcnOverride
       );
 
       if (result.success) {

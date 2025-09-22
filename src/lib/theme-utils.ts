@@ -37,7 +37,7 @@ export function computeThemeTokens(theme: ThemeData): {
 
   // Extract color properties, filtering out font, shadow, and other non-color properties
   const filterColorProperties = (obj: any) => {
-    const colorProps = {};
+    const colorProps: Record<string, string> = {};
     for (const [key, value] of Object.entries(obj || {})) {
       // Include all properties that are color-related (exclude font, shadow, radius properties)
       if (!key.startsWith('font-') &&

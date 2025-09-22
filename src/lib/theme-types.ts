@@ -115,6 +115,7 @@ export interface ProviderThemeData {
   } | null;
   overrides?: ThemeOverrides;
   isFavorite?: boolean;
+  is_public?: boolean;
 }
 
 // Export schema types for validation
