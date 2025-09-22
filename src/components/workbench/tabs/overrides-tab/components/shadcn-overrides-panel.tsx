@@ -496,7 +496,7 @@ export function ShadcnOverridesPanel({
               <Trash2 className="h-4 w-4 text-destructive" />
               <AlertDescription className="flex items-center justify-between">
                 <span className="text-sm">
-                  Clear all shadcn overrides from this theme permanently.
+                  Clear shadcn overrides from this theme permanently.
                 </span>
                 <Button
                   variant="destructive"

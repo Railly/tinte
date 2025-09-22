@@ -325,13 +325,140 @@ export function Dock({ providerId, providerName }: DockProps) {
   }, [overrides?.shadcn, activeTheme]);
 
   const vscodeCount = useMemo(() => {
-    // Use store overrides as source of truth
+    console.log(
+      "🔢 [Override Count] Calculating vscodeCount for theme:",
+      activeTheme?.name,
+    );
+
+    // Get current overrides from the theme store (the source of truth)
     const storeOverrides = overrides?.vscode || {};
-    return Object.values(storeOverrides).reduce(
+
+    console.log("🔢 [Override Count] VSCode store overrides:", storeOverrides);
+
+    // Check if theme has natural VSCode overrides (from DB themes, etc.)
+    const hasNaturalOverrides =
+      (activeTheme as any)?.overrides?.vscode ||
+      (activeTheme as any)?.vscode_override;
+
+    console.log(
+      "🔢 [Override Count] Has natural VSCode overrides:",
+      hasNaturalOverrides,
+    );
+
+    if (hasNaturalOverrides) {
+      // Get original overrides from the theme data
+      const originalOverrides =
+        (activeTheme as any).overrides?.vscode ||
+        (activeTheme as any).vscode_override ||
+        {};
+
+      console.log("🔢 [Override Count] VSCode original overrides:", originalOverrides);
+      console.log("🔢 [Override Count] VSCode original overrides JSON:", JSON.stringify(originalOverrides));
+
+      // Normalize both objects for comparison (handle undefined/null)
+      const normalizeOverrides = (obj: any) => {
+        if (!obj || typeof obj !== "object") return {};
+        const normalized: any = {};
+        ["light", "dark"].forEach((mode) => {
+          if (obj[mode] && typeof obj[mode] === "object") {
+            normalized[mode] = { ...obj[mode] };
+          }
+        });
+        return normalized;
+      };
+
+      const normalizedOriginal = normalizeOverrides(originalOverrides);
+      const normalizedCurrent = normalizeOverrides(storeOverrides);
+
+      // If store overrides are empty but original has data, treat as no changes (initial load state)
+      const storeIsEmpty = Object.keys(normalizedCurrent).length === 0 ||
+        (Object.keys(normalizedCurrent).every(mode => Object.keys(normalizedCurrent[mode] || {}).length === 0));
+      const originalHasData = Object.keys(normalizedOriginal).length > 0;
+
+      if (storeIsEmpty && originalHasData) {
+        console.log("🔢 [Override Count] VSCode store is empty but original has data - treating as initial load (no changes)");
+        return 0;
+      }
+
+      // Check if store has partial data compared to original (subset scenario)
+      // This happens when store is being populated gradually and doesn't have all modes yet
+      const storeHasSubsetOfOriginal = () => {
+        // Check if all store keys exist in original with same values
+        for (const mode of Object.keys(normalizedCurrent)) {
+          const storeMode = normalizedCurrent[mode] || {};
+          const originalMode = normalizedOriginal[mode] || {};
+
+          for (const key of Object.keys(storeMode)) {
+            if (storeMode[key] !== originalMode[key]) {
+              return false; // Values don't match, not a subset
+            }
+          }
+        }
+        return true; // All store values match original values
+      };
+
+      if (originalHasData && storeHasSubsetOfOriginal()) {
+        console.log("🔢 [Override Count] VSCode store appears to be a subset of original (partial load) - treating as no changes");
+        return 0;
+      }
+
+      const isExactMatch =
+        JSON.stringify(normalizedOriginal) ===
+        JSON.stringify(normalizedCurrent);
+
+      console.log(
+        "🔢 [Override Count] VSCode normalized original:",
+        normalizedOriginal,
+      );
+      console.log("🔢 [Override Count] VSCode normalized current:", normalizedCurrent);
+      console.log("🔢 [Override Count] VSCode original JSON:", JSON.stringify(normalizedOriginal));
+      console.log("🔢 [Override Count] VSCode current JSON:", JSON.stringify(normalizedCurrent));
+      console.log("🔢 [Override Count] VSCode is exact match:", isExactMatch);
+
+      if (isExactMatch) {
+        console.log("🔢 [Override Count] VSCode exact match - no changes");
+        return 0;
+      }
+
+      // Count only differences from original using store overrides (source of truth)
+      let changeCount = 0;
+
+      ["light", "dark"].forEach((mode) => {
+        const original = originalOverrides[mode] || {};
+        const current = storeOverrides[mode] || {};
+
+        // Get all unique keys from both objects
+        const allKeys = new Set([
+          ...Object.keys(original),
+          ...Object.keys(current),
+        ]);
+
+        allKeys.forEach((key) => {
+          const originalValue = original[key];
+          const currentValue = current[key];
+
+          // Count as change if values are different or key exists in only one
+          if (originalValue !== currentValue) {
+            changeCount++;
+          }
+        });
+      });
+
+      console.log("🔢 [Override Count] VSCode total change count:", changeCount);
+      return changeCount;
+    }
+
+    // For themes without natural overrides, count all overrides as changes
+    const totalChanges = Object.values(storeOverrides).reduce(
       (total, modeOverrides) => total + Object.keys(modeOverrides || {}).length,
       0,
     );
-  }, [overrides?.vscode]);
+    console.log(
+      "🔢 [Override Count] VSCode no natural overrides, total changes:",
+      totalChanges,
+    );
+    return totalChanges;
+  }, [overrides?.vscode, activeTheme]);
 
   const overrideChanges = useMemo(() => {
     console.log(

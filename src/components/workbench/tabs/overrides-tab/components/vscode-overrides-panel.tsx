@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Info } from "lucide-react";
+import { ChevronDown, Info, Trash2 } from "lucide-react";
 import * as React from "react";
 import { TokenSearch } from "@/components/shared/token-search";
 import { VSCodeTokenInput } from "@/components/shared/vscode-token-input";
@@ -9,6 +9,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -29,6 +31,7 @@ import {
 } from "@/lib/vscode-token-utils";
 import { useThemeContext } from "@/providers/theme";
 import { useVSCodeOverrides } from "../hooks/use-provider-overrides";
+import { toast } from "sonner";
 
 // Comprehensive editor color groups - ALL tokens from editorColorMap organized logically
 const EDITOR_COLOR_GROUPS = [
@@ -694,7 +697,7 @@ export function VSCodeOverridesPanel({
   onSearchChange,
   searchPlaceholder = "Search tokens...",
 }: VSCodeOverridesPanelProps) {
-  const { tinteTheme, currentMode, mounted } = useThemeContext();
+  const { tinteTheme, currentMode, mounted, activeTheme, saveCurrentTheme, selectTheme } = useThemeContext();
   const vscodeOverrides = useVSCodeOverrides();
   const [activeTab, setActiveTab] = React.useState("tokens");
   const [openTokenGroups, setOpenTokenGroups] = React.useState<
@@ -713,6 +716,53 @@ export function VSCodeOverridesPanel({
       {},
     ),
   );
+
+  const [isClearing, setIsClearing] = React.useState(false);
+
+  // Clear all VSCode overrides from both store and database
+  const handleClearOverrides = React.useCallback(async () => {
+    if (!activeTheme?.id || !activeTheme.id.startsWith("theme_")) {
+      toast.error("Can only clear overrides for saved themes");
+      return;
+    }
+
+    setIsClearing(true);
+    try {
+      console.log("🗑️ [Clear VSCode Overrides] Clearing vscode overrides for theme:", activeTheme.id);
+
+      // Clear from local store first
+      vscodeOverrides.resetAllOverrides();
+
+      // Clear from database by saving with null vscode overrides
+      const result = await saveCurrentTheme(activeTheme.name, activeTheme.is_public, undefined, null);
+
+      if (result.success) {
+        // Force UI repaint by re-selecting the theme without overrides
+        const cleanTheme = {
+          ...activeTheme,
+          vscode_override: null, // Remove DB overrides
+          overrides: {
+            ...activeTheme.overrides,
+            vscode: null // Remove local overrides
+          }
+        };
+
+        console.log("🔄 [Clear VSCode Overrides] Re-selecting theme to force UI repaint");
+        selectTheme(cleanTheme);
+
+        toast.success("Cleared all VSCode overrides");
+        console.log("✅ [Clear VSCode Overrides] Successfully cleared overrides and repainted UI");
+      } else {
+        toast.error("Failed to clear overrides from database");
+        console.error("❌ [Clear VSCode Overrides] Failed to clear from DB");
+      }
+    } catch (error) {
+      console.error("💥 [Clear VSCode Overrides] Error:", error);
+      toast.error("Error clearing overrides");
+    } finally {
+      setIsClearing(false);
+    }
+  }, [activeTheme, vscodeOverrides, saveCurrentTheme, selectTheme]);
 
   // Determine if we should show skeletons or real data
   const currentColors = tinteTheme?.[currentMode];
@@ -875,6 +925,26 @@ export function VSCodeOverridesPanel({
     return currentColors?.[mappedKey];
   };
 
+  // Check if there are any VSCode overrides to show the clear button
+  const hasVSCodeOverrides = React.useMemo(() => {
+    // Check local store overrides
+    const hasLocalOverrides = vscodeOverrides.hasAnyOverrides;
+
+    // Check if theme has DB overrides
+    const hasDbOverrides = (activeTheme as any)?.vscode_override &&
+                          Object.keys((activeTheme as any).vscode_override).length > 0;
+
+    console.log("🔍 [hasVSCodeOverrides] Check:", {
+      hasLocalOverrides,
+      hasDbOverrides,
+      vscodeOverrides: vscodeOverrides.allOverrides,
+      dbOverrides: (activeTheme as any)?.vscode_override,
+      result: hasLocalOverrides || hasDbOverrides
+    });
+
+    return hasLocalOverrides || hasDbOverrides;
+  }, [vscodeOverrides.hasAnyOverrides, vscodeOverrides.allOverrides, activeTheme]);
+
   return (
     <div className="flex flex-col h-full">
       {onSearchChange && (
@@ -911,6 +981,28 @@ export function VSCodeOverridesPanel({
         showScrollIndicators={true}
         indicatorType="shadow"
       >
+        {/* Clear VSCode Overrides Alert */}
+        {hasVSCodeOverrides && activeTheme?.id?.startsWith("theme_") && (
+          <div className="mb-4">
+            <Alert className="border-destructive/50 bg-destructive/5">
+              <Trash2 className="h-4 w-4 text-destructive" />
+              <AlertDescription className="flex items-center justify-between">
+                <span className="text-sm">
+                  Clear VSCode overrides from this theme permanently.
+                </span>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleClearOverrides}
+                  disabled={isClearing}
+                  className="ml-3 h-8 px-3"
+                >
+                  {isClearing ? "Clearing..." : "Clear All"}
+                </Button>
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
         {activeTab === "tokens" && (
           <div className="space-y-4 pb-2">
             {searchQuery.trim() && !hasTokenResults && hasEditorResults && (
