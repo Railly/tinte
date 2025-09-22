@@ -148,9 +148,10 @@ export function ThemeSelector({
       // Call the original onSelect callback
       onSelect(theme);
 
-      // Update URL without navigation to prevent page reload
+      // Update URL without navigation to prevent page reload, preserving query params
       if (theme.id && theme.id !== "default" && theme.id !== "theme") {
-        const newUrl = `/workbench/${theme.id}`;
+        const currentUrl = new URL(window.location.href);
+        const newUrl = `/workbench/${theme.id}${currentUrl.search}`;
         window.history.replaceState(null, '', newUrl);
       }
     },

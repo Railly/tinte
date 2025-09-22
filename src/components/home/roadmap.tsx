@@ -47,7 +47,7 @@ export function Roadmap() {
             <Button
               variant="outline"
               className="gap-2 h-9 text-sm w-full sm:w-auto"
-              onClick={() => console.log("Suggest feature")}
+              onClick={() => window.open("https://github.com/Railly/tinte/issues", "_blank")}
             >
               <Plus className="w-4 h-4" />
               Suggest a Feature

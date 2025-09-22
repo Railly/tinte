@@ -47,17 +47,21 @@ export async function getThemesWithUsers(
 
     const results = await (limit ? baseQuery.limit(limit) : baseQuery);
 
-    return results.map((result) =>
-      transformThemeToMetadata(
-        result.theme,
-        {
-          author: result.user?.name || "Anonymous",
-          description: `Theme by ${result.user?.name || "Anonymous"}`,
-          tags: ["user", "custom"],
-          isFavorite: Boolean(result.isFavorite),
-        },
-        result.user,
-      ),
+    return await Promise.all(
+      results.map(async (result) => {
+        const likeCount = await getThemeLikeCount(result.theme.id);
+        return transformThemeToMetadata(
+          result.theme,
+          {
+            author: result.user?.name || "Anonymous",
+            description: `Theme by ${result.user?.name || "Anonymous"}`,
+            tags: ["user", "custom"],
+            isFavorite: Boolean(result.isFavorite),
+            likes: likeCount,
+          },
+          result.user,
+        );
+      }),
     );
   } catch (error) {
     console.error("Error fetching themes with users:", error);
@@ -84,16 +88,20 @@ export async function getUserThemes(
 
     const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
 
-    const transformedThemes = dbThemes.map((theme) =>
-      transformThemeToMetadata(
-        theme,
-        {
-          author: "You",
-          description: `Custom theme created by you`,
-          tags: ["custom", "user"],
-        },
-        currentUser,
-      ),
+    const transformedThemes = await Promise.all(
+      dbThemes.map(async (themeData) => {
+        const likeCount = await getThemeLikeCount(themeData.id);
+        return transformThemeToMetadata(
+          themeData,
+          {
+            author: "You",
+            description: `Custom theme created by you`,
+            tags: ["custom", "user"],
+            likes: likeCount,
+          },
+          currentUser,
+        );
+      }),
     );
 
     return transformedThemes;
@@ -124,7 +132,7 @@ export async function getPublicThemes(
       })
       .from(theme)
       .leftJoin(user, eq(theme.user_id, user.id))
-      .where(eq(theme.is_public, true))
+      .where(and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`))
       .orderBy(desc(theme.created_at));
 
     // Only add userFavorites join if currentUserId is provided
@@ -146,21 +154,25 @@ export async function getPublicThemes(
         ? baseQuery.limit(limit)
         : baseQuery);
 
-    const transformedThemes = results.map((result) =>
-      transformThemeToMetadata(
-        result.theme,
-        {
-          author: result.user?.name || "Anonymous",
-          description: `Beautiful ${result.theme.name.toLowerCase()} theme ${
-            result.user?.name
-              ? `by ${result.user.name}`
-              : "shared by the community"
-          }`,
-          tags: ["community", "public", "shared"],
-          isFavorite: Boolean(result.isFavorite),
-        },
-        result.user,
-      ),
+    const transformedThemes = await Promise.all(
+      results.map(async (result) => {
+        const likeCount = await getThemeLikeCount(result.theme.id);
+        return transformThemeToMetadata(
+          result.theme,
+          {
+            author: result.user?.name || "Anonymous",
+            description: `Beautiful ${result.theme.name.toLowerCase()} theme ${
+              result.user?.name
+                ? `by ${result.user.name}`
+                : "shared by the community"
+            }`,
+            tags: ["community", "public", "shared"],
+            isFavorite: Boolean(result.isFavorite),
+            likes: likeCount,
+          },
+          result.user,
+        );
+      }),
     );
 
     return transformedThemes;
@@ -175,7 +187,7 @@ export async function getPublicThemesCount(): Promise<number> {
     const result = await db
       .select({ count: count() })
       .from(theme)
-      .where(eq(theme.is_public, true));
+      .where(and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`));
 
     return result[0]?.count || 0;
   } catch (error) {
@@ -198,23 +210,27 @@ export async function getAllPublicThemes(): Promise<ThemeWithMetadata[]> {
       })
       .from(theme)
       .leftJoin(user, eq(theme.user_id, user.id))
-      .where(eq(theme.is_public, true))
+      .where(and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`))
       .orderBy(desc(theme.created_at));
 
-    const transformedThemes = results.map((result) =>
-      transformThemeToMetadata(
-        result.theme,
-        {
-          author: result.user?.name || "Anonymous",
-          description: `Beautiful ${result.theme.name.toLowerCase()} theme ${
-            result.user?.name
-              ? `by ${result.user.name}`
-              : "shared by the community"
-          }`,
-          tags: ["community", "public", "shared"],
-        },
-        result.user,
-      ),
+    const transformedThemes = await Promise.all(
+      results.map(async (result) => {
+        const likeCount = await getThemeLikeCount(result.theme.id);
+        return transformThemeToMetadata(
+          result.theme,
+          {
+            author: result.user?.name || "Anonymous",
+            description: `Beautiful ${result.theme.name.toLowerCase()} theme ${
+              result.user?.name
+                ? `by ${result.user.name}`
+                : "shared by the community"
+            }`,
+            tags: ["community", "public", "shared"],
+            likes: likeCount,
+          },
+          result.user,
+        );
+      }),
     );
 
     return transformedThemes;
@@ -244,19 +260,23 @@ export async function getUserFavoriteThemes(
       .where(eq(userFavorites.userId, userId))
       .orderBy(desc(userFavorites.createdAt));
 
-    const transformedThemes = results.map((result) =>
-      transformThemeToMetadata(
-        result.theme,
-        {
-          author: result.user?.name || "Anonymous",
-          description: `${result.theme.name} ${
-            result.user?.name ? `by ${result.user.name}` : "from the community"
-          }`,
-          tags: ["favorite", "starred"],
-          isFavorite: true,
-        },
-        result.user,
-      ),
+    const transformedThemes = await Promise.all(
+      results.map(async (result) => {
+        const likeCount = await getThemeLikeCount(result.theme.id);
+        return transformThemeToMetadata(
+          result.theme,
+          {
+            author: result.user?.name || "Anonymous",
+            description: `${result.theme.name} ${
+              result.user?.name ? `by ${result.user.name}` : "from the community"
+            }`,
+            tags: ["favorite", "starred"],
+            isFavorite: true,
+            likes: likeCount,
+          },
+          result.user,
+        );
+      }),
     );
 
     return transformedThemes;
@@ -280,21 +300,25 @@ export async function getTweakCNThemes(
 
     console.log("UserThemeService - TweakCN themes count:", dbThemes.length);
 
-    const transformedThemes = dbThemes.map((theme) =>
-      transformThemeToMetadata(
-        theme,
-        {
-          author: "tweakcn",
-          description: `Beautiful ${theme.name.toLowerCase()} theme with carefully crafted color combinations`,
-          tags: [
-            theme.name.split(" ")[0].toLowerCase(),
-            "modern",
-            "preset",
-            "community",
-          ],
-        },
-        null,
-      ),
+    const transformedThemes = await Promise.all(
+      dbThemes.map(async (themeData) => {
+        const likeCount = await getThemeLikeCount(themeData.id);
+        return transformThemeToMetadata(
+          themeData,
+          {
+            author: "tweakcn",
+            description: `Beautiful ${themeData.name.toLowerCase()} theme with carefully crafted color combinations`,
+            tags: [
+              themeData.name.split(" ")[0].toLowerCase(),
+              "modern",
+              "preset",
+              "community",
+            ],
+            likes: likeCount,
+          },
+          null,
+        );
+      }),
     );
 
     console.log(
@@ -323,21 +347,25 @@ export async function getTinteThemes(
 
     console.log("UserThemeService - Tinte themes count:", dbThemes.length);
 
-    const transformedThemes = dbThemes.map((theme) =>
-      transformThemeToMetadata(
-        theme,
-        {
-          author: "tinte",
-          description: `Beautiful ${theme.name.toLowerCase()} theme with modern design principles`,
-          tags: [
-            theme.name.split(" ")[0].toLowerCase(),
-            "modern",
-            "preset",
-            "official",
-          ],
-        },
-        null,
-      ),
+    const transformedThemes = await Promise.all(
+      dbThemes.map(async (themeData) => {
+        const likeCount = await getThemeLikeCount(themeData.id);
+        return transformThemeToMetadata(
+          themeData,
+          {
+            author: "tinte",
+            description: `Beautiful ${themeData.name.toLowerCase()} theme with modern design principles`,
+            tags: [
+              themeData.name.split(" ")[0].toLowerCase(),
+              "modern",
+              "preset",
+              "official",
+            ],
+            likes: likeCount,
+          },
+          null,
+        );
+      }),
     );
 
     console.log(
@@ -366,21 +394,25 @@ export async function getRaysoThemes(
 
     console.log("UserThemeService - Rayso themes count:", dbThemes.length);
 
-    const transformedThemes = dbThemes.map((theme) =>
-      transformThemeToMetadata(
-        theme,
-        {
-          author: "ray.so",
-          description: `Beautiful ${theme.name.toLowerCase()} theme inspired by ray.so aesthetics`,
-          tags: [
-            theme.name.split(" ")[0].toLowerCase(),
-            "rayso",
-            "preset",
-            "community",
-          ],
-        },
-        null,
-      ),
+    const transformedThemes = await Promise.all(
+      dbThemes.map(async (themeData) => {
+        const likeCount = await getThemeLikeCount(themeData.id);
+        return transformThemeToMetadata(
+          themeData,
+          {
+            author: "ray.so",
+            description: `Beautiful ${themeData.name.toLowerCase()} theme inspired by ray.so aesthetics`,
+            tags: [
+              themeData.name.split(" ")[0].toLowerCase(),
+              "rayso",
+              "preset",
+              "community",
+            ],
+            likes: likeCount,
+          },
+          null,
+        );
+      }),
     );
 
     console.log(
@@ -392,6 +424,20 @@ export async function getRaysoThemes(
   } catch (error) {
     console.error("Error fetching Rayso themes:", error);
     return [];
+  }
+}
+
+async function getThemeLikeCount(themeId: string): Promise<number> {
+  try {
+    const result = await db
+      .select({ count: count() })
+      .from(userFavorites)
+      .where(eq(userFavorites.themeId, themeId));
+
+    return result[0]?.count || 0;
+  } catch (error) {
+    console.error("Error fetching theme like count:", error);
+    return 0;
   }
 }
 
@@ -410,6 +456,8 @@ function transformThemeToMetadata(
     description = "Custom theme created by user",
     tags = ["custom", "user"],
     isFavorite = false,
+    likes = 0,
+    downloads = 0,
   } = options;
 
   return {
@@ -423,10 +471,9 @@ function transformThemeToMetadata(
     description: dbTheme.concept || description,
     tags,
 
-    // Provider metadata (required for compatibility)
-    provider: (dbTheme.vendor || "tinte") as "tweakcn" | "rayso" | "tinte",
-    downloads: 0,
-    likes: 0,
+    provider: dbTheme.vendor as "tweakcn" | "rayso" | "tinte",
+    downloads,
+    likes,
     createdAt: dbTheme.created_at?.toISOString() || new Date().toISOString(),
 
     // User context

@@ -2,6 +2,8 @@ import type { TinteTheme } from "@/types/tinte";
 
 export { alacrittyProvider } from "./alacritty";
 export { bananaProvider } from "./banana";
+export { brandGuidelinesProvider } from "./brand-guidelines";
+export { designSystemProvider } from "./design-system";
 export { gimpProvider } from "./gimp";
 export { kittyProvider } from "./kitty";
 // Export new Poline-based providers
@@ -13,6 +15,8 @@ export { slackProvider } from "./slack";
 export * from "./types";
 export * from "./vscode";
 
+import { brandGuidelinesProvider } from "./brand-guidelines";
+import { designSystemProvider } from "./design-system";
 import { ProviderRegistry } from "./registry";
 import { shadcnProvider } from "./shadcn";
 import { shikiProvider } from "./shiki";
@@ -32,6 +36,8 @@ const registry = new ProviderRegistry();
 registry.registerPreviewable(shadcnProvider);
 registry.registerPreviewable(vscodeProvider);
 registry.registerPreviewable(shikiProvider);
+registry.registerPreviewable(brandGuidelinesProvider);
+registry.registerPreviewable(designSystemProvider);
 // registry.registerPreviewable(alacrittyProvider);
 // registry.registerPreviewable(bananaProvider);
 // registry.registerPreviewable(kittyProvider);

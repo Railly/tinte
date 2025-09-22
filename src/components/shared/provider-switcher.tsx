@@ -77,7 +77,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={`justify-between ${className} hover:text-muted-foreground w-[18ch] transition-all duration-150`}
+          className={`justify-between ${className} hover:text-muted-foreground w-[22ch] transition-all duration-150`}
         >
           <div className="flex items-center gap-2 min-w-0">
             {activeProvider.icon && (

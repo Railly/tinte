@@ -88,6 +88,8 @@ export interface ThemeTransformOptions {
   description?: string;
   tags?: string[];
   isFavorite?: boolean;
+  likes?: number;
+  downloads?: number;
 }
 
 // Provider-specific theme data (for external integrations)
