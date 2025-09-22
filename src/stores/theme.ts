@@ -174,36 +174,74 @@ const computeTokens = (theme: ThemeData, mode: ThemeMode, overrides: ThemeOverri
   // Apply extended properties from theme - handle different override structures
   let extendedProps = null;
 
-  // Try different sources for extended properties
+  // Apply extended properties from multiple sources with proper priority
+  // 1. Start with rawTheme for AI-generated extended properties (lowest priority)
+  let baseExtendedProps = null;
+  if (theme.rawTheme && (theme.rawTheme as any).fonts) {
+    baseExtendedProps = theme.rawTheme;
+    console.log("Found base extended props in theme.rawTheme:", baseExtendedProps);
+  }
+  // 2. Merge with theme.shadcn_override from database
   if ((theme as any).shadcn_override) {
-    extendedProps = (theme as any).shadcn_override;
-    console.log("Using theme.shadcn_override for extended props:", extendedProps);
-  } else if (overrides.shadcn?.[mode]) {
-    extendedProps = overrides.shadcn[mode];
-    console.log("Using overrides.shadcn[mode] for extended props:", extendedProps);
-  } else if (overrides.shadcn?.light || overrides.shadcn?.dark) {
-    extendedProps = overrides.shadcn[mode];
-    console.log("Using overrides.shadcn from DB structure for extended props:", extendedProps);
+    baseExtendedProps = {
+      ...baseExtendedProps,
+      ...(theme as any).shadcn_override
+    };
+    console.log("Merged with theme.shadcn_override:", baseExtendedProps);
+  }
+  // 3. Override with current user overrides (highest priority)
+  if (overrides.shadcn) {
+    extendedProps = {
+      ...baseExtendedProps,
+      ...overrides.shadcn
+    };
+    console.log("Final extended props with user overrides:", extendedProps);
+  } else {
+    extendedProps = baseExtendedProps;
   }
 
   if (extendedProps) {
     console.log("Applying extended properties:", extendedProps);
 
+    // Handle fonts
     if (extendedProps.fonts) {
       if (extendedProps.fonts.sans) processedTokens["font-sans"] = extendedProps.fonts.sans;
       if (extendedProps.fonts.serif) processedTokens["font-serif"] = extendedProps.fonts.serif;
       if (extendedProps.fonts.mono) processedTokens["font-mono"] = extendedProps.fonts.mono;
     }
-    if (extendedProps.radius) processedTokens["radius"] = extendedProps.radius;
+
+    // Handle radius - support both AI format (object) and legacy format (string)
+    if (extendedProps.radius) {
+      if (typeof extendedProps.radius === 'object') {
+        // AI format: { sm: "0.125rem", md: "0.25rem", lg: "0.5rem", xl: "0.75rem" }
+        Object.entries(extendedProps.radius).forEach(([key, value]) => {
+          processedTokens[`radius-${key}`] = value as string;
+        });
+        // Also set the default radius to the medium value
+        processedTokens["radius"] = extendedProps.radius.md || extendedProps.radius.lg || "0.5rem";
+      } else {
+        // Legacy format: single string value
+        processedTokens["radius"] = extendedProps.radius;
+      }
+    }
+
+    // Handle letter spacing
     if (extendedProps.letter_spacing) processedTokens["letter-spacing"] = extendedProps.letter_spacing;
-    if (extendedProps.shadow) {
-      const shadow = extendedProps.shadow;
-      if (shadow.color) processedTokens["shadow-color"] = shadow.color;
-      if (shadow.opacity) processedTokens["shadow-opacity"] = shadow.opacity;
-      if (shadow.blur) processedTokens["shadow-blur"] = shadow.blur;
-      if (shadow.spread) processedTokens["shadow-spread"] = shadow.spread;
-      if (shadow.offset_x) processedTokens["shadow-offset-x"] = shadow.offset_x;
-      if (shadow.offset_y) processedTokens["shadow-offset-y"] = shadow.offset_y;
+
+    // Handle shadows - support both AI format (shadows) and legacy format (shadow)
+    const shadowData = extendedProps.shadows || extendedProps.shadow;
+    if (shadowData) {
+      if (shadowData.color) processedTokens["shadow-color"] = shadowData.color;
+      if (shadowData.opacity) processedTokens["shadow-opacity"] = shadowData.opacity;
+      if (shadowData.blur) processedTokens["shadow-blur"] = shadowData.blur;
+      if (shadowData.spread) processedTokens["shadow-spread"] = shadowData.spread;
+      // Handle both AI format (offsetX/offsetY) and legacy format (offset_x/offset_y)
+      if (shadowData.offsetX || shadowData.offset_x) {
+        processedTokens["shadow-offset-x"] = shadowData.offsetX || shadowData.offset_x;
+      }
+      if (shadowData.offsetY || shadowData.offset_y) {
+        processedTokens["shadow-offset-y"] = shadowData.offsetY || shadowData.offset_y;
+      }
     }
   }
 
@@ -451,6 +489,21 @@ export const useThemeStore = create<ThemeStore>()(
               Object.entries(dbOverrides).filter(([_, value]) => value !== null)
             )
           };
+
+          // If there are extended properties in rawTheme but no overrides, populate the overrides
+          // This ensures that AI-generated themes show their extended properties in the overrides panel
+          if (themeWithRawTheme.rawTheme && !finalOverrides.shadcn?.fonts && !finalOverrides.shadcn?.radius && !finalOverrides.shadcn?.shadows) {
+            const rawTheme = themeWithRawTheme.rawTheme as any;
+            if (rawTheme.fonts || rawTheme.radius || rawTheme.shadows) {
+              finalOverrides.shadcn = {
+                ...finalOverrides.shadcn,
+                ...(rawTheme.fonts && { fonts: rawTheme.fonts }),
+                ...(rawTheme.radius && { radius: rawTheme.radius }),
+                ...(rawTheme.shadows && { shadows: rawTheme.shadows }),
+              };
+              console.log("🎨 [Theme Store] Auto-populated overrides from rawTheme:", finalOverrides.shadcn);
+            }
+          }
 
           console.log("🔧 [Theme Store] Final overrides to use:", finalOverrides);
 
