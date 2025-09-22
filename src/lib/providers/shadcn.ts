@@ -192,9 +192,16 @@ export function convertTinteToShadcn(tinte: TinteTheme | any): ShadcnTheme {
       ? (tinte as any)
       : null;
 
+  const lightBlock = mapBlock(tinte.light, "light", extendedTheme);
+  const darkBlock = mapBlock(tinte.dark, "dark", extendedTheme);
+
+  // Add computed shadow variables to each block
+  const lightShadowVars = computeShadowVars(lightBlock);
+  const darkShadowVars = computeShadowVars(darkBlock);
+
   return {
-    light: mapBlock(tinte.light, "light", extendedTheme),
-    dark: mapBlock(tinte.dark, "dark", extendedTheme),
+    light: { ...lightBlock, ...lightShadowVars },
+    dark: { ...darkBlock, ...darkShadowVars },
   };
 }
 
@@ -265,15 +272,12 @@ export function computeShadowVars(
 }
 
 function generateCSSVariables(theme: ShadcnTheme): string {
-  // Compute shadow vars for both modes using the tokens (which already have shadow properties if extended)
-  const lightShadowVars = computeShadowVars(theme.light);
-  const darkShadowVars = computeShadowVars(theme.dark);
-
-  const lightVars = Object.entries({ ...theme.light, ...lightShadowVars })
+  // Shadow vars are now already included in theme.light/dark, no need to compute them again
+  const lightVars = Object.entries(theme.light)
     .map(([key, value]) => `    --${key}: ${value};`)
     .join("\n");
 
-  const darkVars = Object.entries({ ...theme.dark, ...darkShadowVars })
+  const darkVars = Object.entries(theme.dark)
     .map(([key, value]) => `    --${key}: ${value};`)
     .join("\n");
 

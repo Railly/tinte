@@ -11,7 +11,7 @@ import { ThemeCardPreview } from "@/components/shared/theme-card-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { ThemeData } from "@/lib/theme-tokens";
-import { extractThemeColors, extractShadcnColors, extractShadcnFonts, formatNumber } from "@/utils/theme-card-helpers";
+import { extractThemeColors, extractShadcnColors, extractShadcnFonts, extractShadcnShadows, formatNumber } from "@/utils/theme-card-helpers";
 import { useThemeContext } from "@/providers/theme";
 
 interface ThemeCardProps {
@@ -139,6 +139,7 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
   const colors = extractThemeColors(theme);
   const shadcnColors = extractShadcnColors(theme, isDark);
   const shadcnFonts = extractShadcnFonts(theme);
+  const shadcnShadows = extractShadcnShadows(theme, isDark);
 
   // Debug: uncomment to see font extraction in console
   // console.log('🎨 Theme Card Debug:', { themeName: theme.name, shadcnFonts });
@@ -150,7 +151,7 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
         transition={{ duration: 0.2, ease: "easeOut" }}
         className="group relative bg-background/50 backdrop-blur-sm rounded-lg border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
         onClick={handleThemeClick}
-        style={{ ...shadcnColors, ...shadcnFonts } as React.CSSProperties}
+        style={{ ...shadcnColors, ...shadcnFonts, ...shadcnShadows } as React.CSSProperties}
       >
         <div className="p-4">
           {/* Top section - Theme info and stats */}
@@ -280,7 +281,7 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="group relative bg-background/50 backdrop-blur-sm rounded-xl border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
       onClick={handleThemeClick}
-      style={{ ...shadcnColors, ...shadcnFonts } as React.CSSProperties}
+      style={{ ...shadcnColors, ...shadcnFonts, ...shadcnShadows } as React.CSSProperties}
     >
       {/* Color preview dots */}
       <div className="absolute top-3 right-3 flex gap-1 z-10">

@@ -3,7 +3,7 @@ import type {
   ThemeData,
   TinteThemeData,
 } from "@/lib/theme-tokens";
-import { convertTinteToShadcn } from "@/lib/providers/shadcn";
+import { convertTinteToShadcn, computeShadowVars } from "@/lib/providers/shadcn";
 
 export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {
   // Safety check for theme
@@ -151,7 +151,7 @@ export function extractShadcnFonts(theme: ThemeData) {
   // First check rawTheme for fonts (tweakcn themes have fonts directly in the palette)
   if ('rawTheme' in theme && theme.rawTheme && typeof theme.rawTheme === 'object') {
     const rawTheme = theme.rawTheme as any;
-    
+
     // Check for nested fonts object first
     if ('fonts' in rawTheme) {
       const fonts = rawTheme.fonts;
@@ -164,11 +164,11 @@ export function extractShadcnFonts(theme: ThemeData) {
         };
       }
     }
-    
+
     // Check for font properties directly in light/dark themes (tweakcn structure)
     // Use light mode fonts by default, since that's what we extract colors from too
     const themeData = rawTheme.light || rawTheme.dark || rawTheme;
-    
+
     if (themeData && (themeData['font-sans'] || themeData['font-serif'] || themeData['font-mono'])) {
       return {
         "--font-sans": themeData['font-sans'],
@@ -178,21 +178,100 @@ export function extractShadcnFonts(theme: ThemeData) {
       };
     }
   }
-  
+
   // Fall back to shadcn_override with fonts (database themes)
   const themeWithOverride = theme as any;
   if (themeWithOverride.shadcn_override?.fonts) {
     const fonts = themeWithOverride.shadcn_override.fonts;
     return {
       "--font-sans": fonts.sans,
-      "--font-serif": fonts.serif, 
+      "--font-serif": fonts.serif,
       "--font-mono": fonts.mono,
       "fontFamily": fonts.sans, // Apply sans as default
     };
   }
-  
+
   // No custom fonts available
   return {};
+}
+
+export function extractShadcnShadows(theme: ThemeData, isDark = false) {
+  // First check for shadcn_override with shadows (database themes)
+  const themeWithOverride = theme as any;
+  if (themeWithOverride.shadcn_override?.shadows) {
+    const shadows = themeWithOverride.shadcn_override.shadows;
+
+    // Create tokens object for computeShadowVars utility
+    const shadowTokens = {
+      "shadow-color": shadows.color,
+      "shadow-opacity": shadows.opacity,
+      "shadow-offset-x": shadows.offsetX,
+      "shadow-offset-y": shadows.offsetY,
+      "shadow-blur": shadows.blur,
+      "shadow-spread": shadows.spread,
+    };
+
+    // Use the existing utility to generate all shadow variants
+    const computedShadows = computeShadowVars(shadowTokens);
+
+    // Convert to CSS custom properties format
+    const result: any = {};
+    Object.entries(computedShadows).forEach(([key, value]) => {
+      result[`--${key}`] = value;
+    });
+
+    return result;
+  }
+
+  let shadcnTheme;
+
+  // Check if theme has rawTheme with shadcn format (tweakcn themes)
+  if ('rawTheme' in theme && theme.rawTheme && 'light' in theme.rawTheme && typeof theme.rawTheme.light === 'object' && 'background' in theme.rawTheme.light) {
+    // Already in shadcn format (tweakcn)
+    shadcnTheme = theme.rawTheme as any;
+  } else if ('rawTheme' in theme && theme.rawTheme) {
+    // Tinte format - needs conversion
+    try {
+      shadcnTheme = convertTinteToShadcn(theme.rawTheme);
+    } catch (error) {
+      console.warn('Failed to convert tinte theme:', error);
+      shadcnTheme = null;
+    }
+  }
+
+  if (shadcnTheme) {
+    const colorSet = isDark ? shadcnTheme.dark : shadcnTheme.light;
+
+    const result: any = {
+      "--shadow-2xs": colorSet["shadow-2xs"],
+      "--shadow-xs": colorSet["shadow-xs"],
+      "--shadow-sm": colorSet["shadow-sm"],
+      "--shadow": colorSet["shadow"],
+      "--shadow-md": colorSet["shadow-md"],
+      "--shadow-lg": colorSet["shadow-lg"],
+      "--shadow-xl": colorSet["shadow-xl"],
+      "--shadow-2xl": colorSet["shadow-2xl"],
+    };
+
+    // Add shadow color if available
+    if (colorSet["shadow-color"]) {
+      result["--shadow-color"] = colorSet["shadow-color"];
+    }
+
+    return result;
+  }
+
+  // Fallback shadows
+  return {
+    "--shadow-2xs": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "--shadow-xs": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "--shadow-sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "--shadow": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+    "--shadow-md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    "--shadow-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    "--shadow-xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    "--shadow-2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+  };
 }
 
 export function formatNumber(num: number): string {
