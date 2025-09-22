@@ -40,7 +40,10 @@ export function UserDropdown({
         size="sm"
         className="h-7 px-3 text-xs"
         variant="outline"
-        onClick={() => authClient.signIn.social({ provider: "github" })}
+        onClick={() => authClient.signIn.social({
+          provider: "github",
+          callbackURL: window.location.href
+        })}
       >
         Sign In
       </Button>
