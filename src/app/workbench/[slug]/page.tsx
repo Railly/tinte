@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { WorkbenchMain } from "@/components/workbench/workbench-main";
 import { auth } from "@/lib/auth";
 import {
@@ -62,7 +63,7 @@ export default async function WorkbenchSlugPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { slug } = await params;
-  const { tab } = await searchParams;
+  const { tab, prompt } = await searchParams;
 
   const defaultTab =
     (tab as "canonical" | "overrides" | "agent") || "canonical";
@@ -85,6 +86,11 @@ export default async function WorkbenchSlugPage({
   const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
   const initialTheme = await getThemeBySlug(slug, allThemes);
 
+  // If theme not found and slug is not a default workbench identifier, redirect to themes search
+  if (!initialTheme && slug !== 'default' && slug !== 'new' && !slug.match(/^[0-9a-f-]{36}$/i)) {
+    redirect(`/themes?search=${encodeURIComponent(slug)}&from=workbench`);
+  }
+
   return (
     <WorkbenchMain
       chatId={slug}
@@ -94,6 +100,7 @@ export default async function WorkbenchSlugPage({
       tweakCNThemes={tweakCNThemes}
       tinteThemes={tinteThemes}
       raysoThemes={raysoThemes}
+      initialPrompt={prompt as string}
     />
   );
 }

@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
 import { useThemeContext } from "@/providers/theme";
+import { useThemeSlugRedirect } from "@/hooks/use-theme-slug-redirect";
 import type { UserThemeData } from "@/types/user-theme";
 
 import { WorkbenchHeader } from "./workbench-header";
@@ -20,14 +21,25 @@ interface WorkbenchMainProps {
   tweakCNThemes?: UserThemeData[];
   tinteThemes?: UserThemeData[];
   raysoThemes?: UserThemeData[];
+  initialPrompt?: string;
 }
 
-export function WorkbenchMain({ chatId, defaultTab, initialTheme, userThemes = [], tweakCNThemes = [], tinteThemes = [], raysoThemes = [] }: WorkbenchMainProps) {
+export function WorkbenchMain({ chatId, defaultTab, initialTheme, userThemes = [], tweakCNThemes = [], tinteThemes = [], raysoThemes = [], initialPrompt }: WorkbenchMainProps) {
   const initializeWorkbench = useWorkbenchStore(
     (state) => state.initializeWorkbench,
   );
   const { selectTheme } = useThemeContext();
   const isMobile = useIsMobile();
+
+  // Check if chatId looks like a generated ID (36 chars with dashes) to enable auto-redirect
+  const isGeneratedChatId = chatId.match(/^[0-9a-zA-Z_-]{21}$/) || chatId.match(/^[0-9a-f-]{36}$/i);
+
+  // Enable slug redirect for generated chat IDs (when themes are created with AI)
+  // Note: We'll pass messages from the chat logic when available
+  useThemeSlugRedirect({
+    chatId,
+    enabled: Boolean(isGeneratedChatId && initialPrompt)
+  });
 
   useEffect(() => {
     initializeWorkbench(chatId);
@@ -51,7 +63,7 @@ export function WorkbenchMain({ chatId, defaultTab, initialTheme, userThemes = [
 
   // Mobile layout
   if (isMobile) {
-    return <WorkbenchMobile chatId={chatId} defaultTab={defaultTab} />;
+    return <WorkbenchMobile chatId={chatId} defaultTab={defaultTab} initialPrompt={initialPrompt} />;
   }
 
   // Desktop layout with SidebarProvider
@@ -60,7 +72,7 @@ export function WorkbenchMain({ chatId, defaultTab, initialTheme, userThemes = [
       <div className="h-screen w-full flex flex-col">
         <WorkbenchHeader chatId={chatId} userThemes={userThemes} tweakCNThemes={tweakCNThemes} tinteThemes={tinteThemes} raysoThemes={raysoThemes} />
         <div className="flex flex-1">
-          <WorkbenchSidebar defaultTab={defaultTab} />
+          <WorkbenchSidebar defaultTab={defaultTab} initialPrompt={initialPrompt} />
           <SidebarInset className="flex flex-col">
             <div className="flex-1">
               <WorkbenchPreviewPane />

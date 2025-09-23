@@ -16,11 +16,13 @@ import { WorkbenchPreviewPane } from "./workbench-preview-pane";
 interface WorkbenchMobileProps {
   chatId: string;
   defaultTab?: WorkbenchTab;
+  initialPrompt?: string;
 }
 
 export function WorkbenchMobile({
   chatId: _chatId,
   defaultTab,
+  initialPrompt,
 }: WorkbenchMobileProps) {
   // Direct store access
   const _loading = useWorkbenchStore((state) => state.loading);

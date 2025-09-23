@@ -1,22 +1,44 @@
-"use client";
-
+import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { Loading } from "@/components/loading";
+import { Suspense } from "react";
+import {
+  getRaysoThemes,
+  getThemesWithUsers,
+  getTinteThemes,
+  getTweakCNThemes,
+} from "@/lib/user-themes";
+import { WorkbenchPromptGenerator } from "@/components/workbench/workbench-prompt-generator";
 
-export default function WorkbenchPage() {
-  const router = useRouter();
+interface WorkbenchPageProps {
+  searchParams: Promise<{ prompt?: string }>;
+}
 
-  useEffect(() => {
-    const chatId = nanoid();
-    router.replace(`/workbench/${chatId}`);
-  }, [router]);
+export default async function WorkbenchPage({ searchParams }: WorkbenchPageProps) {
+  const { prompt } = await searchParams;
 
-  // Reuse the same loading structure as loading.tsx to prevent layout shift
-  return (
-    <div className="flex h-[calc(100dvh-var(--header-height))] items-center justify-center">
-      <Loading />
-    </div>
-  );
+  // If there's a prompt, show the generation UI
+  if (prompt) {
+    return (
+      <Suspense fallback={<div>Loading workbench...</div>}>
+        <WorkbenchPromptGenerator prompt={prompt} />
+      </Suspense>
+    );
+  }
+
+  // Otherwise, redirect to default theme
+  const [userThemes, tweakCNThemes, tinteThemes, raysoThemes] = await Promise.all([
+    getThemesWithUsers(5), // Just get a few user themes
+    getTweakCNThemes(),
+    getTinteThemes(),
+    getRaysoThemes(),
+  ]);
+
+  // Get all themes and find the first one with a slug
+  const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
+  const firstThemeWithSlug = allThemes.find(theme => theme.slug);
+
+  // Use first theme slug if available, otherwise generate random ID
+  const workbenchId = firstThemeWithSlug?.slug || nanoid();
+
+  redirect(`/workbench/${workbenchId}`);
 }

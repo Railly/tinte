@@ -12,9 +12,10 @@ import { WORKBENCH_CONFIG, WORKBENCH_TABS } from "./workbench.config";
 
 interface WorkbenchSidebarProps {
   defaultTab?: WorkbenchTab;
+  initialPrompt?: string;
 }
 
-export function WorkbenchSidebar({ defaultTab }: WorkbenchSidebarProps) {
+export function WorkbenchSidebar({ defaultTab, initialPrompt }: WorkbenchSidebarProps) {
   const { activeTab, setActiveTab } = useWorkbenchUrlSync(
     defaultTab || WORKBENCH_CONFIG.DEFAULT_TAB,
   );
@@ -40,7 +41,11 @@ export function WorkbenchSidebar({ defaultTab }: WorkbenchSidebarProps) {
             <SidebarGroupContent className="h-full">
               {WORKBENCH_TABS.map(({ id, component: Component }) => (
                 <TabsContent key={id} value={id} className="h-full mt-0">
-                  <Component />
+                  {id === "agent" ? (
+                    <Component initialPrompt={initialPrompt} />
+                  ) : (
+                    <Component />
+                  )}
                 </TabsContent>
               ))}
             </SidebarGroupContent>

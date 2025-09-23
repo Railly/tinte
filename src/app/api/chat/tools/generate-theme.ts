@@ -1,5 +1,9 @@
 import { tool } from "ai";
 import { z } from "zod";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { saveThemeToDatabase } from "@/lib/save-theme-to-db";
+import { createAnonymousUser } from "@/lib/create-anonymous-user";
 import description from './generate-theme.md';
 
 const TinteBlockSchema = z.object({
@@ -113,15 +117,69 @@ export const generateThemeTool = tool({
     radius,
     shadows,
   }) => {
-    return {
-      theme: { light, dark },
-      fonts,
-      radius,
-      shadows,
-      title,
-      concept,
-      success: true,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      // Get current session
+      const headersList = await headers();
+      const session = await auth.api.getSession({
+        headers: headersList,
+      });
+
+      let userId: string | undefined;
+
+      if (session?.user) {
+        // User is authenticated
+        userId = session.user.id;
+        console.log(`🔐 Authenticated user generating theme: ${session.user.name} (${userId})`);
+      } else {
+        // Create anonymous user for this theme
+        const anonymousUser = await createAnonymousUser();
+        userId = anonymousUser.id;
+        console.log(`👤 Anonymous user created for theme: ${anonymousUser.id}`);
+      }
+
+      // Save theme to database
+      const { theme: savedTheme, slug } = await saveThemeToDatabase(
+        {
+          title,
+          concept,
+          light,
+          dark,
+          fonts,
+          radius,
+          shadows,
+        },
+        userId
+      );
+
+      console.log(`🎨 Theme "${title}" saved with slug: ${slug}`);
+
+      return {
+        theme: { light, dark },
+        fonts,
+        radius,
+        shadows,
+        title,
+        concept,
+        slug, // Return the slug for redirect
+        databaseId: savedTheme.id,
+        success: true,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error("Error in generateTheme tool:", error);
+
+      // Fallback to in-memory theme without database save
+      return {
+        theme: { light, dark },
+        fonts,
+        radius,
+        shadows,
+        title,
+        concept,
+        success: true,
+        error: "Theme generated but not saved to database",
+        timestamp: new Date().toISOString(),
+      };
+    }
   },
 });

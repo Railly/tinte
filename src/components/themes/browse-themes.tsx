@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";
+import { toast } from "sonner";
+import { nanoid } from "nanoid";
 import { Header } from "@/components/home/header";
 import { Footer } from "@/components/shared/footer";
 import RaycastIcon from "@/components/shared/icons/raycast";
@@ -15,6 +17,7 @@ import {
   ThemeCardListSkeleton,
   ThemeCardSkeleton,
 } from "@/components/shared/theme-card";
+import { CompactFilterBar } from "@/components/themes/compact-filter-bar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -47,6 +50,7 @@ interface BrowseThemesProps {
   publicThemesCount: number;
   initialCategory?: string;
   initialSearch?: string;
+  fromWorkbench?: boolean;
 }
 
 export function BrowseThemes({
@@ -60,6 +64,7 @@ export function BrowseThemes({
   publicThemesCount,
   initialCategory = "community",
   initialSearch = "",
+  fromWorkbench = false,
 }: BrowseThemesProps) {
   const { isDark, handleThemeSelect, mounted } = useThemeContext();
 
@@ -76,6 +81,26 @@ export function BrowseThemes({
     "search",
     parseAsString.withDefault(initialSearch),
   );
+
+  // Show notification when redirected from workbench due to non-existent theme
+  useEffect(() => {
+    if (fromWorkbench && initialSearch) {
+      toast.info(`Theme "${initialSearch}" not found`, {
+        description: "We've searched for similar themes below. You can also create a new theme in the workbench.",
+        duration: 6000,
+        action: {
+          label: "Create Theme",
+          onClick: () => {
+            const workbenchId = initialSearch ? "new" : nanoid();
+            const url = initialSearch
+              ? `/workbench/${workbenchId}?prompt=${encodeURIComponent(`Create a theme inspired by "${initialSearch}"`)}`
+              : "/workbench";
+            window.open(url, "_blank");
+          },
+        },
+      });
+    }
+  }, [fromWorkbench, initialSearch]);
 
   // Use API search hook for real search functionality
   const {
@@ -301,144 +326,22 @@ export function BrowseThemes({
               </p>
             </div>
 
-            {/* Primary Search */}
-            <div className="relative max-w-lg mx-auto">
-              {isSearching ? (
-                <Loader2 className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground animate-spin" />
-              ) : (
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-              )}
-              <Input
-                placeholder={isSearching ? "Searching..." : "Search themes..."}
-                className="pl-12 h-12 text-base rounded-xl border-2 focus:border-primary/50 shadow-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
           </div>
 
-          {/* Filter Bar */}
-          <div className="border rounded-xl bg-card/50 backdrop-blur-sm p-4 space-y-4">
-            {/* Categories */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Browse by Category
-              </h3>
-              <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-                <TabsList
-                  className={`bg-muted/30 h-auto p-1 w-full justify-start overflow-x-auto ${searchTerm.trim() ? "opacity-50 pointer-events-none" : ""}`}
-                >
-                  <div className="flex gap-1 min-w-max">
-                    <TabsTrigger
-                      value="community"
-                      disabled={!!searchTerm.trim()}
-                      className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg py-2.5 px-4 text-sm gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Users className="w-4 h-4" />
-                      Community
-                    </TabsTrigger>
-                    {session && (
-                      <TabsTrigger
-                        value="user"
-                        disabled={!!searchTerm.trim()}
-                        className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg py-2.5 px-4 text-sm gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {session.user.image ? (
-                          <img
-                            src={session.user.image}
-                            alt="Profile"
-                            className="w-4 h-4 rounded-full"
-                          />
-                        ) : (
-                          <User className="w-4 h-4" />
-                        )}
-                        My Themes
-                      </TabsTrigger>
-                    )}
-                    {session && (
-                      <TabsTrigger
-                        value="favorites"
-                        disabled={!!searchTerm.trim()}
-                        className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg py-2.5 px-4 text-sm gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <Heart className="w-4 h-4" />
-                        Favorites
-                      </TabsTrigger>
-                    )}
-                    <div className="w-px h-8 bg-border mx-2" />
-                    <TabsTrigger
-                      value="tweakcn"
-                      disabled={!!searchTerm.trim()}
-                      className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg py-2.5 px-4 text-sm gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <TweakCNIcon className="w-4 h-4" />
-                      TweakCN
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="rayso"
-                      disabled={!!searchTerm.trim()}
-                      className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg py-2.5 px-4 text-sm gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <RaycastIcon className="w-4 h-4" />
-                      Ray.so
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="tinte"
-                      disabled={!!searchTerm.trim()}
-                      className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg py-2.5 px-4 text-sm gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Logo size={16} />
-                      Tinte
-                    </TabsTrigger>
-                  </div>
-                </TabsList>
-              </Tabs>
-            </div>
-
-            {/* Controls */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Sort by
-                </span>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[140px] h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="relevance">Relevance</SelectItem>
-                    <SelectItem value="name">Name</SelectItem>
-                    <SelectItem value="downloads">Downloads</SelectItem>
-                    <SelectItem value="likes">Likes</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-muted-foreground">
-                  View
-                </span>
-                <div className="flex border rounded-lg p-1 bg-muted/30">
-                  <Button
-                    variant={viewMode === "grid" ? "default" : "ghost"}
-                    size="sm"
-                    className="h-7 px-3 text-xs rounded-md"
-                    onClick={() => setViewMode("grid")}
-                  >
-                    Grid
-                  </Button>
-                  <Button
-                    variant={viewMode === "list" ? "default" : "ghost"}
-                    size="sm"
-                    className="h-7 px-3 text-xs rounded-md"
-                    onClick={() => setViewMode("list")}
-                  >
-                    List
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Compact Filter Bar */}
+          <CompactFilterBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            isSearching={isSearching}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            session={session}
+            disabled={!mounted}
+          />
         </div>
 
         {/* Results */}

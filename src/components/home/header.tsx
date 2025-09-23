@@ -19,12 +19,11 @@ import {
 import { siteConfig } from "@/config/site";
 
 export function Header() {
-
   const navigation = [
+    { name: "Themes", href: "/themes" },
     { name: "Features", href: "#features" },
     { name: "Roadmap", href: "#roadmap" },
     { name: "FAQ", href: "#faq" },
-    { name: "Docs", href: "#docs" },
   ];
 
   return (

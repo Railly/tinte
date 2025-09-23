@@ -52,7 +52,7 @@ export default async function ThemesPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { category, search } = await searchParams;
+  const { category, search, from } = await searchParams;
 
   // Fetch user session and themes server-side
   const session = await auth.api.getSession({
@@ -89,6 +89,7 @@ export default async function ThemesPage({
       publicThemesCount={publicThemesCount}
       initialCategory={category as string}
       initialSearch={search as string}
+      fromWorkbench={from === "workbench"}
     />
   );
 }

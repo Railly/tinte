@@ -8,7 +8,11 @@ import { useWorkbenchStore } from "@/stores/workbench-store";
 import { clearSeed } from "@/utils/anon-seed";
 import { useThemeContext } from "@/providers/theme";
 
-export function useChatLogic() {
+interface UseChatLogicProps {
+  initialPrompt?: string;
+}
+
+export function useChatLogic({ initialPrompt }: UseChatLogicProps = {}) {
   const { tinteTheme, currentMode, fonts, radius, shadows } = useThemeContext();
 
   const { messages, sendMessage, status, stop } = useChat({
@@ -32,6 +36,7 @@ export function useChatLogic() {
   const seed = useWorkbenchStore((state) => state.seed);
   const chatId = useWorkbenchStore((state) => state.chatId);
   const [seedProcessed, setSeedProcessed] = useState(false);
+  const [promptProcessed, setPromptProcessed] = useState(false);
   const processedSeedRef = useRef<string | null>(null);
 
   // Handle seed processing
@@ -73,6 +78,22 @@ export function useChatLogic() {
       clearSeed(chatId);
     }
   }, [seed, seedProcessed, chatId, messages.length, sendMessage]);
+
+  // Handle initial prompt auto-send
+  useEffect(() => {
+    if (
+      initialPrompt &&
+      !promptProcessed &&
+      messages.length === 0 &&
+      chatId &&
+      !seed // Don't auto-send if we have a seed to process
+    ) {
+      setPromptProcessed(true);
+      sendMessage({
+        text: initialPrompt.trim(),
+      });
+    }
+  }, [initialPrompt, promptProcessed, chatId, messages.length, sendMessage, seed]);
 
   const handleSubmit = useCallback(
     (content: string, attachments: PastedItem[]) => {

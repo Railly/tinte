@@ -124,9 +124,14 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
     if (onThemeSelect) {
       onThemeSelect(theme);
     }
-    // Then navigate to workbench - use theme slug if available, otherwise generate new ID
-    const workbenchId = theme.slug || nanoid();
-    router.push(`/workbench/${workbenchId}`);
+    // Then navigate to workbench - use theme slug if available, otherwise generate new ID with prompt
+    if (theme.slug) {
+      router.push(`/workbench/${theme.slug}`);
+    } else {
+      const workbenchId = nanoid();
+      const prompt = `Create a theme similar to "${theme.name}" with these colors: primary ${theme.colors?.primary}, background ${theme.colors?.background}, accent ${theme.colors?.accent}`;
+      router.push(`/workbench/${workbenchId}?prompt=${encodeURIComponent(prompt)}`);
+    }
   };
 
   const handleThemeClick = () => {
