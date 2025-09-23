@@ -67,7 +67,7 @@ export function ThemeResultCard({
         concept
       });
 
-      const result = await saveCurrentTheme(themeName, false, shadcnOverride); // Save as private by default with concept from theme
+      const result = await saveCurrentTheme(themeName, true, shadcnOverride); // Save as public by default with concept from theme
 
       console.log("📥 [AI Save] Save result:", result);
 

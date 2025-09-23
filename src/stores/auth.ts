@@ -236,7 +236,7 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      saveTheme: async (theme: ThemeData, name?: string, makePublic = false) => {
+      saveTheme: async (theme: ThemeData, name?: string, makePublic = true) => {
         console.log("🚀 [Auth Store] saveTheme called with:", { theme, name, makePublic });
         console.log("🔍 [Auth Store] theme.rawTheme:", theme.rawTheme);
         console.log("🔍 [Auth Store] theme.concept:", theme.concept);
