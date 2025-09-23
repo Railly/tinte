@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import GithubIcon from "@/components/shared/icons/github";
 import TwitterIcon from "@/components/shared/icons/twitter";
 import Logo from "@/components/shared/logo";
@@ -19,6 +20,16 @@ import {
 import { siteConfig } from "@/config/site";
 
 export function Header() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    if (href.startsWith("#") && pathname !== "/") {
+      e.preventDefault();
+      router.push(`/${href}`);
+    }
+  };
+
   const navigation = [
     { name: "Themes", href: "/themes" },
     { name: "Roadmap", href: "#roadmap" },
@@ -41,6 +52,7 @@ export function Header() {
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {item.name}
@@ -98,6 +110,7 @@ export function Header() {
                     <SheetClose key={item.name} asChild>
                       <Link
                         href={item.href}
+                        onClick={(e) => handleNavClick(e, item.href)}
                         className="text-2xl font-medium text-foreground hover:text-primary transition-colors"
                       >
                         {item.name}
