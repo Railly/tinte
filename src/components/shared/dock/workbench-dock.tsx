@@ -108,14 +108,14 @@ export function Dock({ providerId, providerName }: DockProps) {
       }
 
       // Navigate to the saved theme with shallow routing
-      if (savedTheme?.id) {
-        router.replace(`/workbench/${savedTheme.id}`);
+      if (savedTheme?.slug) {
+        router.replace(`/workbench/${savedTheme.slug}`);
       }
 
       console.log(`✅ ${action} completed:`, {
         themeId: savedTheme?.id,
         themeName: savedTheme?.name,
-        navigationUrl: `/workbench/${savedTheme?.id}`,
+        navigationUrl: `/workbench/${savedTheme?.slug}`,
       });
     } catch (error) {
       console.error(`Error in post-${action.toLowerCase()} navigation:`, error);
@@ -159,7 +159,7 @@ export function Dock({ providerId, providerName }: DockProps) {
     providerId,
     providerName,
     provider,
-    themeId: activeTheme?.id,
+    themeId: activeTheme?.slug,
     canSave,
     themeName: activeTheme?.name,
     vscodeOverrides: vscodeOverrides.allOverrides,
@@ -542,13 +542,13 @@ export function Dock({ providerId, providerName }: DockProps) {
   const handleCopyCommandAction = async () => {
     if (providerId === "shadcn") {
       const baseUrl = window.location.origin;
-      const registryUrl = `${baseUrl}/r/${activeTheme?.id}`;
+      const registryUrl = `${baseUrl}/r/${activeTheme?.slug}`;
       const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
       showSuccessWithMessage("Command copied!");
     } else if (providerId === "vscode") {
       const baseUrl = window.location.origin;
-      const registryUrl = `${baseUrl}/api/v/${activeTheme?.id}`;
+      const registryUrl = `${baseUrl}/api/v/${activeTheme?.slug}`;
       const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
       showSuccessWithMessage("Command copied!");
@@ -729,7 +729,7 @@ export function Dock({ providerId, providerName }: DockProps) {
     if (!activeTheme?.id) return "";
     if (typeof window === "undefined") return "";
     const baseUrl = window.location.origin;
-    return `${baseUrl}/r/${activeTheme.id}`;
+    return `${baseUrl}/r/${activeTheme.slug}`;
   };
 
   const handleImportTheme = async (

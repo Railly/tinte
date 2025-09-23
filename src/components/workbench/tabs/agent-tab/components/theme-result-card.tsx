@@ -87,8 +87,8 @@ export function ThemeResultCard({
           console.log("🌐 [AI Save] Theme selected, updating URL...");
 
           // Update URL without navigation to prevent page reload
-          if (result.savedTheme.id && result.savedTheme.id !== "default" && result.savedTheme.id !== "theme") {
-            const newUrl = `/workbench/${result.savedTheme.id}`;
+          if (result.savedTheme.slug && result.savedTheme.slug !== "default" && result.savedTheme.slug !== "theme") {
+            const newUrl = `/workbench/${result.savedTheme.slug}`;
             window.history.replaceState(null, '', newUrl);
             console.log("🔗 [AI Save] URL updated to:", newUrl);
           }

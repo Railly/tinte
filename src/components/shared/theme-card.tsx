@@ -124,9 +124,9 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
     if (onThemeSelect) {
       onThemeSelect(theme);
     }
-    // Then navigate to workbench
-    const chatId = nanoid();
-    router.push(`/workbench/${chatId}`);
+    // Then navigate to workbench - use theme slug if available, otherwise generate new ID
+    const workbenchId = theme.slug || nanoid();
+    router.push(`/workbench/${workbenchId}`);
   };
 
   const handleThemeClick = () => {

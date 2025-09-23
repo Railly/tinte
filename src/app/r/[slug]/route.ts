@@ -7,18 +7,18 @@ import type { TinteTheme } from "@/types/tinte";
 
 interface RouteContext {
   params: Promise<{
-    id: string;
+    slug: string;
   }>;
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const { id } = await context.params;
-    // Get theme by ID - must be public for registry access
+    const { slug } = await context.params;
+    // Get theme by slug - must be public for registry access
     const themeData = await db
       .select()
       .from(theme)
-      .where(eq(theme.id, id))
+      .where(eq(theme.slug, slug))
       .limit(1);
 
     if (themeData.length === 0) {

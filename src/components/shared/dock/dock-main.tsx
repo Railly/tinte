@@ -230,24 +230,7 @@ export function DockMain({
             </DockIcon>
           </TooltipTrigger>
           <TooltipContent>
-            <div className="space-y-2">
-              <p className="font-medium">Install via CLI</p>
-              <div className="space-y-1">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">VS Code:</p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded block">
-                    {cliCommand}
-                  </code>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Cursor:</p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded block">
-                    {cliCommand} --cursor
-                  </code>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">Click to copy VS Code command</p>
-            </div>
+            <p className="text-xs ">{cliCommand}</p>
           </TooltipContent>
         </Tooltip>
       )}

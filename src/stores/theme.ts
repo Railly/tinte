@@ -537,6 +537,14 @@ export const useThemeStore = create<ThemeStore>()(
                 lastSaved: null,
               });
             });
+
+            // Update URL if we're in workbench and theme has a slug
+            const currentPath = window.location.pathname;
+            if (currentPath.startsWith('/workbench/') && themeWithRawTheme.slug) {
+              const newUrl = `/workbench/${themeWithRawTheme.slug}${window.location.search}`;
+              window.history.replaceState(null, '', newUrl);
+              console.log('🔗 [Theme Store] URL updated to:', newUrl);
+            }
           }
         },
 

@@ -7,7 +7,7 @@ import type { TinteTheme } from "@/types/tinte";
 
 interface RouteContext {
   params: Promise<{
-    id: string;
+    slug: string;
   }>;
 }
 
@@ -47,13 +47,13 @@ function generateSettingsJsonContent(tinteTheme: TinteTheme, themeName: string, 
 
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const { id } = await context.params;
+    const { slug } = await context.params;
 
-    // Get theme by ID - must be public for registry access
+    // Get theme by slug - must be public for registry access
     const themeData = await db
       .select()
       .from(theme)
-      .where(eq(theme.id, id))
+      .where(eq(theme.slug, slug))
       .limit(1);
 
     if (themeData.length === 0) {
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     };
 
     const themeName = themeRecord.name;
-    const slug = themeRecord.slug || themeRecord.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const themeSlug = themeRecord.slug || themeRecord.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 
     // Generate the settings.json content
     const settingsJsonContent = generateSettingsJsonContent(tinteTheme, themeName, themeRecord.id);
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     // Create shadcn registry-compatible format for VS Code settings
     const registryItem = {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-      "name": `${slug}-vscode-theme`,
+      "name": `${themeSlug}-vscode-theme`,
       "type": "registry:ui",
       "title": `${themeName} VS Code Theme`,
       "description": `${themeName} - VS Code theme configuration created with Tinte. Copy the settings to your VS Code settings.json file.`,
@@ -128,7 +128,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       "registryDependencies": [],
       "files": [
         {
-          "path": `registry/default/themes/${slug}-settings.json`,
+          "path": `registry/default/themes/${themeSlug}-settings.json`,
           "content": escapedContent,
           "type": "registry:file",
           "target": ".vscode/settings.json"

@@ -8,6 +8,7 @@ import {
   getTinteThemes,
   getTweakCNThemes,
 } from "@/lib/user-themes";
+import { getThemeBySlug } from "@/lib/get-theme-by-slug";
 
 import { siteConfig } from "@/config/site";
 
@@ -53,14 +54,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function WorkbenchIdPage({
+export default async function WorkbenchSlugPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { id } = await params;
+  const { slug } = await params;
   const { tab } = await searchParams;
 
   const defaultTab =
@@ -72,15 +73,23 @@ export default async function WorkbenchIdPage({
   });
   const currentUserId = session?.user?.id;
 
-  const userThemes = await getThemesWithUsers(20, currentUserId);
-  const tweakCNThemes = await getTweakCNThemes();
-  const tinteThemes = await getTinteThemes();
-  const raysoThemes = await getRaysoThemes();
+  // Fetch themes in parallel
+  const [userThemes, tweakCNThemes, tinteThemes, raysoThemes] = await Promise.all([
+    getThemesWithUsers(20, currentUserId),
+    getTweakCNThemes(),
+    getTinteThemes(),
+    getRaysoThemes(),
+  ]);
+
+  // Try to get the theme by slug (server-side)
+  const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
+  const initialTheme = await getThemeBySlug(slug, allThemes);
 
   return (
     <WorkbenchMain
-      chatId={id}
+      chatId={slug}
       defaultTab={defaultTab}
+      initialTheme={initialTheme}
       userThemes={userThemes}
       tweakCNThemes={tweakCNThemes}
       tinteThemes={tinteThemes}
