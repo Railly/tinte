@@ -115,14 +115,14 @@ export function WorkbenchPromptGenerator({ prompt }: WorkbenchPromptGeneratorPro
         part.state === "output-available"
       );
 
-      if (themePart && themePart.output?.slug) {
+      if (themePart && (themePart as any).output?.slug) {
         setProgress(100);
         setStatus("Theme generated successfully!");
-        console.log("✅ AI theme generation completed, redirecting to slug:", themePart.output.slug);
+        console.log("✅ AI theme generation completed, redirecting to slug:", (themePart as any).output.slug);
 
         // Redirect to the generated theme slug
         setTimeout(() => {
-          router.push(`/workbench/${themePart.output.slug}`);
+          router.push(`/workbench/${(themePart as any).output.slug}`);
         }, 1000);
       }
     }

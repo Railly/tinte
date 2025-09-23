@@ -19,7 +19,11 @@ import { useChatLogic } from "./hooks/use-chat-logic";
 import { useLoadingTimer } from "./hooks/use-loading-timer";
 import { useThemeApplication } from "./hooks/use-theme-application";
 
-export function AgentTab() {
+interface AgentTabProps {
+  initialPrompt?: string;
+}
+
+export function AgentTab({ initialPrompt }: AgentTabProps) {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
 
@@ -31,7 +35,7 @@ export function AgentTab() {
     hasActiveTool,
     isLoading,
     isChatDisabled,
-  } = useChatLogic();
+  } = useChatLogic({ initialPrompt });
 
   const { loadingTimer, currentToolMessage } = useLoadingTimer({
     isLoading,

@@ -24,7 +24,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const themeValue = useTheme();
 
   // Preload fonts whenever the current theme changes
-  useThemeFonts(themeValue.currentTheme);
+  useThemeFonts(themeValue.activeTheme);
 
   // Handle initialization at provider level to prevent infinite loops
   useEffect(() => {
