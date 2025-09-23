@@ -267,6 +267,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     // Reconstruct the theme data manually
     const userTheme = {
       id: themeRecord.id,
+      slug: themeRecord.slug,
       name: themeRecord.name,
       description: themeRecord.concept || `Theme ${themeRecord.name}`,
       concept: themeRecord.concept,

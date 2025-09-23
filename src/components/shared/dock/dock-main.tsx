@@ -8,6 +8,7 @@ import {
   Save,
   Settings,
   Share2,
+  Terminal,
   Undo,
 } from "lucide-react";
 import { type MotionValue, motion } from "motion/react";
@@ -60,6 +61,10 @@ interface DockMainProps {
   // Import
   onImport?: () => void;
 
+  // Install CLI command
+  onCopyCLICommand?: () => void;
+  cliCommand?: string;
+
   // Primary action state for temporary themes
   isPrimaryActionDisabled?: boolean;
 }
@@ -84,6 +89,8 @@ export function DockMain({
   onNavigateToSettings,
   onShare,
   onImport,
+  onCopyCLICommand,
+  cliCommand,
   isPrimaryActionDisabled,
 }: DockMainProps) {
   const PrimaryIcon = primaryActionConfig.icon;
@@ -209,6 +216,41 @@ export function DockMain({
           <p>{primaryActionConfig.description}</p>
         </TooltipContent>
       </Tooltip>
+
+      {/* CLI Install Command */}
+      {onCopyCLICommand && cliCommand && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DockIcon
+              mouseX={mouseX}
+              onClick={onCopyCLICommand}
+              className="cursor-pointer hover:bg-green-500/20 hover:border-green-500/50 rounded-full border border-border/50 transition-colors"
+            >
+              <Terminal className="h-4 w-4" />
+            </DockIcon>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="space-y-2">
+              <p className="font-medium">Install via CLI</p>
+              <div className="space-y-1">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">VS Code:</p>
+                  <code className="text-xs bg-muted px-2 py-1 rounded block">
+                    {cliCommand}
+                  </code>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Cursor:</p>
+                  <code className="text-xs bg-muted px-2 py-1 rounded block">
+                    {cliCommand} --cursor
+                  </code>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">Click to copy VS Code command</p>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      )}
 
       {/* Import */}
       {onImport && (

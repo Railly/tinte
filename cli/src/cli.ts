@@ -11,7 +11,7 @@ async function main() {
 🎨 Tinte CLI - Beautiful Editor Themes
 
 Usage:
-  bunx tinte <theme-id>              # Install theme by ID
+  bunx tinte <theme-slug>            # Install theme by slug
   bunx tinte <theme-url>             # Install theme from URL
   bunx tinte <theme.json>            # Install theme from local file
   bunx tinte list                    # List installed Tinte themes
@@ -28,7 +28,7 @@ Options:
 Examples:
   bunx tinte flexoki-theme          # Install to VS Code
   bunx tinte flexoki-theme --cursor # Install to Cursor
-  bunx tinte https://tinte.dev/api/themes/abc123 --light
+  bunx tinte https://tinte.dev/api/themes/slug/flexoki-theme --light
   bunx tinte ./my-theme.json --cursor --no-close
     `);
     process.exit(0);

@@ -44,7 +44,7 @@ export class TinteCLI {
   }
 
   /**
-   * Install theme from URL (theme ID or full theme data)
+   * Install theme from URL (theme slug or full theme data)
    */
   async installFromUrl(
     themeUrl: string,
@@ -52,10 +52,10 @@ export class TinteCLI {
   ): Promise<string> {
     console.log(`🌐 Fetching theme from: ${themeUrl}`);
 
-    // If it's a Tinte theme ID, construct the API URL
+    // If it's a Tinte theme slug, construct the API URL
     let apiUrl = themeUrl;
     if (!themeUrl.startsWith('http')) {
-      apiUrl = `https://tinte-rh.netlify.app/api/themes/${themeUrl}`;
+      apiUrl = `https://www.tinte.dev/api/themes/slug/${themeUrl}`;
     }
 
     // Fetch theme data

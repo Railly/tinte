@@ -1131,6 +1131,13 @@ export function Dock({ providerId, providerName }: DockProps) {
                 onNavigateToSettings={handleNavigateToSettings}
                 onShare={() => setShowShareDialog(true)}
                 onImport={() => setShowImportDialog(true)}
+                // CLI command props for VS Code
+                onCopyCLICommand={providerId === "vscode" && activeTheme?.slug ? async () => {
+                  const command = `bunx tinte ${activeTheme.slug}`;
+                  await navigator.clipboard.writeText(command);
+                  showSuccessWithMessage("CLI command copied!");
+                } : undefined}
+                cliCommand={providerId === "vscode" && activeTheme?.slug ? `bunx tinte ${activeTheme.slug}` : undefined}
                 isPrimaryActionDisabled={isTemporaryTheme() && !canSave}
               />
             ) : dockState === "export" ? (

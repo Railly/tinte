@@ -1,6 +1,6 @@
 {
   "name": "tinte",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Beautiful editor themes with the best DX - install themes instantly to VS Code and Cursor",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
