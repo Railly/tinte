@@ -1,0 +1,42 @@
+{
+  "name": "@tinte/cli",
+  "version": "1.0.0",
+  "description": "Beautiful VS Code themes with the best DX - install themes instantly from Tinte",
+  "main": "dist/tinte-cli.js",
+  "bin": {
+    "tinte": "dist/tinte-cli.js"
+  },
+  "scripts": {
+    "build": "tsc tinte-cli.ts --outDir dist --target es2020 --module commonjs --esModuleInterop --skipLibCheck",
+    "dev": "tsx tinte-cli.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "vscode",
+    "theme",
+    "cli",
+    "tinte",
+    "colors",
+    "development",
+    "tools"
+  ],
+  "author": "Tinte",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Railly/tinte.git"
+  },
+  "homepage": "https://tinte.dev",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ]
+}

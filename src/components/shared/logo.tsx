@@ -25,11 +25,7 @@ export default function Logo({ size = 40, className }: LogoProps) {
           fill="var(--background)"
         />
       </g>
-      <defs>
-        <clipPath id="clip0_171_409">
-          <rect width="1024" height="1024" fill="white" />
-        </clipPath>
-      </defs>
+      <defs></defs>
     </svg>
   );
 }

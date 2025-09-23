@@ -1,0 +1,55 @@
+{
+  "name": "tinte",
+  "version": "1.0.0",
+  "description": "Beautiful editor themes with the best DX - install themes instantly to VS Code and Cursor",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "tinte": "dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
+    "test": "node dist/cli.js --help"
+  },
+  "keywords": [
+    "vscode",
+    "cursor",
+    "theme",
+    "cli",
+    "tinte",
+    "colors",
+    "development",
+    "tools",
+    "editor"
+  ],
+  "author": "Tinte <team@tinte.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Railly/tinte.git",
+    "directory": "cli"
+  },
+  "homepage": "https://tinte.dev",
+  "bugs": {
+    "url": "https://github.com/Railly/tinte/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

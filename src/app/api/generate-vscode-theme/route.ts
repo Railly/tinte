@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const NETLIFY_FUNCTION_URL = process.env.NODE_ENV === "production"
-  ? "/.netlify/functions/generate-vscode-theme"
-  : "https://tinte-rh.netlify.app/.netlify/functions/generate-vscode-theme";
+const NETLIFY_FUNCTION_URL = "/.netlify/functions/generate-vscode-theme";
 
 export async function POST(request: NextRequest) {
   try {
