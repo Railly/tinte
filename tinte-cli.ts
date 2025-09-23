@@ -276,7 +276,7 @@ Examples:
 
   try {
     switch (command) {
-      case 'list':
+      case 'list': {
         const installed = cli.listInstalled(options.editor);
         const editorName = options.editor === 'cursor' ? 'Cursor' : 'VS Code';
         if (installed.length === 0) {
@@ -286,12 +286,13 @@ Examples:
           installed.forEach(theme => console.log(`  - ${theme}`));
         }
         break;
+      }
 
       case 'cleanup':
         cli.cleanup();
         break;
 
-      default:
+      default: {
         await cli.quick(command, options);
         const editorName = options.editor === 'cursor' ? 'Cursor' : 'VS Code';
         const editorCommand = options.editor === 'cursor' ? 'cursor .' : 'code .';
@@ -305,6 +306,7 @@ Next steps:
 4. Enjoy your beautiful new theme! ✨
         `);
         break;
+      }
     }
   } catch (error) {
     console.error('❌ Error:', error instanceof Error ? error.message : error);

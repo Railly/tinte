@@ -95,6 +95,7 @@ export interface ThemeTransformOptions {
 // Provider-specific theme data (for external integrations)
 export interface ProviderThemeData {
   id: string;
+  slug?: string;
   name: string;
   description: string;
   concept?: string | null;
