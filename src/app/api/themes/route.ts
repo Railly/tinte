@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, tinteTheme, overrides = {}, isPublic = false, concept }: {
+    const { name, tinteTheme, overrides = {}, isPublic = true, concept }: {
       name: string;
       tinteTheme: TinteTheme;
       overrides?: {

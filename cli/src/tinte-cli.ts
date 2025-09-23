@@ -23,10 +23,10 @@ export class TinteCLI {
     themeName: string,
     options: EditorInstallOptions = {}
   ): Promise<string> {
-    const { variant = 'dark', autoClose = true, timeout = 3000, editor = 'code' } = options;
+    const { variant = 'dark', autoClose = false, timeout = 3000, editor = 'code' } = options;
 
     const editorName = editor === 'cursor' ? 'Cursor' : 'VS Code';
-    console.log(`🎨 Generating ${themeName} (${variant}) theme for ${editorName}...`);
+    console.log(`🎨 Installing ${themeName} to ${editorName}...`);
 
     // Generate VSIX from Netlify function
     const vsixBuffer = await this.generateVSIX(tinteTheme, themeName, variant);
@@ -34,8 +34,6 @@ export class TinteCLI {
     // Save to tmp file
     const vsixPath = join(this.TMP_DIR, `${themeName.toLowerCase().replace(/\s+/g, '-')}-${variant}.vsix`);
     writeFileSync(vsixPath, vsixBuffer);
-
-    console.log(`📦 Theme saved to: ${vsixPath}`);
 
     // Install to editor
     await this.installToEditor(vsixPath, autoClose, timeout, editor);
@@ -50,8 +48,6 @@ export class TinteCLI {
     themeUrl: string,
     options: EditorInstallOptions = {}
   ): Promise<string> {
-    console.log(`🌐 Fetching theme from: ${themeUrl}`);
-
     // If it's a Tinte theme slug, construct the API URL
     let apiUrl = themeUrl;
     if (!themeUrl.startsWith('http')) {
@@ -79,8 +75,6 @@ export class TinteCLI {
     themeName?: string,
     options: EditorInstallOptions = {}
   ): Promise<string> {
-    console.log(`📁 Loading theme from: ${filePath}`);
-
     const fs = await import('fs/promises');
     const fileContent = await fs.readFile(filePath, 'utf-8');
     const themeData = JSON.parse(fileContent);
@@ -179,21 +173,16 @@ export class TinteCLI {
     editor: 'code' | 'cursor'
   ): Promise<void> {
     try {
-      const editorName = editor === 'cursor' ? 'Cursor' : 'VS Code';
       const command = editor === 'cursor' ? 'cursor' : 'code';
-
-      console.log(`🚀 Installing theme to ${editorName}...`);
 
       // Install the extension
       execSync(`${command} --install-extension "${vsixPath}"`, {
-        stdio: 'inherit'
+        stdio: 'pipe'
       });
 
       console.log('✅ Theme installed successfully!');
 
       if (autoClose) {
-        console.log(`⏳ Auto-closing ${editorName} in ${timeout}ms...`);
-
         // Small delay to ensure installation completes
         await new Promise(resolve => setTimeout(resolve, timeout));
 
@@ -208,9 +197,8 @@ export class TinteCLI {
           } else {
             execSync(`pkill -f "${command}"`);
           }
-          console.log(`🔚 ${editorName} closed`);
         } catch (error) {
-          console.warn(`⚠️  Could not auto-close ${editorName}`);
+          // Silently fail on auto-close
         }
       }
 

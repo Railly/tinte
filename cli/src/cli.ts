@@ -20,7 +20,7 @@ Usage:
 Options:
   --light                           # Install light variant
   --dark                            # Install dark variant (default)
-  --no-close                        # Don't auto-close editor
+  --close                           # Auto-close editor after install
   --timeout <ms>                    # Auto-close timeout (default: 3000)
   --code                            # Install to VS Code (default)
   --cursor                          # Install to Cursor
@@ -29,7 +29,7 @@ Examples:
   bunx tinte flexoki-theme          # Install to VS Code
   bunx tinte flexoki-theme --cursor # Install to Cursor
   bunx tinte https://tinte.dev/api/themes/slug/flexoki-theme --light
-  bunx tinte ./my-theme.json --cursor --no-close
+  bunx tinte ./my-theme.json --cursor --close
     `);
     process.exit(0);
   }
@@ -37,7 +37,7 @@ Examples:
   const command = args[0];
   const options: EditorInstallOptions = {
     variant: args.includes('--light') ? 'light' : 'dark',
-    autoClose: !args.includes('--no-close'),
+    autoClose: args.includes('--close'),
     timeout: parseInt(args.find(arg => arg.startsWith('--timeout'))?.split('=')[1] || '3000'),
     editor: args.includes('--cursor') ? 'cursor' : 'code',
   };
@@ -64,13 +64,7 @@ Examples:
         const installEditorName = options.editor === 'cursor' ? 'Cursor' : 'VS Code';
         const editorCommand = options.editor === 'cursor' ? 'cursor .' : 'code .';
         console.log(`
-🎉 Theme installed!
-
-Next steps:
-1. Open ${installEditorName}: ${editorCommand}
-2. Go to: File → Preferences → Color Theme
-3. Select your new Tinte theme
-4. Enjoy your beautiful new theme! ✨
+🎉 Open ${installEditorName} and select your new theme from Preferences → Color Theme
         `);
         break;
     }

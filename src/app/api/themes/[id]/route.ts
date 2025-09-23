@@ -278,6 +278,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       tags: ["custom"],
       createdAt:
         themeRecord.created_at?.toISOString() || new Date().toISOString(),
+      is_public: themeRecord.is_public,
       colors: {
         primary: themeRecord.light_pr,
         secondary: themeRecord.light_sc,

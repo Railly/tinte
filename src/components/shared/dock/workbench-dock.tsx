@@ -73,6 +73,26 @@ export function Dock({ providerId, providerName }: DockProps) {
     overrides,
   } = useThemeContext();
 
+  // Sync isThemePublic state with activeTheme
+  useEffect(() => {
+    if (activeTheme) {
+      // Debug: Log the theme object to see what fields are available
+      console.log("🔍 Active theme data:", {
+        id: activeTheme.id,
+        name: activeTheme.name,
+        is_public: (activeTheme as any)?.is_public,
+        hasIsPublic: "is_public" in activeTheme,
+        allKeys: Object.keys(activeTheme),
+        theme: activeTheme,
+      });
+
+      // Check for is_public property in the theme data
+      const themeIsPublic = (activeTheme as any)?.is_public ?? false;
+      console.log("🔍 Setting isThemePublic to:", themeIsPublic);
+      setIsThemePublic(themeIsPublic);
+    }
+  }, [activeTheme]);
+
   // Use theme from context instead of props
   const theme = tinteTheme;
 
@@ -259,12 +279,17 @@ export function Dock({ providerId, providerName }: DockProps) {
       const normalizedCurrent = normalizeOverrides(storeOverrides);
 
       // If store overrides are empty but original has data, treat as no changes (initial load state)
-      const storeIsEmpty = Object.keys(normalizedCurrent).length === 0 ||
-        (Object.keys(normalizedCurrent).every(mode => Object.keys(normalizedCurrent[mode] || {}).length === 0));
+      const storeIsEmpty =
+        Object.keys(normalizedCurrent).length === 0 ||
+        Object.keys(normalizedCurrent).every(
+          (mode) => Object.keys(normalizedCurrent[mode] || {}).length === 0,
+        );
       const originalHasData = Object.keys(normalizedOriginal).length > 0;
 
       if (storeIsEmpty && originalHasData) {
-        console.log("🔢 [Override Count] Store is empty but original has data - treating as initial load (no changes)");
+        console.log(
+          "🔢 [Override Count] Store is empty but original has data - treating as initial load (no changes)",
+        );
         return 0;
       }
 
@@ -352,8 +377,14 @@ export function Dock({ providerId, providerName }: DockProps) {
         (activeTheme as any).vscode_override ||
         {};
 
-      console.log("🔢 [Override Count] VSCode original overrides:", originalOverrides);
-      console.log("🔢 [Override Count] VSCode original overrides JSON:", JSON.stringify(originalOverrides));
+      console.log(
+        "🔢 [Override Count] VSCode original overrides:",
+        originalOverrides,
+      );
+      console.log(
+        "🔢 [Override Count] VSCode original overrides JSON:",
+        JSON.stringify(originalOverrides),
+      );
 
       // Normalize both objects for comparison (handle undefined/null)
       const normalizeOverrides = (obj: any) => {
@@ -371,12 +402,17 @@ export function Dock({ providerId, providerName }: DockProps) {
       const normalizedCurrent = normalizeOverrides(storeOverrides);
 
       // If store overrides are empty but original has data, treat as no changes (initial load state)
-      const storeIsEmpty = Object.keys(normalizedCurrent).length === 0 ||
-        (Object.keys(normalizedCurrent).every(mode => Object.keys(normalizedCurrent[mode] || {}).length === 0));
+      const storeIsEmpty =
+        Object.keys(normalizedCurrent).length === 0 ||
+        Object.keys(normalizedCurrent).every(
+          (mode) => Object.keys(normalizedCurrent[mode] || {}).length === 0,
+        );
       const originalHasData = Object.keys(normalizedOriginal).length > 0;
 
       if (storeIsEmpty && originalHasData) {
-        console.log("🔢 [Override Count] VSCode store is empty but original has data - treating as initial load (no changes)");
+        console.log(
+          "🔢 [Override Count] VSCode store is empty but original has data - treating as initial load (no changes)",
+        );
         return 0;
       }
 
@@ -398,7 +434,9 @@ export function Dock({ providerId, providerName }: DockProps) {
       };
 
       if (originalHasData && storeHasSubsetOfOriginal()) {
-        console.log("🔢 [Override Count] VSCode store appears to be a subset of original (partial load) - treating as no changes");
+        console.log(
+          "🔢 [Override Count] VSCode store appears to be a subset of original (partial load) - treating as no changes",
+        );
         return 0;
       }
 
@@ -410,9 +448,18 @@ export function Dock({ providerId, providerName }: DockProps) {
         "🔢 [Override Count] VSCode normalized original:",
         normalizedOriginal,
       );
-      console.log("🔢 [Override Count] VSCode normalized current:", normalizedCurrent);
-      console.log("🔢 [Override Count] VSCode original JSON:", JSON.stringify(normalizedOriginal));
-      console.log("🔢 [Override Count] VSCode current JSON:", JSON.stringify(normalizedCurrent));
+      console.log(
+        "🔢 [Override Count] VSCode normalized current:",
+        normalizedCurrent,
+      );
+      console.log(
+        "🔢 [Override Count] VSCode original JSON:",
+        JSON.stringify(normalizedOriginal),
+      );
+      console.log(
+        "🔢 [Override Count] VSCode current JSON:",
+        JSON.stringify(normalizedCurrent),
+      );
       console.log("🔢 [Override Count] VSCode is exact match:", isExactMatch);
 
       if (isExactMatch) {
@@ -444,7 +491,10 @@ export function Dock({ providerId, providerName }: DockProps) {
         });
       });
 
-      console.log("🔢 [Override Count] VSCode total change count:", changeCount);
+      console.log(
+        "🔢 [Override Count] VSCode total change count:",
+        changeCount,
+      );
       return changeCount;
     }
 
@@ -486,17 +536,6 @@ export function Dock({ providerId, providerName }: DockProps) {
   }, [undoCount, overrideChanges]);
 
   const hasChanges = totalChanges > 0 || unsavedChanges;
-  console.log("🔍 [Dock Debug] Combined hasChanges calculation:", {
-    totalChanges,
-    unsavedChanges,
-    result: hasChanges,
-  });
-  console.log("🔍 [Dock Debug] Combined hasChanges calculation:", {
-    totalChanges,
-    unsavedChanges,
-    result: hasChanges,
-  });
-
   const exportedTheme = exportTheme(providerId, theme);
   const primaryActionConfig = getPrimaryActionConfig();
 
@@ -725,11 +764,11 @@ export function Dock({ providerId, providerName }: DockProps) {
         // Ensure proper user association for ownership detection
         user: user
           ? {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            image: user.image,
-          }
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            }
           : null,
       };
 
@@ -755,11 +794,11 @@ export function Dock({ providerId, providerName }: DockProps) {
           // Ensure user association is preserved
           user: user
             ? {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            }
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              }
             : null,
           // Ensure overrides are preserved
           overrides: {
@@ -783,7 +822,7 @@ export function Dock({ providerId, providerName }: DockProps) {
     }
   };
 
-  const handleTogglePublic = (makePublic: boolean) => {
+  const handleTogglePublic = async (makePublic: boolean) => {
     try {
       if (!activeTheme?.id) {
         console.error("No theme ID");
@@ -791,18 +830,51 @@ export function Dock({ providerId, providerName }: DockProps) {
         return;
       }
 
+      if (!isOwnTheme) {
+        toast.error("Only theme owners can make themes public");
+        return;
+      }
+
+      // Update local state optimistically
       setIsThemePublic(makePublic);
 
-      if (makePublic && isOwnTheme) {
-        // Future: API call to make theme public
-        console.log("Making theme public:", activeTheme.id);
+      // Call API to update theme visibility
+      const response = await fetch(`/api/themes/${activeTheme.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          isPublic: makePublic,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update theme visibility");
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update theme visibility");
+      }
+
+      // Update the activeTheme in the context with the new is_public value
+      if (activeTheme) {
+        const updatedTheme = {
+          ...activeTheme,
+          is_public: makePublic,
+        };
+        selectTheme(updatedTheme);
+      }
+
+      // Refresh theme data to ensure consistency
+      await loadUserThemes();
+
+      if (makePublic) {
         toast.success("✨ Theme is now public!");
-      } else if (!makePublic) {
-        console.log("Making theme private:", activeTheme.id);
+      } else {
         toast.success("🔒 Theme is now private");
-      } else if (makePublic && !isOwnTheme) {
-        toast.error("Only theme owners can make themes public");
-        setIsThemePublic(false);
       }
     } catch (error) {
       console.error("Error toggling theme visibility:", error);
@@ -1132,12 +1204,20 @@ export function Dock({ providerId, providerName }: DockProps) {
                 onShare={() => setShowShareDialog(true)}
                 onImport={() => setShowImportDialog(true)}
                 // CLI command props for VS Code
-                onCopyCLICommand={providerId === "vscode" && activeTheme?.slug ? async () => {
-                  const command = `bunx tinte ${activeTheme.slug}`;
-                  await navigator.clipboard.writeText(command);
-                  showSuccessWithMessage("CLI command copied!");
-                } : undefined}
-                cliCommand={providerId === "vscode" && activeTheme?.slug ? `bunx tinte ${activeTheme.slug}` : undefined}
+                onCopyCLICommand={
+                  providerId === "vscode" && activeTheme?.slug
+                    ? async () => {
+                        const command = `bunx tinte ${activeTheme.slug}`;
+                        await navigator.clipboard.writeText(command);
+                        showSuccessWithMessage("CLI command copied!");
+                      }
+                    : undefined
+                }
+                cliCommand={
+                  providerId === "vscode" && activeTheme?.slug
+                    ? `bunx tinte ${activeTheme.slug}`
+                    : undefined
+                }
                 isPrimaryActionDisabled={isTemporaryTheme() && !canSave}
               />
             ) : dockState === "export" ? (
