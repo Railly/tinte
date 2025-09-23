@@ -159,7 +159,7 @@ export async function saveThemeToDatabase(
     name: themeData.title,
     slug: slug,
     concept: themeData.concept,
-    vendor: "tinte",
+    vendor: null,
 
     // Light mode
     light_bg: themeData.light.bg,
@@ -199,12 +199,11 @@ export async function saveThemeToDatabase(
   };
 
   try {
-    const [savedTheme] = await db
-      .insert(theme)
-      .values(themeInsert)
-      .returning();
+    const [savedTheme] = await db.insert(theme).values(themeInsert).returning();
 
-    console.log(`✅ Theme "${themeData.title}" saved to database with slug: ${slug}`);
+    console.log(
+      `✅ Theme "${themeData.title}" saved to database with slug: ${slug}`
+    );
 
     return { theme: savedTheme, slug };
   } catch (error) {

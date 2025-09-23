@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AlertTriangle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { VSCodeIcon } from "@/components/shared/icons/vscode";
 
 const BETA_BANNER_KEY = "tinte-beta-banner-dismissed";
 
 export function BetaBanner() {
   const [shouldShow, setShouldShow] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const isDismissed = localStorage.getItem(BETA_BANNER_KEY);
@@ -28,14 +31,25 @@ export function BetaBanner() {
     const toastId = toast(
       <div className="flex items-start gap-3 w-full">
         <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
-        <div className="flex-1 space-y-1">
+        <div className="flex-1 space-y-2">
           <div className="font-medium text-foreground">
             Tinte is currently in beta
           </div>
           <div className="text-sm text-muted-foreground">
-            The product might be buggy, especially VS Code export which is still in progress.
-            We appreciate your patience as we improve the experience.
+            We're actively improving the experience! Try our VS Code theme export feature and help us make it better.
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs"
+            onClick={() => {
+              router.push("/workbench?provider=vscode");
+              dismissBanner();
+            }}
+          >
+            <VSCodeIcon className="w-3 h-3 mr-1" />
+            Test VS Code Export
+          </Button>
         </div>
         <Button
           variant="ghost"
