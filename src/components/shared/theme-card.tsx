@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import type { ThemeData } from "@/lib/theme-tokens";
 import { extractThemeColors, extractShadcnColors, extractShadcnFonts, extractShadcnShadows, formatNumber } from "@/utils/theme-card-helpers";
 import { useThemeContext } from "@/providers/theme";
+import { useThemeFonts } from "@/hooks/use-theme-fonts";
 
 interface ThemeCardProps {
   theme: ThemeData;
@@ -110,6 +111,9 @@ export function ThemeCardSkeleton() {
 export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo = false }: ThemeCardProps) {
   const { isDark } = useThemeContext();
   const router = useRouter();
+
+  // Ensure fonts are loaded for this theme card
+  useThemeFonts(theme);
 
   const handleApplyTheme = (e: React.MouseEvent) => {
     e.stopPropagation();

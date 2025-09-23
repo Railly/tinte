@@ -46,6 +46,7 @@ interface FontSelectorProps {
   onSelect: (font: FontInfo) => void;
   placeholder?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function FontSelector({
@@ -54,6 +55,7 @@ export function FontSelector({
   onSelect,
   placeholder = "Search fonts...",
   className,
+  style,
 }: FontSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
@@ -208,6 +210,7 @@ export function FontSelector({
             "bg-input/25 w-full justify-between gap-2 md:h-auto md:py-2",
             className,
           )}
+          style={style}
         >
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {currentFont ? (

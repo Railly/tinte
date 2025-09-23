@@ -10,7 +10,7 @@ import { CardsTeamMembers } from "./demos/team-members";
 
 export function ShadcnPreview() {
   return (
-    <div className="h-full md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-13">
+    <div className="font-sans h-full md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-13">
       <div className="h-full grid gap-4 lg:col-span-4 xl:col-span-6">
         <CardsStats />
         <div className="grid gap-1 sm:grid-cols-[auto_1fr] md:hidden">

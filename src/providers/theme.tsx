@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
+import { useThemeFonts } from "@/hooks/use-theme-fonts";
 import { useThemeStore } from "@/stores/theme";
 import { useAuthStore } from "@/stores/auth";
 
@@ -21,6 +22,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const themeStore = useThemeStore();
   const authStore = useAuthStore();
   const themeValue = useTheme();
+
+  // Preload fonts whenever the current theme changes
+  useThemeFonts(themeValue.currentTheme);
 
   // Handle initialization at provider level to prevent infinite loops
   useEffect(() => {

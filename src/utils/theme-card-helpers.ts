@@ -4,6 +4,7 @@ import type {
   TinteThemeData,
 } from "@/lib/theme-tokens";
 import { convertTinteToShadcn, computeShadowVars } from "@/lib/providers/shadcn";
+import { loadGoogleFont, getDefaultWeights, buildFontFamily } from "@/utils/fonts";
 
 export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {
   // Safety check for theme
@@ -148,6 +149,8 @@ export function extractShadcnColors(theme: ThemeData, isDark = false) {
 }
 
 export function extractShadcnFonts(theme: ThemeData) {
+  let extractedFonts: any = {};
+
   // First check rawTheme for fonts (tweakcn themes have fonts directly in the palette)
   if ('rawTheme' in theme && theme.rawTheme && typeof theme.rawTheme === 'object') {
     const rawTheme = theme.rawTheme as any;
@@ -156,12 +159,15 @@ export function extractShadcnFonts(theme: ThemeData) {
     if ('fonts' in rawTheme) {
       const fonts = rawTheme.fonts;
       if (fonts) {
-        return {
+        extractedFonts = {
           "--font-sans": fonts.sans || fonts.primary,
           "--font-serif": fonts.serif || fonts.secondary,
           "--font-mono": fonts.mono || fonts.code,
           "fontFamily": fonts.sans || fonts.primary,
         };
+
+        // Preload the fonts
+        preloadThemeFonts(fonts);
       }
     }
 
@@ -170,12 +176,19 @@ export function extractShadcnFonts(theme: ThemeData) {
     const themeData = rawTheme.light || rawTheme.dark || rawTheme;
 
     if (themeData && (themeData['font-sans'] || themeData['font-serif'] || themeData['font-mono'])) {
-      return {
+      extractedFonts = {
         "--font-sans": themeData['font-sans'],
         "--font-serif": themeData['font-serif'],
         "--font-mono": themeData['font-mono'],
         "fontFamily": themeData['font-sans'], // Apply sans as default
       };
+
+      // Preload the fonts
+      preloadThemeFonts({
+        sans: themeData['font-sans'],
+        serif: themeData['font-serif'],
+        mono: themeData['font-mono'],
+      });
     }
   }
 
@@ -183,16 +196,45 @@ export function extractShadcnFonts(theme: ThemeData) {
   const themeWithOverride = theme as any;
   if (themeWithOverride.shadcn_override?.fonts) {
     const fonts = themeWithOverride.shadcn_override.fonts;
-    return {
+    extractedFonts = {
       "--font-sans": fonts.sans,
       "--font-serif": fonts.serif,
       "--font-mono": fonts.mono,
       "fontFamily": fonts.sans, // Apply sans as default
     };
+
+    // Preload the fonts
+    preloadThemeFonts(fonts);
   }
 
-  // No custom fonts available
-  return {};
+  return extractedFonts;
+}
+
+// Helper function to preload theme fonts
+function preloadThemeFonts(fonts: any) {
+  if (typeof window === 'undefined') return;
+
+  try {
+    // Preload sans-serif font
+    if (fonts.sans) {
+      const sansFamily = fonts.sans.split(',')[0].trim().replace(/['\"]/g, '');
+      loadGoogleFont(sansFamily, ['400', '500', '600']);
+    }
+
+    // Preload serif font
+    if (fonts.serif) {
+      const serifFamily = fonts.serif.split(',')[0].trim().replace(/['\"]/g, '');
+      loadGoogleFont(serifFamily, ['400', '600']);
+    }
+
+    // Preload mono font
+    if (fonts.mono) {
+      const monoFamily = fonts.mono.split(',')[0].trim().replace(/['\"]/g, '');
+      loadGoogleFont(monoFamily, ['400', '500']);
+    }
+  } catch (error) {
+    console.warn('Failed to preload theme fonts:', error);
+  }
 }
 
 export function extractShadcnShadows(theme: ThemeData, isDark = false) {

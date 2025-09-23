@@ -21,6 +21,7 @@ import type { TokenGroup } from "@/lib/theme-editor-utils";
 import type { FontInfo } from "@/types/fonts";
 import type { TinteBlock } from "@/types/tinte";
 import { FontSelector } from "./font-selector";
+import { loadGoogleFont, extractFontFamily } from "@/utils/fonts";
 
 interface EnhancedTokenInputProps {
   group: TokenGroup;
@@ -201,6 +202,12 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
   }
 
   if (group.type === "fonts") {
+    // Extract and preload the current font
+    const currentFontFamily = extractFontFamily(value);
+    if (currentFontFamily && typeof window !== 'undefined') {
+      loadGoogleFont(currentFontFamily, ['400', '500']);
+    }
+
     return (
       <FontSelector
         value={value.split(",")[0].trim().replace(/['"]/g, "")}
@@ -216,6 +223,13 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
         onSelect={(font) => onFontSelect(tokenKey, font)}
         placeholder="Select font..."
         className="h-7 text-xs"
+        style={{
+          fontFamily: currentFontFamily ? `"${currentFontFamily}", ${
+            tokenKey.includes("sans") ? "sans-serif" :
+            tokenKey.includes("serif") ? "serif" :
+            tokenKey.includes("mono") ? "monospace" : "sans-serif"
+          }` : undefined
+        }}
       />
     );
   }

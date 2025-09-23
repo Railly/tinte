@@ -9,6 +9,7 @@ import { computeShadowVars } from "@/lib/providers/shadcn";
 import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";
 import { DEFAULT_THEME } from "@/utils/default-theme";
+import { loadGoogleFont, extractFontFamily } from "@/utils/fonts";
 
 type ThemeMode = "light" | "dark";
 
@@ -316,19 +317,38 @@ const extractTinteTheme = (theme: ThemeData): TinteTheme => {
 const applyToDOM = (theme: ThemeData, mode: ThemeMode, tokens: Record<string, string>) => {
   if (typeof window === "undefined") return;
 
-  console.log("🎨 applyToDOM called with:", { mode, tokenCount: Object.keys(tokens).length });
-
   const root = document.documentElement;
   root.setAttribute("data-theme", mode);
-
-  console.log("Set data-theme attribute to:", mode);
 
   // Apply all tokens (colors, fonts, shadows, radius, etc.)
   Object.entries(tokens).forEach(([key, value]) => {
     root.style.setProperty(`--${key}`, value);
   });
 
-  console.log("✅ DOM updated with", Object.keys(tokens).length, "CSS variables");
+  // Preload Google Fonts from font tokens
+  const fontTokens = Object.entries(tokens).filter(([key]) => key.startsWith('font-'));
+  fontTokens.forEach(([key, value]) => {
+    const fontFamily = extractFontFamily(value);
+    if (fontFamily) {
+      loadGoogleFont(fontFamily, ['400', '500', '600']);
+
+      // Special handling for Press Start 2P
+      if (fontFamily === "Press Start 2P") {
+        setTimeout(() => {
+          const specialLink = document.createElement("link");
+          specialLink.rel = "stylesheet";
+          specialLink.href = "https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap";
+
+          specialLink.onload = () => {
+            document.documentElement.style.setProperty('--font-sans', '"Press Start 2P", monospace');
+            document.body.offsetHeight; // Force reflow
+          };
+
+          document.head.appendChild(specialLink);
+        }, 200);
+      }
+    }
+  });
 
   (window as any).__TINTE_THEME__ = { theme, mode };
 };

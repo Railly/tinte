@@ -164,6 +164,11 @@ export const generateThemeTool = tool({
         databaseId: savedTheme.id,
         success: true,
         timestamp: new Date().toISOString(),
+        preloadFonts: {
+          sans: fonts.sans,
+          serif: fonts.serif,
+          mono: fonts.mono,
+        },
       };
     } catch (error) {
       console.error("Error in generateTheme tool:", error);
@@ -179,6 +184,11 @@ export const generateThemeTool = tool({
         success: true,
         error: "Theme generated but not saved to database",
         timestamp: new Date().toISOString(),
+        preloadFonts: {
+          sans: fonts.sans,
+          serif: fonts.serif,
+          mono: fonts.mono,
+        },
       };
     }
   },

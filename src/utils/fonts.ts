@@ -312,6 +312,11 @@ export function loadGoogleFont(
 ): void {
   if (typeof document === "undefined") return;
 
+  // Special handling for Press Start 2P - it only has weight 400
+  if (family === "Press Start 2P") {
+    weights = ["400"];
+  }
+
   // Check if already loaded
   const href = buildFontCssUrl(family, weights);
   const existing = document.querySelector(`link[href="${href}"]`);
