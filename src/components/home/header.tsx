@@ -21,7 +21,6 @@ import { siteConfig } from "@/config/site";
 export function Header() {
   const navigation = [
     { name: "Themes", href: "/themes" },
-    { name: "Features", href: "#features" },
     { name: "Roadmap", href: "#roadmap" },
     { name: "FAQ", href: "#faq" },
   ];
@@ -39,13 +38,13 @@ export function Header() {
           {/* Desktop Navigation - Centered */}
           <nav className="hidden md:flex items-center gap-6 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {navigation.map((item) => (
-              <a
+              <Link
                 key={item.name}
                 href={item.href}
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -97,12 +96,12 @@ export function Header() {
                 <nav className="flex flex-col gap-8 pt-4">
                   {navigation.map((item) => (
                     <SheetClose key={item.name} asChild>
-                      <a
+                      <Link
                         href={item.href}
                         className="text-2xl font-medium text-foreground hover:text-primary transition-colors"
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     </SheetClose>
                   ))}
                 </nav>

@@ -11,9 +11,9 @@ interface RouteContext {
   }>;
 }
 
-function generateSettingsJsonContent(tinteTheme: TinteTheme, themeName: string, themeId: string): string {
+function generateSettingsJsonContent(tinteTheme: TinteTheme, themeName: string, themeId: string, vscodeOverrides?: any): string {
   // Convert theme to VS Code format using the existing provider functions
-  const vscodeTheme = convertTinteToVSCode(tinteTheme, themeName);
+  const vscodeTheme = convertTinteToVSCode(tinteTheme, themeName, vscodeOverrides);
 
   // Extract workbench colors (UI colors) - these are the exact same colors the provider generates
   const workbenchColors = vscodeTheme.dark.colors;
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const themeSlug = themeRecord.slug || themeRecord.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 
     // Generate the settings.json content
-    const settingsJsonContent = generateSettingsJsonContent(tinteTheme, themeName, themeRecord.id);
+    const settingsJsonContent = generateSettingsJsonContent(tinteTheme, themeName, themeRecord.id, themeRecord.vscode_override);
 
     // Escape the content for registry format
     const escapedContent = settingsJsonContent
