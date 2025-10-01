@@ -28,7 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { DesignSystemOutput } from "@/lib/providers/design-system";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeStore } from "@/stores/theme";
 
 interface DesignSystemPreviewProps {
   theme: DesignSystemOutput;
@@ -54,45 +54,26 @@ export function DesignSystemPreview({
   theme,
   className,
 }: DesignSystemPreviewProps) {
-  const { mode } = useThemeContext();
+  // Subscribe directly to tinteTheme and mode from the store
+  const tinteTheme = useThemeStore((state) => state.tinteTheme);
+  const currentMode = useThemeStore((state) => state.mode);
   const [demoTab, setDemoTab] = useState("tab1");
 
-  // Fallback to a default theme if currentTheme is not loaded yet
-  const defaultTheme = {
-    light: {
-      bg: "#ffffff",
-      bg_2: "#f8f9fa",
-      ui: "#e9ecef",
-      ui_2: "#dee2e6",
-      ui_3: "#ced4da",
-      tx: "#212529",
-      tx_2: "#6c757d",
-      tx_3: "#adb5bd",
-      pr: "#007bff",
-      sc: "#6c757d",
-      ac_1: "#dc3545",
-      ac_2: "#28a745",
-      ac_3: "#ffc107",
-    },
-    dark: {
-      bg: "#212529",
-      bg_2: "#343a40",
-      ui: "#495057",
-      ui_2: "#6c757d",
-      ui_3: "#adb5bd",
-      tx: "#f8f9fa",
-      tx_2: "#e9ecef",
-      tx_3: "#ced4da",
-      pr: "#0d6efd",
-      sc: "#6c757d",
-      ac_1: "#dc3545",
-      ac_2: "#198754",
-      ac_3: "#ffc107",
-    },
+  const currentColors = tinteTheme?.[currentMode] || {
+    bg: "#ffffff",
+    bg_2: "#f8f9fa",
+    ui: "#e9ecef",
+    ui_2: "#dee2e6",
+    ui_3: "#ced4da",
+    tx: "#212529",
+    tx_2: "#6c757d",
+    tx_3: "#adb5bd",
+    pr: "#007bff",
+    sc: "#6c757d",
+    ac_1: "#dc3545",
+    ac_2: "#28a745",
+    ac_3: "#ffc107",
   };
-
-  const safeTheme = defaultTheme;
-  const currentColors = mode === "dark" ? safeTheme.dark : safeTheme.light;
 
   return (
     <div className={`h-full ${className}`}>

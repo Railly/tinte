@@ -308,11 +308,39 @@ export const useThemeStore = create<ThemeStore>()(
               rawTheme: newTinteTheme,
             }, userId);
 
-            const newTokens = computeFinalTokens(updatedTheme, state.mode, state.overrides, state.editedTokens);
+            // Clear overrides that conflict with canonical colors being edited
+            const updatedKeys = Object.keys(updates);
+            const clearedOverrides = { ...state.overrides };
+
+            // If editing canonical colors, clear shadcn overrides for those colors
+            if (clearedOverrides.shadcn) {
+              const modeOverrides = clearedOverrides.shadcn[targetMode];
+              if (modeOverrides) {
+                // Map canonical keys to shadcn token names
+                const keysToRemove = new Set<string>();
+                updatedKeys.forEach(key => {
+                  if (key === 'pr') keysToRemove.add('primary');
+                  if (key === 'sc') keysToRemove.add('secondary');
+                  if (key === 'bg') keysToRemove.add('background');
+                  if (key === 'tx') keysToRemove.add('foreground');
+                  if (key.startsWith('ac_')) {
+                    keysToRemove.add('accent');
+                    keysToRemove.add('destructive');
+                  }
+                });
+
+                keysToRemove.forEach(tokenKey => {
+                  delete modeOverrides[tokenKey];
+                });
+              }
+            }
+
+            const newTokens = computeFinalTokens(updatedTheme, state.mode, clearedOverrides, state.editedTokens);
 
             return {
               activeTheme: updatedTheme,
               tinteTheme: newTinteTheme,
+              overrides: clearedOverrides,
               currentTokens: newTokens,
               unsavedChanges: true,
               hasEdits: true,
