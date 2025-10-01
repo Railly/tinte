@@ -120,9 +120,17 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                         )}
 
                         {/* Tool calls - Enhanced with better state handling */}
-                        {message.parts
-                          .filter((part) => part.type === "tool-generateTheme" || part.type === "tool-getCurrentTheme")
-                          .map((part, index) => {
+                        {(() => {
+                          // Count all generated themes across all messages to determine if this is the first theme
+                          const allGeneratedThemes = messages.flatMap(msg =>
+                            msg.parts.filter(part =>
+                              part.type === "tool-generateTheme" && part.state === "output-available"
+                            )
+                          );
+
+                          return message.parts
+                            .filter((part) => part.type === "tool-generateTheme" || part.type === "tool-getCurrentTheme")
+                            .map((part, index) => {
                             if (part.type === "tool-getCurrentTheme") {
                               // Handle getCurrentTheme tool silently - just show brief status
                               switch (part.state) {
@@ -167,6 +175,8 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                                 );
                               case "output-available": {
                                 const themeOutput = part.output as any;
+                                // Check if this is the first theme generated (across all messages)
+                                const isFirstTheme = allGeneratedThemes.length === 1 && part === allGeneratedThemes[0];
                                 return (
                                   <ThemeResultCard
                                     key={index}
@@ -174,6 +184,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                                     currentMode={currentMode}
                                     loadingTimer={loadingTimer}
                                     onApplyTheme={handleApplyTheme}
+                                    isFirstTheme={isFirstTheme}
                                   />
                                 );
                               }
@@ -226,7 +237,8 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                               default:
                                 return null;
                             }
-                          })}
+                          });
+                        })()}
                       </div>
                     </div>
                   )}

@@ -198,9 +198,13 @@ body {
 /* Shimmer effect for theme generation loading */
 @keyframes shimmer {
   0% {
-    transform: translateX(-100%);
+    background-position: -200% 0;
   }
   100% {
-    transform: translateX(100%);
+    background-position: 200% 0;
   }
+}
+
+@theme {
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
 }

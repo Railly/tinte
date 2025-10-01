@@ -14,13 +14,13 @@ import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
 import { WorkbenchPreviewPane } from "./workbench-preview-pane";
 
 interface WorkbenchMobileProps {
-  chatId: string;
+  themeSlug: string;
   defaultTab?: WorkbenchTab;
   initialPrompt?: string;
 }
 
 export function WorkbenchMobile({
-  chatId: _chatId,
+  themeSlug: _themeSlug,
   defaultTab,
   initialPrompt,
 }: WorkbenchMobileProps) {

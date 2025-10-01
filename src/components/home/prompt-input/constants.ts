@@ -1,7 +1,7 @@
 export const PROMPT_INPUT_PRESETS = [
   {
     icon: "🏢",
-    text: "Corporate Blue Theme",
+    text: "Corporate Blue",
     primaryColor: "#1e40af",
     neutralColor: "#64748b",
     backgroundColor: "#ffffff",
@@ -10,7 +10,7 @@ export const PROMPT_INPUT_PRESETS = [
   },
   {
     icon: "🌅",
-    text: "Warm Sunset Palette",
+    text: "Warm Sunset",
     primaryColor: "#f97316",
     neutralColor: "#a3a3a3",
     backgroundColor: "#fefefe",
@@ -19,7 +19,7 @@ export const PROMPT_INPUT_PRESETS = [
   },
   {
     icon: "🌙",
-    text: "Minimal Dark Mode",
+    text: "Minimal Dark",
     primaryColor: "#6366f1",
     neutralColor: "#71717a",
     backgroundColor: "#0f0f23",
@@ -28,7 +28,7 @@ export const PROMPT_INPUT_PRESETS = [
   },
   {
     icon: "⚡",
-    text: "Vibrant Neon Colors",
+    text: "Vibrant Neon",
     primaryColor: "#8b5cf6",
     neutralColor: "#737373",
     backgroundColor: "#0a0a0a",
@@ -37,7 +37,7 @@ export const PROMPT_INPUT_PRESETS = [
   },
   {
     icon: "🌿",
-    text: "Natural Green Tones",
+    text: "Natural Green",
     primaryColor: "#10b981",
     neutralColor: "#78716c",
     backgroundColor: "#fafaf9",

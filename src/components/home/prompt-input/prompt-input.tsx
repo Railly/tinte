@@ -127,16 +127,21 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
 
     if (!allContent && pastedItems.length === 0) return;
 
-    const chatId = nanoid();
-    const attachments = mapPastedToAttachments(pastedItems, 1_000_000); // Increased to 1MB for images
-    writeSeed(chatId, {
-      id: chatId,
-      content: allContent,
-      attachments,
-      createdAt: Date.now(),
-    });
-
-    router.push(`/workbench/${chatId}?tab=agent`);
+    // For simple prompts, just go to workbench/new with prompt in URL
+    // For complex cases with attachments, use the seed system
+    if (pastedItems.length > 0) {
+      const chatId = nanoid();
+      const attachments = mapPastedToAttachments(pastedItems, 1_000_000);
+      writeSeed(chatId, {
+        id: chatId,
+        content: allContent,
+        attachments,
+        createdAt: Date.now(),
+      });
+      router.push(`/workbench/${chatId}?tab=agent`);
+    } else {
+      router.push(`/workbench/new?tab=agent&prompt=${encodeURIComponent(allContent)}`);
+    }
     onSubmit?.("prompt", allContent);
   }
 
@@ -520,61 +525,21 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
         </div>
       </div>
 
-      {/* Preset buttons */}
-      <div className="mt-6">
-        {/* Mobile: Single row with all buttons */}
-        <div className="flex flex-wrap justify-center gap-2 sm:hidden">
-          {PROMPT_INPUT_PRESETS.map((preset, index) => (
-            <button
-              key={index}
-              onClick={() => handlePresetClick(preset)}
-              className="flex items-center gap-2 px-3 py-2 text-xs bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-lg"
-            >
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: preset.primaryColor }}
-              />
-              <span className="text-center leading-tight">{preset.text}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Desktop: 2 rows (2 + 3) */}
-        <div className="hidden sm:block space-y-3">
-          {/* First row - 2 buttons */}
-          <div className="flex justify-center gap-3">
-            {PROMPT_INPUT_PRESETS.slice(0, 2).map((preset, index) => (
-              <button
-                key={index}
-                onClick={() => handlePresetClick(preset)}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-full"
-              >
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: preset.primaryColor }}
-                />
-                <span>{preset.text}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Second row - 3 buttons */}
-          <div className="flex justify-center gap-3">
-            {PROMPT_INPUT_PRESETS.slice(2, 5).map((preset, index) => (
-              <button
-                key={index + 2}
-                onClick={() => handlePresetClick(preset)}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-full"
-              >
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: preset.primaryColor }}
-                />
-                <span>{preset.text}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* Preset buttons - 4 inline */}
+      <div className="mt-6 flex flex-wrap justify-center gap-3">
+        {PROMPT_INPUT_PRESETS.slice(0, 4).map((preset, index) => (
+          <button
+            key={index}
+            onClick={() => handlePresetClick(preset)}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-full"
+          >
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: preset.primaryColor }}
+            />
+            <span>{preset.text}</span>
+          </button>
+        ))}
       </div>
 
       <PasteDialog

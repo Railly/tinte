@@ -20,12 +20,30 @@ export function usePastedItems() {
     setFetchingIds((prev) => new Set([...prev, itemId]));
 
     try {
-      const meta = await fetchUrlMetadata(url);
+      const [meta, screenshotBlob] = await Promise.all([
+        fetchUrlMetadata(url),
+        fetch(
+          `https://headlessx-railway-template-production.up.railway.app/api/screenshot?token=a7f3d9e8c5b2f1a4e6d8c9b7f3e5a2d1c8f4b6e9a3d7f2c5b8e1a9d6f4c7b3e5a&url=${encodeURIComponent(url)}`,
+        )
+          .then((r) => r.blob())
+          .catch(() => null),
+      ]);
+
+      let imageData: string | undefined;
+      if (screenshotBlob) {
+        const reader = new FileReader();
+        imageData = await new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(screenshotBlob);
+        });
+      }
+
       setPastedItems((prev) =>
         prev.map((item) =>
           item.id === itemId
             ? {
                 ...item,
+                imageData,
                 metadata: {
                   title: meta.title,
                   description: meta.description,

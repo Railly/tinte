@@ -19,7 +19,7 @@ export async function getThemeBySlug(
   }
 
   // If not found and looks like a valid theme slug, fetch from database
-  if (!slug || slug.match(/^[0-9a-f-]{36}$/i) || slug === 'default' || slug === 'theme') {
+  if (!slug || slug.match(/^[0-9a-f-]{36}$/i) || slug === 'default' || slug === 'theme' || slug === 'new') {
     return null;
   }
 

@@ -65,8 +65,9 @@ export default async function WorkbenchSlugPage({
   const { slug } = await params;
   const { tab, prompt } = await searchParams;
 
-  const defaultTab =
-    (tab as "canonical" | "overrides" | "agent") || "canonical";
+  const defaultTab = prompt
+    ? "agent"
+    : (tab as "canonical" | "overrides" | "agent") || "canonical";
 
   const headersList = await headers();
   const session = await auth.api.getSession({
@@ -86,14 +87,11 @@ export default async function WorkbenchSlugPage({
   const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
   const initialTheme = await getThemeBySlug(slug, allThemes);
 
-  // If theme not found and slug is not a default workbench identifier, redirect to themes search
-  if (!initialTheme && slug !== 'default' && slug !== 'new' && !slug.match(/^[0-9a-f-]{36}$/i)) {
-    redirect(`/themes?search=${encodeURIComponent(slug)}&from=workbench`);
-  }
+  // No more redirects - workbench can handle any slug, with or without theme
 
   return (
     <WorkbenchMain
-      chatId={slug}
+      themeSlug={slug}
       defaultTab={defaultTab}
       initialTheme={initialTheme}
       userThemes={userThemes}

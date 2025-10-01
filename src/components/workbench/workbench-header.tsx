@@ -21,7 +21,7 @@ import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 
 interface WorkbenchHeaderProps {
-  chatId: string;
+  themeSlug: string;
   userThemes?: UserThemeData[];
   tweakCNThemes?: UserThemeData[];
   tinteThemes?: UserThemeData[];
@@ -29,7 +29,7 @@ interface WorkbenchHeaderProps {
 }
 
 export function WorkbenchHeader({
-  chatId,
+  themeSlug,
   userThemes = [],
   tweakCNThemes = [],
   tinteThemes = [],

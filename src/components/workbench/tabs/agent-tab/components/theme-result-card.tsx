@@ -1,7 +1,7 @@
 "use client";
 
-import { Copy, Palette, Sparkles, Save } from "lucide-react";
-import { useState } from "react";
+import { Copy, Palette, Sparkles, Save, RefreshCw } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useThemeContext } from "@/providers/theme";
@@ -16,6 +16,7 @@ interface ThemeResultCardProps {
   currentMode: "light" | "dark";
   loadingTimer: number;
   onApplyTheme: (themeOutput: any) => void;
+  isFirstTheme?: boolean;
 }
 
 export function ThemeResultCard({
@@ -23,9 +24,11 @@ export function ThemeResultCard({
   currentMode,
   loadingTimer,
   onApplyTheme,
+  isFirstTheme = false,
 }: ThemeResultCardProps) {
   const [openSections, setOpenSections] = useState(DEFAULT_OPEN_SECTIONS);
   const [isSaving, setIsSaving] = useState(false);
+  const [hasAutoSaved, setHasAutoSaved] = useState(false);
 
   const {
     saveCurrentTheme,
@@ -36,6 +39,15 @@ export function ThemeResultCard({
     shadcnOverride
   } = useThemeContext();
 
+  // Auto-save and apply first theme
+  useEffect(() => {
+    if (isFirstTheme && !hasAutoSaved && themeOutput) {
+      console.log("🎯 [Auto-save] Auto-saving first theme:", themeOutput.title);
+      handleSaveTheme(true); // Pass true for auto-save
+      setHasAutoSaved(true);
+    }
+  }, [isFirstTheme, hasAutoSaved, themeOutput]);
+
   const toggleSection = (section: keyof typeof DEFAULT_OPEN_SECTIONS) => {
     setOpenSections((prev) => ({
       ...prev,
@@ -43,10 +55,11 @@ export function ThemeResultCard({
     }));
   };
 
-  const handleSaveTheme = async () => {
-    console.log("🚀 [AI Save] Starting save process");
+  const handleSaveTheme = async (isAutoSave = false) => {
+    console.log("🚀 [AI Save] Starting save process", { isAutoSave });
 
-    if (!canSave) {
+    // For auto-save, we always save regardless of authentication status (anonymous users included)
+    if (!isAutoSave && !canSave) {
       toast.error("Please sign in to save themes");
       return;
     }
@@ -94,7 +107,9 @@ export function ThemeResultCard({
           }
         }, 100);
 
-        toast.success(`"${themeName}" saved successfully!`);
+        if (!isAutoSave) {
+          toast.success(`"${themeName}" saved successfully!`);
+        }
       } else {
         console.error("❌ [AI Save] Save failed:", result);
         toast.error("Failed to save theme");
@@ -171,16 +186,18 @@ export function ThemeResultCard({
             <Sparkles className="h-3 w-3 mr-1.5" />
             Apply Theme
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleSaveTheme}
-            disabled={!canSave || isSaving}
-            className="h-8 px-3"
-          >
-            <Save className="h-3 w-3 mr-1.5" />
-            {isSaving ? "Saving..." : "Save"}
-          </Button>
+          {!isFirstTheme && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleSaveTheme(false)}
+              disabled={!canSave || isSaving}
+              className="h-8 px-3"
+            >
+              <RefreshCw className="h-3 w-3 mr-1.5" />
+              {isSaving ? "Updating..." : "Update"}
+            </Button>
+          )}
         </div>
       </div>
     </div>

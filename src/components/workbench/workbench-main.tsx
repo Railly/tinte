@@ -14,7 +14,7 @@ import { WorkbenchPreviewPane } from "./workbench-preview-pane";
 import { WorkbenchSidebar } from "./workbench-sidebar";
 
 interface WorkbenchMainProps {
-  chatId: string;
+  themeSlug: string;
   defaultTab?: WorkbenchTab;
   initialTheme?: UserThemeData | null;
   userThemes?: UserThemeData[];
@@ -24,53 +24,64 @@ interface WorkbenchMainProps {
   initialPrompt?: string;
 }
 
-export function WorkbenchMain({ chatId, defaultTab, initialTheme, userThemes = [], tweakCNThemes = [], tinteThemes = [], raysoThemes = [], initialPrompt }: WorkbenchMainProps) {
+export function WorkbenchMain({ themeSlug, defaultTab, initialTheme, userThemes = [], tweakCNThemes = [], tinteThemes = [], raysoThemes = [], initialPrompt }: WorkbenchMainProps) {
   const initializeWorkbench = useWorkbenchStore(
     (state) => state.initializeWorkbench,
   );
   const { selectTheme } = useThemeContext();
   const isMobile = useIsMobile();
 
-  // Check if chatId looks like a generated ID (36 chars with dashes) to enable auto-redirect
-  const isGeneratedChatId = chatId.match(/^[0-9a-zA-Z_-]{21}$/) || chatId.match(/^[0-9a-f-]{36}$/i);
+  // Check if themeSlug looks like a generated ID (36 chars with dashes) to enable auto-redirect
+  const isGeneratedId = themeSlug.match(/^[0-9a-zA-Z_-]{21}$/) || themeSlug.match(/^[0-9a-f-]{36}$/i);
 
-  // Enable slug redirect for generated chat IDs (when themes are created with AI)
+  // Enable slug redirect for generated IDs (when themes are created with AI)
   // Note: We'll pass messages from the chat logic when available
   useThemeSlugRedirect({
-    chatId,
-    enabled: Boolean(isGeneratedChatId && initialPrompt)
+    chatId: themeSlug,
+    enabled: Boolean(isGeneratedId && initialPrompt)
   });
 
   useEffect(() => {
-    initializeWorkbench(chatId);
+    initializeWorkbench(themeSlug);
 
-    // If we have an initialTheme from server, use it immediately
+    const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
+    const builtInThemes = [...tweakCNThemes, ...tinteThemes, ...raysoThemes];
+
+    // Priority 1: Use server-provided theme
     if (initialTheme) {
-      console.log('🎨 [WorkbenchMain] Using server-side initial theme:', initialTheme);
       selectTheme(initialTheme);
       return;
     }
 
-    // Fallback: Check if chatId corresponds to a theme slug in pre-loaded themes
-    const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
-    const themeBySlug = allThemes.find(theme => theme.slug === chatId);
-
-    if (themeBySlug) {
-      console.log('🎨 [WorkbenchMain] Found theme by slug in pre-loaded themes:', themeBySlug);
-      selectTheme(themeBySlug);
+    // Priority 2: Use first built-in theme for "new" slug
+    if (themeSlug === 'new') {
+      if (builtInThemes[0]) selectTheme(builtInThemes[0]);
+      return;
     }
-  }, [chatId, initialTheme, initializeWorkbench, selectTheme, userThemes, tweakCNThemes, tinteThemes, raysoThemes]);
+
+    // Priority 3: Find theme by slug
+    const matchedTheme = allThemes.find(t => t.slug === themeSlug);
+    if (matchedTheme) {
+      selectTheme(matchedTheme);
+      return;
+    }
+
+    // Priority 4: Fallback to first built-in theme
+    if (builtInThemes[0]) {
+      selectTheme(builtInThemes[0]);
+    }
+  }, [themeSlug, initialTheme, initializeWorkbench, selectTheme, userThemes, tweakCNThemes, tinteThemes, raysoThemes]);
 
   // Mobile layout
   if (isMobile) {
-    return <WorkbenchMobile chatId={chatId} defaultTab={defaultTab} initialPrompt={initialPrompt} />;
+    return <WorkbenchMobile themeSlug={themeSlug} defaultTab={defaultTab} initialPrompt={initialPrompt} />;
   }
 
   // Desktop layout with SidebarProvider
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="h-screen w-full flex flex-col">
-        <WorkbenchHeader chatId={chatId} userThemes={userThemes} tweakCNThemes={tweakCNThemes} tinteThemes={tinteThemes} raysoThemes={raysoThemes} />
+        <WorkbenchHeader themeSlug={themeSlug} userThemes={userThemes} tweakCNThemes={tweakCNThemes} tinteThemes={tinteThemes} raysoThemes={raysoThemes} />
         <div className="flex flex-1">
           <WorkbenchSidebar defaultTab={defaultTab} initialPrompt={initialPrompt} />
           <SidebarInset className="flex flex-col">

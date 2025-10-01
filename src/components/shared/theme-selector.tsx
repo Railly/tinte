@@ -55,6 +55,7 @@ export function ThemeSelector({
     searchError,
     searchQuery,
     setSearchQuery,
+    searchLocal,
   } = useThemeSearch();
 
   const [selectedSearchTheme, setSelectedSearchTheme] =
@@ -158,25 +159,23 @@ export function ThemeSelector({
     [searchResults, onSelect],
   );
 
-  // Organize themes into sections
+  // Organize themes into sections with smart local + remote search
   const organizedThemes = React.useMemo(() => {
     const combined = [...themes];
 
-    // Add selected search theme if it's not already in the themes list
-    if (
-      selectedSearchTheme &&
-      !themes.some((t) => t.id === selectedSearchTheme.id)
-    ) {
+    if (selectedSearchTheme && !themes.some((t) => t.id === selectedSearchTheme.id)) {
       combined.push(selectedSearchTheme);
     }
 
-    if (searchQuery.trim() && searchResults.length > 0) {
-      // Show search results with regular themes as fallback
-      const searchIds = new Set(searchResults.map((t) => t.id));
-      const remainingThemes = combined.filter((t) => !searchIds.has(t.id));
+    // Search mode
+    if (searchQuery.trim()) {
+      const localResults = searchLocal(combined, searchQuery);
+      const localIds = new Set(localResults.map((t) => t.id));
+      const remoteOnlyResults = searchResults.filter((t) => !localIds.has(t.id));
+
       return {
-        searchResults: searchResults,
-        remainingThemes: remainingThemes,
+        localSearchResults: localResults,
+        remoteSearchResults: remoteOnlyResults,
         favoriteThemes: [],
         userThemes: [],
         communityThemes: [],
@@ -184,54 +183,31 @@ export function ThemeSelector({
       };
     }
 
-    // Create a set of favorite theme IDs to avoid duplicates
+    // Normal mode - categorize all themes
     const favoriteThemeIds = new Set(favoriteThemes.map((t) => t.id));
-
-    // Separate themes into categories, excluding those already in favorites
     const userThemes: ThemeData[] = [];
     const communityThemes: ThemeData[] = [];
     const builtInThemes: ThemeData[] = [];
 
     combined.forEach((theme) => {
-      // Skip if this theme is already in favorites section
-      if (favoriteThemeIds.has(theme.id)) {
-        return;
-      }
+      if (favoriteThemeIds.has(theme.id)) return;
 
-      // Check if theme belongs to current user
       const isOwnTheme = theme.user?.id === user?.id;
-      const isCustomTheme =
-        theme.author === "You" || theme.name?.includes("Custom");
-      const isUserCreated =
-        theme.provider === "tinte" && (isOwnTheme || isCustomTheme);
+      const hasUser = Boolean(theme.user?.id);
 
-      // Check if it's a community theme (user-created but not own)
-      const isCommunityTheme =
-        theme.provider === "tinte" &&
-        theme.user?.id &&
-        theme.user.id !== user?.id;
-
-      // Check if it's a built-in theme (only official presets)
-      const isBuiltInTheme =
-        (["tweakcn", "ray.so", "tinte"].includes(theme.author || "") ||
-          ["tweakcn", "rayso", "tinte"].includes(theme.provider || "")) &&
-        !theme.user?.id;
-
-      if (isUserCreated || isOwnTheme) {
+      if (isOwnTheme) {
         userThemes.push(theme);
-      } else if (isCommunityTheme) {
+      } else if (hasUser) {
         communityThemes.push(theme);
-      } else if (isBuiltInTheme) {
+      } else {
         builtInThemes.push(theme);
       }
-      // Remove fallback - themes that don't match any category are ignored
     });
 
-    // Sort user themes by creation date (newest first)
     userThemes.sort((a, b) => {
-      const dateA = new Date(a.createdAt || 0);
-      const dateB = new Date(b.createdAt || 0);
-      return dateB.getTime() - dateA.getTime();
+      const dateA = new Date(a.createdAt || 0).getTime();
+      const dateB = new Date(b.createdAt || 0).getTime();
+      return dateB - dateA;
     });
 
     return {
@@ -239,18 +215,10 @@ export function ThemeSelector({
       userThemes,
       communityThemes,
       builtInThemes,
-      searchResults: [],
-      remainingThemes: [],
+      localSearchResults: [],
+      remoteSearchResults: [],
     };
-  }, [
-    themes,
-    searchResults,
-    searchQuery,
-    selectedSearchTheme,
-    user,
-    favoriteThemes,
-    isAuthenticated,
-  ]);
+  }, [themes, searchResults, searchQuery, selectedSearchTheme, user, favoriteThemes, isAuthenticated, searchLocal]);
 
   // Find active theme in ALL available themes (user + built-in + search results)
   const active = React.useMemo(() => {
@@ -294,9 +262,13 @@ export function ThemeSelector({
       found = selectedSearchTheme;
     }
 
-    // If still not found and we have search results, look there too
-    if (!found && organizedThemes.searchResults.length > 0) {
-      found = organizedThemes.searchResults.find((t) => t.id === activeId);
+    // If still not found, check search results
+    if (!found && organizedThemes.localSearchResults?.length > 0) {
+      found = organizedThemes.localSearchResults.find((t) => t.id === activeId);
+    }
+
+    if (!found && organizedThemes.remoteSearchResults?.length > 0) {
+      found = organizedThemes.remoteSearchResults.find((t) => t.id === activeId);
     }
 
     return found;
@@ -387,27 +359,61 @@ export function ThemeSelector({
       >
         <Command>
           <CommandInput
-            placeholder="Search 12k+ themes..."
+            placeholder="Search your library & 12k+ themes..."
             className="h-9"
             value={searchQuery}
             onValueChange={setSearchQuery}
           />
           <CommandList className="max-h-[300px] w-full overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-thumb]:bg-border">
-            {isSearching && (
-              <div className="flex items-center gap-2 p-2 text-sm text-muted-foreground">
+            {isSearching && searchQuery.trim() && (
+              <div className="flex items-center justify-center gap-2 p-4 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Searching themes...
+                <span>Searching online...</span>
               </div>
             )}
             {searchError && (
-              <div className="p-2 text-sm text-destructive">
-                Search failed: {searchError}
+              <div className="flex flex-col items-center justify-center gap-2 p-4">
+                <div className="text-sm text-destructive text-center">
+                  Search failed: {searchError}
+                </div>
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Clear search
+                </button>
               </div>
             )}
             <CommandEmpty>
-              {searchQuery.trim()
-                ? "No themes found for your search."
-                : "No theme found."}
+              <div className="flex flex-col items-center justify-center gap-3 py-8 px-4">
+                <div className="w-12 h-12 rounded-full bg-muted/30 flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-muted-foreground"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="text-center space-y-1">
+                  <p className="text-sm font-medium">
+                    {searchQuery.trim()
+                      ? "No themes found"
+                      : "No theme found"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {searchQuery.trim()
+                      ? "Try a different search term"
+                      : "Start typing to search"}
+                  </p>
+                </div>
+              </div>
             </CommandEmpty>
 
             {/* Favorites section - only when not searching AND only when authenticated */}
@@ -418,7 +424,8 @@ export function ThemeSelector({
                   {organizedThemes.favoriteThemes.map((theme) => (
                     <CommandItem
                       key={theme.id}
-                      value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
+                      value={theme.slug || theme.id}
+                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
                       onSelect={() => {
                         handleThemeSelect(theme);
                         setOpen(false);
@@ -474,7 +481,8 @@ export function ThemeSelector({
                 {organizedThemes.userThemes.map((theme) => (
                   <CommandItem
                     key={theme.id}
-                    value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
+                    value={theme.slug || theme.id}
+                    keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
                     onSelect={() => {
                       handleThemeSelect(theme);
                       setOpen(false);
@@ -516,7 +524,8 @@ export function ThemeSelector({
                   {organizedThemes.communityThemes.map((theme) => (
                     <CommandItem
                       key={theme.id}
-                      value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
+                      value={theme.slug || theme.id}
+                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
                       onSelect={() => {
                         handleThemeSelect(theme);
                         setOpen(false);
@@ -568,7 +577,8 @@ export function ThemeSelector({
                   {organizedThemes.builtInThemes.map((theme) => (
                     <CommandItem
                       key={theme.id}
-                      value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
+                      value={theme.slug || theme.id}
+                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
                       onSelect={() => {
                         handleThemeSelect(theme);
                         setOpen(false);
@@ -613,58 +623,151 @@ export function ThemeSelector({
                 </CommandGroup>
               )}
 
-            {/* Search results section */}
-            {searchQuery.trim() && searchResults.length > 0 && (
-              <CommandGroup
-                heading={`Search Results (${searchResults.length})`}
-              >
-                {searchResults.map((theme) => (
-                  <CommandItem
-                    key={theme.id}
-                    value={`${theme.name} ${theme.author || ""} ${(theme.tags || []).join(" ")}`}
-                    onSelect={() => {
-                      handleThemeSelect(theme);
-                      setOpen(false);
-                    }}
-                    className="gap-2 md:h-auto md:py-2"
-                  >
-                    {/* Desktop layout - horizontal */}
-                    <div className="hidden md:flex items-center gap-2 min-w-0 flex-1">
-                      <ThemeColorPreview
-                        colors={extractThemeColors(theme, currentMode)}
-                        maxColors={3}
-                      />
-                      <div className="flex justify-between gap-0.5 min-w-0 flex-1">
-                        <span className="text-xs font-medium truncate">
-                          {theme.name}
-                        </span>
-                        <div className="flex items-center text-[10px] text-muted-foreground truncate">
-                          {renderAuthorIcon(theme, 12)}
+            {/* Local search results section */}
+            {searchQuery.trim() &&
+              organizedThemes.localSearchResults &&
+              organizedThemes.localSearchResults.length > 0 && (
+                <CommandGroup
+                  heading={
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold">
+                        Your Library
+                      </span>
+                      <span className="text-[10px] text-muted-foreground font-normal px-1.5 py-0.5 rounded-md bg-muted/50">
+                        {organizedThemes.localSearchResults.length}
+                      </span>
+                    </div>
+                  }
+                >
+                  {organizedThemes.localSearchResults.map((theme) => (
+                    <CommandItem
+                      key={theme.id}
+                      value={theme.slug || theme.id}
+                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
+                      onSelect={() => {
+                        handleThemeSelect(theme);
+                        setOpen(false);
+                      }}
+                      className="gap-2 md:h-auto md:py-2"
+                    >
+                      {/* Desktop layout - horizontal */}
+                      <div className="hidden md:flex items-center gap-2 min-w-0 flex-1">
+                        <ThemeColorPreview
+                          colors={extractThemeColors(theme, currentMode)}
+                          maxColors={3}
+                        />
+                        <div className="flex justify-between gap-0.5 min-w-0 flex-1">
+                          <span className="text-xs font-medium truncate">
+                            {theme.name}
+                          </span>
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                            {renderAuthorIcon(theme, 12)}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Mobile layout - stacked */}
-                    <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
-                      <div className="flex items-center justify-between w-full min-w-0">
-                        <span className="text-xs font-medium truncate">
-                          {theme.name}
-                        </span>
-                        <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
-                          {renderAuthorIcon(theme, 12)}
+                      {/* Mobile layout - stacked */}
+                      <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
+                        <div className="flex items-center justify-between w-full min-w-0">
+                          <span className="text-xs font-medium truncate">
+                            {theme.name}
+                          </span>
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
+                            {renderAuthorIcon(theme, 12)}
+                          </div>
+                        </div>
+                        <ThemeColorPreview
+                          colors={extractThemeColors(theme, currentMode)}
+                          maxColors={8}
+                          size="sm"
+                          className="self-start"
+                        />
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+
+            {/* Divider between local and remote results */}
+            {searchQuery.trim() &&
+              organizedThemes.localSearchResults &&
+              organizedThemes.localSearchResults.length > 0 &&
+              organizedThemes.remoteSearchResults &&
+              organizedThemes.remoteSearchResults.length > 0 && (
+                <div className="relative my-2">
+                  <div className="absolute inset-0 flex items-center px-2">
+                    <div className="w-full border-t border-border/50"></div>
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-popover px-2 text-[10px] text-muted-foreground/70">
+                      12k+ online themes
+                    </span>
+                  </div>
+                </div>
+              )}
+
+            {/* Remote search results section */}
+            {searchQuery.trim() &&
+              organizedThemes.remoteSearchResults &&
+              organizedThemes.remoteSearchResults.length > 0 && (
+                <CommandGroup
+                  heading={
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold">Browse All</span>
+                      <span className="text-[10px] text-muted-foreground font-normal px-1.5 py-0.5 rounded-md bg-muted/50">
+                        {organizedThemes.remoteSearchResults.length}
+                      </span>
+                    </div>
+                  }
+                >
+                  {organizedThemes.remoteSearchResults.map((theme) => (
+                    <CommandItem
+                      key={theme.id}
+                      value={theme.slug || theme.id}
+                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
+                      onSelect={() => {
+                        handleThemeSelect(theme);
+                        setOpen(false);
+                      }}
+                      className="gap-2 md:h-auto md:py-2"
+                    >
+                      {/* Desktop layout - horizontal */}
+                      <div className="hidden md:flex items-center gap-2 min-w-0 flex-1">
+                        <ThemeColorPreview
+                          colors={extractThemeColors(theme, currentMode)}
+                          maxColors={3}
+                        />
+                        <div className="flex justify-between gap-0.5 min-w-0 flex-1">
+                          <span className="text-xs font-medium truncate">
+                            {theme.name}
+                          </span>
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate">
+                            {renderAuthorIcon(theme, 12)}
+                          </div>
                         </div>
                       </div>
-                      <ThemeColorPreview
-                        colors={extractThemeColors(theme, currentMode)}
-                        maxColors={8}
-                        size="sm"
-                        className="self-start"
-                      />
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
+
+                      {/* Mobile layout - stacked */}
+                      <div className="flex md:hidden flex-col gap-1 min-w-0 flex-1">
+                        <div className="flex items-center justify-between w-full min-w-0">
+                          <span className="text-xs font-medium truncate">
+                            {theme.name}
+                          </span>
+                          <div className="flex items-center text-[10px] text-muted-foreground truncate ml-2">
+                            {renderAuthorIcon(theme, 12)}
+                          </div>
+                        </div>
+                        <ThemeColorPreview
+                          colors={extractThemeColors(theme, currentMode)}
+                          maxColors={8}
+                          size="sm"
+                          className="self-start"
+                        />
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
           </CommandList>
         </Command>
       </PopoverContent>

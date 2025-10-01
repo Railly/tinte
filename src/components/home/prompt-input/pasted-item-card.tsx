@@ -47,7 +47,7 @@ export function PastedItemCard({
   const favicon = item.metadata?.favicon;
   const canEdit = ["url", "tailwind", "cssvars", "palette"].includes(item.kind);
   const hasError = item.metadata?.error;
-  const _isLoading = item.metadata?.loading;
+  const isLoading = item.metadata?.loading;
   const controls = useAnimationControls();
   const hasTriggeredError = useRef(false);
 
@@ -153,6 +153,18 @@ export function PastedItemCard({
                 alt="Pasted screenshot"
                 className="w-full h-full object-cover rounded-lg"
               />
+            </div>
+          ) : item.kind === "url" && item.imageData ? (
+            <div className="w-full h-full">
+              <img
+                src={item.imageData}
+                alt="Webpage screenshot"
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
+          ) : item.kind === "url" && isLoading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="w-full h-full rounded-lg bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30 animate-shimmer bg-[length:200%_100%]" />
             </div>
           ) : item.kind === "url" && favicon ? (
             <div className="flex items-start gap-2 mb-2">
