@@ -9,7 +9,6 @@ interface AuthState {
   mounted: boolean;
   user: any | null;
   isAuthenticated: boolean;
-  isAnonymous: boolean;
   userThemes: ThemeData[];
   favoriteThemes: ThemeData[];
   favorites: Record<string, boolean>;
@@ -19,8 +18,6 @@ interface AuthState {
 
 interface AuthActions {
   initialize: () => Promise<void>;
-  signInAnonymously: () => Promise<void>;
-  linkAccount: () => Promise<void>;
   loadUserThemes: () => Promise<void>;
   loadFavorites: () => Promise<void>;
   toggleFavorite: (themeId: string) => Promise<boolean>;
@@ -43,34 +40,12 @@ const sanitizeFavorites = (input: any): Record<string, boolean> => {
   }
 };
 
-const loadAnonymousThemes = (): ThemeData[] => {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const stored = localStorage.getItem("tinte-anonymous-themes");
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveAnonymousThemes = (themes: ThemeData[]) => {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem("tinte-anonymous-themes", JSON.stringify(themes));
-  } catch (error) {
-    console.warn("Failed to save anonymous themes:", error);
-  }
-};
-
 export const useAuthStore = create<AuthStore>()(
   devtools(
     (set, get) => ({
       mounted: false,
       user: null,
       isAuthenticated: false,
-      isAnonymous: false,
       userThemes: [],
       favoriteThemes: [],
       favorites: {},
@@ -83,7 +58,6 @@ export const useAuthStore = create<AuthStore>()(
           const session = sessionResult.data;
           const user = session?.user || null;
           const isAuthenticated = !!user && !user.isAnonymous;
-          const isAnonymous = !!user?.isAnonymous;
 
           let userThemes: ThemeData[] = [];
           let favoriteThemes: ThemeData[] = [];
@@ -99,15 +73,12 @@ export const useAuthStore = create<AuthStore>()(
             userThemes = state.userThemes;
             favoriteThemes = state.favoriteThemes;
             favorites = state.favorites;
-          } else if (isAnonymous) {
-            userThemes = loadAnonymousThemes();
           }
 
           set({
             mounted: true,
             user,
             isAuthenticated,
-            isAnonymous,
             userThemes,
             favoriteThemes,
             favorites,
@@ -115,23 +86,6 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error) {
           console.error("Auth initialization error:", error);
           set({ mounted: true });
-        }
-      },
-
-      signInAnonymously: async () => {
-        try {
-          await authClient.signIn.anonymous();
-          await get().initialize();
-        } catch (error) {
-          console.error("Anonymous sign-in error:", error);
-        }
-      },
-
-      linkAccount: async () => {
-        try {
-          await get().initialize();
-        } catch (error) {
-          console.error("Account linking error:", error);
         }
       },
 
@@ -241,9 +195,9 @@ export const useAuthStore = create<AuthStore>()(
         console.log("🔍 [Auth Store] theme.rawTheme:", theme.rawTheme);
         console.log("🔍 [Auth Store] theme.concept:", theme.concept);
 
-        const { isAuthenticated, isAnonymous, userThemes, user } = get();
+        const { isAuthenticated, userThemes, user } = get();
 
-        if (!isAuthenticated && !isAnonymous) {
+        if (!isAuthenticated) {
           return { success: false, savedTheme: null };
         }
 
@@ -265,75 +219,61 @@ export const useAuthStore = create<AuthStore>()(
             tags: theme.tags?.filter((tag: string) => tag !== "unsaved") || ["custom"],
           };
 
-          if (isAnonymous) {
-            const existingIndex = userThemes.findIndex(t => t.id === themeToSave.id);
-            const updatedThemes = existingIndex >= 0
-              ? userThemes.map(t => t.id === themeToSave.id ? themeToSave : t)
-              : [...userThemes, themeToSave];
+          // Check if this is an existing theme owned by the user that should be updated
+          // Exclude AI-generated themes which should always create new themes
+          const isExistingOwnTheme =
+            themeToSave.id &&
+            themeToSave.id.startsWith("theme_") &&
+            !themeToSave.id.startsWith("ai-generated-") &&
+            (themeToSave.user?.id === user?.id || themeToSave.author === "You");
 
-            set({ userThemes: updatedThemes, lastSaved: new Date() });
-            saveAnonymousThemes(updatedThemes);
-
-            return { success: true, savedTheme: themeToSave };
-          }
-
-          if (isAuthenticated) {
-            // Check if this is an existing theme owned by the user that should be updated
-            // Exclude AI-generated themes which should always create new themes
-            const isExistingOwnTheme =
-              themeToSave.id &&
-              themeToSave.id.startsWith("theme_") &&
-              !themeToSave.id.startsWith("ai-generated-") &&
-              (themeToSave.user?.id === user?.id || themeToSave.author === "You");
-
-            if (isExistingOwnTheme) {
-              // Update existing theme using PUT
-              const response = await fetch(`/api/themes/${themeToSave.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  name: cleanName,
-                  tinteTheme: themeToSave.rawTheme,
-                  overrides: themeToSave.overrides || {},
-                  isPublic: makePublic,
-                  concept: themeToSave.concept,
-                }),
-              });
-
-              if (response.ok) {
-                const result = await response.json();
-                const savedTheme = result.theme;
-                await get().loadUserThemes();
-                set({ lastSaved: new Date() });
-                return { success: true, savedTheme };
-              }
-            } else {
-              // Create new theme using POST
-              const payload = {
+          if (isExistingOwnTheme) {
+            // Update existing theme using PUT
+            const response = await fetch(`/api/themes/${themeToSave.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
                 name: cleanName,
                 tinteTheme: themeToSave.rawTheme,
                 overrides: themeToSave.overrides || {},
                 isPublic: makePublic,
                 concept: themeToSave.concept,
-              };
+              }),
+            });
 
-              console.log("📤 [Auth Store] POST payload being sent:", payload);
-              console.log("📤 [Auth Store] themeToSave.rawTheme:", themeToSave.rawTheme);
-              console.log("📤 [Auth Store] themeToSave.concept:", themeToSave.concept);
+            if (response.ok) {
+              const result = await response.json();
+              const savedTheme = result.theme;
+              await get().loadUserThemes();
+              set({ lastSaved: new Date() });
+              return { success: true, savedTheme };
+            }
+          } else {
+            // Create new theme using POST
+            const payload = {
+              name: cleanName,
+              tinteTheme: themeToSave.rawTheme,
+              overrides: themeToSave.overrides || {},
+              isPublic: makePublic,
+              concept: themeToSave.concept,
+            };
 
-              const response = await fetch("/api/themes", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-              });
+            console.log("📤 [Auth Store] POST payload being sent:", payload);
+            console.log("📤 [Auth Store] themeToSave.rawTheme:", themeToSave.rawTheme);
+            console.log("📤 [Auth Store] themeToSave.concept:", themeToSave.concept);
 
-              if (response.ok) {
-                const result = await response.json();
-                const savedTheme = result.theme;
-                await get().loadUserThemes();
-                set({ lastSaved: new Date() });
-                return { success: true, savedTheme };
-              }
+            const response = await fetch("/api/themes", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              const savedTheme = result.theme;
+              await get().loadUserThemes();
+              set({ lastSaved: new Date() });
+              return { success: true, savedTheme };
             }
           }
 
@@ -347,27 +287,18 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       deleteTheme: async (themeId: string) => {
-        const { isAuthenticated, isAnonymous, userThemes } = get();
+        const { isAuthenticated } = get();
 
-        if (!isAuthenticated && !isAnonymous) return false;
+        if (!isAuthenticated) return false;
 
         try {
-          if (isAnonymous) {
-            const updatedThemes = userThemes.filter(t => t.id !== themeId);
-            set({ userThemes: updatedThemes });
-            saveAnonymousThemes(updatedThemes);
+          const response = await fetch(`/api/themes/${themeId}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            await get().loadUserThemes();
             return true;
-          }
-
-          if (isAuthenticated) {
-            const response = await fetch(`/api/themes/${themeId}`, {
-              method: "DELETE",
-            });
-
-            if (response.ok) {
-              await get().loadUserThemes();
-              return true;
-            }
           }
 
           return false;

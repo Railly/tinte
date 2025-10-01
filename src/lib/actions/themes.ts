@@ -104,7 +104,10 @@ export async function duplicateTheme(
       headers: headersList,
     });
 
-    if (!session?.user) {
+    const user = session?.user;
+
+    // Require authenticated user (not anonymous)
+    if (!user || user.isAnonymous === true) {
       redirect("/auth/signin");
     }
 

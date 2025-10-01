@@ -4,7 +4,7 @@ import { convertTheme, getPreviewableProvider } from "@/lib/providers";
 import { convertTinteToVSCode } from "@/lib/providers/vscode";
 import { cn } from "@/lib/utils";
 import type { TinteTheme } from "@/types/tinte";
-import { WorkbenchDock } from "./shared/dock";
+import { WorkbenchToolbar } from "@/components/workbench/workbench-toolbar";
 
 interface UnifiedPreviewProps {
   theme: TinteTheme;
@@ -49,16 +49,11 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   return (
     <div
       className={cn(
-        "h-[calc(100dvh-var(--header-height)_-_2rem)] relative",
+        "h-[calc(100dvh-var(--header-height)_-_2rem)]",
         className,
       )}
     >
       <PreviewComponent theme={converted} />
-
-      <WorkbenchDock
-        providerId={currentProvider.metadata.id}
-        providerName={currentProvider.metadata.name}
-      />
     </div>
   );
 }

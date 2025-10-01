@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useThemeStore } from "@/stores/theme";
+import { useThemeStore } from "@/stores/theme-v2";
 import { useAuthStore } from "@/stores/auth";
 
 export function useTheme() {
@@ -30,7 +30,6 @@ export function useTheme() {
     tinteTheme: themeStore.tinteTheme,
     user: authStore.user,
     isAuthenticated: authStore.isAuthenticated,
-    isAnonymous: authStore.isAnonymous,
     userThemes: authStore.userThemes,
     favoriteThemes: authStore.favoriteThemes,
     favorites: authStore.favorites,
@@ -39,7 +38,7 @@ export function useTheme() {
 
     // Memoized computed values
     allThemes,
-    canSave: authStore.isAuthenticated || authStore.isAnonymous,
+    canSave: authStore.isAuthenticated,
     favoritesLoaded: true,
     shadcnOverride: themeStore.overrides.shadcn,
     vscodeOverride: themeStore.overrides.vscode,
@@ -75,8 +74,6 @@ export function useTheme() {
     updateOverride: themeStore.updateOverride,
     resetOverrides: themeStore.resetOverrides,
     markAsSaved: themeStore.markAsSaved,
-    signInAnonymously: authStore.signInAnonymously,
-    linkAccount: authStore.linkAccount,
     loadUserThemes: authStore.loadUserThemes,
     loadFavorites: authStore.loadFavorites,
     toggleFavorite: authStore.toggleFavorite,
@@ -141,7 +138,6 @@ export function useTheme() {
 
       return authStore.saveTheme(themeWithOverrides, name, makePublic);
     },
-    syncAnonymousThemes: () => authStore.initialize(),
   };
 }
 
@@ -169,7 +165,6 @@ export const useThemeActions = () => {
       return authStore.saveTheme(themeWithOverrides, name, makePublic);
     },
     addTheme: (theme: any) => themeStore.selectTheme(theme),
-    syncAnonymousThemes: () => authStore.initialize(),
     navigateTheme: (direction: "prev" | "next" | "random") => {
       const allThemes = [...authStore.userThemes, ...authStore.favoriteThemes];
       if (!themeStore.activeTheme || allThemes.length <= 1) return;

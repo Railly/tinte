@@ -27,7 +27,10 @@ export function computeThemeTokens(theme: ThemeData): {
   dark: Record<string, string>;
 } {
   console.log("📊 [Theme Utils] computeThemeTokens called with theme:", theme);
-  console.log("📊 [Theme Utils] Theme has shadcn_override:", !!(theme as any).shadcn_override);
+  console.log(
+    "📊 [Theme Utils] Theme has shadcn_override:",
+    !!(theme as any).shadcn_override,
+  );
   console.log("📊 [Theme Utils] Theme has rawTheme:", !!theme.rawTheme);
 
   // Safety check for theme
@@ -40,10 +43,12 @@ export function computeThemeTokens(theme: ThemeData): {
     const colorProps: Record<string, string> = {};
     for (const [key, value] of Object.entries(obj || {})) {
       // Include all properties that are color-related (exclude font, shadow, radius properties)
-      if (!key.startsWith('font-') &&
-          !key.startsWith('shadow-') &&
-          key !== 'radius' &&
-          typeof value === 'string') {
+      if (
+        !key.startsWith("font-") &&
+        !key.startsWith("shadow-") &&
+        key !== "radius" &&
+        typeof value === "string"
+      ) {
         colorProps[key] = value;
       }
     }
@@ -55,10 +60,8 @@ export function computeThemeTokens(theme: ThemeData): {
 
   if (theme.rawTheme) {
     try {
-      console.log("Converting rawTheme to shadcn format:", theme.rawTheme);
       const shadcnTheme = convertTheme("shadcn", theme.rawTheme) as ShadcnTheme;
       if (shadcnTheme && shadcnTheme.light && shadcnTheme.dark) {
-        console.log("Successfully converted rawTheme to shadcn:", shadcnTheme);
         baseTokens = {
           light: shadcnTheme.light,
           dark: shadcnTheme.dark,
@@ -72,8 +75,9 @@ export function computeThemeTokens(theme: ThemeData): {
   // Step 2: Apply overrides granularly if they exist
   if ((theme as any).shadcn_override?.palettes) {
     const palettes = (theme as any).shadcn_override.palettes;
-    const hasValidPalettes = (palettes.light && Object.keys(palettes.light).length > 0) ||
-                            (palettes.dark && Object.keys(palettes.dark).length > 0);
+    const hasValidPalettes =
+      (palettes.light && Object.keys(palettes.light).length > 0) ||
+      (palettes.dark && Object.keys(palettes.dark).length > 0);
 
     if (hasValidPalettes) {
       console.log("Applying shadcn_override.palettes with granular precedence");
@@ -95,7 +99,10 @@ export function computeThemeTokens(theme: ThemeData): {
         dark: darkTokens,
       };
 
-      console.log("Final computedTokens with overrides applied:", computedTokens);
+      console.log(
+        "Final computedTokens with overrides applied:",
+        computedTokens,
+      );
       return computedTokens;
     }
   }
@@ -141,7 +148,10 @@ export function computeThemeTokens(theme: ThemeData): {
       console.log("Converted database theme to rawTheme:", rawTheme);
       const shadcnTheme = convertTheme("shadcn", rawTheme) as ShadcnTheme;
       if (shadcnTheme && shadcnTheme.light && shadcnTheme.dark) {
-        console.log("Successfully converted database theme to shadcn:", shadcnTheme);
+        console.log(
+          "Successfully converted database theme to shadcn:",
+          shadcnTheme,
+        );
         baseTokens = {
           light: shadcnTheme.light,
           dark: shadcnTheme.dark,
@@ -154,7 +164,6 @@ export function computeThemeTokens(theme: ThemeData): {
 
   // Step 4: Return base tokens if we have them, otherwise default
   if (baseTokens) {
-    console.log("Using base tokens from database conversion");
     return baseTokens;
   }
 
