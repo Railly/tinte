@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { useThemeFonts } from "@/hooks/use-theme-fonts";
-import { useThemeStore } from "@/stores/theme-v2";
+import { useThemeStore } from "@/stores/theme";
 import { useAuthStore } from "@/stores/auth";
 
 type ThemeContextValue = ReturnType<typeof useTheme>;

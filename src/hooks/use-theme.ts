@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useThemeStore } from "@/stores/theme-v2";
+import { useThemeStore } from "@/stores/theme";
 import { useAuthStore } from "@/stores/auth";
 
 export function useTheme() {
@@ -10,8 +10,8 @@ export function useTheme() {
   const authStore = useAuthStore();
 
   // Memoize combined arrays to prevent infinite re-renders
-  const allThemes = useMemo(() =>
-    [...authStore.userThemes, ...authStore.favoriteThemes],
+  const allThemes = useMemo(
+    () => [...authStore.userThemes, ...authStore.favoriteThemes],
     [authStore.userThemes, authStore.favoriteThemes]
   );
 
@@ -46,9 +46,15 @@ export function useTheme() {
 
     // Typography and styling properties
     fonts: {
-      sans: themeStore.currentTokens["font-sans"] || "Inter, ui-sans-serif, system-ui, sans-serif",
-      serif: themeStore.currentTokens["font-serif"] || "Georgia, Cambria, \"Times New Roman\", serif",
-      mono: themeStore.currentTokens["font-mono"] || "JetBrains Mono, ui-monospace, SFMono-Regular, monospace",
+      sans:
+        themeStore.currentTokens["font-sans"] ||
+        "Inter, ui-sans-serif, system-ui, sans-serif",
+      serif:
+        themeStore.currentTokens["font-serif"] ||
+        'Georgia, Cambria, "Times New Roman", serif',
+      mono:
+        themeStore.currentTokens["font-mono"] ||
+        "JetBrains Mono, ui-monospace, SFMono-Regular, monospace",
     },
     radius: themeStore.currentTokens["radius"] || "0.5rem",
     shadows: {
@@ -90,35 +96,80 @@ export function useTheme() {
     handleTokenEdit: themeStore.editToken,
 
     // Legacy functions - these should NOT cause re-renders
-    getFavoriteStatus: (themeId: string) => authStore.favorites[themeId] ?? false,
+    getFavoriteStatus: (themeId: string) =>
+      authStore.favorites[themeId] ?? false,
     addTheme: (theme: any) => themeStore.selectTheme(theme),
     navigateTheme: (direction: "prev" | "next" | "random") => {
-      const currentAllThemes = [...authStore.userThemes, ...authStore.favoriteThemes];
+      const currentAllThemes = [
+        ...authStore.userThemes,
+        ...authStore.favoriteThemes,
+      ];
       if (!themeStore.activeTheme || currentAllThemes.length <= 1) return;
-      const currentIndex = currentAllThemes.findIndex(t => t.id === themeStore.activeTheme.id);
+      const currentIndex = currentAllThemes.findIndex(
+        (t) => t.id === themeStore.activeTheme.id
+      );
       let nextTheme;
       switch (direction) {
         case "prev":
-          nextTheme = currentAllThemes[currentIndex <= 0 ? currentAllThemes.length - 1 : currentIndex - 1];
+          nextTheme =
+            currentAllThemes[
+              currentIndex <= 0 ? currentAllThemes.length - 1 : currentIndex - 1
+            ];
           break;
         case "next":
-          nextTheme = currentAllThemes[currentIndex >= currentAllThemes.length - 1 ? 0 : currentIndex + 1];
+          nextTheme =
+            currentAllThemes[
+              currentIndex >= currentAllThemes.length - 1 ? 0 : currentIndex + 1
+            ];
           break;
         case "random":
-          const available = currentAllThemes.filter(t => t.id !== themeStore.activeTheme.id);
+          const available = currentAllThemes.filter(
+            (t) => t.id !== themeStore.activeTheme.id
+          );
           nextTheme = available[Math.floor(Math.random() * available.length)];
           break;
       }
       if (nextTheme) themeStore.selectTheme(nextTheme);
     },
-    updateShadcnOverride: (override: any) => themeStore.updateOverride("shadcn", override),
-    updateVscodeOverride: (override: any) => themeStore.updateOverride("vscode", override),
-    updateShikiOverride: (override: any) => themeStore.updateOverride("shiki", override),
-    saveCurrentTheme: (name?: string, makePublic?: boolean, shadcnOverride?: any) => {
+    updateShadcnOverride: (override: any) =>
+      themeStore.updateOverride("shadcn", override),
+    updateVscodeOverride: (override: any) =>
+      themeStore.updateOverride("vscode", override),
+    updateShikiOverride: (override: any) =>
+      themeStore.updateOverride("shiki", override),
+    saveCurrentTheme: (
+      name?: string,
+      makePublic?: boolean,
+      shadcnOverride?: any
+    ) => {
       // Create theme with current overrides from store
       console.log("🔍 [saveCurrentTheme] activeTheme:", themeStore.activeTheme);
-      console.log("🔍 [saveCurrentTheme] activeTheme.rawTheme:", themeStore.activeTheme?.rawTheme);
-      console.log("🔍 [saveCurrentTheme] activeTheme.concept:", themeStore.activeTheme?.concept);
+      console.log(
+        "🔍 [saveCurrentTheme] activeTheme.rawTheme:",
+        themeStore.activeTheme?.rawTheme
+      );
+      console.log(
+        "🔍 [saveCurrentTheme] activeTheme.concept:",
+        themeStore.activeTheme?.concept
+      );
+
+      // Convert ProviderOverride format to ThemeOverrides format
+      const convertProviderOverrideToThemeOverrides = (
+        providerOverride: any
+      ) => {
+        if (!providerOverride) return undefined;
+
+        // If it already has light/dark structure, return as is
+        if (providerOverride.light || providerOverride.dark) {
+          return providerOverride;
+        }
+
+        // If it's a ProviderOverride format, convert to ThemeOverrides format
+        return {
+          light: providerOverride.light,
+          dark: providerOverride.dark,
+        };
+      };
 
       const themeWithOverrides = {
         ...themeStore.activeTheme,
@@ -126,15 +177,30 @@ export function useTheme() {
         concept: themeStore.activeTheme?.concept, // Explicitly preserve concept
         overrides: {
           ...themeStore.activeTheme.overrides,
-          shadcn: shadcnOverride || themeStore.overrides.shadcn,
-          vscode: themeStore.overrides.vscode,
-          shiki: themeStore.overrides.shiki,
+          shadcn: convertProviderOverrideToThemeOverrides(
+            shadcnOverride || themeStore.overrides.shadcn
+          ),
+          vscode: convertProviderOverrideToThemeOverrides(
+            themeStore.overrides.vscode
+          ),
+          shiki: convertProviderOverrideToThemeOverrides(
+            themeStore.overrides.shiki
+          ),
         },
       };
 
-      console.log("🔍 [saveCurrentTheme] themeWithOverrides:", themeWithOverrides);
-      console.log("🔍 [saveCurrentTheme] themeWithOverrides.rawTheme:", themeWithOverrides.rawTheme);
-      console.log("🔍 [saveCurrentTheme] themeWithOverrides.concept:", themeWithOverrides.concept);
+      console.log(
+        "🔍 [saveCurrentTheme] themeWithOverrides:",
+        themeWithOverrides
+      );
+      console.log(
+        "🔍 [saveCurrentTheme] themeWithOverrides.rawTheme:",
+        themeWithOverrides.rawTheme
+      );
+      console.log(
+        "🔍 [saveCurrentTheme] themeWithOverrides.concept:",
+        themeWithOverrides.concept
+      );
 
       return authStore.saveTheme(themeWithOverrides, name, makePublic);
     },
@@ -146,43 +212,92 @@ export const useThemeActions = () => {
   const themeStore = useThemeStore();
   const authStore = useAuthStore();
 
-  return useMemo(() => ({
-    getFavoriteStatus: (themeId: string) => authStore.favorites[themeId] ?? false,
-    updateShadcnOverride: (override: any) => themeStore.updateOverride("shadcn", override),
-    updateVscodeOverride: (override: any) => themeStore.updateOverride("vscode", override),
-    updateShikiOverride: (override: any) => themeStore.updateOverride("shiki", override),
-    saveCurrentTheme: (name?: string, makePublic?: boolean, shadcnOverride?: any) => {
-      // Create theme with current overrides from store
-      const themeWithOverrides = {
-        ...themeStore.activeTheme,
-        overrides: {
-          ...themeStore.activeTheme.overrides,
-          shadcn: shadcnOverride || themeStore.overrides.shadcn,
-          vscode: themeStore.overrides.vscode,
-          shiki: themeStore.overrides.shiki,
-        },
-      };
-      return authStore.saveTheme(themeWithOverrides, name, makePublic);
-    },
-    addTheme: (theme: any) => themeStore.selectTheme(theme),
-    navigateTheme: (direction: "prev" | "next" | "random") => {
-      const allThemes = [...authStore.userThemes, ...authStore.favoriteThemes];
-      if (!themeStore.activeTheme || allThemes.length <= 1) return;
-      const currentIndex = allThemes.findIndex(t => t.id === themeStore.activeTheme.id);
-      let nextTheme;
-      switch (direction) {
-        case "prev":
-          nextTheme = allThemes[currentIndex <= 0 ? allThemes.length - 1 : currentIndex - 1];
-          break;
-        case "next":
-          nextTheme = allThemes[currentIndex >= allThemes.length - 1 ? 0 : currentIndex + 1];
-          break;
-        case "random":
-          const available = allThemes.filter(t => t.id !== themeStore.activeTheme.id);
-          nextTheme = available[Math.floor(Math.random() * available.length)];
-          break;
-      }
-      if (nextTheme) themeStore.selectTheme(nextTheme);
-    },
-  }), [authStore, themeStore]);
+  return useMemo(
+    () => ({
+      getFavoriteStatus: (themeId: string) =>
+        authStore.favorites[themeId] ?? false,
+      updateShadcnOverride: (override: any) =>
+        themeStore.updateOverride("shadcn", override),
+      updateVscodeOverride: (override: any) =>
+        themeStore.updateOverride("vscode", override),
+      updateShikiOverride: (override: any) =>
+        themeStore.updateOverride("shiki", override),
+      saveCurrentTheme: (
+        name?: string,
+        makePublic?: boolean,
+        shadcnOverride?: any
+      ) => {
+        // Create theme with current overrides from store
+
+        // Convert ProviderOverride format to ThemeOverrides format
+        const convertProviderOverrideToThemeOverrides = (
+          providerOverride: any
+        ) => {
+          if (!providerOverride) return undefined;
+
+          // If it already has light/dark structure, return as is
+          if (providerOverride.light || providerOverride.dark) {
+            return providerOverride;
+          }
+
+          // If it's a ProviderOverride format, convert to ThemeOverrides format
+          return {
+            light: providerOverride.light,
+            dark: providerOverride.dark,
+          };
+        };
+
+        const themeWithOverrides = {
+          ...themeStore.activeTheme,
+          overrides: {
+            ...themeStore.activeTheme.overrides,
+            shadcn: convertProviderOverrideToThemeOverrides(
+              shadcnOverride || themeStore.overrides.shadcn
+            ),
+            vscode: convertProviderOverrideToThemeOverrides(
+              themeStore.overrides.vscode
+            ),
+            shiki: convertProviderOverrideToThemeOverrides(
+              themeStore.overrides.shiki
+            ),
+          },
+        };
+        return authStore.saveTheme(themeWithOverrides, name, makePublic);
+      },
+      addTheme: (theme: any) => themeStore.selectTheme(theme),
+      navigateTheme: (direction: "prev" | "next" | "random") => {
+        const allThemes = [
+          ...authStore.userThemes,
+          ...authStore.favoriteThemes,
+        ];
+        if (!themeStore.activeTheme || allThemes.length <= 1) return;
+        const currentIndex = allThemes.findIndex(
+          (t) => t.id === themeStore.activeTheme.id
+        );
+        let nextTheme;
+        switch (direction) {
+          case "prev":
+            nextTheme =
+              allThemes[
+                currentIndex <= 0 ? allThemes.length - 1 : currentIndex - 1
+              ];
+            break;
+          case "next":
+            nextTheme =
+              allThemes[
+                currentIndex >= allThemes.length - 1 ? 0 : currentIndex + 1
+              ];
+            break;
+          case "random":
+            const available = allThemes.filter(
+              (t) => t.id !== themeStore.activeTheme.id
+            );
+            nextTheme = available[Math.floor(Math.random() * available.length)];
+            break;
+        }
+        if (nextTheme) themeStore.selectTheme(nextTheme);
+      },
+    }),
+    [authStore, themeStore]
+  );
 };

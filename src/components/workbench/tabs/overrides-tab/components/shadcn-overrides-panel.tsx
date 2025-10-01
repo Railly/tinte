@@ -11,19 +11,11 @@ import {
 } from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-clear-overrides";
 import { useShadcnOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { convertTinteToShadcn } from "@/lib/providers/shadcn";
 import {
-  createInitialOpenGroups,
   createSkeletonGroups,
-  hasValidColorTokens,
-  organizeRealTokens,
 } from "@/lib/theme-editor-utils";
 import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
@@ -56,7 +48,6 @@ export function ShadcnOverridesPanel({
     mounted,
     currentMode,
     updateShadcnOverride,
-    resetOverrides,
     tinteTheme,
     shadcnOverride,
     activeTheme,
@@ -93,7 +84,7 @@ export function ShadcnOverridesPanel({
     (key: string, value: string) => {
       const currentOverrides = shadcnOverride || {};
       const currentModeOverrides =
-        currentOverrides.palettes?.[currentMode] || {};
+        currentOverrides[currentMode] || {};
 
       // Determine which section this key belongs to
       if (key === "radius" || key.startsWith("radius-")) {
@@ -149,7 +140,7 @@ export function ShadcnOverridesPanel({
         if (shadowKey === "offset-y") shadowKey = "offsetY";
 
         const currentShadow =
-          currentOverrides.shadows || currentOverrides.shadow || {};
+          currentOverrides.shadows || {};
         const updatedOverrides = {
           ...currentOverrides,
           shadows: {
@@ -160,18 +151,11 @@ export function ShadcnOverridesPanel({
         updateShadcnOverride(updatedOverrides);
       } else {
         // Handle palette colors
-        const currentPalettes = currentOverrides.palettes || {
-          light: {},
-          dark: {},
-        };
         const updatedOverrides = {
           ...currentOverrides,
-          palettes: {
-            ...currentPalettes,
-            [currentMode]: {
-              ...currentModeOverrides,
-              [key]: value,
-            },
+          [currentMode]: {
+            ...currentModeOverrides,
+            [key]: value,
           },
         };
         updateShadcnOverride(updatedOverrides);
@@ -216,73 +200,73 @@ export function ShadcnOverridesPanel({
         // Fallback defaults if no tinte theme is available
         return currentMode === "light"
           ? {
-              background: "#ffffff",
-              foreground: "#09090b",
-              card: "#ffffff",
-              "card-foreground": "#09090b",
-              popover: "#ffffff",
-              "popover-foreground": "#09090b",
-              primary: "#18181b",
-              "primary-foreground": "#fafafa",
-              secondary: "#f4f4f5",
-              "secondary-foreground": "#18181b",
-              muted: "#f4f4f5",
-              "muted-foreground": "#71717a",
-              accent: "#f4f4f5",
-              "accent-foreground": "#18181b",
-              destructive: "#ef4444",
-              "destructive-foreground": "#fafafa",
-              border: "#e4e4e7",
-              input: "#e4e4e7",
-              ring: "#18181b",
-              "chart-1": "#e60049",
-              "chart-2": "#0bb4ff",
-              "chart-3": "#50e991",
-              "chart-4": "#e6d800",
-              "chart-5": "#9b19f5",
-              sidebar: "#f8fafc",
-              "sidebar-foreground": "#0f172a",
-              "sidebar-primary": "#0f172a",
-              "sidebar-primary-foreground": "#f8fafc",
-              "sidebar-accent": "#f1f5f9",
-              "sidebar-accent-foreground": "#0f172a",
-              "sidebar-border": "#e2e8f0",
-              "sidebar-ring": "#0f172a",
-            }
+            background: "#ffffff",
+            foreground: "#09090b",
+            card: "#ffffff",
+            "card-foreground": "#09090b",
+            popover: "#ffffff",
+            "popover-foreground": "#09090b",
+            primary: "#18181b",
+            "primary-foreground": "#fafafa",
+            secondary: "#f4f4f5",
+            "secondary-foreground": "#18181b",
+            muted: "#f4f4f5",
+            "muted-foreground": "#71717a",
+            accent: "#f4f4f5",
+            "accent-foreground": "#18181b",
+            destructive: "#ef4444",
+            "destructive-foreground": "#fafafa",
+            border: "#e4e4e7",
+            input: "#e4e4e7",
+            ring: "#18181b",
+            "chart-1": "#e60049",
+            "chart-2": "#0bb4ff",
+            "chart-3": "#50e991",
+            "chart-4": "#e6d800",
+            "chart-5": "#9b19f5",
+            sidebar: "#f8fafc",
+            "sidebar-foreground": "#0f172a",
+            "sidebar-primary": "#0f172a",
+            "sidebar-primary-foreground": "#f8fafc",
+            "sidebar-accent": "#f1f5f9",
+            "sidebar-accent-foreground": "#0f172a",
+            "sidebar-border": "#e2e8f0",
+            "sidebar-ring": "#0f172a",
+          }
           : {
-              background: "#09090b",
-              foreground: "#fafafa",
-              card: "#09090b",
-              "card-foreground": "#fafafa",
-              popover: "#09090b",
-              "popover-foreground": "#fafafa",
-              primary: "#fafafa",
-              "primary-foreground": "#09090b",
-              secondary: "#27272a",
-              "secondary-foreground": "#fafafa",
-              muted: "#27272a",
-              "muted-foreground": "#a1a1aa",
-              accent: "#27272a",
-              "accent-foreground": "#fafafa",
-              destructive: "#ef4444",
-              "destructive-foreground": "#fafafa",
-              border: "#27272a",
-              input: "#27272a",
-              ring: "#d4d4d8",
-              sidebar: "#020817",
-              "sidebar-foreground": "#f8fafc",
-              "sidebar-primary": "#f8fafc",
-              "sidebar-primary-foreground": "#020817",
-              "sidebar-accent": "#1e293b",
-              "sidebar-accent-foreground": "#f8fafc",
-              "sidebar-border": "#334155",
-              "sidebar-ring": "#f8fafc",
-            };
+            background: "#09090b",
+            foreground: "#fafafa",
+            card: "#09090b",
+            "card-foreground": "#fafafa",
+            popover: "#09090b",
+            "popover-foreground": "#fafafa",
+            primary: "#fafafa",
+            "primary-foreground": "#09090b",
+            secondary: "#27272a",
+            "secondary-foreground": "#fafafa",
+            muted: "#27272a",
+            "muted-foreground": "#a1a1aa",
+            accent: "#27272a",
+            "accent-foreground": "#fafafa",
+            destructive: "#ef4444",
+            "destructive-foreground": "#fafafa",
+            border: "#27272a",
+            input: "#27272a",
+            ring: "#d4d4d8",
+            sidebar: "#020817",
+            "sidebar-foreground": "#f8fafc",
+            "sidebar-primary": "#f8fafc",
+            "sidebar-primary-foreground": "#020817",
+            "sidebar-accent": "#1e293b",
+            "sidebar-accent-foreground": "#f8fafc",
+            "sidebar-border": "#334155",
+            "sidebar-ring": "#f8fafc",
+          };
       }
 
       // Convert the current canonical theme to shadcn palette
       const convertedShadcn = convertTinteToShadcn(tinteTheme);
-      return convertedShadcn[currentMode];
+      return convertedShadcn[currentMode as keyof typeof convertedShadcn];
     };
 
     // Get extrapolated palette from canonical theme as baseline
@@ -291,18 +275,10 @@ export function ShadcnOverridesPanel({
     // Handle palette tokens (colors) - always merge DB values with extrapolated values
     let dbPalette = {};
 
-    if (currentOverrides.palettes?.[currentMode]) {
-      // New schema format: overrides.palettes.light/dark
-      dbPalette = currentOverrides.palettes[currentMode];
-      console.log("Found DB palette in new schema format for", currentMode);
-    } else if (currentOverrides[currentMode]?.palettes?.[currentMode]) {
-      // Legacy format: overrides.light/dark.palettes.light/dark
-      dbPalette = currentOverrides[currentMode].palettes[currentMode];
-      console.log("Found DB palette in legacy schema format for", currentMode);
-    } else if (currentOverrides[currentMode]?.palettes) {
-      // Direct mode format with palettes nested
-      dbPalette = currentOverrides[currentMode].palettes[currentMode] || {};
-      console.log("Found DB palette in direct mode format for", currentMode);
+    if (currentOverrides[currentMode]) {
+      // Direct mode format: overrides.light/dark
+      dbPalette = currentOverrides[currentMode];
+      console.log("Found DB palette for", currentMode);
     }
 
     // Always merge: extrapolated as base, then override with DB values
@@ -429,8 +405,6 @@ export function ShadcnOverridesPanel({
     };
     const shadow =
       currentOverrides.shadows || // AI generation uses 'shadows'
-      currentOverrides.shadow || // Legacy uses 'shadow'
-      currentOverrides[currentMode]?.shadow ||
       defaultShadow;
 
     console.log("Shadow for", currentMode, ":", shadow);
@@ -564,55 +538,21 @@ export function ShadcnOverridesPanel({
                               currentTokens={
                                 group.type === "shadow-properties"
                                   ? {
-                                      "shadow-color":
-                                        (
-                                          shadcnOverride?.shadows ||
-                                          shadcnOverride?.shadow ||
-                                          shadcnOverride?.[currentMode]?.shadow
-                                        )?.color || "0 0 0",
-                                      "shadow-opacity":
-                                        (
-                                          shadcnOverride?.shadows ||
-                                          shadcnOverride?.shadow ||
-                                          shadcnOverride?.[currentMode]?.shadow
-                                        )?.opacity || "0.1",
-                                      "shadow-blur":
-                                        (
-                                          shadcnOverride?.shadows ||
-                                          shadcnOverride?.shadow ||
-                                          shadcnOverride?.[currentMode]?.shadow
-                                        )?.blur || "3px",
-                                      "shadow-spread":
-                                        (
-                                          shadcnOverride?.shadows ||
-                                          shadcnOverride?.shadow ||
-                                          shadcnOverride?.[currentMode]?.shadow
-                                        )?.spread || "0px",
-                                      "shadow-offset-x":
-                                        (
-                                          shadcnOverride?.shadows ||
-                                          shadcnOverride?.shadow ||
-                                          shadcnOverride?.[currentMode]?.shadow
-                                        )?.offsetX ||
-                                        (
-                                          shadcnOverride?.shadows ||
-                                          shadcnOverride?.shadow ||
-                                          shadcnOverride?.[currentMode]?.shadow
-                                        )?.offset_x ||
-                                        "0px",
-                                      "shadow-offset-y":
-                                        (
-                                          shadcnOverride?.shadows ||
-                                          shadcnOverride?.shadow ||
-                                          shadcnOverride?.[currentMode]?.shadow
-                                        )?.offsetY ||
-                                        (
-                                          shadcnOverride?.shadows ||
-                                          shadcnOverride?.shadow ||
-                                          shadcnOverride?.[currentMode]?.shadow
-                                        )?.offset_y ||
-                                        "1px",
-                                    }
+                                    "shadow-color":
+                                      shadcnOverride?.shadows?.color || "0 0 0",
+                                    "shadow-opacity":
+                                      shadcnOverride?.shadows?.opacity || "0.1",
+                                    "shadow-blur":
+                                      shadcnOverride?.shadows?.blur || "3px",
+                                    "shadow-spread":
+                                      shadcnOverride?.shadows?.spread || "0px",
+                                    "shadow-offset-x":
+                                      shadcnOverride?.shadows?.offsetX ||
+                                      "0px",
+                                    "shadow-offset-y":
+                                      shadcnOverride?.shadows?.offsetY ||
+                                      "1px",
+                                  }
                                   : currentTokens
                               }
                               onEdit={handleTokenEdit}

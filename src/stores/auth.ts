@@ -21,7 +21,11 @@ interface AuthActions {
   loadUserThemes: () => Promise<void>;
   loadFavorites: () => Promise<void>;
   toggleFavorite: (themeId: string) => Promise<boolean>;
-  saveTheme: (theme: ThemeData, name?: string, makePublic?: boolean) => Promise<{ success: boolean; savedTheme: any | null }>;
+  saveTheme: (
+    theme: ThemeData,
+    name?: string,
+    makePublic?: boolean
+  ) => Promise<{ success: boolean; savedTheme: any | null }>;
   deleteTheme: (themeId: string) => Promise<boolean>;
   addThemes: (themes: ThemeData[]) => void;
 }
@@ -57,17 +61,14 @@ export const useAuthStore = create<AuthStore>()(
           const sessionResult = await authClient.getSession();
           const session = sessionResult.data;
           const user = session?.user || null;
-          const isAuthenticated = !!user && !user.isAnonymous;
+          const isAuthenticated = !!user;
 
           let userThemes: ThemeData[] = [];
           let favoriteThemes: ThemeData[] = [];
           let favorites: Record<string, boolean> = {};
 
           if (isAuthenticated) {
-            await Promise.all([
-              get().loadUserThemes(),
-              get().loadFavorites(),
-            ]);
+            await Promise.all([get().loadUserThemes(), get().loadFavorites()]);
 
             const state = get();
             userThemes = state.userThemes;
@@ -119,7 +120,10 @@ export const useAuthStore = create<AuthStore>()(
           set({ favorites: sanitized });
 
           if (typeof window !== "undefined") {
-            localStorage.setItem(`favorites_${user.id}`, JSON.stringify(sanitized));
+            localStorage.setItem(
+              `favorites_${user.id}`,
+              JSON.stringify(sanitized)
+            );
           }
 
           const response = await fetch("/api/user/favorites");
@@ -137,7 +141,10 @@ export const useAuthStore = create<AuthStore>()(
                 const favorites = sanitizeFavorites(JSON.parse(stored));
                 set({ favorites });
               } catch (parseError) {
-                console.error("Error parsing localStorage favorites:", parseError);
+                console.error(
+                  "Error parsing localStorage favorites:",
+                  parseError
+                );
               }
             }
           }
@@ -155,7 +162,10 @@ export const useAuthStore = create<AuthStore>()(
         set({ favorites: newFavorites });
 
         if (typeof window !== "undefined") {
-          localStorage.setItem(`favorites_${user.id}`, JSON.stringify(newFavorites));
+          localStorage.setItem(
+            `favorites_${user.id}`,
+            JSON.stringify(newFavorites)
+          );
         }
 
         try {
@@ -165,16 +175,25 @@ export const useAuthStore = create<AuthStore>()(
           if (!result.success) {
             set({ favorites });
             if (typeof window !== "undefined") {
-              localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+              localStorage.setItem(
+                `favorites_${user.id}`,
+                JSON.stringify(favorites)
+              );
             }
             return false;
           }
 
           if (result.isFavorite !== newStatus) {
-            const corrected = { ...newFavorites, [themeId]: !!result.isFavorite };
+            const corrected = {
+              ...newFavorites,
+              [themeId]: !!result.isFavorite,
+            };
             set({ favorites: corrected });
             if (typeof window !== "undefined") {
-              localStorage.setItem(`favorites_${user.id}`, JSON.stringify(corrected));
+              localStorage.setItem(
+                `favorites_${user.id}`,
+                JSON.stringify(corrected)
+              );
             }
           }
 
@@ -184,14 +203,21 @@ export const useAuthStore = create<AuthStore>()(
           console.error("Error syncing favorite:", error);
           set({ favorites });
           if (typeof window !== "undefined") {
-            localStorage.setItem(`favorites_${user.id}`, JSON.stringify(favorites));
+            localStorage.setItem(
+              `favorites_${user.id}`,
+              JSON.stringify(favorites)
+            );
           }
           return false;
         }
       },
 
       saveTheme: async (theme: ThemeData, name?: string, makePublic = true) => {
-        console.log("🚀 [Auth Store] saveTheme called with:", { theme, name, makePublic });
+        console.log("🚀 [Auth Store] saveTheme called with:", {
+          theme,
+          name,
+          makePublic,
+        });
         console.log("🔍 [Auth Store] theme.rawTheme:", theme.rawTheme);
         console.log("🔍 [Auth Store] theme.concept:", theme.concept);
 
@@ -216,7 +242,9 @@ export const useAuthStore = create<AuthStore>()(
             ...theme,
             name: cleanName,
             id: theme.id || `theme_${Date.now()}`,
-            tags: theme.tags?.filter((tag: string) => tag !== "unsaved") || ["custom"],
+            tags: theme.tags?.filter((tag: string) => tag !== "unsaved") || [
+              "custom",
+            ],
           };
 
           // Check if this is an existing theme owned by the user that should be updated
@@ -259,8 +287,14 @@ export const useAuthStore = create<AuthStore>()(
             };
 
             console.log("📤 [Auth Store] POST payload being sent:", payload);
-            console.log("📤 [Auth Store] themeToSave.rawTheme:", themeToSave.rawTheme);
-            console.log("📤 [Auth Store] themeToSave.concept:", themeToSave.concept);
+            console.log(
+              "📤 [Auth Store] themeToSave.rawTheme:",
+              themeToSave.rawTheme
+            );
+            console.log(
+              "📤 [Auth Store] themeToSave.concept:",
+              themeToSave.concept
+            );
 
             const response = await fetch("/api/themes", {
               method: "POST",
@@ -312,19 +346,19 @@ export const useAuthStore = create<AuthStore>()(
         set((state) => {
           // Create a comprehensive deduplication across all theme sources
           const allExistingIds = new Set([
-            ...state.userThemes.map(t => t.id),
-            ...state.favoriteThemes.map(t => t.id)
+            ...state.userThemes.map((t) => t.id),
+            ...state.favoriteThemes.map((t) => t.id),
           ]);
 
           // Filter out duplicates and also deduplicate within the new themes array
-          const uniqueThemes = themes.filter((theme, index, arr) =>
-            !allExistingIds.has(theme.id) &&
-            arr.findIndex(t => t.id === theme.id) === index
+          const uniqueThemes = themes.filter(
+            (theme, index, arr) =>
+              !allExistingIds.has(theme.id) &&
+              arr.findIndex((t) => t.id === theme.id) === index
           );
 
-
           return {
-            userThemes: [...state.userThemes, ...uniqueThemes]
+            userThemes: [...state.userThemes, ...uniqueThemes],
           };
         });
       },

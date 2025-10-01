@@ -14,37 +14,9 @@ export interface TokenGroup {
   skeleton?: boolean;
 }
 
-// Initialize all groups as open to prevent flash
-export const createInitialOpenGroups = (): Record<string, boolean> => {
-  const initialState: Record<string, boolean> = {};
-  TOKEN_GROUPS.forEach((group) => {
-    initialState[group.label] = true;
-  });
-  Object.keys(NON_COLOR_GROUPS).forEach((groupName) => {
-    initialState[groupName] = true;
-  });
-  return initialState;
-};
-
-// Check if we have valid color tokens loaded
-export const hasValidColorTokens = (
-  tokens: Record<string, string>,
-): boolean => {
-  return TOKEN_GROUPS.some((group) =>
-    group.keys.some(
-      (key) =>
-        tokens[key] &&
-        typeof tokens[key] === "string" &&
-        tokens[key].startsWith("#"),
-    ),
-  );
-};
-
-// Create skeleton structure that mirrors real groups
 export const createSkeletonGroups = (): TokenGroup[] => {
   const groups: TokenGroup[] = [];
 
-  // Add color token groups with skeleton placeholders
   TOKEN_GROUPS.forEach((group) => {
     groups.push({
       label: group.label,
@@ -54,7 +26,6 @@ export const createSkeletonGroups = (): TokenGroup[] => {
     });
   });
 
-  // Add non-color groups with skeleton placeholders
   Object.entries(NON_COLOR_GROUPS).forEach(([groupName, groupData]) => {
     if (Array.isArray(groupData)) {
       if (groupName === "Shadows") {
@@ -87,7 +58,7 @@ export const createSkeletonGroups = (): TokenGroup[] => {
 
 // Organize real tokens into groups
 export const organizeRealTokens = (
-  currentTokens: Record<string, string>,
+  currentTokens: Record<string, string>
 ): TokenGroup[] => {
   const groups: TokenGroup[] = [];
 
@@ -96,7 +67,7 @@ export const organizeRealTokens = (
     const tokens = group.keys
       .map((key) => [key, currentTokens[key]] as [string, string])
       .filter(
-        ([_, value]) => typeof value === "string" && value.startsWith("#"),
+        ([_, value]) => typeof value === "string" && value.startsWith("#")
       );
 
     if (tokens.length > 0) {
@@ -116,7 +87,7 @@ export const organizeRealTokens = (
           (key) =>
             currentTokens[key] &&
             typeof currentTokens[key] === "string" &&
-            currentTokens[key].trim().length > 0,
+            currentTokens[key].trim().length > 0
         );
 
         if (hasValidShadowData) {
@@ -138,8 +109,7 @@ export const organizeRealTokens = (
             return [key, value] as [string, string];
           })
           .filter(
-            ([_, value]) =>
-              typeof value === "string" && value.trim().length > 0,
+            ([_, value]) => typeof value === "string" && value.trim().length > 0
           );
 
         if (tokens.length > 0) {
@@ -160,7 +130,7 @@ export const organizeRealTokens = (
           return [key, value] as [string, string];
         })
         .filter(
-          ([_, value]) => typeof value === "string" && value.trim().length > 0,
+          ([_, value]) => typeof value === "string" && value.trim().length > 0
         );
 
       if (tokens.length > 0) {

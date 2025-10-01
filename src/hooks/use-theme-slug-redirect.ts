@@ -10,9 +10,13 @@ interface UseThemeSlugRedirectProps {
   messages?: any[]; // Chat messages to detect AI tool responses
 }
 
-export function useThemeSlugRedirect({ chatId, enabled = true, messages = [] }: UseThemeSlugRedirectProps) {
+export function useThemeSlugRedirect({
+  chatId,
+  enabled = true,
+  messages = [],
+}: UseThemeSlugRedirectProps) {
   const router = useRouter();
-  const activeTheme = useThemeStore((state) => state.activeTheme);
+  const activeTheme = useThemeStore((state: any) => state.activeTheme);
   const lastThemeRef = useRef<string | null>(null);
   const initialChatIdRef = useRef(chatId);
   const [detectedSlug, setDetectedSlug] = useState<string | null>(null);
@@ -25,7 +29,11 @@ export function useThemeSlugRedirect({ chatId, enabled = true, messages = [] }: 
     for (const message of messages) {
       if (message.role === "assistant" && message.parts) {
         for (const part of message.parts) {
-          if (part.type === "tool-generateTheme" && part.state === "output-available" && part.output) {
+          if (
+            part.type === "tool-generateTheme" &&
+            part.state === "output-available" &&
+            part.output
+          ) {
             const { slug } = part.output;
             if (slug && slug !== detectedSlug) {
               console.log("🎨 AI generated theme with database slug:", slug);
@@ -43,7 +51,8 @@ export function useThemeSlugRedirect({ chatId, enabled = true, messages = [] }: 
     if (!enabled) return;
 
     const currentPath = window.location.pathname;
-    const isOnOriginalChatId = currentPath === `/workbench/${initialChatIdRef.current}`;
+    const isOnOriginalChatId =
+      currentPath === `/workbench/${initialChatIdRef.current}`;
 
     if (!isOnOriginalChatId) return;
 
@@ -69,7 +78,7 @@ export function useThemeSlugRedirect({ chatId, enabled = true, messages = [] }: 
         oldSlug: lastThemeRef.current,
         newSlug: activeTheme.slug,
         chatId,
-        currentPath
+        currentPath,
       });
 
       lastThemeRef.current = activeTheme.slug;
@@ -91,9 +100,9 @@ export function useThemeSlugRedirect({ chatId, enabled = true, messages = [] }: 
     detectedSlug,
     shouldRedirect: Boolean(
       enabled &&
-      (detectedSlug || activeTheme?.slug) &&
-      (detectedSlug !== chatId || activeTheme?.slug !== chatId) &&
-      window.location.pathname === `/workbench/${initialChatIdRef.current}`
-    )
+        (detectedSlug || activeTheme?.slug) &&
+        (detectedSlug !== chatId || activeTheme?.slug !== chatId) &&
+        window.location.pathname === `/workbench/${initialChatIdRef.current}`
+    ),
   };
 }

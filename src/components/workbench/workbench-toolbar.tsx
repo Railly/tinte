@@ -70,7 +70,6 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
     activeTheme,
     user,
     isAuthenticated,
-    isAnonymous,
     canSave,
     saveCurrentTheme,
     deleteTheme,

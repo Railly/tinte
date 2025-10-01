@@ -71,7 +71,10 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
       default:
         return null;
     }
-  }, [provider, shadcnOverride, vscodeOverride, shikiOverride]);
+  }, [provider, shadcnOverride, vscodeOverride, shikiOverride]) as Record<
+    string,
+    T
+  > | null;
 
   // Get overrides for current mode
   const overrides = useMemo<T>(() => {
@@ -91,7 +94,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
         {} as any,
         {}
       );
-      const currentTheme = vscodeTheme[currentMode];
+      const currentTheme = vscodeTheme[currentMode as keyof typeof vscodeTheme];
       const values: Record<string, string> = {};
 
       // Add editor colors
@@ -101,7 +104,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
 
       // Add token colors
       if (currentTheme?.tokenColors) {
-        currentTheme.tokenColors.forEach((tokenColor) => {
+        currentTheme.tokenColors.forEach((tokenColor: any) => {
           if (tokenColor.name && tokenColor.settings?.foreground) {
             values[tokenColor.name] = tokenColor.settings.foreground;
           }
@@ -200,7 +203,9 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
       if (!allOverrides || !allOverrides[currentMode]) return;
 
       const currentOverrides = { ...allOverrides };
-      const modeOverrides = { ...currentOverrides[currentMode] };
+      const modeOverrides = {
+        ...(currentOverrides[currentMode] as Record<string, any>),
+      };
       delete modeOverrides[key];
 
       updateFunction({
@@ -231,8 +236,12 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
     if (!allOverrides) return false;
 
     return Object.keys(allOverrides).some((mode) => {
-      const modeOverrides = allOverrides[mode];
-      return modeOverrides && Object.keys(modeOverrides).length > 0;
+      const modeOverrides = allOverrides[mode as keyof typeof allOverrides];
+      return (
+        modeOverrides &&
+        typeof modeOverrides === "object" &&
+        Object.keys(modeOverrides).length > 0
+      );
     });
   }, [allOverrides]);
 
