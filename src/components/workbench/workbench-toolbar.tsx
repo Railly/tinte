@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 import {
   Download,
   Save,
@@ -15,7 +17,15 @@ import {
   Check,
   Copy
 } from "lucide-react";
+import GithubIcon from "@/components/shared/icons/github";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,7 +61,9 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showSignInDialog, setShowSignInDialog] = useState(false);
   const [isThemePublic, setIsThemePublic] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const {
     updateTinteTheme,
@@ -79,20 +91,27 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
   const shadcnOverrides = useShadcnOverrides();
   const vscodeOverrides = useVSCodeOverrides();
 
-  const updateTheme = (newTheme: TinteTheme) => {
-    updateTinteTheme("light", newTheme.light);
-    updateTinteTheme("dark", newTheme.dark);
-  };
+  // Restore theme to a specific state
+  const restoreTheme = React.useCallback((
+    themeToRestore: TinteTheme,
+    shouldSelectTheme: boolean,
+    themeToSelect?: any
+  ) => {
+    if (shouldSelectTheme && themeToSelect) {
+      // Go back to the original theme (remove unsaved)
+      selectTheme(themeToSelect);
+    } else {
+      // Just update the current theme
+      updateTinteTheme("light", themeToRestore.light);
+      updateTinteTheme("dark", themeToRestore.dark);
+    }
+  }, [updateTinteTheme, selectTheme]);
 
-  const {
-    canUndo,
-    canRedo,
-    undoCount,
-    redoCount,
-    undo,
-    redo,
-    reset,
-  } = useThemeHistory(theme, updateTheme);
+  const { canUndo, canRedo, hasChanges, undo, redo, reset } = useThemeHistory(
+    theme,
+    activeTheme,
+    restoreTheme
+  );
 
   const {
     isExporting,
@@ -157,7 +176,6 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
         const result = await saveCurrentTheme();
         if (result.success) {
           toast.success("Theme updated successfully!");
-          reset(theme);
           markAsSaved();
         } else {
           toast.error("Failed to update theme");
@@ -177,7 +195,6 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
       const result = await saveCurrentTheme(name, makePublic);
       if (result.success && result.savedTheme) {
         toast.success("Theme saved successfully!");
-        reset(theme);
         markAsSaved();
         await handlePostSaveNavigation(result.savedTheme, "Save");
       } else {
@@ -394,6 +411,19 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
     activeTheme?.author === "You" ||
     (activeTheme?.id && activeTheme.id.startsWith("theme_") && user);
 
+  // Check if it's a custom unsaved theme (modified someone else's theme)
+  const isCustomUnsaved = activeTheme?.name === "Custom (unsaved)";
+
+  // Button logic:
+  // 1. Logged in + Own theme → Show Update button (becomes Save when modified)
+  // 2. Logged in + Custom (unsaved) → Show Save button
+  // 3. Logged in + Someone else's theme → Show Duplicate button
+  // 4. Not logged in → Show Duplicate button (opens login modal)
+
+  const shouldShowUpdateButton = isAuthenticated && isOwnTheme && !isCustomUnsaved;
+  const shouldShowSaveButton = isAuthenticated && isCustomUnsaved;
+  const shouldShowDuplicateButton = !shouldShowUpdateButton && !shouldShowSaveButton;
+
   const PrimaryIcon = primaryActionConfig.icon;
 
   return (
@@ -422,13 +452,13 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
         </div>
 
         {/* Reset (only show when has changes) */}
-        {(undoCount > 0 || unsavedChanges) && (
+        {hasChanges && (
           <>
             <div className="w-px h-6 bg-border" />
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => reset(theme)}
+              onClick={reset}
               className="h-8"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
@@ -443,8 +473,8 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
 
       {/* Right: Primary Actions */}
       <div className="flex items-center gap-2">
-        {/* Save Button - Only show if logged in AND it's your theme */}
-        {canSave && isOwnTheme && (
+        {/* Update Button - Show for own themes */}
+        {shouldShowUpdateButton && (
           <Button
             variant={unsavedChanges ? "default" : "ghost"}
             size="sm"
@@ -455,7 +485,7 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
             {unsavedChanges ? (
               <>
                 <Save className="h-4 w-4 mr-2" />
-                Save
+                Update
               </>
             ) : (
               <>
@@ -466,15 +496,28 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
           </Button>
         )}
 
-        {/* Duplicate Button - PRIMARY if NOT your theme */}
-        {!isOwnTheme && (
+        {/* Save Button - Show for Custom (unsaved) */}
+        {shouldShowSaveButton && (
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleSaveTheme}
+            disabled={isSaving}
+            className="h-8"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save
+          </Button>
+        )}
+
+        {/* Duplicate Button - Show for others' themes or when not logged in */}
+        {shouldShowDuplicateButton && (
           <Button
             variant="default"
             size="sm"
             onClick={() => {
               if (!isAuthenticated) {
-                toast.error("Please sign in to duplicate themes");
-                router.push("/auth/signin");
+                setShowSignInDialog(true);
                 return;
               }
               setShowDuplicateDialog(true);
@@ -576,8 +619,7 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
             {isOwnTheme && (
               <DropdownMenuItem onClick={() => {
                 if (!isAuthenticated) {
-                  toast.error("Please sign in to duplicate themes");
-                  router.push("/auth/signin");
+                  setShowSignInDialog(true);
                   return;
                 }
                 setShowDuplicateDialog(true);
@@ -640,6 +682,46 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
         themeName={activeTheme?.name}
         isLoading={false}
       />
+
+      {/* Sign In Dialog */}
+      <Dialog open={showSignInDialog} onOpenChange={setShowSignInDialog}>
+        <DialogContent className="sm:max-w-[440px]">
+          <DialogHeader className="space-y-3">
+            <DialogTitle className="text-2xl font-semibold tracking-tight">
+              Sign in to continue
+            </DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground">
+              Create an account to duplicate themes, save your work, and sync across devices.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 pt-4 pb-2">
+            <Button
+              onClick={async () => {
+                setIsSigningIn(true);
+                try {
+                  await authClient.signIn.social({
+                    provider: "github",
+                    callbackURL: window.location.href,
+                  });
+                } catch (error) {
+                  console.error("Error signing in:", error);
+                  toast.error("Failed to sign in. Please try again.");
+                  setIsSigningIn(false);
+                }
+              }}
+              disabled={isSigningIn}
+              size="lg"
+              className="w-full h-12 gap-3 text-base font-medium"
+            >
+              <GithubIcon className="h-5 w-5" />
+              {isSigningIn ? "Signing in..." : "Continue with GitHub"}
+            </Button>
+            <p className="text-xs text-center text-muted-foreground px-4">
+              By continuing, you agree to our Terms of Service and Privacy Policy
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

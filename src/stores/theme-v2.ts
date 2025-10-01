@@ -9,6 +9,7 @@ import type { TinteBlock, TinteTheme } from "@/types/tinte";
 import type { NormalizedOverrides } from "@/types/overrides";
 import { DEFAULT_THEME } from "@/utils/default-theme";
 import { loadGoogleFont, extractFontFamily } from "@/utils/fonts";
+import { useAuthStore } from "@/stores/auth";
 
 type ThemeMode = "light" | "dark";
 
@@ -127,20 +128,27 @@ const applyToDOMDebounced = (() => {
   };
 })();
 
-const createThemeForEdit = (theme: ThemeData): ThemeData => {
+const createThemeForEdit = (theme: ThemeData, userId?: string): ThemeData => {
   if (theme.name.includes("(unsaved)")) {
     return theme;
   }
 
+  // Check if this is the user's own theme
   const isOwnTheme =
-    theme.id?.startsWith("theme_") ||
+    (theme.user?.id && theme.user.id === userId) ||
     theme.author === "You" ||
-    (theme.user?.id && theme.id && !theme.id.startsWith("custom_"));
+    (theme.id?.startsWith("theme_") && userId);
 
+  // If it's your own theme, keep the same name and ID
+  if (isOwnTheme) {
+    return theme;
+  }
+
+  // If it's someone else's theme, create Custom (unsaved)
   return {
     ...theme,
-    id: isOwnTheme ? theme.id : `custom_${Date.now()}`,
-    name: theme.name === "Custom" ? "Custom (unsaved)" : `${theme.name} (unsaved)`,
+    id: `custom_${Date.now()}`,
+    name: "Custom (unsaved)",
   };
 };
 
@@ -252,7 +260,8 @@ export const useThemeStore = create<ThemeStore>()(
                                ? value : convertColorToHex(value);
 
           set((state) => {
-            const updatedTheme = createThemeForEdit(state.activeTheme);
+            const userId = useAuthStore.getState().user?.id;
+            const updatedTheme = createThemeForEdit(state.activeTheme, userId);
             const newEditedTokens = { ...state.editedTokens, [key]: processedValue };
             const newCurrentTokens = { ...state.currentTokens, [key]: processedValue };
 
@@ -293,10 +302,11 @@ export const useThemeStore = create<ThemeStore>()(
               [targetMode]: { ...state.tinteTheme[targetMode], ...updates },
             };
 
+            const userId = useAuthStore.getState().user?.id;
             const updatedTheme = createThemeForEdit({
               ...state.activeTheme,
               rawTheme: newTinteTheme,
-            });
+            }, userId);
 
             const newTokens = computeFinalTokens(updatedTheme, state.mode, state.overrides, state.editedTokens);
 

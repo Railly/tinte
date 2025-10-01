@@ -1,24 +1,14 @@
 "use client";
 
-import { Menu, Github, UserPlus } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 import GithubIcon from "@/components/shared/icons/github";
 import TwitterIcon from "@/components/shared/icons/twitter";
 import Logo from "@/components/shared/logo";
 import { ThemeSwitcher } from "@/components/shared/theme-switcher";
 import { UserDropdown } from "@/components/shared/user-dropdown";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth-client";
 import {
   Sheet,
   SheetClose,
@@ -32,8 +22,6 @@ import { siteConfig } from "@/config/site";
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleNavClick = (e: React.MouseEvent, href: string) => {
     if (href.startsWith("#") && pathname !== "/") {
@@ -42,54 +30,8 @@ export function Header() {
     }
   };
 
-  const handleGetStarted = async () => {
-    try {
-      // Check if user is already authenticated
-      const session = await authClient.getSession();
-
-      if (session.data?.user) {
-        // User is authenticated, go directly to workbench
-        router.push("/workbench");
-      } else {
-        // User is not authenticated, show dialog
-        setShowAuthDialog(true);
-      }
-    } catch (error) {
-      console.error("Error checking session:", error);
-      // If there's an error, show the dialog anyway
-      setShowAuthDialog(true);
-    }
-  };
-
-  const handleContinueAsGuest = async () => {
-    setIsLoading(true);
-    try {
-      // Sign in anonymously using better-auth
-      await authClient.signIn.anonymous();
-      toast.success("Welcome! You're now signed in as a guest.");
-      router.push("/workbench");
-    } catch (error) {
-      console.error("Error signing in as guest:", error);
-      toast.error("Failed to continue as guest. Please try again.");
-    } finally {
-      setIsLoading(false);
-      setShowAuthDialog(false);
-    }
-  };
-
-  const handleSignInWithGitHub = async () => {
-    setIsLoading(true);
-    try {
-      // Sign in with GitHub using better-auth
-      await authClient.signIn.social({
-        provider: "github",
-        callbackURL: "/workbench",
-      });
-    } catch (error) {
-      console.error("Error signing in with GitHub:", error);
-      toast.error("Failed to sign in with GitHub. Please try again.");
-      setIsLoading(false);
-    }
+  const handleGetStarted = () => {
+    router.push("/workbench");
   };
 
   const navigation = [
@@ -232,40 +174,6 @@ export function Header() {
           </Sheet>
         </div>
       </div>
-
-      {/* Auth Dialog */}
-      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Get Started with Tinte</DialogTitle>
-            <DialogDescription>
-              Choose how you'd like to continue. You can always upgrade your account later.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-3 mt-6">
-            <Button
-              onClick={handleContinueAsGuest}
-              disabled={isLoading}
-              variant="outline"
-              className="w-full justify-start gap-3 h-12"
-            >
-              <UserPlus className="h-4 w-4" />
-              Continue as Guest
-            </Button>
-            <Button
-              onClick={handleSignInWithGitHub}
-              disabled={isLoading}
-              className="w-full justify-start gap-3 h-12"
-            >
-              <Github className="h-4 w-4" />
-              Sign in with GitHub
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-4 text-center">
-            Guest accounts can create and save themes. Sign in to sync across devices and claim your themes.
-          </p>
-        </DialogContent>
-      </Dialog>
     </header>
   );
 }

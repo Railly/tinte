@@ -53,9 +53,8 @@ export function WorkbenchMain({ themeSlug, defaultTab, initialTheme, userThemes 
       return;
     }
 
-    // Priority 2: Use first built-in theme for "new" slug
+    // Priority 2: For "new" slug, keep current theme (don't auto-select)
     if (themeSlug === 'new') {
-      if (builtInThemes[0]) selectTheme(builtInThemes[0]);
       return;
     }
 
