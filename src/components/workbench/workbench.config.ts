@@ -6,6 +6,11 @@ import { OverridesTab } from "./tabs/overrides-tab/overrides-tab";
 // Simple, extensible tab configuration
 export const WORKBENCH_TABS = [
   {
+    id: "agent" as const,
+    label: "Agent",
+    component: AgentTab,
+  },
+  {
     id: "canonical" as const,
     label: "Canonical",
     component: CanonicalTab,
@@ -14,11 +19,6 @@ export const WORKBENCH_TABS = [
     id: "overrides" as const,
     label: "Overrides",
     component: OverridesTab,
-  },
-  {
-    id: "agent" as const,
-    label: "Agent",
-    component: AgentTab,
   },
 ] as const;
 
@@ -33,7 +33,7 @@ export function getTabConfig(tabId: WorkbenchTab): TabConfig | undefined {
 
 // App configuration
 export const WORKBENCH_CONFIG = {
-  DEFAULT_TAB: "canonical" as WorkbenchTab,
+  DEFAULT_TAB: "agent" as WorkbenchTab,
   STATIC_TAB: "canonical" as WorkbenchTab,
   CHAT_ID_DISPLAY_LENGTH: 8,
 } as const;
