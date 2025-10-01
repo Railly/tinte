@@ -67,7 +67,7 @@ export default async function WorkbenchSlugPage({
 
   const defaultTab = prompt
     ? "agent"
-    : (tab as "canonical" | "overrides" | "agent") || "canonical";
+    : (tab as "canonical" | "overrides" | "agent") || "agent";
 
   const headersList = await headers();
   const session = await auth.api.getSession({

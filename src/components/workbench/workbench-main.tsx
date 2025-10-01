@@ -44,8 +44,8 @@ export function WorkbenchMain({ themeSlug, defaultTab, initialTheme, userThemes 
   useEffect(() => {
     initializeWorkbench(themeSlug);
 
-    const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
-    const builtInThemes = [...tweakCNThemes, ...tinteThemes, ...raysoThemes];
+    const allThemes = [...userThemes, ...tinteThemes, ...tweakCNThemes, ...raysoThemes];
+    const builtInThemes = [...tinteThemes, ...tweakCNThemes, ...raysoThemes];
 
     // Priority 1: Use server-provided theme
     if (initialTheme) {
