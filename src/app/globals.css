@@ -143,7 +143,12 @@
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif) !important;
+  font-family: var(
+    --font-sans,
+    ui-sans-serif,
+    system-ui,
+    sans-serif
+  ) !important;
   -webkit-font-smoothing: antialiased;
   letter-spacing: var(--letter-spacing);
 }

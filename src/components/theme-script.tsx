@@ -1,132 +1,163 @@
-"use client";
-
 import { DEFAULT_THEME } from "@/utils/default-theme";
 
 export function TinteThemeScript() {
   const scriptContent = `(function() {
-    const THEME_KEY = 'tinte-selected-theme';
-    const MODE_KEY = 'tinte-current-mode';
-    const DEFAULT_THEME = ${JSON.stringify(DEFAULT_THEME)};
-    const root = document.documentElement;
+    const STORAGE_THEME = 'tinte-selected-theme';
+    const STORAGE_MODE = 'tinte-theme-mode';
+    const FALLBACK_THEME = ${JSON.stringify(DEFAULT_THEME)};
+    const WEIGHTS = ['400', '500', '600', '700'];
+    const SYS_FONTS = ['ui-sans-serif', 'ui-serif', 'ui-monospace', 'system-ui', 'sans-serif', 'serif', 'monospace', 'cursive', 'fantasy'];
+    const html = document.documentElement;
 
-    function applyTokens(tokens) {
-      if (!tokens) return;
-      Object.entries(tokens).forEach(function([key, value]) {
-        if (typeof value === 'string') {
-          root.style.setProperty('--' + key, value);
-        }
-      });
+    function parseFontName(value) {
+      if (!value) return null;
+      const name = value.split(',')[0].trim().replace(/['"]/g, '');
+      return SYS_FONTS.includes(name.toLowerCase()) ? null : name;
     }
 
-    function getMode() {
-      try {
-        const stored = localStorage.getItem(MODE_KEY);
-        if (stored === 'dark' || stored === 'light') return stored;
-      } catch (e) {}
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    function createFontUrl(name, weights) {
+      const w = (weights || WEIGHTS).join(';');
+      return 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(name) + ':wght@' + w + '&display=swap';
     }
 
-    let theme = DEFAULT_THEME;
+    function injectFont(name) {
+      const url = createFontUrl(name);
+      if (document.querySelector('link[href="' + url + '"]')) return;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = url;
+      document.head.appendChild(link);
+    }
+
+    // Detect theme mode
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let activeMode = isDark ? 'dark' : 'light';
+
     try {
-      const stored = localStorage.getItem(THEME_KEY);
-      if (stored) theme = JSON.parse(stored);
+      const saved = localStorage.getItem(STORAGE_MODE);
+      if (saved === 'dark' || saved === 'light') activeMode = saved;
     } catch (e) {}
 
-    const mode = getMode();
-    
-    if (mode === 'dark') {
-      root.classList.add('dark');
-      root.style.colorScheme = 'dark';
-    } else {
-      root.classList.remove('dark');
-      root.style.colorScheme = 'light';
-    }
+    // Load theme data
+    let themeData = FALLBACK_THEME;
+    try {
+      const saved = localStorage.getItem(STORAGE_THEME);
+      if (saved) themeData = JSON.parse(saved);
+    } catch (e) {}
 
-    // Get base tokens - prioritize computedTokens for DOM application
-    let tokens;
-    if (theme.computedTokens && theme.computedTokens[mode]) {
-      tokens = theme.computedTokens[mode];
-    } else if (theme.rawTheme && theme.rawTheme[mode]) {
-      // If no computedTokens, convert rawTheme to shadcn format for DOM
-      const tinteTokens = theme.rawTheme[mode];
-      tokens = {
-        background: tinteTokens.bg || '#ffffff',
-        foreground: tinteTokens.tx || '#000000',
-        card: tinteTokens.bg_2 || tinteTokens.bg || '#ffffff',
-        'card-foreground': tinteTokens.tx || '#000000',
-        popover: tinteTokens.bg_2 || tinteTokens.bg || '#ffffff',
-        'popover-foreground': tinteTokens.tx || '#000000',
-        primary: tinteTokens.pr || '#3b82f6',
+    // Extract theme tokens for current mode
+    let styleVars;
+    if (themeData.computedTokens && themeData.computedTokens[activeMode]) {
+      styleVars = themeData.computedTokens[activeMode];
+    } else if (themeData.rawTheme && themeData.rawTheme[activeMode]) {
+      // Fallback: convert rawTheme to shadcn format
+      const raw = themeData.rawTheme[activeMode];
+      styleVars = {
+        background: raw.bg || '#ffffff',
+        foreground: raw.tx || '#000000',
+        card: raw.bg_2 || raw.bg || '#ffffff',
+        'card-foreground': raw.tx || '#000000',
+        popover: raw.bg_2 || raw.bg || '#ffffff',
+        'popover-foreground': raw.tx || '#000000',
+        primary: raw.pr || '#3b82f6',
         'primary-foreground': '#ffffff',
-        secondary: tinteTokens.sc || '#f1f5f9',
-        'secondary-foreground': tinteTokens.tx || '#000000',
-        muted: tinteTokens.ui || '#f1f5f9',
-        'muted-foreground': tinteTokens.tx_3 || '#64748b',
-        accent: tinteTokens.ac_1 || '#f1f5f9',
-        'accent-foreground': tinteTokens.tx || '#000000',
+        secondary: raw.sc || '#f1f5f9',
+        'secondary-foreground': raw.tx || '#000000',
+        muted: raw.ui || '#f1f5f9',
+        'muted-foreground': raw.tx_3 || '#64748b',
+        accent: raw.ac_1 || '#f1f5f9',
+        'accent-foreground': raw.tx || '#000000',
         destructive: '#ef4444',
         'destructive-foreground': '#ffffff',
-        border: tinteTokens.ui || '#e2e8f0',
-        input: tinteTokens.ui_2 || tinteTokens.ui || '#e2e8f0',
-        ring: tinteTokens.pr || '#3b82f6'
+        border: raw.ui || '#e2e8f0',
+        input: raw.ui_2 || raw.ui || '#e2e8f0',
+        ring: raw.pr || '#3b82f6'
       };
     } else {
-      // Fallback to flattened format (dark_bg, light_bg, etc.)
-      const tinteTokens = {};
-      const prefix = mode + '_';
-      for (const key in theme) {
-        if (key.startsWith(prefix)) {
-          const tokenKey = key.substring(prefix.length);
-          tinteTokens[tokenKey] = theme[key];
+      // Fallback to flattened format
+      const flat = {};
+      const pre = activeMode + '_';
+      for (const k in themeData) {
+        if (k.startsWith(pre)) {
+          flat[k.substring(pre.length)] = themeData[k];
         }
       }
 
-      if (Object.keys(tinteTokens).length > 0) {
-        tokens = {
-          background: tinteTokens.bg || '#ffffff',
-          foreground: tinteTokens.tx || '#000000',
-          card: tinteTokens.bg_2 || tinteTokens.bg || '#ffffff',
-          'card-foreground': tinteTokens.tx || '#000000',
-          popover: tinteTokens.bg_2 || tinteTokens.bg || '#ffffff',
-          'popover-foreground': tinteTokens.tx || '#000000',
-          primary: tinteTokens.pr || '#3b82f6',
+      if (Object.keys(flat).length > 0) {
+        styleVars = {
+          background: flat.bg || '#ffffff',
+          foreground: flat.tx || '#000000',
+          card: flat.bg_2 || flat.bg || '#ffffff',
+          'card-foreground': flat.tx || '#000000',
+          popover: flat.bg_2 || flat.bg || '#ffffff',
+          'popover-foreground': flat.tx || '#000000',
+          primary: flat.pr || '#3b82f6',
           'primary-foreground': '#ffffff',
-          secondary: tinteTokens.sc || '#f1f5f9',
-          'secondary-foreground': tinteTokens.tx || '#000000',
-          muted: tinteTokens.ui || '#f1f5f9',
-          'muted-foreground': tinteTokens.tx_3 || '#64748b',
-          accent: tinteTokens.ac_1 || '#f1f5f9',
-          'accent-foreground': tinteTokens.tx || '#000000',
+          secondary: flat.sc || '#f1f5f9',
+          'secondary-foreground': flat.tx || '#000000',
+          muted: flat.ui || '#f1f5f9',
+          'muted-foreground': flat.tx_3 || '#64748b',
+          accent: flat.ac_1 || '#f1f5f9',
+          'accent-foreground': flat.tx || '#000000',
           destructive: '#ef4444',
           'destructive-foreground': '#ffffff',
-          border: tinteTokens.ui || '#e2e8f0',
-          input: tinteTokens.ui_2 || tinteTokens.ui || '#e2e8f0',
-          ring: tinteTokens.pr || '#3b82f6'
+          border: flat.ui || '#e2e8f0',
+          input: flat.ui_2 || flat.ui || '#e2e8f0',
+          ring: flat.pr || '#3b82f6'
         };
       } else {
-        tokens = DEFAULT_THEME.computedTokens[mode];
+        styleVars = FALLBACK_THEME.computedTokens[activeMode];
       }
     }
 
-    // Apply overrides if they exist (prioritize shadcn overrides for visual consistency)
-    if (theme.overrides && theme.overrides.shadcn && theme.overrides.shadcn[mode]) {
-      const overrideTokens = theme.overrides.shadcn[mode];
-      // Convert colors to hex and merge
-      Object.entries(overrideTokens).forEach(function([key, value]) {
-        if (typeof value === 'string') {
-          tokens = Object.assign({}, tokens, { [key]: value });
-        }
+    // Merge overrides if present
+    if (themeData.overrides && themeData.overrides.shadcn && themeData.overrides.shadcn[activeMode]) {
+      const overrides = themeData.overrides.shadcn[activeMode];
+      Object.entries(overrides).forEach(function([k, v]) {
+        if (typeof v === 'string') styleVars = Object.assign({}, styleVars, { [k]: v });
       });
     }
 
-    applyTokens(tokens);
+    // Apply tokens to DOM immediately
+    if (styleVars) {
+      Object.entries(styleVars).forEach(function([k, v]) {
+        if (typeof v === 'string') html.style.setProperty('--' + k, v);
+      });
+    }
 
-    window.__TINTE_THEME__ = { theme, mode, tokens };
+    // Set dark mode class
+    if (activeMode === 'dark') html.classList.add('dark');
+    html.style.colorScheme = activeMode;
+
+    window.__TINTE_THEME__ = { theme: themeData, mode: activeMode, tokens: styleVars };
+
+    // Load fonts and show body when ready
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(function() {
+        document.body.classList.add('fonts-loaded');
+      }).catch(function() {
+        // Fallback: show content after timeout even if fonts fail
+        setTimeout(function() {
+          document.body.classList.add('fonts-loaded');
+        }, 100);
+      });
+    } else {
+      // No font loading API support, show immediately
+      if (document.body) {
+        document.body.classList.add('fonts-loaded');
+      } else {
+        document.addEventListener('DOMContentLoaded', function() {
+          document.body.classList.add('fonts-loaded');
+        });
+      }
+    }
   })();`;
 
   return (
     <script
-      dangerouslySetInnerHTML={{ __html: scriptContent }}
+      dangerouslySetInnerHTML={{
+        __html: scriptContent,
+      }}
       suppressHydrationWarning
     />
   );
