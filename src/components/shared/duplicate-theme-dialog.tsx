@@ -33,7 +33,7 @@ export function DuplicateThemeDialog({
   isBuiltInTheme = false,
 }: DuplicateThemeDialogProps) {
   const [themeName, setThemeName] = useState("");
-  const [makePublic, setMakePublic] = useState(false);
+  const [makePublic, setMakePublic] = useState(true);
   const [isDuplicating, setIsDuplicating] = useState(false);
 
   // Use defaultName as the actual default, but allow editing
@@ -48,7 +48,7 @@ export function DuplicateThemeDialog({
       await onDuplicate(nameToUse, makePublic);
       onOpenChange(false);
       setThemeName("");
-      setMakePublic(false);
+      setMakePublic(true);
     } catch (error) {
       console.error("Error duplicating theme:", error);
     } finally {
@@ -61,7 +61,7 @@ export function DuplicateThemeDialog({
     onOpenChange(open);
     if (!open) {
       setThemeName("");
-      setMakePublic(false);
+      setMakePublic(true);
     }
   };
 

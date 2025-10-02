@@ -14,6 +14,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-clear-overrides";
 import { useShadcnOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { convertTinteToShadcn } from "@/lib/providers/shadcn";
+import { getShadcnPaletteWithOverrides } from "@/lib/shadcn-theme-utils";
 import {
   createSkeletonGroups,
 } from "@/lib/theme-editor-utils";
@@ -227,92 +228,12 @@ export function ShadcnOverridesPanel({
       type: "color" | "fonts" | "shadow" | "shadow-properties" | "base";
     }> = [];
 
-    // Get default palette from the current canonical theme conversion
-    const getDefaultPalette = () => {
-      if (!tinteTheme) {
-        // Fallback defaults if no tinte theme is available
-        return currentMode === "light"
-          ? {
-            background: "#ffffff",
-            foreground: "#09090b",
-            card: "#ffffff",
-            "card-foreground": "#09090b",
-            popover: "#ffffff",
-            "popover-foreground": "#09090b",
-            primary: "#18181b",
-            "primary-foreground": "#fafafa",
-            secondary: "#f4f4f5",
-            "secondary-foreground": "#18181b",
-            muted: "#f4f4f5",
-            "muted-foreground": "#71717a",
-            accent: "#f4f4f5",
-            "accent-foreground": "#18181b",
-            destructive: "#ef4444",
-            "destructive-foreground": "#fafafa",
-            border: "#e4e4e7",
-            input: "#e4e4e7",
-            ring: "#18181b",
-            "chart-1": "#e60049",
-            "chart-2": "#0bb4ff",
-            "chart-3": "#50e991",
-            "chart-4": "#e6d800",
-            "chart-5": "#9b19f5",
-            sidebar: "#f8fafc",
-            "sidebar-foreground": "#0f172a",
-            "sidebar-primary": "#0f172a",
-            "sidebar-primary-foreground": "#f8fafc",
-            "sidebar-accent": "#f1f5f9",
-            "sidebar-accent-foreground": "#0f172a",
-            "sidebar-border": "#e2e8f0",
-            "sidebar-ring": "#0f172a",
-          }
-          : {
-            background: "#09090b",
-            foreground: "#fafafa",
-            card: "#09090b",
-            "card-foreground": "#fafafa",
-            popover: "#09090b",
-            "popover-foreground": "#fafafa",
-            primary: "#fafafa",
-            "primary-foreground": "#09090b",
-            secondary: "#27272a",
-            "secondary-foreground": "#fafafa",
-            muted: "#27272a",
-            "muted-foreground": "#a1a1aa",
-            accent: "#27272a",
-            "accent-foreground": "#fafafa",
-            destructive: "#ef4444",
-            "destructive-foreground": "#fafafa",
-            border: "#27272a",
-            input: "#27272a",
-            ring: "#d4d4d8",
-            sidebar: "#020817",
-            "sidebar-foreground": "#f8fafc",
-            "sidebar-primary": "#f8fafc",
-            "sidebar-primary-foreground": "#020817",
-            "sidebar-accent": "#1e293b",
-            "sidebar-accent-foreground": "#f8fafc",
-            "sidebar-border": "#334155",
-            "sidebar-ring": "#f8fafc",
-          };
-      }
-
-      // Convert the current canonical theme to shadcn palette
-      // Get shadow data for current mode from normalized shadows
-      const currentShadows = shadcnOverride?.shadows?.[currentMode];
-
-      const themeWithOverrides = {
-        ...tinteTheme,
-        ...(shadcnOverride?.fonts && { fonts: shadcnOverride.fonts }),
-        ...(shadcnOverride?.radius && { radius: shadcnOverride.radius }),
-        ...(currentShadows && { shadows: currentShadows }),
-      };
-      const convertedShadcn = convertTinteToShadcn(themeWithOverrides);
-      return convertedShadcn[currentMode as keyof typeof convertedShadcn];
-    };
-
     // Get extrapolated palette from canonical theme as baseline
-    const extrapolatedPalette = getDefaultPalette();
+    const extrapolatedPalette = getShadcnPaletteWithOverrides(
+      tinteTheme,
+      currentMode,
+      shadcnOverride,
+    );
 
     // Handle palette tokens (colors) - always merge DB values with extrapolated values
     let dbPalette = {};

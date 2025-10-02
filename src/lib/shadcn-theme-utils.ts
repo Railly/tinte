@@ -1,0 +1,57 @@
+import { convertTinteToShadcn } from "@/lib/providers/shadcn";
+import type { TinteTheme } from "@/types/tinte";
+import type { ShadcnTheme } from "@/types/shadcn";
+
+export function getShadcnPaletteWithOverrides(
+  tinteTheme: TinteTheme,
+  mode: "light" | "dark",
+  shadcnOverride?: any,
+): Record<string, string> {
+  if (!tinteTheme) return {};
+
+  const overrides = shadcnOverride || {};
+  const modeShadows = overrides?.shadows?.[mode];
+
+  const themeWithOverrides = {
+    ...tinteTheme,
+    ...(overrides?.fonts && { fonts: overrides.fonts }),
+    ...(overrides?.radius && { radius: overrides.radius }),
+    ...(modeShadows && { shadows: modeShadows }),
+  };
+
+  const converted = convertTinteToShadcn(themeWithOverrides);
+  const palette = {
+    ...converted[mode],
+    ...(overrides?.[mode] || {}),
+  };
+
+  return palette;
+}
+
+export function getShadcnThemeCSS(
+  tinteTheme: TinteTheme,
+  shadcnOverride?: any,
+): string {
+  if (!tinteTheme) return "";
+
+  const lightPalette = getShadcnPaletteWithOverrides(
+    tinteTheme,
+    "light",
+    shadcnOverride,
+  );
+  const darkPalette = getShadcnPaletteWithOverrides(
+    tinteTheme,
+    "dark",
+    shadcnOverride,
+  );
+
+  const lightVars = Object.entries(lightPalette)
+    .map(([key, value]) => `    --${key}: ${value};`)
+    .join("\n");
+
+  const darkVars = Object.entries(darkPalette)
+    .map(([key, value]) => `    --${key}: ${value};`)
+    .join("\n");
+
+  return `:root {\n${lightVars}\n}\n\n.dark {\n${darkVars}\n}`;
+}

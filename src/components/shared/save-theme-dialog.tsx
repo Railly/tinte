@@ -31,7 +31,7 @@ export function SaveThemeDialog({
   isLoading = false,
 }: SaveThemeDialogProps) {
   const [themeName, setThemeName] = useState("");
-  const [makePublic, setMakePublic] = useState(false);
+  const [makePublic, setMakePublic] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   // Use defaultName as the actual default, but allow editing
@@ -47,7 +47,7 @@ export function SaveThemeDialog({
       onOpenChange(false);
       // Reset form
       setThemeName("");
-      setMakePublic(false);
+      setMakePublic(true);
     } catch (error) {
       console.error("Error saving theme:", error);
     } finally {
@@ -61,7 +61,7 @@ export function SaveThemeDialog({
     if (!open) {
       // Reset form when closing
       setThemeName("");
-      setMakePublic(false);
+      setMakePublic(true);
     }
   };
 

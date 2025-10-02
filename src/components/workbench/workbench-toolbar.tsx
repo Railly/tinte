@@ -1,23 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
 import {
+  Check,
+  Code,
+  Copy,
   Download,
-  Save,
-  Settings2,
-  Share2,
+  Edit3,
   FileText,
-  Undo,
   Redo,
   RotateCcw,
-  Check,
-  Copy
+  Save,
+  Settings,
+  Share2,
+  Trash2,
+  Undo,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { DeleteThemeDialog } from "@/components/shared/delete-theme-dialog";
+import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
 import GithubIcon from "@/components/shared/icons/github";
+import { ImportThemeDialog } from "@/components/shared/import-theme-dialog";
+import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
+import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
+import { ShareThemeDialog } from "@/components/shared/share-theme-dialog";
+import { ViewCodeDialog } from "@/components/shared/view-code-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,27 +43,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DeleteThemeDialog } from "@/components/shared/delete-theme-dialog";
-import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
-import { ImportThemeDialog } from "@/components/shared/import-theme-dialog";
-import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
-import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
-import { ShareThemeDialog } from "@/components/shared/share-theme-dialog";
-import { useShadcnOverrides, useVSCodeOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
-import { useThemeHistory } from "@/hooks/use-theme-history";
-import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
-import { importShadcnTheme } from "@/lib/import-theme";
-import { exportTheme, getProvider } from "@/lib/providers";
-import { useThemeContext } from "@/providers/theme";
-import type { TinteTheme } from "@/types/tinte";
-import { useQueryState } from "nuqs";
+import {
+  useShadcnOverrides,
+  useVSCodeOverrides,
+} from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { useDockActions } from "@/hooks/use-dock-actions";
+import { useThemeHistory } from "@/hooks/use-theme-history";
+import { cn } from "@/lib";
+import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
+import { authClient } from "@/lib/auth-client";
+import { importShadcnTheme } from "@/lib/import-theme";
+import { convertTheme, exportTheme, getProvider } from "@/lib/providers";
+import { useThemeContext } from "@/providers/theme";
+import type { ShadcnTheme } from "@/types/shadcn";
+import type { TinteTheme } from "@/types/tinte";
 
 interface WorkbenchToolbarProps {
   providerId?: string;
 }
 
-export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProps) {
+export function WorkbenchToolbar({
+  providerId = "shadcn",
+}: WorkbenchToolbarProps) {
   const router = useRouter();
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -62,8 +73,13 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showSignInDialog, setShowSignInDialog] = useState(false);
+  const [showViewCodeDialog, setShowViewCodeDialog] = useState(false);
   const [isThemePublic, setIsThemePublic] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [showCopiedFeedback, setShowCopiedFeedback] = useState(false);
+  const [copiedAction, setCopiedAction] = useState<
+    "file" | "theme" | "command" | null
+  >(null);
 
   const {
     updateTinteTheme,
@@ -91,25 +107,28 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
   const vscodeOverrides = useVSCodeOverrides();
 
   // Restore theme to a specific state
-  const restoreTheme = React.useCallback((
-    themeToRestore: TinteTheme,
-    shouldSelectTheme: boolean,
-    themeToSelect?: any
-  ) => {
-    if (shouldSelectTheme && themeToSelect) {
-      // Go back to the original theme (remove unsaved)
-      selectTheme(themeToSelect);
-    } else {
-      // Just update the current theme
-      updateTinteTheme("light", themeToRestore.light);
-      updateTinteTheme("dark", themeToRestore.dark);
-    }
-  }, [updateTinteTheme, selectTheme]);
+  const restoreTheme = React.useCallback(
+    (
+      themeToRestore: TinteTheme,
+      shouldSelectTheme: boolean,
+      themeToSelect?: any,
+    ) => {
+      if (shouldSelectTheme && themeToSelect) {
+        // Go back to the original theme (remove unsaved)
+        selectTheme(themeToSelect);
+      } else {
+        // Just update the current theme
+        updateTinteTheme("light", themeToRestore.light);
+        updateTinteTheme("dark", themeToRestore.dark);
+      }
+    },
+    [updateTinteTheme, selectTheme],
+  );
 
   const { canUndo, canRedo, hasChanges, undo, redo, reset } = useThemeHistory(
     theme,
     activeTheme,
-    restoreTheme
+    restoreTheme,
   );
 
   const {
@@ -166,9 +185,8 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
     }
 
     const isOwnTheme =
-      activeTheme?.user?.id === user?.id ||
-      activeTheme?.author === "You" ||
-      (activeTheme?.id && activeTheme.id.startsWith("theme_") && user);
+      (user && activeTheme?.user?.id === user?.id) ||
+      (user && activeTheme?.author === "You");
 
     if (isOwnTheme && activeTheme?.id && activeTheme.id.startsWith("theme_")) {
       try {
@@ -249,7 +267,11 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
     return `${baseUrl}/r/${activeTheme.slug}`;
   };
 
-  const handleImportTheme = async (name: string, css: string, makePublic: boolean) => {
+  const handleImportTheme = async (
+    name: string,
+    css: string,
+    makePublic: boolean,
+  ) => {
     try {
       const { tinteTheme, shadcnTheme } = importShadcnTheme(css);
 
@@ -272,7 +294,14 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
           foreground: tinteTheme.light.tx,
         },
         rawTheme: tinteTheme,
-        user: user ? { id: user.id, name: user.name, email: user.email, image: user.image } : null,
+        user: user
+          ? {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            }
+          : null,
       };
 
       if (shadcnTheme) {
@@ -288,7 +317,14 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
 
         const updatedSavedTheme = {
           ...result.savedTheme,
-          user: user ? { id: user.id, name: user.name, email: user.email, image: user.image } : null,
+          user: user
+            ? {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              }
+            : null,
           overrides: {
             shadcn: shadcnTheme,
             vscode: result.savedTheme.overrides?.vscode,
@@ -317,9 +353,8 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
       }
 
       const isOwnTheme =
-        activeTheme?.user?.id === user?.id ||
-        activeTheme?.author === "You" ||
-        (activeTheme?.id && activeTheme.id.startsWith("theme_") && user);
+        (user && activeTheme?.user?.id === user?.id) ||
+        (user && activeTheme?.author === "You");
 
       if (!isOwnTheme) {
         toast.error("Only theme owners can make themes public");
@@ -411,9 +446,8 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
 
   // Check ownership
   const isOwnTheme =
-    activeTheme?.user?.id === user?.id ||
-    activeTheme?.author === "You" ||
-    (activeTheme?.id && activeTheme.id.startsWith("theme_") && user);
+    (user && activeTheme?.user?.id === user?.id) ||
+    (user && activeTheme?.author === "You");
 
   // Check if it's a custom unsaved theme (modified someone else's theme)
   const isCustomUnsaved = activeTheme?.name === "Custom (unsaved)";
@@ -425,9 +459,13 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
   // 4. Not logged in + unsaved changes → Show Save button (opens login modal)
   // 5. Not logged in + no unsaved changes → Show Duplicate button (opens login modal)
 
-  const shouldShowUpdateButton = isAuthenticated && isOwnTheme && !isCustomUnsaved;
-  const shouldShowSaveButton = (isAuthenticated && isCustomUnsaved) || (!isAuthenticated && unsavedChanges);
-  const shouldShowDuplicateButton = !shouldShowUpdateButton && !shouldShowSaveButton;
+  const shouldShowUpdateButton =
+    isAuthenticated && isOwnTheme && !isCustomUnsaved;
+  const shouldShowSaveButton =
+    (isAuthenticated && isCustomUnsaved) ||
+    (!isAuthenticated && unsavedChanges);
+  const shouldShowDuplicateButton =
+    !shouldShowUpdateButton && !shouldShowSaveButton;
 
   const PrimaryIcon = primaryActionConfig.icon;
 
@@ -460,12 +498,7 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
         {hasChanges && (
           <>
             <div className="w-px h-6 bg-border" />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={reset}
-              className="h-8"
-            >
+            <Button variant="ghost" size="sm" onClick={reset} className="h-8">
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
@@ -547,7 +580,9 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
           onClick={async () => {
             if (isTemporaryTheme()) {
               if (!canSave) {
-                toast.error("Please sign in to save themes and generate install commands");
+                toast.error(
+                  "Please sign in to save themes and generate install commands",
+                );
                 return;
               }
               setShowSaveDialog(true);
@@ -555,8 +590,10 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
             }
 
             await handlePrimaryAction();
+
             if (currentProviderId === "shadcn") {
-              toast.success("Command copied!");
+              setShowCopiedFeedback(true);
+              setTimeout(() => setShowCopiedFeedback(false), 2000);
             } else if (currentProviderId === "vscode") {
               toast.success("VSIX downloaded!");
             } else {
@@ -564,10 +601,30 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
             }
           }}
           disabled={isExporting || (isTemporaryTheme() && !canSave)}
-          className="h-8"
+          className="h-8 relative overflow-hidden"
         >
-          <PrimaryIcon className="h-4 w-4 mr-2" />
-          {primaryActionConfig.label}
+          <div
+            className={cn(
+              "flex items-center transition-all duration-300",
+              showCopiedFeedback
+                ? "opacity-0 scale-75 blur-sm"
+                : "opacity-100 scale-100 blur-0",
+            )}
+          >
+            <PrimaryIcon className="h-4 w-4 mr-2" />
+            {primaryActionConfig.label}
+          </div>
+          <div
+            className={cn(
+              "absolute inset-0 flex items-center justify-center transition-all duration-300",
+              showCopiedFeedback
+                ? "opacity-100 scale-100 blur-0"
+                : "opacity-0 scale-75 blur-sm",
+            )}
+          >
+            <Check className="h-4 w-4 mr-2" />
+            Copied!
+          </div>
         </Button>
 
         <div className="w-px h-6 bg-border" />
@@ -580,28 +637,68 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
               Export
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={async () => {
-              await handleExport();
-              toast.success("File downloaded!");
-            }}>
-              <Download className="h-4 w-4 mr-2" />
-              Download File
+          <DropdownMenuContent align="end" className="min-w-[180px]">
+            <DropdownMenuItem
+              onClick={async () => {
+                await handleExport();
+                setCopiedAction("file");
+                setTimeout(() => setCopiedAction(null), 2000);
+              }}
+              className="relative overflow-hidden"
+            >
+              <div
+                className={cn(
+                  "flex items-center transition-all duration-300",
+                  copiedAction === "file"
+                    ? "opacity-0 scale-75 blur-sm"
+                    : "opacity-100 scale-100 blur-0",
+                )}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download File
+              </div>
+              <div
+                className={cn(
+                  "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                  copiedAction === "file"
+                    ? "opacity-100 scale-100 blur-0"
+                    : "opacity-0 scale-75 blur-sm pointer-events-none",
+                )}
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Downloaded!
+              </div>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={async () => {
-              await handleCopyTheme();
-              toast.success("Theme copied!");
-            }}>
-              Copy Theme
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={async () => {
-              const command = currentProviderId === "shadcn"
-                ? `npx shadcn@latest add ${window.location.origin}/r/${activeTheme?.slug}`
-                : `bunx tinte ${activeTheme?.slug}`;
-              await handleCopyCommand(command);
-              toast.success("Command copied!");
-            }}>
-              Copy Install Command
+            <DropdownMenuItem
+              onClick={async () => {
+                await handleCopyTheme();
+                setCopiedAction("theme");
+                setTimeout(() => setCopiedAction(null), 2000);
+              }}
+              className="relative overflow-hidden"
+            >
+              <div
+                className={cn(
+                  "flex items-center transition-all duration-300",
+                  copiedAction === "theme"
+                    ? "opacity-0 scale-75 blur-sm"
+                    : "opacity-100 scale-100 blur-0",
+                )}
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Theme
+              </div>
+              <div
+                className={cn(
+                  "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                  copiedAction === "theme"
+                    ? "opacity-100 scale-100 blur-0"
+                    : "opacity-0 scale-75 blur-sm pointer-events-none",
+                )}
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Copied!
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -610,36 +707,51 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Settings2 className="h-4 w-4" />
+              <Settings className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setShowViewCodeDialog(true)}>
+              <Code className="h-4 w-4 mr-2" />
+              View Code
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShowImportDialog(true)}>
               <FileText className="h-4 w-4 mr-2" />
-              Import Theme
+              Import CSS
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShowShareDialog(true)}>
               <Share2 className="h-4 w-4 mr-2" />
-              Share Theme
+              Share
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setShowRenameDialog(true)} disabled={!isOwnTheme}>
-              Rename Theme
+            <DropdownMenuItem
+              onClick={() => setShowRenameDialog(true)}
+              disabled={!isOwnTheme}
+            >
+              <Edit3 className="h-4 w-4 mr-2" />
+              Rename
             </DropdownMenuItem>
             {/* Only show Duplicate in dropdown if it's already your theme (not shown as primary button) */}
             {isOwnTheme && (
-              <DropdownMenuItem onClick={() => {
-                if (!isAuthenticated) {
-                  setShowSignInDialog(true);
-                  return;
-                }
-                setShowDuplicateDialog(true);
-              }}>
-                Duplicate Theme
+              <DropdownMenuItem
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    setShowSignInDialog(true);
+                    return;
+                  }
+                  setShowDuplicateDialog(true);
+                }}
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Duplicate
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} disabled={!isOwnTheme}>
-              Delete Theme
+            <DropdownMenuItem
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={!isOwnTheme}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -694,6 +806,11 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
         isLoading={false}
       />
 
+      <ViewCodeDialog
+        isOpen={showViewCodeDialog}
+        onOpenChange={setShowViewCodeDialog}
+      />
+
       {/* Sign In Dialog */}
       <Dialog open={showSignInDialog} onOpenChange={setShowSignInDialog}>
         <DialogContent className="sm:max-w-[440px]">
@@ -702,7 +819,8 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
               Sign in to continue
             </DialogTitle>
             <DialogDescription className="text-base text-muted-foreground">
-              Create an account to duplicate themes, save your work, and sync across devices.
+              Create an account to duplicate themes, save your work, and sync
+              across devices.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-4 pb-2">
@@ -728,7 +846,8 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
               {isSigningIn ? "Signing in..." : "Continue with GitHub"}
             </Button>
             <p className="text-xs text-center text-muted-foreground px-4">
-              By continuing, you agree to our Terms of Service and Privacy Policy
+              By continuing, you agree to our Terms of Service and Privacy
+              Policy
             </p>
           </div>
         </DialogContent>

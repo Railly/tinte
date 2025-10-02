@@ -32,7 +32,7 @@ export function ImportThemeDialog({
 }: ImportThemeDialogProps) {
   const [themeName, setThemeName] = useState("");
   const [themeCSS, setThemeCSS] = useState("");
-  const [makePublic, setMakePublic] = useState(false);
+  const [makePublic, setMakePublic] = useState(true);
   const [isImporting, setIsImporting] = useState(false);
 
   const handleImport = async () => {
@@ -63,7 +63,7 @@ export function ImportThemeDialog({
       // Reset form
       setThemeName("");
       setThemeCSS("");
-      setMakePublic(false);
+      setMakePublic(true);
     } catch (error) {
       console.error("Error importing theme:", error);
       toast.error("Failed to import theme");
@@ -79,7 +79,7 @@ export function ImportThemeDialog({
       // Reset form when closing
       setThemeName("");
       setThemeCSS("");
-      setMakePublic(false);
+      setMakePublic(true);
     }
   };
 
