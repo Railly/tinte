@@ -125,7 +125,7 @@ export function Hero() {
             </div>
           </div>
           <div className="flex text-sm sm:text-md md:text-lg lg:text-xl text-muted-foreground font-light text-center">
-            Define tokens once, ship them everywhere.
+            Define colors once, ship them everywhere.
           </div>
         </h1>
       </div>
