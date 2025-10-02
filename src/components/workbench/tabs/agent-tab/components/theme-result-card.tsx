@@ -28,7 +28,7 @@ export function ThemeResultCard({
 }: ThemeResultCardProps) {
   const [openSections, setOpenSections] = useState(DEFAULT_OPEN_SECTIONS);
   const [isSaving, setIsSaving] = useState(false);
-  const [hasAutoSaved, setHasAutoSaved] = useState(false);
+  const [hasAutoApplied, setHasAutoApplied] = useState(false);
 
   const {
     saveCurrentTheme,
@@ -39,14 +39,14 @@ export function ThemeResultCard({
     shadcnOverride
   } = useThemeContext();
 
-  // Auto-save and apply first theme
+  // Auto-apply every generated theme (session only, no DB save)
   useEffect(() => {
-    if (isFirstTheme && !hasAutoSaved && themeOutput) {
-      console.log("🎯 [Auto-save] Auto-saving first theme:", themeOutput.title);
-      handleSaveTheme(true); // Pass true for auto-save
-      setHasAutoSaved(true);
+    if (!hasAutoApplied && themeOutput) {
+      console.log("🎯 [Auto-apply] Applying generated theme (unsaved):", themeOutput.title);
+      onApplyTheme(themeOutput);
+      setHasAutoApplied(true);
     }
-  }, [isFirstTheme, hasAutoSaved, themeOutput]);
+  }, [hasAutoApplied, themeOutput, onApplyTheme]);
 
   const toggleSection = (section: keyof typeof DEFAULT_OPEN_SECTIONS) => {
     setOpenSections((prev) => ({
@@ -55,51 +55,41 @@ export function ThemeResultCard({
     }));
   };
 
-  const handleSaveTheme = async (isAutoSave = false) => {
-    console.log("🚀 [AI Save] Starting save process", { isAutoSave });
-
-    // For auto-save, we always save regardless of authentication status (anonymous users included)
-    if (!isAutoSave && !canSave) {
+  const handleSaveTheme = async () => {
+    if (!canSave) {
       toast.error("Please sign in to save themes");
       return;
     }
 
     console.log("🎨 [AI Save] About to apply theme:", themeOutput);
-    // Apply theme first to ensure it's current
     await onApplyTheme(themeOutput);
     console.log("✅ [AI Save] Theme applied, current shadcnOverride:", shadcnOverride);
 
     setIsSaving(true);
     try {
       const themeName = themeOutput.title || "AI Generated Theme";
-      const concept = themeOutput.concept; // Extract concept from AI output
 
       console.log("💾 [AI Save] About to save with:", {
         themeName,
         shadcnOverride,
-        concept
       });
 
-      const result = await saveCurrentTheme(themeName, true, shadcnOverride); // Save as public by default with concept from theme
+      const result = await saveCurrentTheme(themeName, true, shadcnOverride);
 
       console.log("📥 [AI Save] Save result:", result);
 
       if (result.success && result.savedTheme) {
         console.log("🔄 [AI Save] Refreshing theme lists...");
-        // Refresh theme lists to include the new theme
         await loadUserThemes();
         console.log("✅ [AI Save] Theme lists refreshed");
 
-        // Small delay to ensure all operations are complete
         setTimeout(() => {
           console.log("🎯 [AI Save] About to select saved theme:", result.savedTheme);
 
-          // Select the saved theme
           selectTheme(result.savedTheme);
 
           console.log("🌐 [AI Save] Theme selected, updating URL...");
 
-          // Update URL without navigation to prevent page reload
           if (result.savedTheme.slug && result.savedTheme.slug !== "default" && result.savedTheme.slug !== "theme") {
             const newUrl = `/workbench/${result.savedTheme.slug}`;
             window.history.replaceState(null, '', newUrl);
@@ -107,9 +97,7 @@ export function ThemeResultCard({
           }
         }, 100);
 
-        if (!isAutoSave) {
-          toast.success(`"${themeName}" saved successfully!`);
-        }
+        toast.success(`"${themeName}" saved successfully!`);
       } else {
         console.error("❌ [AI Save] Save failed:", result);
         toast.error("Failed to save theme");
@@ -126,9 +114,16 @@ export function ThemeResultCard({
   return (
     <div className="pt-3 px-2 w-full max-w-2xl space-y-4">
       {/* Header with status */}
-      <div className="flex items-center gap-2 text-sm text-primary">
-        <div className="w-2 h-2 rounded-full bg-primary" />
-        <span>Crafted in {loadingTimer}s ✨</span>
+      <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center gap-2 text-primary">
+          <div className="w-2 h-2 rounded-full bg-primary" />
+          <span>Crafted in {loadingTimer}s ✨</span>
+        </div>
+        {isFirstTheme && (
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+            Unsaved
+          </span>
+        )}
       </div>
 
       {/* Main theme card */}
@@ -186,18 +181,16 @@ export function ThemeResultCard({
             <Sparkles className="h-3 w-3 mr-1.5" />
             Apply Theme
           </Button>
-          {!isFirstTheme && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleSaveTheme(false)}
-              disabled={!canSave || isSaving}
-              className="h-8 px-3"
-            >
-              <RefreshCw className="h-3 w-3 mr-1.5" />
-              {isSaving ? "Updating..." : "Update"}
-            </Button>
-          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleSaveTheme}
+            disabled={!canSave || isSaving}
+            className="h-8 px-3"
+          >
+            <Save className="h-3 w-3 mr-1.5" />
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
         </div>
       </div>
     </div>

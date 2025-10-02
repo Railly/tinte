@@ -313,26 +313,24 @@ export const useThemeStore = create<ThemeStore>()(
             const clearedOverrides = { ...state.overrides };
 
             // If editing canonical colors, clear shadcn overrides for those colors
-            if (clearedOverrides.shadcn) {
-              const modeOverrides = clearedOverrides.shadcn[targetMode];
-              if (modeOverrides) {
-                // Map canonical keys to shadcn token names
-                const keysToRemove = new Set<string>();
-                updatedKeys.forEach(key => {
-                  if (key === 'pr') keysToRemove.add('primary');
-                  if (key === 'sc') keysToRemove.add('secondary');
-                  if (key === 'bg') keysToRemove.add('background');
-                  if (key === 'tx') keysToRemove.add('foreground');
-                  if (key.startsWith('ac_')) {
-                    keysToRemove.add('accent');
-                    keysToRemove.add('destructive');
-                  }
-                });
+            if (clearedOverrides.shadcn?.palettes?.[targetMode]) {
+              const modePalette = clearedOverrides.shadcn.palettes[targetMode];
+              // Map canonical keys to shadcn token names
+              const keysToRemove = new Set<string>();
+              updatedKeys.forEach(key => {
+                if (key === 'pr') keysToRemove.add('primary');
+                if (key === 'sc') keysToRemove.add('secondary');
+                if (key === 'bg') keysToRemove.add('background');
+                if (key === 'tx') keysToRemove.add('foreground');
+                if (key.startsWith('ac_')) {
+                  keysToRemove.add('accent');
+                  keysToRemove.add('destructive');
+                }
+              });
 
-                keysToRemove.forEach(tokenKey => {
-                  delete modeOverrides[tokenKey];
-                });
-              }
+              keysToRemove.forEach(tokenKey => {
+                delete modePalette[tokenKey];
+              });
             }
 
             const newTokens = computeFinalTokens(updatedTheme, state.mode, clearedOverrides, state.editedTokens);

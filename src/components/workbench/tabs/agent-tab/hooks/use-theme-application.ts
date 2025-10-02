@@ -7,7 +7,7 @@ import { loadGoogleFont } from "@/utils/fonts";
 import { FONT_WEIGHTS } from "../constants";
 
 export function useThemeApplication() {
-  const { addTheme, handleThemeSelect } = useThemeContext();
+  const { handleThemeSelect } = useThemeContext();
 
   const handleApplyTheme = useCallback(
     async (toolResult: any) => {
@@ -16,8 +16,6 @@ export function useThemeApplication() {
       // Load Google Fonts if they were generated
       if (toolResult.fonts) {
         try {
-          // Load all three font families with common weights
-          // These run synchronously but won't block the theme application
           loadGoogleFont(toolResult.fonts.sans, FONT_WEIGHTS);
           loadGoogleFont(toolResult.fonts.serif, FONT_WEIGHTS);
           loadGoogleFont(toolResult.fonts.mono, FONT_WEIGHTS);
@@ -26,19 +24,17 @@ export function useThemeApplication() {
         }
       }
 
-      // Create extended theme data with fonts, radius, and shadows
       const extendedRawTheme = {
         light: toolResult.theme.light,
         dark: toolResult.theme.dark,
-        // Add the extended properties
         fonts: toolResult.fonts,
         radius: toolResult.radius,
         shadows: toolResult.shadows,
       };
 
       const themeData: ThemeData = {
-        id: `ai-generated-${Date.now()}`,
-        name: toolResult.title || "AI Generated Theme",
+        id: `unsaved-${Date.now()}`,
+        name: toolResult.title || "AI Generated Theme (Unsaved)",
         description: `AI-generated theme: ${
           toolResult.concept || "Custom theme"
         }`,
@@ -55,29 +51,26 @@ export function useThemeApplication() {
           background: toolResult.theme.light.bg,
           foreground: toolResult.theme.light.tx,
         },
-        tags: ["ai-generated", "custom"],
+        tags: ["ai-generated", "unsaved"],
         rawTheme: extendedRawTheme,
-        concept: toolResult.concept, // Store concept as a property
+        concept: toolResult.concept,
       };
 
-      addTheme(themeData);
       handleThemeSelect(themeData);
 
-      // Force DOM update for CSS variables (helps with shadow cache issues)
       setTimeout(() => {
         if (document.documentElement) {
           document.documentElement.style.setProperty(
             "--force-update",
             Date.now().toString()
           );
-          // Remove it immediately to trigger a repaint
           requestAnimationFrame(() => {
             document.documentElement.style.removeProperty("--force-update");
           });
         }
       }, 100);
     },
-    [addTheme, handleThemeSelect]
+    [handleThemeSelect]
   );
 
   return { handleApplyTheme };

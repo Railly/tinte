@@ -84,8 +84,8 @@ export function ShadcnOverridesPanel({
   const handleTokenEdit = React.useCallback(
     (key: string, value: string) => {
       const currentOverrides = shadcnOverride || {};
-      const currentModeOverrides =
-        currentOverrides[currentMode] || {};
+      const currentModePalette =
+        currentOverrides.palettes?.[currentMode] || {};
 
       // Determine which section this key belongs to
       if (key === "radius" || key.startsWith("radius-")) {
@@ -133,32 +133,35 @@ export function ShadcnOverridesPanel({
         };
         updateShadcnOverride(updatedOverrides);
       } else if (key.includes("shadow-")) {
-        // Handle shadow properties - save per mode
+        // Handle shadow properties - save to palettes.{mode}.shadow (DB schema)
         let shadowKey = key.replace("shadow-", "");
 
-        // Map the property names correctly
-        if (shadowKey === "offset-x") shadowKey = "offsetX";
-        if (shadowKey === "offset-y") shadowKey = "offsetY";
+        // Map to DB schema property names (snake_case)
+        if (shadowKey === "offset-x") shadowKey = "offset_x";
+        if (shadowKey === "offset-y") shadowKey = "offset_y";
 
-        const currentShadows = currentOverrides.shadows || {};
-        const currentModeShadow = currentShadows[currentMode] || {};
+        const currentPalettes = currentOverrides.palettes || { light: {}, dark: {} };
+        const currentModePalette = currentPalettes[currentMode] || {};
+        const currentModeShadow = currentModePalette.shadow || {};
 
         console.log("🔧 [handleTokenEdit] Shadow update:", {
           key,
           shadowKey,
           value,
           currentMode,
-          currentShadows,
           currentModeShadow,
         });
 
         const updatedOverrides = {
           ...currentOverrides,
-          shadows: {
-            ...currentShadows,
+          palettes: {
+            ...currentPalettes,
             [currentMode]: {
-              ...currentModeShadow,
-              [shadowKey]: value,
+              ...currentModePalette,
+              shadow: {
+                ...currentModeShadow,
+                [shadowKey]: value,
+              },
             },
           },
         };
@@ -166,12 +169,18 @@ export function ShadcnOverridesPanel({
         console.log("🔧 [handleTokenEdit] Updated overrides:", updatedOverrides);
         updateShadcnOverride(updatedOverrides);
       } else {
-        // Handle palette colors
+        // Handle palette colors - save to palettes.{mode} (DB schema)
+        const currentPalettes = currentOverrides.palettes || { light: {}, dark: {} };
+        const currentModePalette = currentPalettes[currentMode] || {};
+
         const updatedOverrides = {
           ...currentOverrides,
-          [currentMode]: {
-            ...currentModeOverrides,
-            [key]: value,
+          palettes: {
+            ...currentPalettes,
+            [currentMode]: {
+              ...currentModePalette,
+              [key]: value,
+            },
           },
         };
         updateShadcnOverride(updatedOverrides);
@@ -180,20 +189,21 @@ export function ShadcnOverridesPanel({
     [shadcnOverride, currentMode, updateShadcnOverride],
   );
 
-  // Shadow tokens - recalculate on every render to ensure immediate updates
+  // Shadow tokens - read from palettes.{mode}.shadow (DB schema)
   console.log("🔧 [ShadcnOverridesPanel] shadcnOverride:", shadcnOverride);
-  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride.shadows:", shadcnOverride?.shadows);
-  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride.shadows?.light:", shadcnOverride?.shadows?.light);
-  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride.shadows?.dark:", shadcnOverride?.shadows?.dark);
+  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride.palettes:", shadcnOverride?.palettes);
   console.log("🔧 [ShadcnOverridesPanel] currentMode:", currentMode);
 
+  const shadowFromDB = shadcnOverride?.palettes?.[currentMode]?.shadow;
+  console.log("🔧 [ShadcnOverridesPanel] shadowFromDB:", shadowFromDB);
+
   const shadowTokens = {
-    "shadow-color": shadcnOverride?.shadows?.[currentMode]?.color || "0 0 0",
-    "shadow-opacity": shadcnOverride?.shadows?.[currentMode]?.opacity || "0.1",
-    "shadow-blur": shadcnOverride?.shadows?.[currentMode]?.blur || "3px",
-    "shadow-spread": shadcnOverride?.shadows?.[currentMode]?.spread || "0px",
-    "shadow-offset-x": shadcnOverride?.shadows?.[currentMode]?.offsetX || "0px",
-    "shadow-offset-y": shadcnOverride?.shadows?.[currentMode]?.offsetY || "1px",
+    "shadow-color": shadowFromDB?.color || "0 0 0",
+    "shadow-opacity": shadowFromDB?.opacity || "0.1",
+    "shadow-blur": shadowFromDB?.blur || "3px",
+    "shadow-spread": shadowFromDB?.spread || "0px",
+    "shadow-offset-x": shadowFromDB?.offset_x || "0px",
+    "shadow-offset-y": shadowFromDB?.offset_y || "1px",
   };
 
   console.log("🔧 [ShadcnOverridesPanel] Shadow tokens:", shadowTokens);
@@ -235,14 +245,10 @@ export function ShadcnOverridesPanel({
       shadcnOverride,
     );
 
-    // Handle palette tokens (colors) - always merge DB values with extrapolated values
-    let dbPalette = {};
+    // Handle palette tokens (colors) - read from palettes.{mode} (DB schema)
+    const dbPalette = currentOverrides.palettes?.[currentMode] || {};
 
-    if (currentOverrides[currentMode]) {
-      // Direct mode format: overrides.light/dark
-      dbPalette = currentOverrides[currentMode];
-      console.log("Found DB palette for", currentMode);
-    }
+    console.log("DB palette for", currentMode, ":", dbPalette);
 
     // Always merge: extrapolated as base, then override with DB values
     const currentPalette = {
@@ -251,7 +257,6 @@ export function ShadcnOverridesPanel({
     };
 
     console.log("Extrapolated palette:", extrapolatedPalette);
-    console.log("DB palette override:", dbPalette);
     console.log("Final merged palette for", currentMode, ":", currentPalette);
 
     // Group palette tokens by category - always show all groups
@@ -313,13 +318,10 @@ export function ShadcnOverridesPanel({
       mono: "ui-monospace, monospace",
     };
 
-    // Check different override structures for fonts - prioritize top-level fonts from AI generation
-    const fonts =
-      currentOverrides.fonts ||
-      currentOverrides[currentMode]?.fonts ||
-      defaultFonts;
+    // Fonts are top-level in DB schema
+    const fonts = currentOverrides.fonts || defaultFonts;
 
-    console.log("Fonts for", currentMode, ":", fonts);
+    console.log("Fonts:", fonts);
     const fontTokens = Object.entries(fonts)
       .filter(
         ([_, value]) => typeof value === "string" && value.trim().length > 0,
@@ -329,13 +331,10 @@ export function ShadcnOverridesPanel({
     // Always show fonts group
     groups.push({ label: "Fonts", tokens: fontTokens, type: "fonts" });
 
-    // Handle radius - provide default - prioritize top-level radius from AI generation
-    const radius =
-      currentOverrides.radius ||
-      currentOverrides[currentMode]?.radius ||
-      "0.5rem";
+    // Radius is top-level in DB schema
+    const radius = currentOverrides.radius || "0.5rem";
 
-    console.log("Radius for", currentMode, ":", radius);
+    console.log("Radius:", radius);
 
     // Handle radius - check if it's an object (AI format) or string (legacy format)
     let radiusTokens;
@@ -357,34 +356,17 @@ export function ShadcnOverridesPanel({
       type: "base",
     });
 
-    // Handle shadow properties - provide defaults - prioritize top-level shadows from AI generation
-    const defaultShadow = {
-      color: "0 0 0",
-      opacity: "0.1",
-      blur: "3px",
-      spread: "0px",
-      offset_x: "0px",
-      offset_y: "1px",
-    };
-    const shadow =
-      currentOverrides.shadows || // AI generation uses 'shadows'
-      defaultShadow;
-
-    console.log("Shadow for", currentMode, ":", shadow);
-    // Always show shadows group
+    // Shadows are in palettes.{mode}.shadow (handled by shadow editor directly)
     groups.push({
       label: "Shadows",
       tokens: [["shadow-properties", "shadow-editor"]],
       type: "shadow-properties",
     });
 
-    // Handle letter spacing - provide default
-    const letterSpacing =
-      currentOverrides.letter_spacing ||
-      currentOverrides[currentMode]?.letter_spacing ||
-      "0em";
+    // Letter spacing is top-level in DB schema
+    const letterSpacing = currentOverrides.letter_spacing || "0em";
 
-    console.log("Letter spacing for", currentMode, ":", letterSpacing);
+    console.log("Letter spacing:", letterSpacing);
     // Always show letter spacing group
     groups.push({
       label: "Letter Spacing",

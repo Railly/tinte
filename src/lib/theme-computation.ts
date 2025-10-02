@@ -97,10 +97,20 @@ function applyProviderOverride(
 ): void {
   if (!override) return;
 
-  const modeOverrides = override[mode];
-  if (modeOverrides) {
-    for (const [key, value] of Object.entries(modeOverrides)) {
-      if (typeof value === "string") {
+  // Apply palette colors and shadows from palettes.{mode}
+  const modePalette = override.palettes?.[mode];
+  if (modePalette) {
+    for (const [key, value] of Object.entries(modePalette)) {
+      if (key === "shadow") {
+        // Handle shadow properties
+        const shadow = value as any;
+        if (shadow.color) tokens["shadow-color"] = shadow.color;
+        if (shadow.opacity) tokens["shadow-opacity"] = shadow.opacity;
+        if (shadow.blur) tokens["shadow-blur"] = shadow.blur;
+        if (shadow.spread) tokens["shadow-spread"] = shadow.spread;
+        if (shadow.offset_x) tokens["shadow-offset-x"] = shadow.offset_x;
+        if (shadow.offset_y) tokens["shadow-offset-y"] = shadow.offset_y;
+      } else if (typeof value === "string") {
         tokens[key] = isPaletteColor(key) ? convertColorToHex(value) : value;
       }
     }
@@ -125,27 +135,6 @@ function applyProviderOverride(
 
   if (override.letter_spacing) {
     tokens["letter-spacing"] = override.letter_spacing;
-  }
-
-  if (override.shadows) {
-    const modeShadows = override.shadows[mode];
-    console.log("🔧 [applyProviderOverride] Applying shadows for mode:", mode, modeShadows);
-    if (modeShadows) {
-      if (modeShadows.color) tokens["shadow-color"] = modeShadows.color;
-      if (modeShadows.opacity) tokens["shadow-opacity"] = modeShadows.opacity;
-      if (modeShadows.blur) tokens["shadow-blur"] = modeShadows.blur;
-      if (modeShadows.spread) tokens["shadow-spread"] = modeShadows.spread;
-      if (modeShadows.offsetX) tokens["shadow-offset-x"] = modeShadows.offsetX;
-      if (modeShadows.offsetY) tokens["shadow-offset-y"] = modeShadows.offsetY;
-      console.log("🔧 [applyProviderOverride] Shadow tokens applied:", {
-        "shadow-color": tokens["shadow-color"],
-        "shadow-opacity": tokens["shadow-opacity"],
-        "shadow-blur": tokens["shadow-blur"],
-        "shadow-spread": tokens["shadow-spread"],
-        "shadow-offset-x": tokens["shadow-offset-x"],
-        "shadow-offset-y": tokens["shadow-offset-y"],
-      });
-    }
   }
 }
 

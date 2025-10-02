@@ -16,25 +16,22 @@ export interface ShadowProperties {
   opacity?: string;
   blur?: string;
   spread?: string;
-  offsetX?: string;
-  offsetY?: string;
-}
-
-export interface ShadowOverrides {
-  light?: ShadowProperties;
-  dark?: ShadowProperties;
+  offset_x?: string;
+  offset_y?: string;
 }
 
 export interface PaletteOverrides {
-  [key: string]: string;
+  [key: string]: string | ShadowProperties | undefined;
+  shadow?: ShadowProperties;
 }
 
 export interface ProviderOverride {
-  light?: PaletteOverrides;
-  dark?: PaletteOverrides;
+  palettes?: {
+    light?: PaletteOverrides;
+    dark?: PaletteOverrides;
+  };
   fonts?: FontOverrides;
   radius?: RadiusOverrides | string;
-  shadows?: ShadowOverrides;
   letter_spacing?: string;
 }
 
@@ -47,7 +44,7 @@ export interface NormalizedOverrides {
 export type OverrideKey =
   | `${string}-font-${"sans" | "serif" | "mono"}`
   | `${string}-radius${"-sm" | "-md" | "-lg" | "-xl" | ""}`
-  | `${string}-shadow-${"color" | "opacity" | "blur" | "spread" | "offsetX" | "offsetY"}`
+  | `${string}-shadow-${"color" | "opacity" | "blur" | "spread" | "offset_x" | "offset_y"}`
   | `${string}-letter-spacing`
   | `${string}-${string}`;
 
