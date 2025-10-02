@@ -229,6 +229,11 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
       }
 
       await loadUserThemes();
+
+      if (result.theme?.slug) {
+        router.replace(`/workbench/${result.theme.slug}`);
+      }
+
       toast.success(`Theme renamed to "${newName}"!`);
     } catch (error) {
       console.error("Error renaming theme:", error);
