@@ -1,7 +1,6 @@
 export const siteConfig = {
   name: "Tinte",
   url: "https://tinte.dev",
-  ogImage: "https://tinte.dev/og.jpg",
   description:
     "Tinte is a multi-platform theme generator for your favorite tools.",
   longDescription:
@@ -26,7 +25,7 @@ export const siteConfig = {
     "WCAG contrast",
     "semantic colors",
     "theme workbench",
-    "color tools"
+    "color tools",
   ],
   author: {
     name: "Railly Hugo",
@@ -46,7 +45,7 @@ export const siteConfig = {
     "OKLCH color space manipulation",
     "WCAG contrast validation",
     "Universal theme previews",
-    "Flexoki-inspired color philosophy"
+    "Flexoki-inspired color philosophy",
   ],
   categories: [
     "Developer Tools",
@@ -55,8 +54,8 @@ export const siteConfig = {
     "Productivity",
     "Code Editors",
     "Terminal",
-    "Web Development"
-  ]
+    "Web Development",
+  ],
 };
 
 export type SiteConfig = typeof siteConfig;
