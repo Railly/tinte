@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import { generateTailwindPalette } from "@/lib/ice-theme";
 import { useThemeContext } from "@/providers/theme";
 import { cn } from "@/lib/utils";
 import type { TinteBlock } from "@/types/tinte";
+import { formatHex, parse } from "culori";
 
 interface ShadowPropertiesEditorProps {
   values: {
@@ -52,6 +54,26 @@ const COLOR_LABELS: Record<keyof TinteBlock, string> = {
   ac_3: "AC3"
 };
 
+const parseColor = (colorValue: string): string => {
+  // Already hex
+  if (colorValue.startsWith("#")) {
+    return colorValue;
+  }
+
+  // Use culori to parse any color format (HSL, RGB, etc.) to hex
+  try {
+    const parsed = parse(colorValue);
+    if (parsed) {
+      return formatHex(parsed);
+    }
+  } catch (error) {
+    console.warn("Failed to parse color with culori:", colorValue, error);
+  }
+
+  // Fallback
+  return "#000000";
+};
+
 export function ShadowPropertiesEditor({
   values,
   onChange,
@@ -60,15 +82,36 @@ export function ShadowPropertiesEditor({
   const { tinteTheme, currentMode } = useThemeContext();
   const currentColors = tinteTheme?.[currentMode];
 
+  // Local state for immediate updates
+  const [localColor, setLocalColor] = React.useState(() => parseColor(values["shadow-color"]));
+
+  // Sync local state when prop changes (e.g., mode switch or external update)
+  React.useEffect(() => {
+    setLocalColor(parseColor(values["shadow-color"]));
+  }, [values["shadow-color"]]);
+
+  console.log("🎨 [ShadowPropertiesEditor] Rendering with values:", values);
+  console.log("🎨 [ShadowPropertiesEditor] Local color:", localColor);
+
   const handleCanonicalColorSelect = (colorKey: keyof TinteBlock) => {
     const colorValue = currentColors?.[colorKey];
     if (colorValue) {
+      console.log("🎨 [ShadowPropertiesEditor] Canonical color selected:", colorValue);
+      setLocalColor(parseColor(colorValue));
       onChange("shadow-color", colorValue);
     }
   };
 
   const handleTailwindColorSelect = (color: string) => {
+    console.log("🎨 [ShadowPropertiesEditor] Tailwind color selected:", color);
+    setLocalColor(color);
     onChange("shadow-color", color);
+  };
+
+  const handleColorChange = (newColor: string) => {
+    console.log("🎨 [ShadowPropertiesEditor] Color picker changed:", newColor);
+    setLocalColor(newColor);
+    onChange("shadow-color", newColor);
   };
 
   const parseValue = (value: string): number => {
@@ -79,28 +122,6 @@ export function ShadowPropertiesEditor({
     return `${value}${unit}`;
   };
 
-  const parseColor = (colorValue: string): string => {
-    // Handle HSL colors like "hsl(0 0% 0%)" or "hsl(0 0% 0% / 0.5)"
-    if (colorValue.startsWith("hsl(")) {
-      // For now, return a fallback - we could parse HSL later
-      return "#000000";
-    }
-
-    // Handle RGBA colors
-    if (colorValue.startsWith("rgba(")) {
-      const match = colorValue.match(
-        /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/,
-      );
-      if (match) {
-        const [, r, g, b] = match;
-        return `#${parseInt(r).toString(16).padStart(2, "0")}${parseInt(g).toString(16).padStart(2, "0")}${parseInt(b).toString(16).padStart(2, "0")}`;
-      }
-    }
-
-    // Return as-is if already hex or other format
-    return colorValue.startsWith("#") ? colorValue : "#000000";
-  };
-
   return (
     <div className={cn("space-y-3", className)}>
       {/* Color picker */}
@@ -109,8 +130,8 @@ export function ShadowPropertiesEditor({
         <div className="flex gap-2">
           <div className="flex-1">
             <ColorPickerInput
-              color={parseColor(values["shadow-color"])}
-              onChange={(newColor) => onChange("shadow-color", newColor)}
+              color={localColor}
+              onChange={handleColorChange}
             />
           </div>
 
@@ -128,8 +149,7 @@ export function ShadowPropertiesEditor({
             <DropdownMenuContent align="end" className="w-48">
               {CANONICAL_COLOR_KEYS.map((colorKey) => {
                 const colorValue = currentColors?.[colorKey];
-                const currentShadowColor = parseColor(values["shadow-color"]);
-                const isSelected = colorValue === currentShadowColor;
+                const isSelected = parseColor(colorValue || "") === localColor;
                 
                 return (
                   <DropdownMenuItem
@@ -167,11 +187,10 @@ export function ShadowPropertiesEditor({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              {values["shadow-color"] && (() => {
-                const currentShadowColor = parseColor(values["shadow-color"]);
-                const palette = generateTailwindPalette(currentShadowColor);
+              {localColor && (() => {
+                const palette = generateTailwindPalette(localColor);
                 return palette.map((color) => {
-                  const isSelected = color.value === currentShadowColor;
+                  const isSelected = color.value === localColor;
                   
                   return (
                     <DropdownMenuItem

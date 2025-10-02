@@ -10,7 +10,8 @@
     "lint": "biome check",
     "format": "biome format --write",
     "fix": "biome check . --write --unsafe --max-diagnostics=10000",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "migrate:shadows": "bun --bun scripts/migrate-shadows.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.13",

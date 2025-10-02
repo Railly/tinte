@@ -128,13 +128,24 @@ function applyProviderOverride(
   }
 
   if (override.shadows) {
-    const s = override.shadows;
-    if (s.color) tokens["shadow-color"] = s.color;
-    if (s.opacity) tokens["shadow-opacity"] = s.opacity;
-    if (s.blur) tokens["shadow-blur"] = s.blur;
-    if (s.spread) tokens["shadow-spread"] = s.spread;
-    if (s.offsetX) tokens["shadow-offset-x"] = s.offsetX;
-    if (s.offsetY) tokens["shadow-offset-y"] = s.offsetY;
+    const modeShadows = override.shadows[mode];
+    console.log("🔧 [applyProviderOverride] Applying shadows for mode:", mode, modeShadows);
+    if (modeShadows) {
+      if (modeShadows.color) tokens["shadow-color"] = modeShadows.color;
+      if (modeShadows.opacity) tokens["shadow-opacity"] = modeShadows.opacity;
+      if (modeShadows.blur) tokens["shadow-blur"] = modeShadows.blur;
+      if (modeShadows.spread) tokens["shadow-spread"] = modeShadows.spread;
+      if (modeShadows.offsetX) tokens["shadow-offset-x"] = modeShadows.offsetX;
+      if (modeShadows.offsetY) tokens["shadow-offset-y"] = modeShadows.offsetY;
+      console.log("🔧 [applyProviderOverride] Shadow tokens applied:", {
+        "shadow-color": tokens["shadow-color"],
+        "shadow-opacity": tokens["shadow-opacity"],
+        "shadow-blur": tokens["shadow-blur"],
+        "shadow-spread": tokens["shadow-spread"],
+        "shadow-offset-x": tokens["shadow-offset-x"],
+        "shadow-offset-y": tokens["shadow-offset-y"],
+      });
+    }
   }
 }
 

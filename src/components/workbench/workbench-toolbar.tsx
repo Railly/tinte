@@ -417,10 +417,11 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
   // 1. Logged in + Own theme → Show Update button (becomes Save when modified)
   // 2. Logged in + Custom (unsaved) → Show Save button
   // 3. Logged in + Someone else's theme → Show Duplicate button
-  // 4. Not logged in → Show Duplicate button (opens login modal)
+  // 4. Not logged in + unsaved changes → Show Save button (opens login modal)
+  // 5. Not logged in + no unsaved changes → Show Duplicate button (opens login modal)
 
   const shouldShowUpdateButton = isAuthenticated && isOwnTheme && !isCustomUnsaved;
-  const shouldShowSaveButton = isAuthenticated && isCustomUnsaved;
+  const shouldShowSaveButton = (isAuthenticated && isCustomUnsaved) || (!isAuthenticated && unsavedChanges);
   const shouldShowDuplicateButton = !shouldShowUpdateButton && !shouldShowSaveButton;
 
   const PrimaryIcon = primaryActionConfig.icon;
@@ -495,12 +496,18 @@ export function WorkbenchToolbar({ providerId = "shadcn" }: WorkbenchToolbarProp
           </Button>
         )}
 
-        {/* Save Button - Show for Custom (unsaved) */}
+        {/* Save Button - Show for Custom (unsaved) or when not logged in with changes */}
         {shouldShowSaveButton && (
           <Button
             variant="default"
             size="sm"
-            onClick={handleSaveTheme}
+            onClick={() => {
+              if (!isAuthenticated) {
+                setShowSignInDialog(true);
+                return;
+              }
+              handleSaveTheme();
+            }}
             disabled={isSaving}
             className="h-8"
           >

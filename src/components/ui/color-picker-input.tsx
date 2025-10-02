@@ -40,8 +40,11 @@ export function ColorPickerInput({
   const [inputValue, setInputValue] = useState(color);
   const [activeTab, setActiveTab] = useState("hex");
 
+  console.log("🎨 [ColorPickerInput] Render - color prop:", color, "inputValue:", inputValue);
+
   // Sync inputValue when color prop changes (e.g., when mode changes)
   useEffect(() => {
+    console.log("🎨 [ColorPickerInput] Color prop changed, syncing:", color);
     setInputValue(color);
   }, [color]);
 
@@ -145,6 +148,7 @@ export function ColorPickerInput({
   const handleColorfulChange = useCallback(
     (newColor: { hsva: { h: number; s: number; v: number; a: number } }) => {
       const hex = hsvaToHex(newColor.hsva);
+      console.log("🎨 [ColorPickerInput] Color changed to:", hex);
       setInputValue(hex);
       onChange(hex);
     },

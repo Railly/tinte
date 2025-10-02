@@ -29,7 +29,7 @@ export function ShadowsSection({
             <div
               className="w-3 h-3 bg-background border border-border rounded-sm"
               style={{
-                boxShadow: `${themeOutput.shadows.offsetX} ${themeOutput.shadows.offsetY} ${themeOutput.shadows.blur} ${themeOutput.shadows.color}${Math.round(
+                boxShadow: `${themeOutput.shadows.offsetX} ${themeOutput.shadows.offsetY} ${themeOutput.shadows.blur} ${themeOutput.shadows.spread || '0px'} ${themeOutput.shadows.color}${Math.round(
                   parseFloat(themeOutput.shadows.opacity) * 255,
                 )
                   .toString(16)

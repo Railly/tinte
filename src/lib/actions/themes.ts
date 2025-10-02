@@ -169,22 +169,32 @@ export async function duplicateTheme(
       try {
         const shadcnTheme = convertTheme<ShadcnTheme>("shadcn", tinteTheme);
         if (shadcnTheme) {
+          const defaultShadow = {
+            color: "0 0 0",
+            opacity: "0.1",
+            blur: "3px",
+            spread: "0px",
+            offset_x: "0px",
+            offset_y: "1px",
+          };
+
           shadcnOverrideToSave = {
-            palettes: shadcnTheme,
+            palettes: {
+              light: {
+                ...shadcnTheme.light,
+                shadow: defaultShadow,
+              },
+              dark: {
+                ...shadcnTheme.dark,
+                shadow: defaultShadow,
+              },
+            },
             fonts: {
               sans: "ui-sans-serif, system-ui, sans-serif",
               serif: "ui-serif, Georgia, serif",
               mono: "ui-monospace, monospace",
             },
             radius: "0.5rem",
-            shadow: {
-              color: "0 0 0",
-              opacity: "0.1",
-              blur: "3px",
-              spread: "0px",
-              offset_x: "0px",
-              offset_y: "1px",
-            },
             letter_spacing: "0",
           };
           console.log(

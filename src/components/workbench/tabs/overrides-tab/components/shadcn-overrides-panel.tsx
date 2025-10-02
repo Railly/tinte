@@ -132,22 +132,37 @@ export function ShadcnOverridesPanel({
         };
         updateShadcnOverride(updatedOverrides);
       } else if (key.includes("shadow-")) {
-        // Handle shadow properties - support both AI format (shadows) and legacy format (shadow)
+        // Handle shadow properties - save per mode
         let shadowKey = key.replace("shadow-", "");
 
-        // Map the property names correctly for AI format
+        // Map the property names correctly
         if (shadowKey === "offset-x") shadowKey = "offsetX";
         if (shadowKey === "offset-y") shadowKey = "offsetY";
 
-        const currentShadow =
-          currentOverrides.shadows || {};
+        const currentShadows = currentOverrides.shadows || {};
+        const currentModeShadow = currentShadows[currentMode] || {};
+
+        console.log("🔧 [handleTokenEdit] Shadow update:", {
+          key,
+          shadowKey,
+          value,
+          currentMode,
+          currentShadows,
+          currentModeShadow,
+        });
+
         const updatedOverrides = {
           ...currentOverrides,
           shadows: {
-            ...currentShadow,
-            [shadowKey]: value,
+            ...currentShadows,
+            [currentMode]: {
+              ...currentModeShadow,
+              [shadowKey]: value,
+            },
           },
         };
+
+        console.log("🔧 [handleTokenEdit] Updated overrides:", updatedOverrides);
         updateShadcnOverride(updatedOverrides);
       } else {
         // Handle palette colors
@@ -163,6 +178,24 @@ export function ShadcnOverridesPanel({
     },
     [shadcnOverride, currentMode, updateShadcnOverride],
   );
+
+  // Shadow tokens - recalculate on every render to ensure immediate updates
+  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride:", shadcnOverride);
+  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride.shadows:", shadcnOverride?.shadows);
+  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride.shadows?.light:", shadcnOverride?.shadows?.light);
+  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride.shadows?.dark:", shadcnOverride?.shadows?.dark);
+  console.log("🔧 [ShadcnOverridesPanel] currentMode:", currentMode);
+
+  const shadowTokens = {
+    "shadow-color": shadcnOverride?.shadows?.[currentMode]?.color || "0 0 0",
+    "shadow-opacity": shadcnOverride?.shadows?.[currentMode]?.opacity || "0.1",
+    "shadow-blur": shadcnOverride?.shadows?.[currentMode]?.blur || "3px",
+    "shadow-spread": shadcnOverride?.shadows?.[currentMode]?.spread || "0px",
+    "shadow-offset-x": shadcnOverride?.shadows?.[currentMode]?.offsetX || "0px",
+    "shadow-offset-y": shadcnOverride?.shadows?.[currentMode]?.offsetY || "1px",
+  };
+
+  console.log("🔧 [ShadcnOverridesPanel] Shadow tokens:", shadowTokens);
 
   const handleFontSelect = React.useCallback(
     (key: string, font: FontInfo) => {
@@ -265,7 +298,16 @@ export function ShadcnOverridesPanel({
       }
 
       // Convert the current canonical theme to shadcn palette
-      const convertedShadcn = convertTinteToShadcn(tinteTheme);
+      // Get shadow data for current mode from normalized shadows
+      const currentShadows = shadcnOverride?.shadows?.[currentMode];
+
+      const themeWithOverrides = {
+        ...tinteTheme,
+        ...(shadcnOverride?.fonts && { fonts: shadcnOverride.fonts }),
+        ...(shadcnOverride?.radius && { radius: shadcnOverride.radius }),
+        ...(currentShadows && { shadows: currentShadows }),
+      };
+      const convertedShadcn = convertTinteToShadcn(themeWithOverrides);
       return convertedShadcn[currentMode as keyof typeof convertedShadcn];
     };
 
@@ -537,22 +579,7 @@ export function ShadcnOverridesPanel({
                               value={value}
                               currentTokens={
                                 group.type === "shadow-properties"
-                                  ? {
-                                    "shadow-color":
-                                      shadcnOverride?.shadows?.color || "0 0 0",
-                                    "shadow-opacity":
-                                      shadcnOverride?.shadows?.opacity || "0.1",
-                                    "shadow-blur":
-                                      shadcnOverride?.shadows?.blur || "3px",
-                                    "shadow-spread":
-                                      shadcnOverride?.shadows?.spread || "0px",
-                                    "shadow-offset-x":
-                                      shadcnOverride?.shadows?.offsetX ||
-                                      "0px",
-                                    "shadow-offset-y":
-                                      shadcnOverride?.shadows?.offsetY ||
-                                      "1px",
-                                  }
+                                  ? shadowTokens
                                   : currentTokens
                               }
                               onEdit={handleTokenEdit}

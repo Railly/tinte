@@ -137,7 +137,7 @@ export function useTheme() {
       themeStore.updateOverride("vscode", override),
     updateShikiOverride: (override: any) =>
       themeStore.updateOverride("shiki", override),
-    saveCurrentTheme: (
+    saveCurrentTheme: async (
       name?: string,
       makePublic?: boolean,
       shadcnOverride?: any
@@ -153,22 +153,13 @@ export function useTheme() {
         themeStore.activeTheme?.concept
       );
 
-      // Convert ProviderOverride format to ThemeOverrides format
-      const convertProviderOverrideToThemeOverrides = (
-        providerOverride: any
-      ) => {
-        if (!providerOverride) return undefined;
+      // Import denormalization function
+      const { denormalizeProviderOverride } = await import("@/lib/override-normalization");
 
-        // If it already has light/dark structure, return as is
-        if (providerOverride.light || providerOverride.dark) {
-          return providerOverride;
-        }
-
-        // If it's a ProviderOverride format, convert to ThemeOverrides format
-        return {
-          light: providerOverride.light,
-          dark: providerOverride.dark,
-        };
+      // Convert normalized overrides back to DB format
+      const convertOverrideForDB = (override: any) => {
+        if (!override) return undefined;
+        return denormalizeProviderOverride(override);
       };
 
       const themeWithOverrides = {
@@ -177,13 +168,13 @@ export function useTheme() {
         concept: themeStore.activeTheme?.concept, // Explicitly preserve concept
         overrides: {
           ...themeStore.activeTheme.overrides,
-          shadcn: convertProviderOverrideToThemeOverrides(
+          shadcn: convertOverrideForDB(
             shadcnOverride || themeStore.overrides.shadcn
           ),
-          vscode: convertProviderOverrideToThemeOverrides(
+          vscode: convertOverrideForDB(
             themeStore.overrides.vscode
           ),
-          shiki: convertProviderOverrideToThemeOverrides(
+          shiki: convertOverrideForDB(
             themeStore.overrides.shiki
           ),
         },
@@ -222,42 +213,31 @@ export const useThemeActions = () => {
         themeStore.updateOverride("vscode", override),
       updateShikiOverride: (override: any) =>
         themeStore.updateOverride("shiki", override),
-      saveCurrentTheme: (
+      saveCurrentTheme: async (
         name?: string,
         makePublic?: boolean,
         shadcnOverride?: any
       ) => {
-        // Create theme with current overrides from store
+        // Import denormalization function
+        const { denormalizeProviderOverride } = await import("@/lib/override-normalization");
 
-        // Convert ProviderOverride format to ThemeOverrides format
-        const convertProviderOverrideToThemeOverrides = (
-          providerOverride: any
-        ) => {
-          if (!providerOverride) return undefined;
-
-          // If it already has light/dark structure, return as is
-          if (providerOverride.light || providerOverride.dark) {
-            return providerOverride;
-          }
-
-          // If it's a ProviderOverride format, convert to ThemeOverrides format
-          return {
-            light: providerOverride.light,
-            dark: providerOverride.dark,
-          };
+        // Convert normalized overrides back to DB format
+        const convertOverrideForDB = (override: any) => {
+          if (!override) return undefined;
+          return denormalizeProviderOverride(override);
         };
 
         const themeWithOverrides = {
           ...themeStore.activeTheme,
           overrides: {
             ...themeStore.activeTheme.overrides,
-            shadcn: convertProviderOverrideToThemeOverrides(
+            shadcn: convertOverrideForDB(
               shadcnOverride || themeStore.overrides.shadcn
             ),
-            vscode: convertProviderOverrideToThemeOverrides(
+            vscode: convertOverrideForDB(
               themeStore.overrides.vscode
             ),
-            shiki: convertProviderOverrideToThemeOverrides(
+            shiki: convertOverrideForDB(
               themeStore.overrides.shiki
             ),
           },

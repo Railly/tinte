@@ -10,6 +10,15 @@ import z from "zod";
 
 import { user } from "./user";
 
+const shadowPropertiesSchema = z.object({
+  color: z.string(),
+  opacity: z.string(),
+  blur: z.string(),
+  spread: z.string(),
+  offset_x: z.string(),
+  offset_y: z.string(),
+});
+
 export const shadcnPaletteSchema = z.object({
   background: z.string(),
   foreground: z.string(),
@@ -53,28 +62,23 @@ export const shadcnPaletteSchema = z.object({
   "sidebar-accent-foreground": z.string(),
   "sidebar-border": z.string(),
   "sidebar-ring": z.string(),
+
+  // Shadow properties per mode
+  shadow: shadowPropertiesSchema.optional(),
 });
 
 export const shadcnOverrideSchema = z.object({
   palettes: z.object({
-    light: shadcnPaletteSchema,
-    dark: shadcnPaletteSchema,
-  }),
+    light: shadcnPaletteSchema.partial(),
+    dark: shadcnPaletteSchema.partial(),
+  }).optional(),
   fonts: z.object({
     sans: z.string(),
     serif: z.string(),
     mono: z.string(),
-  }),
-  radius: z.string(),
-  shadow: z.object({
-    color: z.string(),
-    opacity: z.string(),
-    blur: z.string(),
-    spread: z.string(),
-    offset_x: z.string(),
-    offset_y: z.string(),
-  }),
-  letter_spacing: z.string(),
+  }).optional(),
+  radius: z.string().optional(),
+  letter_spacing: z.string().optional(),
 });
 
 export type ShadcnOverrideSchema = z.infer<typeof shadcnOverrideSchema>;

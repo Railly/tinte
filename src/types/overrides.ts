@@ -11,13 +11,18 @@ export interface RadiusOverrides {
   xl?: string;
 }
 
-export interface ShadowOverrides {
+export interface ShadowProperties {
   color?: string;
   opacity?: string;
   blur?: string;
   spread?: string;
   offsetX?: string;
   offsetY?: string;
+}
+
+export interface ShadowOverrides {
+  light?: ShadowProperties;
+  dark?: ShadowProperties;
 }
 
 export interface PaletteOverrides {

@@ -482,51 +482,21 @@ function transformThemeToMetadata(
 
     // Structured overrides
     overrides: transformOverridesFromDb(dbTheme),
+
+    // Direct overrides (for backward compatibility and ease of access)
+    shadcn_override: dbTheme.shadcn_override,
+    vscode_override: dbTheme.vscode_override,
+    shiki_override: dbTheme.shiki_override,
   };
 }
 
 function transformOverridesFromDb(dbTheme: Theme): ThemeOverrides {
+  // Don't normalize here - the direct override properties are already in DB format
+  // and will be normalized when needed by the normalizeOverrides function
   return {
-    shadcn: dbTheme.shadcn_override
-      ? {
-          light: {
-            palettes: {
-              light: dbTheme.shadcn_override.palettes?.light,
-              dark: dbTheme.shadcn_override.palettes?.dark,
-            },
-            fonts: dbTheme.shadcn_override.fonts,
-            radius: dbTheme.shadcn_override.radius,
-            shadow: dbTheme.shadcn_override.shadow,
-            letter_spacing: dbTheme.shadcn_override.letter_spacing,
-          },
-          dark: {
-            palettes: {
-              light: dbTheme.shadcn_override.palettes?.light,
-              dark: dbTheme.shadcn_override.palettes?.dark,
-            },
-            fonts: dbTheme.shadcn_override.fonts,
-            radius: dbTheme.shadcn_override.radius,
-            shadow: dbTheme.shadcn_override.shadow,
-            letter_spacing: dbTheme.shadcn_override.letter_spacing,
-          },
-        }
-      : undefined,
-    vscode: dbTheme.vscode_override
-      ? {
-          // @ts-expect-error
-          light: dbTheme.vscode_override.light || dbTheme.vscode_override,
-          // @ts-expect-error
-          dark: dbTheme.vscode_override.dark || dbTheme.vscode_override,
-        }
-      : undefined,
-    shiki: dbTheme.shiki_override
-      ? {
-          // @ts-expect-error
-          light: dbTheme.shiki_override.light || dbTheme.shiki_override,
-          // @ts-expect-error
-          dark: dbTheme.shiki_override.dark || dbTheme.shiki_override,
-        }
-      : undefined,
+    shadcn: dbTheme.shadcn_override as any || undefined,
+    vscode: dbTheme.vscode_override as any || undefined,
+    shiki: dbTheme.shiki_override as any || undefined,
   };
 }
 

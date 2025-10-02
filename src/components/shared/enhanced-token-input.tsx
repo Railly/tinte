@@ -263,16 +263,21 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
   }
 
   if (group.type === "shadow-properties") {
+    const shadowValues = {
+      "shadow-color": currentTokens["shadow-color"] || "0 0 0",
+      "shadow-opacity": currentTokens["shadow-opacity"] || "0.1",
+      "shadow-blur": currentTokens["shadow-blur"] || "3px",
+      "shadow-spread": currentTokens["shadow-spread"] || "0px",
+      "shadow-offset-x": currentTokens["shadow-offset-x"] || "0px",
+      "shadow-offset-y": currentTokens["shadow-offset-y"] || "1px",
+    };
+
+    console.log("🎨 [EnhancedTokenInput] Shadow values:", shadowValues);
+    console.log("🎨 [EnhancedTokenInput] currentTokens:", currentTokens);
+
     return (
       <ShadowPropertiesEditor
-        values={{
-          "shadow-color": currentTokens["shadow-color"] || "",
-          "shadow-opacity": currentTokens["shadow-opacity"] || "",
-          "shadow-blur": currentTokens["shadow-blur"] || "",
-          "shadow-spread": currentTokens["shadow-spread"] || "",
-          "shadow-offset-x": currentTokens["shadow-offset-x"] || "",
-          "shadow-offset-y": currentTokens["shadow-offset-y"] || "",
-        }}
+        values={shadowValues}
         onChange={onEdit}
         className="mt-1"
       />
