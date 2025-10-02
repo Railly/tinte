@@ -68,24 +68,28 @@ export async function saveThemeToDatabase(
   const shadcnOverride = {
     palettes: {
       light: {
-        shadow: themeData.shadows ? {
-          color: themeData.shadows.color,
-          opacity: themeData.shadows.opacity,
-          blur: themeData.shadows.blur,
-          spread: themeData.shadows.spread,
-          offset_x: themeData.shadows.offsetX,
-          offset_y: themeData.shadows.offsetY,
-        } : undefined,
+        shadow: themeData.shadows
+          ? {
+              color: themeData.shadows.color,
+              opacity: themeData.shadows.opacity,
+              blur: themeData.shadows.blur,
+              spread: themeData.shadows.spread,
+              offset_x: themeData.shadows.offsetX,
+              offset_y: themeData.shadows.offsetY,
+            }
+          : undefined,
       },
       dark: {
-        shadow: themeData.shadows ? {
-          color: themeData.shadows.color,
-          opacity: themeData.shadows.opacity,
-          blur: themeData.shadows.blur,
-          spread: themeData.shadows.spread,
-          offset_x: themeData.shadows.offsetX,
-          offset_y: themeData.shadows.offsetY,
-        } : undefined,
+        shadow: themeData.shadows
+          ? {
+              color: themeData.shadows.color,
+              opacity: themeData.shadows.opacity,
+              blur: themeData.shadows.blur,
+              spread: themeData.shadows.spread,
+              offset_x: themeData.shadows.offsetX,
+              offset_y: themeData.shadows.offsetY,
+            }
+          : undefined,
       },
     },
     fonts: themeData.fonts,
@@ -136,6 +140,7 @@ export async function saveThemeToDatabase(
     installs: 0,
 
     // Extended properties
+    // @ts-ignore
     shadcn_override: shadcnOverride,
   };
 
