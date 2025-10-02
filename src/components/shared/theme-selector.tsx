@@ -301,15 +301,12 @@ export function ThemeSelector({
       e.preventDefault();
 
       const currentIndex = flatThemes.findIndex((t) => t.id === (active?.id || activeId));
-      let nextIndex: number;
+      
+      if (currentIndex === -1) return;
 
-      if (currentIndex === -1) {
-        nextIndex = 0;
-      } else if (e.key === "ArrowDown") {
-        nextIndex = (currentIndex + 1) % flatThemes.length;
-      } else {
-        nextIndex = (currentIndex - 1 + flatThemes.length) % flatThemes.length;
-      }
+      const nextIndex = e.key === "ArrowDown"
+        ? (currentIndex + 1) % flatThemes.length
+        : (currentIndex - 1 + flatThemes.length) % flatThemes.length;
 
       const nextTheme = flatThemes[nextIndex];
       if (nextTheme) {
