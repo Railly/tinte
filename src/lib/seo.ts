@@ -18,7 +18,6 @@ interface SEOProps {
 export function generateSEO({
   title,
   description = siteConfig.description,
-  image = siteConfig.ogImage,
   url = siteConfig.url,
   type = "website",
   publishedTime,
@@ -30,7 +29,6 @@ export function generateSEO({
 }: SEOProps = {}): Metadata {
   const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.name;
   const pageUrl = url.startsWith("http") ? url : `${siteConfig.url}${url}`;
-  const imageUrl = image.startsWith("http") ? image : `${siteConfig.url}${image}`;
 
   const metadata: Metadata = {
     title: pageTitle,
@@ -41,7 +39,7 @@ export function generateSEO({
         name: siteConfig.author.name,
         url: siteConfig.author.url,
       },
-      ...(authors?.map(name => ({ name })) || []),
+      ...(authors?.map((name) => ({ name })) || []),
     ],
     creator: siteConfig.author.name,
     publisher: siteConfig.author.name,
@@ -56,15 +54,8 @@ export function generateSEO({
       title: pageTitle,
       description,
       siteName: siteConfig.name,
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: title || siteConfig.name,
-          type: "image/jpeg",
-        },
-      ],
+      // Note: OG images are handled by opengraph-image.tsx files
+      // Don't add images here to avoid conflicts with file-based metadata
       ...(type === "article" && {
         publishedTime,
         modifiedTime,
@@ -76,9 +67,10 @@ export function generateSEO({
       card: "summary_large_image",
       title: pageTitle,
       description,
-      images: [imageUrl],
       creator: siteConfig.author.twitter,
       site: siteConfig.author.twitter,
+      // Note: Twitter images are handled by twitter-image.tsx files
+      // Don't add images here to avoid conflicts with file-based metadata
     },
     robots: {
       index: !noIndex,
@@ -115,7 +107,6 @@ export function generatePageSchema({
   title,
   description = siteConfig.description,
   url = siteConfig.url,
-  image = siteConfig.ogImage,
   type = "WebApplication",
   datePublished,
   dateModified,
@@ -123,14 +114,12 @@ export function generatePageSchema({
   title?: string;
   description?: string;
   url?: string;
-  image?: string;
   type?: "WebApplication" | "WebPage" | "Article" | "SoftwareApplication";
   datePublished?: string;
   dateModified?: string;
 } = {}) {
   const pageTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.name;
   const pageUrl = url.startsWith("http") ? url : `${siteConfig.url}${url}`;
-  const imageUrl = image.startsWith("http") ? image : `${siteConfig.url}${image}`;
 
   const baseSchema = {
     "@context": "https://schema.org",
@@ -138,7 +127,6 @@ export function generatePageSchema({
     name: pageTitle,
     description,
     url: pageUrl,
-    image: imageUrl,
     author: {
       "@type": "Person",
       name: siteConfig.author.name,
@@ -172,7 +160,6 @@ export function generatePageSchema({
         priceCurrency: "USD",
       },
       featureList: siteConfig.features,
-      screenshot: imageUrl,
     };
   }
 
@@ -191,7 +178,9 @@ export function generatePageSchema({
   return baseSchema;
 }
 
-export function generateBreadcrumbSchema(items: { name: string; url: string }[]) {
+export function generateBreadcrumbSchema(
+  items: { name: string; url: string }[],
+) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -199,7 +188,9 @@ export function generateBreadcrumbSchema(items: { name: string; url: string }[])
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: item.url.startsWith("http") ? item.url : `${siteConfig.url}${item.url}`,
+      item: item.url.startsWith("http")
+        ? item.url
+        : `${siteConfig.url}${item.url}`,
     })),
   };
 }
