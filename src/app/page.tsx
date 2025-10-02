@@ -23,19 +23,12 @@ export const metadata: Metadata = {
     description: siteConfig.longDescription,
     url: siteConfig.url,
     type: "website",
-    images: [
-      {
-        url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
-        alt: `${siteConfig.name} - Create and convert themes for VS Code, shadcn/ui, terminals and more`,
-      },
-    ],
+    // Images are handled by /app/opengraph-image.tsx
   },
   twitter: {
     title: `${siteConfig.name} - Multi-Platform Theme Generator`,
     description: siteConfig.longDescription,
-    images: [siteConfig.ogImage],
+    // Images are handled by /app/opengraph-image.tsx
   },
   other: {
     "article:section": "Technology",
