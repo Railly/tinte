@@ -276,6 +276,48 @@ export function ThemeSelector({
 
   const isLoading = !mounted;
 
+  const flatThemes = React.useMemo(() => {
+    if (searchQuery.trim()) {
+      return [...organizedThemes.localSearchResults, ...organizedThemes.remoteSearchResults];
+    }
+    return [
+      ...organizedThemes.favoriteThemes,
+      ...organizedThemes.userThemes,
+      ...organizedThemes.communityThemes,
+      ...organizedThemes.builtInThemes,
+    ];
+  }, [organizedThemes, searchQuery]);
+
+  React.useEffect(() => {
+    if (open || !mounted || flatThemes.length === 0) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+
+      const activeElement = document.activeElement;
+      const isInputFocused = activeElement?.tagName === "INPUT" || activeElement?.tagName === "TEXTAREA";
+      if (isInputFocused) return;
+
+      e.preventDefault();
+
+      const currentIndex = flatThemes.findIndex((t) => t.id === (active?.id || activeId));
+      
+      if (currentIndex === -1) return;
+
+      const nextIndex = e.key === "ArrowDown"
+        ? (currentIndex + 1) % flatThemes.length
+        : (currentIndex - 1 + flatThemes.length) % flatThemes.length;
+
+      const nextTheme = flatThemes[nextIndex];
+      if (nextTheme) {
+        handleThemeSelect(nextTheme);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, mounted, flatThemes, active, activeId, handleThemeSelect]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
