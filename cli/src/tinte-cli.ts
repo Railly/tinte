@@ -78,7 +78,8 @@ export class TinteCLI {
     const themeData = (await response.json()) as any;
     const tinteTheme = themeData.rawTheme || themeData;
     const themeName = themeData.name || themeData.displayName || "Custom Theme";
-    const vscodeOverrides = themeData.vscode_overrides;
+    const vscodeOverrides =
+      themeData.vscode_overrides || themeData.overrides?.vscode;
 
     return this.installTheme(tinteTheme, themeName, options, vscodeOverrides);
   }
@@ -98,7 +99,8 @@ export class TinteCLI {
     const tinteTheme = themeData.rawTheme || themeData;
     const name =
       themeName || themeData.name || themeData.displayName || "Local Theme";
-    const vscodeOverrides = themeData.vscode_overrides;
+    const vscodeOverrides =
+      themeData.vscode_overrides || themeData.overrides?.vscode;
 
     return this.installTheme(tinteTheme, name, options, vscodeOverrides);
   }
