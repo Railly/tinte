@@ -30,6 +30,7 @@ export function ThemeResultCard({
   const [openSections, setOpenSections] = useState(DEFAULT_OPEN_SECTIONS);
   const [isSaving, setIsSaving] = useState(false);
   const [hasAutoApplied, setHasAutoApplied] = useState(false);
+  const [hasAutoSaved, setHasAutoSaved] = useState(false);
 
   const {
     saveCurrentTheme,
@@ -73,10 +74,12 @@ export function ThemeResultCard({
       isFirstTheme &&
       isAuthenticated &&
       !firstCreatedThemeId &&
-      hasAutoApplied
+      hasAutoApplied &&
+      !hasAutoSaved
     ) {
       const autoSaveFirstTheme = async () => {
         setIsSaving(true);
+        setHasAutoSaved(true); // Prevent duplicate saves
         try {
           const themeName = themeOutput.title || "AI Generated Theme";
 
@@ -120,6 +123,7 @@ export function ThemeResultCard({
           }
         } catch (error) {
           console.error("💥 [AI Auto-Save] Error:", error);
+          setHasAutoSaved(false); // Reset on error to allow retry
         } finally {
           setIsSaving(false);
         }
@@ -127,7 +131,13 @@ export function ThemeResultCard({
 
       autoSaveFirstTheme();
     }
-  }, [isFirstTheme, isAuthenticated, firstCreatedThemeId, hasAutoApplied]);
+  }, [
+    isFirstTheme,
+    isAuthenticated,
+    firstCreatedThemeId,
+    hasAutoApplied,
+    hasAutoSaved,
+  ]);
 
   const handleUpdateTheme = async () => {
     if (!canSave || !firstCreatedThemeId) return;
