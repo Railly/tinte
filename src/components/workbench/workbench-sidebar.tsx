@@ -31,13 +31,13 @@ export function WorkbenchSidebar({
           onValueChange={(value) => setActiveTab(value as WorkbenchTab)}
           className="flex gap-1 flex-col h-full"
         >
-          <div className="flex-shrink-0 border-b border-border mt-[3.05rem]">
-            <TabsList className="grid w-full grid-cols-3 gap-0 bg-transparent h-8 p-0 rounded-none">
+          <div className="flex-shrink-0 px-2 py-2 mt-[3.05rem] border-b border-border">
+            <TabsList className="grid w-full grid-cols-3 gap-2 bg-transparent h-8 p-0">
               {WORKBENCH_TABS.map(({ id, label }) => (
                 <TabsTrigger
                   key={id}
                   value={id}
-                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                  className="data-[state=active]:bg-muted data-[state=active]:shadow-sm"
                 >
                   {label}
                 </TabsTrigger>

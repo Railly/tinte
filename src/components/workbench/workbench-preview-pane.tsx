@@ -25,7 +25,7 @@ export function WorkbenchPreviewPane({}: WorkbenchPreviewPaneProps) {
 
   return (
     <main className="flex flex-col overflow-hidden w-full">
-      <div className="h-12 border-b border-border flex items-center justify-end px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="h-12.5 border-b border-border flex items-center justify-end px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <WorkbenchToolbar />
       </div>
       <PreviewPaneContent theme={tinteTheme} />
