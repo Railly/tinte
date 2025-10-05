@@ -303,12 +303,15 @@ export function WorkbenchToolbar({
           : null,
       };
 
+      // Apply the imported theme immediately
+      updateTinteTheme("light", tinteTheme.light);
+      updateTinteTheme("dark", tinteTheme.dark);
+
       if (shadcnTheme) {
         updateShadcnOverride(shadcnTheme);
       }
 
-      selectTheme(themeToSave);
-
+      // Save to database
       const result = await saveCurrentTheme(name, makePublic, shadcnTheme);
 
       if (result.success && result.savedTheme) {
