@@ -18,22 +18,16 @@ export function EmptyAvatarGroup() {
         <EmptyMedia>
           <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:size-12 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src="/avatars/01.webp" alt="Team member 1" />
+              <AvatarFallback>T1</AvatarFallback>
             </Avatar>
             <Avatar>
-              <AvatarImage
-                src="https://github.com/maxleiter.png"
-                alt="@maxleiter"
-              />
-              <AvatarFallback>LR</AvatarFallback>
+              <AvatarImage src="/avatars/02.webp" alt="Team member 2" />
+              <AvatarFallback>T2</AvatarFallback>
             </Avatar>
             <Avatar>
-              <AvatarImage
-                src="https://github.com/evilrabbit.png"
-                alt="@evilrabbit"
-              />
-              <AvatarFallback>ER</AvatarFallback>
+              <AvatarImage src="/avatars/03.webp" alt="Team member 3" />
+              <AvatarFallback>T3</AvatarFallback>
             </Avatar>
           </div>
         </EmptyMedia>
