@@ -260,11 +260,11 @@ const applyCustomizations = (color, token, mode) => {
   }
 };
 
-function getVSCodeColors(palette, mode) {
+function getVSCodeColors(palette, mode, overrides) {
   const vsCodeColors = {};
 
   for (const [token, colorKey] of Object.entries(editorColorMap)) {
-    const color = palette[colorKey];
+    const color = overrides?.[token] || palette[colorKey];
     vsCodeColors[token] = applyCustomizations(color, token, mode);
   }
 
@@ -286,15 +286,18 @@ function generateTokenColors(
 }
 
 function convertTinteToVSCode(tinteTheme, name = "Tinte Theme", overrides) {
+  const lightOverrides = overrides?.light || {};
+  const darkOverrides = overrides?.dark || {};
+
   const lightTheme = {
     name: `${name} Light`,
     displayName: `${name} (Light)`,
     type: "light",
-    colors: getVSCodeColors(tinteTheme.light, "light"),
+    colors: getVSCodeColors(tinteTheme.light, "light", lightOverrides),
     tokenColors: generateTokenColors(
       tinteTheme.light,
       defaultTokenColorMap,
-      overrides,
+      lightOverrides,
     ),
   };
 
@@ -302,11 +305,11 @@ function convertTinteToVSCode(tinteTheme, name = "Tinte Theme", overrides) {
     name: `${name} Dark`,
     displayName: `${name} (Dark)`,
     type: "dark",
-    colors: getVSCodeColors(tinteTheme.dark, "dark"),
+    colors: getVSCodeColors(tinteTheme.dark, "dark", darkOverrides),
     tokenColors: generateTokenColors(
       tinteTheme.dark,
       defaultTokenColorMap,
-      overrides,
+      darkOverrides,
     ),
   };
 

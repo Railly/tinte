@@ -23,6 +23,7 @@ export class TinteCLI {
     tinteTheme: TinteTheme,
     themeName: string,
     options: EditorInstallOptions = {},
+    vscodeOverrides?: Record<string, any>,
   ): Promise<string> {
     const {
       variant = "dark",
@@ -35,7 +36,12 @@ export class TinteCLI {
     console.log(`🎨 Installing ${themeName} to ${editorName}...`);
 
     // Generate VSIX from Netlify function
-    const vsixBuffer = await this.generateVSIX(tinteTheme, themeName, variant);
+    const vsixBuffer = await this.generateVSIX(
+      tinteTheme,
+      themeName,
+      variant,
+      vscodeOverrides,
+    );
 
     // Save to tmp file
     const vsixPath = join(
@@ -72,8 +78,9 @@ export class TinteCLI {
     const themeData = (await response.json()) as any;
     const tinteTheme = themeData.rawTheme || themeData;
     const themeName = themeData.name || themeData.displayName || "Custom Theme";
+    const vscodeOverrides = themeData.vscode_overrides;
 
-    return this.installTheme(tinteTheme, themeName, options);
+    return this.installTheme(tinteTheme, themeName, options, vscodeOverrides);
   }
 
   /**
@@ -91,8 +98,9 @@ export class TinteCLI {
     const tinteTheme = themeData.rawTheme || themeData;
     const name =
       themeName || themeData.name || themeData.displayName || "Local Theme";
+    const vscodeOverrides = themeData.vscode_overrides;
 
-    return this.installTheme(tinteTheme, name, options);
+    return this.installTheme(tinteTheme, name, options, vscodeOverrides);
   }
 
   /**
@@ -159,6 +167,7 @@ export class TinteCLI {
     tinteTheme: TinteTheme,
     themeName: string,
     variant: "light" | "dark",
+    vscodeOverrides?: Record<string, any>,
   ): Promise<Buffer> {
     const response = await fetch(this.NETLIFY_ENDPOINT, {
       method: "POST",
@@ -169,6 +178,7 @@ export class TinteCLI {
         tinteTheme,
         themeName,
         variant,
+        overrides: vscodeOverrides,
       }),
     });
 
