@@ -194,8 +194,8 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                                   );
                                 case "output-available": {
                                   const themeOutput = part.output as any;
+                                  // Check if this is the first generated theme (index 0 in all themes)
                                   const isFirstTheme =
-                                    allGeneratedThemes.length === 1 &&
                                     part === allGeneratedThemes[0];
                                   return (
                                     <ThemeResultCard
