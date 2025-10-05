@@ -7,7 +7,6 @@ import {
   Download,
   Edit3,
   FileText,
-  MoreVertical,
   Redo,
   RotateCcw,
   Save,
@@ -726,7 +725,7 @@ export function WorkbenchToolbar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreVertical className="h-4 w-4" />
+              <Settings className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -737,6 +736,10 @@ export function WorkbenchToolbar({
             <DropdownMenuItem onClick={() => setShowImportDialog(true)}>
               <FileText className="h-4 w-4 mr-2" />
               Import CSS
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowShareDialog(true)}>
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

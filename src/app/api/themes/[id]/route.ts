@@ -4,6 +4,8 @@ import { db } from "@/db";
 import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 import { theme } from "@/db/schema/theme";
 import { auth } from "@/lib/auth";
+import { searchService } from "@/lib/services/search.service";
+import type { ThemeData } from "@/lib/theme-tokens";
 import type { TinteTheme } from "@/types/tinte";
 
 // Helper function to generate unique slug (excluding current theme)
@@ -181,6 +183,77 @@ export async function PUT(request: NextRequest, context: RouteContext) {
       );
     }
 
+    // Handle search indexing when isPublic changes
+    if (typeof isPublic === "boolean") {
+      const themeRecord = updatedTheme[0];
+
+      if (isPublic) {
+        // Theme is now public - index it in search
+        const searchThemeData: ThemeData = {
+          id: themeRecord.id,
+          name: themeRecord.name,
+          description: themeRecord.concept || "",
+          author: session.user.name || "You",
+          provider: "tinte",
+          tags: ["custom"],
+          downloads: 0,
+          likes: 0,
+          installs: themeRecord.installs || 0,
+          createdAt:
+            themeRecord.created_at?.toISOString() || new Date().toISOString(),
+          colors: {
+            primary: themeRecord.light_pr,
+            secondary: themeRecord.light_sc,
+            background: themeRecord.light_bg,
+            accent: themeRecord.light_ac_1,
+            foreground: themeRecord.light_tx,
+          },
+          rawTheme: {
+            light: {
+              bg: themeRecord.light_bg,
+              bg_2: themeRecord.light_bg_2,
+              ui: themeRecord.light_ui,
+              ui_2: themeRecord.light_ui_2,
+              ui_3: themeRecord.light_ui_3,
+              tx: themeRecord.light_tx,
+              tx_2: themeRecord.light_tx_2,
+              tx_3: themeRecord.light_tx_3,
+              pr: themeRecord.light_pr,
+              sc: themeRecord.light_sc,
+              ac_1: themeRecord.light_ac_1,
+              ac_2: themeRecord.light_ac_2,
+              ac_3: themeRecord.light_ac_3,
+            },
+            dark: {
+              bg: themeRecord.dark_bg,
+              bg_2: themeRecord.dark_bg_2,
+              ui: themeRecord.dark_ui,
+              ui_2: themeRecord.dark_ui_2,
+              ui_3: themeRecord.dark_ui_3,
+              tx: themeRecord.dark_tx,
+              tx_2: themeRecord.dark_tx_2,
+              tx_3: themeRecord.dark_tx_3,
+              pr: themeRecord.dark_pr,
+              sc: themeRecord.dark_sc,
+              ac_1: themeRecord.dark_ac_1,
+              ac_2: themeRecord.dark_ac_2,
+              ac_3: themeRecord.dark_ac_3,
+            },
+          },
+        };
+
+        // Index asynchronously
+        searchService.upsertThemes([searchThemeData]).catch((error) => {
+          console.error("Failed to index theme in search:", error);
+        });
+      } else {
+        // Theme is now private - remove from search
+        searchService.deleteTheme(id).catch((error) => {
+          console.error("Failed to remove theme from search:", error);
+        });
+      }
+    }
+
     return NextResponse.json({
       success: true,
       theme: updatedTheme[0],
@@ -222,6 +295,13 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     await db
       .delete(theme)
       .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)));
+
+    // Remove from search index if it was public
+    if (existingTheme[0].is_public) {
+      searchService.deleteTheme(id).catch((error) => {
+        console.error("Failed to remove theme from search:", error);
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

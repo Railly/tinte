@@ -2,6 +2,8 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { type ThemeInsert, theme } from "@/db/schema";
 import { generateThemeId } from "./generate-slug";
+import { searchService } from "./services/search.service";
+import type { ThemeData as SearchThemeData } from "./theme-tokens";
 
 interface ThemeData {
   title: string;
@@ -174,6 +176,38 @@ export async function saveThemeToDatabase(
     console.log(
       `✅ Theme "${themeData.title}" saved to database with slug: ${slug}`,
     );
+
+    // Auto-index in Upstash Search (async, non-blocking)
+    if (themeInsert.is_public) {
+      const searchThemeData: SearchThemeData = {
+        id: savedTheme.id,
+        name: savedTheme.name,
+        description: savedTheme.concept || "",
+        author: "You",
+        provider: "tinte",
+        tags: ["custom", "ai-generated"],
+        downloads: 0,
+        likes: 0,
+        installs: 0,
+        createdAt: new Date().toISOString(),
+        colors: {
+          primary: themeData.light.pr,
+          secondary: themeData.light.sc,
+          background: themeData.light.bg,
+          accent: themeData.light.ac_1,
+          foreground: themeData.light.tx,
+        },
+        rawTheme: {
+          light: themeData.light,
+          dark: themeData.dark,
+        },
+      };
+
+      // Index asynchronously without blocking the response
+      searchService.upsertThemes([searchThemeData]).catch((error) => {
+        console.error("Failed to index theme in search:", error);
+      });
+    }
 
     return { theme: savedTheme, slug };
   } catch (error) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreHorizontal, Share } from "lucide-react";
+import { MoreHorizontal, Share, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,19 +43,11 @@ export function SocialsDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-          <MoreHorizontal className="h-4 w-4" />
+          <Share2 className="h-4 w-4" />
           <span className="sr-only">More options</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem
-          onClick={handleShare}
-          className="flex items-center gap-2"
-        >
-          <Share className="h-4 w-4" />
-          Share
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <a
             href={siteConfig.links.github}

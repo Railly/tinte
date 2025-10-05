@@ -212,6 +212,16 @@ class SearchService {
     };
   }
 
+  async deleteTheme(themeId: string) {
+    // Delete a single theme from search index
+    try {
+      await this.index.delete(themeId);
+      console.log(`Theme ${themeId} deleted from search index`);
+    } catch (error) {
+      console.error(`Error deleting theme ${themeId}:`, error);
+    }
+  }
+
   async deleteAllThemes() {
     // This is for cleanup/reset purposes
     try {
