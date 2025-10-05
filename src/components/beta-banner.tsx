@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
@@ -12,6 +12,7 @@ const BETA_BANNER_KEY = "tinte-beta-banner-dismissed";
 export function BetaBanner() {
   const [shouldShow, setShouldShow] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const isDismissed = localStorage.getItem(BETA_BANNER_KEY);
@@ -44,7 +45,11 @@ export function BetaBanner() {
             size="sm"
             className="h-7 text-xs"
             onClick={() => {
-              router.push("/workbench?provider=vscode");
+              // Preserve current theme slug if in workbench, otherwise go to base
+              const targetPath = pathname.startsWith("/workbench/")
+                ? `${pathname}?provider=vscode`
+                : "/workbench?provider=vscode";
+              router.push(targetPath);
               dismissBanner();
             }}
           >
