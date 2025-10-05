@@ -31,7 +31,7 @@ interface AgentTabProps {
 export function AgentTab({ initialPrompt }: AgentTabProps) {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
-  const { clearSession, firstCreatedThemeId, setFirstCreatedTheme } =
+  const { clearSession, rootThemeId, setRootTheme, incrementIteration } =
     useAgentSessionStore();
   const { isAuthenticated, loadUserThemes, selectTheme } = useTheme();
   const processedThemesRef = useRef<Set<string>>(new Set());
@@ -101,9 +101,9 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
     // Auto-apply first theme
     handleApplyTheme(firstThemeOutput);
 
-    // Auto-save first theme if authenticated
-    if (isAuthenticated && !firstCreatedThemeId) {
-      const saveFirstTheme = async () => {
+    // Auto-save/update if authenticated
+    if (isAuthenticated) {
+      const saveOrUpdateTheme = async () => {
         try {
           const extendedRawTheme = {
             light: firstThemeOutput.theme.light,
@@ -113,8 +113,14 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
             shadows: firstThemeOutput.shadows,
           };
 
-          const response = await fetch("/api/themes", {
-            method: "POST",
+          const isFirstIteration = !rootThemeId;
+          const method = isFirstIteration ? "POST" : "PUT";
+          const url = isFirstIteration
+            ? "/api/themes"
+            : `/api/themes/${rootThemeId}`;
+
+          const response = await fetch(url, {
+            method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               name: firstThemeOutput.title || "AI Generated Theme",
@@ -129,13 +135,21 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
             const result = await response.json();
             const savedTheme = result.theme;
 
-            setFirstCreatedTheme(savedTheme.id, savedTheme.slug || "");
+            if (isFirstIteration) {
+              setRootTheme(savedTheme.id, savedTheme.slug || "");
+              toast.success(`"${savedTheme.name}" saved!`);
+            } else {
+              incrementIteration();
+              toast.success(`"${savedTheme.name}" updated!`);
+            }
+
             await loadUserThemes();
 
             setTimeout(() => {
               selectTheme(savedTheme);
 
               if (
+                isFirstIteration &&
                 savedTheme.slug &&
                 savedTheme.slug !== "default" &&
                 savedTheme.slug !== "theme"
@@ -144,22 +158,21 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                 window.history.replaceState(null, "", newUrl);
               }
             }, 100);
-
-            toast.success(`"${savedTheme.name}" saved successfully!`);
           }
         } catch (error) {
-          console.error("Error auto-saving first theme:", error);
+          console.error("Error saving/updating theme:", error);
         }
       };
 
-      saveFirstTheme();
+      saveOrUpdateTheme();
     }
   }, [
     messages,
     isAuthenticated,
-    firstCreatedThemeId,
+    rootThemeId,
     handleApplyTheme,
-    setFirstCreatedTheme,
+    setRootTheme,
+    incrementIteration,
     loadUserThemes,
     selectTheme,
   ]);

@@ -1,28 +1,36 @@
 import { create } from "zustand";
 
 interface AgentSessionState {
-  // Track the first created theme in this session
-  firstCreatedThemeId: string | null;
-  firstCreatedThemeSlug: string | null;
+  // Track the root theme (never changes during session)
+  rootThemeId: string | null;
+  rootThemeSlug: string | null;
+  iterationCount: number;
 
   // Actions
-  setFirstCreatedTheme: (themeId: string, slug: string) => void;
+  setRootTheme: (themeId: string, slug: string) => void;
+  incrementIteration: () => void;
   clearSession: () => void;
 }
 
 export const useAgentSessionStore = create<AgentSessionState>((set) => ({
-  firstCreatedThemeId: null,
-  firstCreatedThemeSlug: null,
+  rootThemeId: null,
+  rootThemeSlug: null,
+  iterationCount: 0,
 
-  setFirstCreatedTheme: (themeId: string, slug: string) =>
+  setRootTheme: (themeId: string, slug: string) =>
     set({
-      firstCreatedThemeId: themeId,
-      firstCreatedThemeSlug: slug,
+      rootThemeId: themeId,
+      rootThemeSlug: slug,
+      iterationCount: 1,
     }),
+
+  incrementIteration: () =>
+    set((state) => ({ iterationCount: state.iterationCount + 1 })),
 
   clearSession: () =>
     set({
-      firstCreatedThemeId: null,
-      firstCreatedThemeSlug: null,
+      rootThemeId: null,
+      rootThemeSlug: null,
+      iterationCount: 0,
     }),
 }));

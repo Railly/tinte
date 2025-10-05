@@ -1,6 +1,6 @@
 "use client";
 
-import { Palette, RefreshCw, Sparkles } from "lucide-react";
+import { Palette, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -28,78 +28,15 @@ export function ThemeResultCard({
   isFirstTheme = false,
 }: ThemeResultCardProps) {
   const [openSections, setOpenSections] = useState(DEFAULT_OPEN_SECTIONS);
-  const [isSaving, setIsSaving] = useState(false);
 
-  const { canSave, isAuthenticated, loadUserThemes, selectTheme } = useTheme();
-
-  const { firstCreatedThemeId } = useAgentSessionStore();
+  const { isAuthenticated } = useTheme();
+  const { iterationCount } = useAgentSessionStore();
 
   const toggleSection = (section: keyof typeof DEFAULT_OPEN_SECTIONS) => {
     setOpenSections((prev) => ({
       ...prev,
       [section]: !prev[section],
     }));
-  };
-
-  const handleUpdateTheme = async () => {
-    if (!canSave || !firstCreatedThemeId) return;
-
-    await onApplyTheme(themeOutput);
-
-    setIsSaving(true);
-    try {
-      const themeName = themeOutput.title || "AI Generated Theme";
-
-      const extendedRawTheme = {
-        light: themeOutput.theme.light,
-        dark: themeOutput.theme.dark,
-        fonts: themeOutput.fonts,
-        radius: themeOutput.radius,
-        shadows: themeOutput.shadows,
-      };
-
-      // Update directly using API with firstCreatedThemeId
-      const response = await fetch(`/api/themes/${firstCreatedThemeId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: themeName,
-          tinteTheme: extendedRawTheme,
-          overrides: {},
-          isPublic: true,
-          concept: themeOutput.concept,
-        }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        const savedTheme = result.theme;
-
-        await loadUserThemes();
-
-        setTimeout(() => {
-          selectTheme(savedTheme);
-
-          if (
-            savedTheme.slug &&
-            savedTheme.slug !== "default" &&
-            savedTheme.slug !== "theme"
-          ) {
-            const newUrl = `/workbench/${savedTheme.slug}?tab=agent`;
-            window.history.replaceState(null, "", newUrl);
-          }
-        }, 100);
-
-        toast.success(`"${themeName}" updated successfully!`);
-      } else {
-        toast.error("Failed to update theme");
-      }
-    } catch (error) {
-      console.error("Error updating theme:", error);
-      toast.error("Error updating theme");
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   return (
@@ -110,9 +47,9 @@ export function ThemeResultCard({
           <div className="w-2 h-2 rounded-full bg-primary" />
           <span>Crafted in {loadingTimer}s ✨</span>
         </div>
-        {isFirstTheme && isAuthenticated && (
+        {isAuthenticated && (
           <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded">
-            Saved
+            {isFirstTheme ? "Iteration 1" : `Iteration ${iterationCount + 1}`}
           </span>
         )}
       </div>
@@ -163,29 +100,15 @@ export function ThemeResultCard({
         </div>
 
         {/* Action buttons */}
-        <div className="px-4 pb-4 pt-2 flex gap-2 border-t border-border/30">
+        <div className="px-4 pb-4 pt-2 border-t border-border/30">
           <Button
             size="sm"
             onClick={() => onApplyTheme(themeOutput)}
-            className="h-8 px-3 flex-1"
+            className="h-8 px-3 w-full"
           >
             <Sparkles className="h-3 w-3 mr-1.5" />
             Apply Theme
           </Button>
-
-          {/* Only show Update button on subsequent themes (not first) */}
-          {isAuthenticated && !isFirstTheme && firstCreatedThemeId && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleUpdateTheme}
-              disabled={isSaving}
-              className="h-8 px-3"
-            >
-              <RefreshCw className="h-3 w-3 mr-1.5" />
-              {isSaving ? "Updating..." : "Update"}
-            </Button>
-          )}
         </div>
       </div>
     </div>
