@@ -145,16 +145,6 @@ export function useTheme() {
       updateThemeId?: string,
     ) => {
       // Create theme with current overrides from store
-      console.log("🔍 [saveCurrentTheme] activeTheme:", themeStore.activeTheme);
-      console.log(
-        "🔍 [saveCurrentTheme] activeTheme.rawTheme:",
-        themeStore.activeTheme?.rawTheme,
-      );
-      console.log(
-        "🔍 [saveCurrentTheme] activeTheme.concept:",
-        themeStore.activeTheme?.concept,
-      );
-
       // Import denormalization function
       const { denormalizeProviderOverride } = await import(
         "@/lib/override-normalization"
@@ -179,19 +169,6 @@ export function useTheme() {
           shiki: convertOverrideForDB(themeStore.overrides.shiki),
         },
       };
-
-      console.log(
-        "🔍 [saveCurrentTheme] themeWithOverrides:",
-        themeWithOverrides,
-      );
-      console.log(
-        "🔍 [saveCurrentTheme] themeWithOverrides.rawTheme:",
-        themeWithOverrides.rawTheme,
-      );
-      console.log(
-        "🔍 [saveCurrentTheme] themeWithOverrides.concept:",
-        themeWithOverrides.concept,
-      );
 
       return authStore.saveTheme(
         themeWithOverrides,

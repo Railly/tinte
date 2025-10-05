@@ -76,8 +76,8 @@ const parseColor = (colorValue: string): string => {
     if (parsed) {
       return formatHex(parsed);
     }
-  } catch (error) {
-    console.warn("Failed to parse color with culori:", colorValue, error);
+  } catch {
+    // Silently fail
   }
 
   // Fallback
@@ -102,29 +102,20 @@ export function ShadowPropertiesEditor({
     setLocalColor(parseColor(values["shadow-color"]));
   }, [values["shadow-color"]]);
 
-  console.log("🎨 [ShadowPropertiesEditor] Rendering with values:", values);
-  console.log("🎨 [ShadowPropertiesEditor] Local color:", localColor);
-
   const handleCanonicalColorSelect = (colorKey: keyof TinteBlock) => {
     const colorValue = currentColors?.[colorKey];
     if (colorValue) {
-      console.log(
-        "🎨 [ShadowPropertiesEditor] Canonical color selected:",
-        colorValue,
-      );
       setLocalColor(parseColor(colorValue));
       onChange("shadow-color", colorValue);
     }
   };
 
   const handleTailwindColorSelect = (color: string) => {
-    console.log("🎨 [ShadowPropertiesEditor] Tailwind color selected:", color);
     setLocalColor(color);
     onChange("shadow-color", color);
   };
 
   const handleColorChange = (newColor: string) => {
-    console.log("🎨 [ShadowPropertiesEditor] Color picker changed:", newColor);
     setLocalColor(newColor);
     onChange("shadow-color", newColor);
   };

@@ -145,14 +145,6 @@ export function ShadcnOverridesPanel({
         const currentModePalette = currentPalettes[currentMode] || {};
         const currentModeShadow = currentModePalette.shadow || {};
 
-        console.log("🔧 [handleTokenEdit] Shadow update:", {
-          key,
-          shadowKey,
-          value,
-          currentMode,
-          currentModeShadow,
-        });
-
         const updatedOverrides = {
           ...currentOverrides,
           palettes: {
@@ -167,10 +159,6 @@ export function ShadcnOverridesPanel({
           },
         };
 
-        console.log(
-          "🔧 [handleTokenEdit] Updated overrides:",
-          updatedOverrides,
-        );
         updateShadcnOverride(updatedOverrides);
       } else {
         // Handle palette colors - save to palettes.{mode} (DB schema)
@@ -196,16 +184,7 @@ export function ShadcnOverridesPanel({
     [shadcnOverride, currentMode, updateShadcnOverride],
   );
 
-  // Shadow tokens - read from palettes.{mode}.shadow (DB schema)
-  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride:", shadcnOverride);
-  console.log(
-    "🔧 [ShadcnOverridesPanel] shadcnOverride.palettes:",
-    shadcnOverride?.palettes,
-  );
-  console.log("🔧 [ShadcnOverridesPanel] currentMode:", currentMode);
-
   const shadowFromDB = shadcnOverride?.palettes?.[currentMode]?.shadow;
-  console.log("🔧 [ShadcnOverridesPanel] shadowFromDB:", shadowFromDB);
 
   const shadowTokens = {
     "shadow-color": shadowFromDB?.color || "0 0 0",
@@ -215,8 +194,6 @@ export function ShadcnOverridesPanel({
     "shadow-offset-x": shadowFromDB?.offset_x || "0px",
     "shadow-offset-y": shadowFromDB?.offset_y || "1px",
   };
-
-  console.log("🔧 [ShadcnOverridesPanel] Shadow tokens:", shadowTokens);
 
   const handleFontSelect = React.useCallback(
     (key: string, font: FontInfo) => {
@@ -258,16 +235,11 @@ export function ShadcnOverridesPanel({
     // Handle palette tokens (colors) - read from palettes.{mode} (DB schema)
     const dbPalette = currentOverrides.palettes?.[currentMode] || {};
 
-    console.log("DB palette for", currentMode, ":", dbPalette);
-
     // Always merge: extrapolated as base, then override with DB values
     const currentPalette = {
       ...extrapolatedPalette,
       ...dbPalette,
     };
-
-    console.log("Extrapolated palette:", extrapolatedPalette);
-    console.log("Final merged palette for", currentMode, ":", currentPalette);
 
     // Group palette tokens by category - always show all groups
     const backgroundGroup: Array<[string, string]> = [];
@@ -331,7 +303,6 @@ export function ShadcnOverridesPanel({
     // Fonts are top-level in DB schema
     const fonts = currentOverrides.fonts || defaultFonts;
 
-    console.log("Fonts:", fonts);
     const fontTokens = Object.entries(fonts)
       .filter(
         ([_, value]) => typeof value === "string" && value.trim().length > 0,
@@ -343,8 +314,6 @@ export function ShadcnOverridesPanel({
 
     // Radius is top-level in DB schema
     const radius = currentOverrides.radius || "0.5rem";
-
-    console.log("Radius:", radius);
 
     // Handle radius - check if it's an object (AI format) or string (legacy format)
     let radiusTokens;
@@ -376,7 +345,6 @@ export function ShadcnOverridesPanel({
     // Letter spacing is top-level in DB schema
     const letterSpacing = currentOverrides.letter_spacing || "0em";
 
-    console.log("Letter spacing:", letterSpacing);
     // Always show letter spacing group
     groups.push({
       label: "Letter Spacing",

@@ -219,15 +219,6 @@ export const useAuthStore = create<AuthStore>()(
         makePublic = true,
         updateThemeId?: string,
       ) => {
-        console.log("🚀 [Auth Store] saveTheme called with:", {
-          theme,
-          name,
-          makePublic,
-          updateThemeId,
-        });
-        console.log("🔍 [Auth Store] theme.rawTheme:", theme.rawTheme);
-        console.log("🔍 [Auth Store] theme.concept:", theme.concept);
-
         const { isAuthenticated, user } = get();
 
         if (!isAuthenticated) {
@@ -296,16 +287,6 @@ export const useAuthStore = create<AuthStore>()(
               isPublic: makePublic,
               concept: themeToSave.concept,
             };
-
-            console.log("📤 [Auth Store] POST payload being sent:", payload);
-            console.log(
-              "📤 [Auth Store] themeToSave.rawTheme:",
-              themeToSave.rawTheme,
-            );
-            console.log(
-              "📤 [Auth Store] themeToSave.concept:",
-              themeToSave.concept,
-            );
 
             const response = await fetch("/api/themes", {
               method: "POST",

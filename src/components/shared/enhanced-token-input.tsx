@@ -291,9 +291,6 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
       "shadow-offset-y": currentTokens["shadow-offset-y"] || "1px",
     };
 
-    console.log("🎨 [EnhancedTokenInput] Shadow values:", shadowValues);
-    console.log("🎨 [EnhancedTokenInput] currentTokens:", currentTokens);
-
     return (
       <ShadowPropertiesEditor
         values={shadowValues}
