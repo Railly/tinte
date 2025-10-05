@@ -33,7 +33,12 @@ export function useThemeApplication() {
       };
 
       const themeData: ThemeData = {
-        id: `ai-generated-${Date.now()}`,
+        // Use database ID if available (from tool), otherwise temporary ID
+        id:
+          toolResult.databaseId ||
+          toolResult.id ||
+          `ai-generated-${Date.now()}`,
+        slug: toolResult.slug,
         name: toolResult.title || "AI Generated Theme",
         description: `AI-generated theme: ${
           toolResult.concept || "Custom theme"

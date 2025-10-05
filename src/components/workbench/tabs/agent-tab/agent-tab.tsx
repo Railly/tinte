@@ -138,8 +138,15 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
       reloadAndSelectTheme();
     } else if (!isAuthenticated) {
-      // Anonymous users: just apply without saving
-      handleApplyThemeRef.current(latestThemeOutput);
+      // Anonymous users: theme is already saved by tool (as public theme)
+      // Apply the theme with database info so it shows as saved
+      const themeToApply = {
+        ...latestThemeOutput,
+        // Include database ID and slug from the tool output
+        id: latestThemeOutput.databaseId,
+        slug: latestThemeOutput.slug,
+      };
+      handleApplyThemeRef.current(themeToApply);
     }
   }, [messages, isAuthenticated]);
 
