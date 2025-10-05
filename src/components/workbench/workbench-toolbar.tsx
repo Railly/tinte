@@ -275,26 +275,28 @@ export function WorkbenchToolbar({
       // Step 1: Parse the CSS to extract theme data
       const { tinteTheme, shadcnTheme } = importShadcnTheme(css);
 
-      // Step 2: Create a temporary theme object with the imported data
-      const importedTheme = {
-        id: `theme_${Date.now()}`,
-        name,
-        description: `Imported theme: ${name}`,
-        author: "You",
-        provider: "tinte" as const,
-        downloads: 0,
-        likes: 0,
-        installs: 0,
-        tags: ["custom", "imported"],
-        createdAt: new Date().toISOString(),
-        colors: {
-          primary: tinteTheme.light.pr,
-          secondary: tinteTheme.light.sc,
-          background: tinteTheme.light.bg,
-          accent: tinteTheme.light.ac_1,
-          foreground: tinteTheme.light.tx,
-        },
-        rawTheme: tinteTheme,
+      // Step 2: Apply the imported theme to the UI immediately
+      updateTinteTheme("light", tinteTheme.light);
+      updateTinteTheme("dark", tinteTheme.dark);
+
+      if (shadcnTheme) {
+        updateShadcnOverride(shadcnTheme);
+      }
+
+      // Step 3: Save to database and get the real theme back
+      const result = await saveCurrentTheme(name, makePublic, shadcnTheme);
+
+      if (!result.success || !result.savedTheme) {
+        toast.error("Failed to save imported theme");
+        return;
+      }
+
+      // Step 4: Reload user themes to get the complete list
+      await loadUserThemes();
+
+      // Step 5: Build the complete theme object with real data from DB
+      const realTheme = {
+        ...result.savedTheme,
         user: user
           ? {
               id: user.id,
@@ -303,49 +305,22 @@ export function WorkbenchToolbar({
               image: user.image,
             }
           : null,
+        overrides: {
+          shadcn: shadcnTheme,
+          vscode: result.savedTheme.overrides?.vscode,
+          shiki: result.savedTheme.overrides?.shiki,
+        },
       };
 
-      // Step 3: Select the imported theme so it becomes the active theme
-      selectTheme(importedTheme);
+      // Step 6: Select the real theme from DB
+      selectTheme(realTheme);
 
-      // Step 4: Apply shadcn overrides if present
-      if (shadcnTheme) {
-        updateShadcnOverride(shadcnTheme);
+      // Step 7: Navigate to the theme's URL
+      if (result.savedTheme.slug) {
+        router.replace(`/workbench/${result.savedTheme.slug}`);
       }
 
-      // Step 5: Now save the active theme (which is the imported one)
-      const result = await saveCurrentTheme(name, makePublic, shadcnTheme);
-
-      if (result.success && result.savedTheme) {
-        await loadUserThemes();
-
-        const updatedSavedTheme = {
-          ...result.savedTheme,
-          user: user
-            ? {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                image: user.image,
-              }
-            : null,
-          overrides: {
-            shadcn: shadcnTheme,
-            vscode: result.savedTheme.overrides?.vscode,
-            shiki: result.savedTheme.overrides?.shiki,
-          },
-        };
-
-        selectTheme(updatedSavedTheme);
-        toast.success(`"${name}" imported and saved successfully!`);
-
-        // Navigate to the new theme's URL
-        if (result.savedTheme.slug) {
-          router.replace(`/workbench/${result.savedTheme.slug}`);
-        }
-      } else {
-        toast.error("Failed to save imported theme");
-      }
+      toast.success(`"${name}" imported and saved successfully!`);
     } catch (error) {
       console.error("Error importing theme:", error);
       toast.error("Failed to import theme");
