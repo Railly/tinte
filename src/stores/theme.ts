@@ -101,7 +101,7 @@ const applyToDOMDebounced = (() => {
   const timeoutId: NodeJS.Timeout | null = null;
   let rafId: number | null = null;
 
-  return (
+  return async (
     theme: ThemeData,
     mode: ThemeMode,
     tokens: Record<string, string>,
@@ -111,22 +111,38 @@ const applyToDOMDebounced = (() => {
     if (timeoutId) clearTimeout(timeoutId);
     if (rafId) cancelAnimationFrame(rafId);
 
+    // Load fonts first
+    const fontTokens = Object.entries(tokens).filter(([key]) =>
+      key.startsWith("font-"),
+    );
+
+    const fontFamilies: string[] = [];
+    fontTokens.forEach(([_, value]) => {
+      const fontFamily = extractFontFamily(value);
+      if (fontFamily) {
+        fontFamilies.push(fontFamily);
+        loadGoogleFont(fontFamily, ["400", "500", "600"]);
+      }
+    });
+
+    // Wait for fonts to load
+    if (fontFamilies.length > 0 && document.fonts) {
+      await Promise.all(
+        fontFamilies.map((family) =>
+          document.fonts.load(`400 12px "${family}"`).catch(() => {
+            // Font failed to load, continue anyway
+          }),
+        ),
+      );
+    }
+
+    // Apply tokens after fonts are loaded
     rafId = requestAnimationFrame(() => {
       const root = document.documentElement;
       root.setAttribute("data-theme", mode);
 
       Object.entries(tokens).forEach(([key, value]) => {
         root.style.setProperty(`--${key}`, value);
-      });
-
-      const fontTokens = Object.entries(tokens).filter(([key]) =>
-        key.startsWith("font-"),
-      );
-      fontTokens.forEach(([_, value]) => {
-        const fontFamily = extractFontFamily(value);
-        if (fontFamily) {
-          loadGoogleFont(fontFamily, ["400", "500", "600"]);
-        }
       });
 
       (window as any).__TINTE_THEME__ = { theme, mode };
