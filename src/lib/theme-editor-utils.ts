@@ -97,14 +97,27 @@ export const organizeRealTokens = (
             type: "shadow-properties",
           });
         }
+      } else if (groupName === "Fonts") {
+        // Always show all font selectors with defaults
+        const tokens = groupData.map((key) => {
+          let value = currentTokens[key];
+          if (!value || typeof value !== "string") {
+            value = DEFAULT_FONTS[key as FontToken] || "";
+          }
+          return [key, value] as [string, string];
+        });
+
+        groups.push({
+          label: groupName,
+          tokens,
+          type: "fonts",
+        });
       } else {
         const tokens = groupData
           .map((key) => {
             let value = currentTokens[key];
             if (!value || typeof value !== "string") {
-              if (groupName === "Fonts") {
-                value = DEFAULT_FONTS[key as FontToken] || "";
-              }
+              value = "";
             }
             return [key, value] as [string, string];
           })
@@ -117,7 +130,7 @@ export const organizeRealTokens = (
           groups.push({
             label: groupName,
             tokens,
-            type: groupName === "Fonts" ? "fonts" : "base",
+            type: "base",
           });
         }
       }
