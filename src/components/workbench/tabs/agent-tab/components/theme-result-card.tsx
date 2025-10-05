@@ -67,9 +67,14 @@ export function ThemeResultCard({
     }));
   };
 
-  // Auto-save first theme without showing Save button
+  // Auto-save first theme without showing Save button (only after auto-apply)
   useEffect(() => {
-    if (isFirstTheme && isAuthenticated && !firstCreatedThemeId) {
+    if (
+      isFirstTheme &&
+      isAuthenticated &&
+      !firstCreatedThemeId &&
+      hasAutoApplied
+    ) {
       const autoSaveFirstTheme = async () => {
         setIsSaving(true);
         try {
@@ -122,7 +127,7 @@ export function ThemeResultCard({
 
       autoSaveFirstTheme();
     }
-  }, [isFirstTheme, isAuthenticated, firstCreatedThemeId]);
+  }, [isFirstTheme, isAuthenticated, firstCreatedThemeId, hasAutoApplied]);
 
   const handleUpdateTheme = async () => {
     if (!canSave || !firstCreatedThemeId) return;
