@@ -14,7 +14,6 @@ import { useTheme } from "@/hooks/use-theme";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
-import { useAgentSessionStore } from "@/stores/agent-session-store";
 import { AssistantAvatar } from "./components/assistant-avatar";
 import { ChatEmptyState } from "./components/chat-empty-state";
 import { MessageAttachment } from "./components/message-attachment";
@@ -31,16 +30,8 @@ interface AgentTabProps {
 export function AgentTab({ initialPrompt }: AgentTabProps) {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
-  const { clearSession, markThemeGenerated } = useAgentSessionStore();
   const { isAuthenticated } = useTheme();
   const processedThemesRef = useRef<Set<string>>(new Set());
-
-  // Clear agent session when component unmounts or when starting fresh
-  useEffect(() => {
-    return () => {
-      clearSession();
-    };
-  }, [clearSession]);
 
   const {
     messages,
@@ -128,7 +119,6 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
           if (response.ok) {
             const result = await response.json();
-            markThemeGenerated();
             toast.success(`"${result.theme.name}" saved!`);
           }
         } catch (error) {
@@ -138,7 +128,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
       saveTheme();
     }
-  }, [messages, isAuthenticated, handleApplyTheme, markThemeGenerated]);
+  }, [messages, isAuthenticated, handleApplyTheme]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
