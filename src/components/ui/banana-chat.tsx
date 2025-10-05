@@ -10,6 +10,7 @@ const BananaIconWrapper = ({ size }: { size: number }) => (
     <BananaIcon className="w-full h-full" />
   </div>
 );
+
 import { AIChat } from "@/components/ui/ai-chat";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib";

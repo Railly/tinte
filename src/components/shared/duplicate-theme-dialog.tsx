@@ -1,5 +1,6 @@
 "use client";
 
+import { Copy, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Copy, Loader2 } from "lucide-react";
 
 interface DuplicateThemeDialogProps {
   isOpen: boolean;
@@ -76,8 +76,7 @@ export function DuplicateThemeDialog({
           <DialogDescription>
             {isBuiltInTheme
               ? "Save this built-in theme to your collection with a custom name."
-              : "Create a copy of this theme with a new name."
-            }
+              : "Create a copy of this theme with a new name."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

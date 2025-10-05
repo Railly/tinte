@@ -23,8 +23,8 @@ import {
   VSCODE_TOKEN_GROUPS,
 } from "@/lib/vscode-token-utils";
 import { useThemeContext } from "@/providers/theme";
-import { useVSCodeOverrides } from "../hooks/use-provider-overrides";
 import { useClearOverrides } from "../hooks/use-clear-overrides";
+import { useVSCodeOverrides } from "../hooks/use-provider-overrides";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
 
 // Comprehensive editor color groups - ALL tokens from editorColorMap organized logically
@@ -716,7 +716,6 @@ export function VSCodeOverridesPanel({
     ),
   );
 
-
   // Determine if we should show skeletons or real data
   const currentColors = tinteTheme?.[currentMode];
   const shouldShowSkeletons = !mounted || !vscodeOverrides.hasAnyOverrides;
@@ -878,7 +877,6 @@ export function VSCodeOverridesPanel({
     return currentColors?.[mappedKey];
   };
 
-
   return (
     <div className="flex flex-col h-full">
       {onSearchChange && (
@@ -944,13 +942,15 @@ export function VSCodeOverridesPanel({
                 onOpenChange={() => toggleTokenGroup(group.label)}
               >
                 <CollapsibleTrigger
-                  className={`flex w-full items-center justify-between uppercase ${openTokenGroups[group.label] ? "rounded-t-md" : "rounded-md"
-                    } border border-border px-3 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground transition-colors`}
+                  className={`flex w-full items-center justify-between uppercase ${
+                    openTokenGroups[group.label] ? "rounded-t-md" : "rounded-md"
+                  } border border-border px-3 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground transition-colors`}
                 >
                   <span>{group.label}</span>
                   <ChevronDown
-                    className={`h-4 w-4 transition-transform ${openTokenGroups[group.label] ? "rotate-180" : ""
-                      }`}
+                    className={`h-4 w-4 transition-transform ${
+                      openTokenGroups[group.label] ? "rotate-180" : ""
+                    }`}
                   />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="border border-t-0 border-border rounded-b-md bg-muted/20">
@@ -994,15 +994,17 @@ export function VSCodeOverridesPanel({
                 onOpenChange={() => toggleEditorGroup(group.label)}
               >
                 <CollapsibleTrigger
-                  className={`flex w-full items-center justify-between uppercase ${openEditorGroups[group.label]
+                  className={`flex w-full items-center justify-between uppercase ${
+                    openEditorGroups[group.label]
                       ? "rounded-t-md"
                       : "rounded-md"
-                    } border border-border px-3 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground transition-colors`}
+                  } border border-border px-3 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground transition-colors`}
                 >
                   <span>{group.label}</span>
                   <ChevronDown
-                    className={`h-4 w-4 transition-transform ${openEditorGroups[group.label] ? "rotate-180" : ""
-                      }`}
+                    className={`h-4 w-4 transition-transform ${
+                      openEditorGroups[group.label] ? "rotate-180" : ""
+                    }`}
                   />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="border border-t-0 border-border rounded-b-md bg-muted/20">

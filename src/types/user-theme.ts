@@ -1,11 +1,11 @@
 // Re-export unified types from theme-types for backwards compatibility
 export type {
   Theme,
-  ThemeWithMetadata,
   ThemeColors,
   ThemeOverrides,
-  VSCodeOverride,
   ThemeTransformOptions,
+  ThemeWithMetadata,
+  VSCodeOverride,
 } from "@/lib/theme-types";
 
 import type { Theme, ThemeWithMetadata } from "@/lib/theme-types";

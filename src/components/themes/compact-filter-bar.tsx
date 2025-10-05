@@ -1,7 +1,21 @@
 "use client";
 
-import { Filter, Grid3X3, List, Loader2, Search, SlidersHorizontal } from "lucide-react";
+import {
+  Filter,
+  Grid3X3,
+  Heart,
+  List,
+  Loader2,
+  Search,
+  SlidersHorizontal,
+  User,
+  Users,
+} from "lucide-react";
 import { useState } from "react";
+import RaycastIcon from "@/components/shared/icons/raycast";
+import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import Logo from "@/components/shared/logo";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,12 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import Logo from "@/components/shared/logo";
-import RaycastIcon from "@/components/shared/icons/raycast";
-import TweakCNIcon from "@/components/shared/icons/tweakcn";
-import { Heart, User, Users } from "lucide-react";
 
 interface CompactFilterBarProps {
   searchTerm: string;
@@ -95,25 +104,29 @@ export function CompactFilterBar({
   const [filterOpen, setFilterOpen] = useState(false);
 
   // Get current category info
-  const currentCategory = CATEGORY_OPTIONS.find(cat => cat.value === activeCategory);
+  const currentCategory = CATEGORY_OPTIONS.find(
+    (cat) => cat.value === activeCategory,
+  );
 
   // Add user-specific categories if session exists
   const allCategories = [
     ...CATEGORY_OPTIONS,
-    ...(session ? [
-      {
-        value: "user",
-        label: "My Themes",
-        icon: User,
-        description: "Your personal themes",
-      },
-      {
-        value: "favorites",
-        label: "Favorites",
-        icon: Heart,
-        description: "Your liked themes",
-      },
-    ] : []),
+    ...(session
+      ? [
+          {
+            value: "user",
+            label: "My Themes",
+            icon: User,
+            description: "Your personal themes",
+          },
+          {
+            value: "favorites",
+            label: "Favorites",
+            icon: Heart,
+            description: "Your liked themes",
+          },
+        ]
+      : []),
   ];
 
   const activeFiltersCount = [
@@ -151,7 +164,9 @@ export function CompactFilterBar({
             {currentCategory?.icon && (
               <currentCategory.icon className="w-4 h-4 flex-shrink-0" />
             )}
-            <span className="hidden sm:inline truncate">{currentCategory?.label || "Category"}</span>
+            <span className="hidden sm:inline truncate">
+              {currentCategory?.label || "Category"}
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
@@ -255,7 +270,10 @@ export function CompactFilterBar({
                 )}
                 {sortBy !== "relevance" && (
                   <div className="flex items-center justify-between text-xs">
-                    <span>Sort: {SORT_OPTIONS.find(opt => opt.value === sortBy)?.label}</span>
+                    <span>
+                      Sort:{" "}
+                      {SORT_OPTIONS.find((opt) => opt.value === sortBy)?.label}
+                    </span>
                     <Button
                       variant="ghost"
                       size="sm"

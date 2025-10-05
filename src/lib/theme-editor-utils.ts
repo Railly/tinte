@@ -58,7 +58,7 @@ export const createSkeletonGroups = (): TokenGroup[] => {
 
 // Organize real tokens into groups
 export const organizeRealTokens = (
-  currentTokens: Record<string, string>
+  currentTokens: Record<string, string>,
 ): TokenGroup[] => {
   const groups: TokenGroup[] = [];
 
@@ -67,7 +67,7 @@ export const organizeRealTokens = (
     const tokens = group.keys
       .map((key) => [key, currentTokens[key]] as [string, string])
       .filter(
-        ([_, value]) => typeof value === "string" && value.startsWith("#")
+        ([_, value]) => typeof value === "string" && value.startsWith("#"),
       );
 
     if (tokens.length > 0) {
@@ -87,7 +87,7 @@ export const organizeRealTokens = (
           (key) =>
             currentTokens[key] &&
             typeof currentTokens[key] === "string" &&
-            currentTokens[key].trim().length > 0
+            currentTokens[key].trim().length > 0,
         );
 
         if (hasValidShadowData) {
@@ -109,7 +109,8 @@ export const organizeRealTokens = (
             return [key, value] as [string, string];
           })
           .filter(
-            ([_, value]) => typeof value === "string" && value.trim().length > 0
+            ([_, value]) =>
+              typeof value === "string" && value.trim().length > 0,
           );
 
         if (tokens.length > 0) {
@@ -130,7 +131,7 @@ export const organizeRealTokens = (
           return [key, value] as [string, string];
         })
         .filter(
-          ([_, value]) => typeof value === "string" && value.trim().length > 0
+          ([_, value]) => typeof value === "string" && value.trim().length > 0,
         );
 
       if (tokens.length > 0) {

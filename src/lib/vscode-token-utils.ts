@@ -15,41 +15,101 @@ export const VSCODE_TOKEN_GROUPS: VSCodeTokenGroup[] = [
     label: "Text & Basic",
     description: "Default text and basic syntax elements",
     tokens: [
-      { key: "plain", displayName: "Plain Text", description: "Default text color" },
-      { key: "punctuation", displayName: "Punctuation", description: "Brackets, semicolons, commas" },
+      {
+        key: "plain",
+        displayName: "Plain Text",
+        description: "Default text color",
+      },
+      {
+        key: "punctuation",
+        displayName: "Punctuation",
+        description: "Brackets, semicolons, commas",
+      },
     ],
   },
   {
     label: "Type Definitions",
     description: "Classes, interfaces, types, and type parameters",
     tokens: [
-      { key: "classes", displayName: "Classes", description: "Class names and definitions" },
-      { key: "interfaces", displayName: "Interfaces", description: "Interface names" },
-      { key: "structs", displayName: "Structs", description: "Struct definitions" },
+      {
+        key: "classes",
+        displayName: "Classes",
+        description: "Class names and definitions",
+      },
+      {
+        key: "interfaces",
+        displayName: "Interfaces",
+        description: "Interface names",
+      },
+      {
+        key: "structs",
+        displayName: "Structs",
+        description: "Struct definitions",
+      },
       { key: "enums", displayName: "Enums", description: "Enum definitions" },
       { key: "types", displayName: "Types", description: "Type annotations" },
-      { key: "typeParameters", displayName: "Type Parameters", description: "Generic type parameters" },
+      {
+        key: "typeParameters",
+        displayName: "Type Parameters",
+        description: "Generic type parameters",
+      },
     ],
   },
   {
     label: "Functions & Methods",
     description: "Function and method definitions and calls",
     tokens: [
-      { key: "functions", displayName: "Functions", description: "Function names and definitions" },
-      { key: "methods", displayName: "Methods", description: "Method calls and definitions" },
-      { key: "calls", displayName: "Function Calls", description: "Function call expressions" },
+      {
+        key: "functions",
+        displayName: "Functions",
+        description: "Function names and definitions",
+      },
+      {
+        key: "methods",
+        displayName: "Methods",
+        description: "Method calls and definitions",
+      },
+      {
+        key: "calls",
+        displayName: "Function Calls",
+        description: "Function call expressions",
+      },
     ],
   },
   {
     label: "Variables & Properties",
     description: "Variable declarations and object properties",
     tokens: [
-      { key: "variables", displayName: "Variables", description: "Local variables" },
-      { key: "variablesOther", displayName: "Object Variables", description: "Object variables" },
-      { key: "globalVariables", displayName: "Global Variables", description: "Global scope variables" },
-      { key: "localVariables", displayName: "Local Variables", description: "Local scope variables" },
-      { key: "parameters", displayName: "Parameters", description: "Function parameters" },
-      { key: "properties", displayName: "Properties", description: "Object properties" },
+      {
+        key: "variables",
+        displayName: "Variables",
+        description: "Local variables",
+      },
+      {
+        key: "variablesOther",
+        displayName: "Object Variables",
+        description: "Object variables",
+      },
+      {
+        key: "globalVariables",
+        displayName: "Global Variables",
+        description: "Global scope variables",
+      },
+      {
+        key: "localVariables",
+        displayName: "Local Variables",
+        description: "Local scope variables",
+      },
+      {
+        key: "parameters",
+        displayName: "Parameters",
+        description: "Function parameters",
+      },
+      {
+        key: "properties",
+        displayName: "Properties",
+        description: "Object properties",
+      },
       { key: "keys", displayName: "Object Keys", description: "Object keys" },
     ],
   },
@@ -57,29 +117,69 @@ export const VSCODE_TOKEN_GROUPS: VSCodeTokenGroup[] = [
     label: "Language Constructs",
     description: "Keywords, operators, and control flow",
     tokens: [
-      { key: "keywords", displayName: "Keywords", description: "if, for, while, etc." },
-      { key: "keywordsControl", displayName: "Control Keywords", description: "import, export, return" },
-      { key: "storageModifiers", displayName: "Storage Modifiers", description: "const, let, var, public, private" },
-      { key: "operators", displayName: "Operators", description: "+, -, *, /, =, etc." },
+      {
+        key: "keywords",
+        displayName: "Keywords",
+        description: "if, for, while, etc.",
+      },
+      {
+        key: "keywordsControl",
+        displayName: "Control Keywords",
+        description: "import, export, return",
+      },
+      {
+        key: "storageModifiers",
+        displayName: "Storage Modifiers",
+        description: "const, let, var, public, private",
+      },
+      {
+        key: "operators",
+        displayName: "Operators",
+        description: "+, -, *, /, =, etc.",
+      },
     ],
   },
   {
     label: "Literals & Constants",
     description: "String, number, and boolean literals",
     tokens: [
-      { key: "strings", displayName: "Strings", description: "String literals" },
-      { key: "stringEscapeSequences", displayName: "String Escapes", description: "\\n, \\t, etc." },
-      { key: "numbers", displayName: "Numbers", description: "Numeric literals" },
+      {
+        key: "strings",
+        displayName: "Strings",
+        description: "String literals",
+      },
+      {
+        key: "stringEscapeSequences",
+        displayName: "String Escapes",
+        description: "\\n, \\t, etc.",
+      },
+      {
+        key: "numbers",
+        displayName: "Numbers",
+        description: "Numeric literals",
+      },
       { key: "booleans", displayName: "Booleans", description: "true, false" },
-      { key: "constants", displayName: "Constants", description: "CONSTANTS, readonly" },
+      {
+        key: "constants",
+        displayName: "Constants",
+        description: "CONSTANTS, readonly",
+      },
     ],
   },
   {
     label: "Comments & Documentation",
     description: "Regular and documentation comments",
     tokens: [
-      { key: "comments", displayName: "Comments", description: "Regular comments" },
-      { key: "docComments", displayName: "Doc Comments", description: "JSDoc, docstrings" },
+      {
+        key: "comments",
+        displayName: "Comments",
+        description: "Regular comments",
+      },
+      {
+        key: "docComments",
+        displayName: "Doc Comments",
+        description: "JSDoc, docstrings",
+      },
     ],
   },
   {
@@ -87,8 +187,16 @@ export const VSCODE_TOKEN_GROUPS: VSCodeTokenGroup[] = [
     description: "HTML, XML, JSX elements and attributes",
     tokens: [
       { key: "tags", displayName: "Tags", description: "HTML/XML tags" },
-      { key: "jsxTags", displayName: "JSX Tags", description: "JSX component tags" },
-      { key: "attributes", displayName: "Attributes", description: "HTML attributes" },
+      {
+        key: "jsxTags",
+        displayName: "JSX Tags",
+        description: "JSX component tags",
+      },
+      {
+        key: "attributes",
+        displayName: "Attributes",
+        description: "HTML attributes",
+      },
       { key: "urls", displayName: "URLs", description: "Links in comments" },
     ],
   },
@@ -96,12 +204,32 @@ export const VSCODE_TOKEN_GROUPS: VSCodeTokenGroup[] = [
     label: "Advanced Constructs",
     description: "Namespaces, modules, decorators, and other advanced features",
     tokens: [
-      { key: "namespaces", displayName: "Namespaces", description: "Namespace declarations" },
+      {
+        key: "namespaces",
+        displayName: "Namespaces",
+        description: "Namespace declarations",
+      },
       { key: "modules", displayName: "Modules", description: "Module imports" },
-      { key: "macros", displayName: "Macros", description: "Preprocessor macros" },
-      { key: "preprocessor", displayName: "Preprocessor", description: "#define, #include" },
-      { key: "exceptions", displayName: "Exceptions", description: "try, catch, throw" },
-      { key: "decorators", displayName: "Decorators", description: "@decorators" },
+      {
+        key: "macros",
+        displayName: "Macros",
+        description: "Preprocessor macros",
+      },
+      {
+        key: "preprocessor",
+        displayName: "Preprocessor",
+        description: "#define, #include",
+      },
+      {
+        key: "exceptions",
+        displayName: "Exceptions",
+        description: "try, catch, throw",
+      },
+      {
+        key: "decorators",
+        displayName: "Decorators",
+        description: "@decorators",
+      },
       { key: "labels", displayName: "Labels", description: "goto labels" },
     ],
   },
@@ -127,7 +255,12 @@ export function createVSCodeTokenSkeletons(): VSCodeTokenGroup[] {
 
 export function hasValidVSCodeTokens(tokenColors?: TokenColorMap): boolean {
   if (!tokenColors) return false;
-  
-  const requiredTokens: SemanticToken[] = ["plain", "functions", "keywords", "strings"];
+
+  const requiredTokens: SemanticToken[] = [
+    "plain",
+    "functions",
+    "keywords",
+    "strings",
+  ];
   return requiredTokens.every((token) => token in tokenColors);
 }

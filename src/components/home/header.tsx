@@ -2,7 +2,7 @@
 
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import GithubIcon from "@/components/shared/icons/github";
 import TwitterIcon from "@/components/shared/icons/twitter";
 import Logo from "@/components/shared/logo";
@@ -88,7 +88,11 @@ export function Header() {
 
             <UserDropdown avatarSize="sm" />
 
-            <Button size="sm" className="h-7 px-3 text-xs" onClick={handleGetStarted}>
+            <Button
+              size="sm"
+              className="h-7 px-3 text-xs"
+              onClick={handleGetStarted}
+            >
               Get Started
             </Button>
           </div>

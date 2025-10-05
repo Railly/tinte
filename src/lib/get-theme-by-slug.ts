@@ -9,17 +9,23 @@ import type { UserThemeData } from "@/types/user-theme";
  */
 export async function getThemeBySlug(
   slug: string,
-  preloadedThemes: UserThemeData[] = []
+  preloadedThemes: UserThemeData[] = [],
 ): Promise<UserThemeData | null> {
   // First, try to find in pre-loaded themes
-  const themeInPreloaded = preloadedThemes.find(theme => theme.slug === slug);
+  const themeInPreloaded = preloadedThemes.find((theme) => theme.slug === slug);
   if (themeInPreloaded) {
-    console.log('🎨 [Server] Found theme in pre-loaded themes:', slug);
+    console.log("🎨 [Server] Found theme in pre-loaded themes:", slug);
     return themeInPreloaded;
   }
 
   // If not found and looks like a valid theme slug, fetch from database
-  if (!slug || slug.match(/^[0-9a-f-]{36}$/i) || slug === 'default' || slug === 'theme' || slug === 'new') {
+  if (
+    !slug ||
+    slug.match(/^[0-9a-f-]{36}$/i) ||
+    slug === "default" ||
+    slug === "theme" ||
+    slug === "new"
+  ) {
     return null;
   }
 
@@ -31,7 +37,7 @@ export async function getThemeBySlug(
       .limit(1);
 
     if (themeData.length === 0) {
-      console.log('❌ [Server] Theme not found:', slug);
+      console.log("❌ [Server] Theme not found:", slug);
       return null;
     }
 
@@ -92,7 +98,8 @@ export async function getThemeBySlug(
       provider: "tinte" as const,
       downloads: 0,
       likes: 0,
-      createdAt: themeRecord.created_at?.toISOString() || new Date().toISOString(),
+      createdAt:
+        themeRecord.created_at?.toISOString() || new Date().toISOString(),
 
       // Structured overrides
       overrides: {
@@ -102,10 +109,14 @@ export async function getThemeBySlug(
       },
     };
 
-    console.log('✅ [Server] Found theme by slug in database:', slug, transformedTheme.name);
+    console.log(
+      "✅ [Server] Found theme by slug in database:",
+      slug,
+      transformedTheme.name,
+    );
     return transformedTheme;
   } catch (error) {
-    console.error('💥 [Server] Error fetching theme by slug:', error);
+    console.error("💥 [Server] Error fetching theme by slug:", error);
     return null;
   }
 }

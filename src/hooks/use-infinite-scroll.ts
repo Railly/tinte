@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { UserThemeData } from "@/types/user-theme";
 
 interface InfiniteScrollState {
@@ -15,13 +15,17 @@ interface InfiniteScrollOptions {
 }
 
 export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
-  const { initialThemes = [], limit = 20, sentinelId = "infinite-scroll-sentinel" } = options;
-  
+  const {
+    initialThemes = [],
+    limit = 20,
+    sentinelId = "infinite-scroll-sentinel",
+  } = options;
+
   const [state, setState] = useState<InfiniteScrollState>({
     themes: initialThemes,
     loading: false,
     hasMore: initialThemes.length >= limit,
-    error: null
+    error: null,
   });
 
   const pageRef = useRef(1);
@@ -31,11 +35,13 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
     if (isLoadingRef.current || !state.hasMore) return;
 
     isLoadingRef.current = true;
-    setState(prev => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
       const nextPage = pageRef.current + 1;
-      const response = await fetch(`/api/themes/public?page=${nextPage}&limit=${limit}`);
+      const response = await fetch(
+        `/api/themes/public?page=${nextPage}&limit=${limit}`,
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch themes");
@@ -43,19 +49,19 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
 
       const data = await response.json();
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         themes: [...prev.themes, ...data.themes],
         loading: false,
-        hasMore: data.pagination.hasMore
+        hasMore: data.pagination.hasMore,
       }));
 
       pageRef.current = nextPage;
     } catch (error) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : "Unknown error"
+        error: error instanceof Error ? error.message : "Unknown error",
       }));
     } finally {
       isLoadingRef.current = false;
@@ -80,7 +86,7 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
             loadMore();
           }
         },
-        { threshold: 0.5, rootMargin: "50px" }
+        { threshold: 0.5, rootMargin: "50px" },
       );
 
       observer.observe(sentinel);
@@ -101,7 +107,7 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
       themes: newThemes,
       loading: false,
       hasMore: true,
-      error: null
+      error: null,
     });
     pageRef.current = 1;
     isLoadingRef.current = false;
@@ -110,6 +116,6 @@ export function useInfiniteScroll(options: InfiniteScrollOptions = {}) {
   return {
     ...state,
     loadMore,
-    reset
+    reset,
   };
 }

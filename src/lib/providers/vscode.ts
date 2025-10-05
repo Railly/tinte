@@ -175,14 +175,22 @@ export function convertThemeToVSCode(
         dark: themeData.rawTheme.dark || themeData.rawTheme,
       };
       const tinteTheme = shadcnToTinte(shadcnTheme);
-      const vscodeTheme = convertTinteToVSCode(tinteTheme, "Tinte Theme", overrides) as {
+      const vscodeTheme = convertTinteToVSCode(
+        tinteTheme,
+        "Tinte Theme",
+        overrides,
+      ) as {
         dark: VSCodeTheme;
         light: VSCodeTheme;
       };
       return vscodeTheme || fallbackTheme;
     } else {
       const tinteTheme = themeData.rawTheme;
-      const vscodeTheme = convertTinteToVSCode(tinteTheme, "Tinte Theme", overrides) as {
+      const vscodeTheme = convertTinteToVSCode(
+        tinteTheme,
+        "Tinte Theme",
+        overrides,
+      ) as {
         dark: VSCodeTheme;
         light: VSCodeTheme;
       };
@@ -566,7 +574,11 @@ function convertTinteToVSCode(
     displayName: `${name} (Light)`,
     type: "light",
     colors: getVSCodeColors(tinteTheme.light, "light"),
-    tokenColors: generateTokenColors(tinteTheme.light, defaultTokenColorMap, overrides),
+    tokenColors: generateTokenColors(
+      tinteTheme.light,
+      defaultTokenColorMap,
+      overrides,
+    ),
   };
 
   const darkTheme: VSCodeTheme = {
@@ -574,7 +586,11 @@ function convertTinteToVSCode(
     displayName: `${name} (Dark)`,
     type: "dark",
     colors: getVSCodeColors(tinteTheme.dark, "dark"),
-    tokenColors: generateTokenColors(tinteTheme.dark, defaultTokenColorMap, overrides),
+    tokenColors: generateTokenColors(
+      tinteTheme.dark,
+      defaultTokenColorMap,
+      overrides,
+    ),
   };
 
   return { light: lightTheme, dark: darkTheme };

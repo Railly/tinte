@@ -1,6 +1,6 @@
 import { convertTinteToShadcn } from "@/lib/providers/shadcn";
-import type { TinteTheme } from "@/types/tinte";
 import type { ShadcnTheme } from "@/types/shadcn";
+import type { TinteTheme } from "@/types/tinte";
 
 export function getShadcnPaletteWithOverrides(
   tinteTheme: TinteTheme,

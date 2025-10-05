@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
-import { ChevronDown, X, RefreshCw } from "lucide-react";
 import { formatHex, oklch } from "culori";
-import Logo from "./logo";
+import { ChevronDown, RefreshCw, X } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ColorPickerInput } from "./color-picker-input";
+import Logo from "./logo";
 
 type ShadcnTokens = Record<string, string>;
 
@@ -25,11 +25,24 @@ const TOKEN_GROUPS = [
   },
   {
     label: "Interactive Elements",
-    tokens: ["primary", "primary-foreground", "secondary", "secondary-foreground", "accent", "accent-foreground"],
+    tokens: [
+      "primary",
+      "primary-foreground",
+      "secondary",
+      "secondary-foreground",
+      "accent",
+      "accent-foreground",
+    ],
   },
   {
     label: "Forms & States",
-    tokens: ["border", "input", "ring", "destructive", "destructive-foreground"],
+    tokens: [
+      "border",
+      "input",
+      "ring",
+      "destructive",
+      "destructive-foreground",
+    ],
   },
   {
     label: "Charts",
@@ -37,7 +50,16 @@ const TOKEN_GROUPS = [
   },
   {
     label: "Sidebar",
-    tokens: ["sidebar", "sidebar-foreground", "sidebar-primary", "sidebar-primary-foreground", "sidebar-accent", "sidebar-accent-foreground", "sidebar-border", "sidebar-ring"],
+    tokens: [
+      "sidebar",
+      "sidebar-foreground",
+      "sidebar-primary",
+      "sidebar-primary-foreground",
+      "sidebar-accent",
+      "sidebar-accent-foreground",
+      "sidebar-border",
+      "sidebar-ring",
+    ],
   },
 ] as const;
 
@@ -48,27 +70,32 @@ interface FloatingThemeEditorProps {
 export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState<ShadcnTheme>({ light: {}, dark: {} });
-  const [originalFormats, setOriginalFormats] = useState<Record<string, Record<string, string>>>({ light: {}, dark: {} });
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [originalFormats, setOriginalFormats] = useState<
+    Record<string, Record<string, string>>
+  >({ light: {}, dark: {} });
+  const [mode, setMode] = useState<"light" | "dark">("light");
   const [loading, setLoading] = useState(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     "Background & Text": true,
     "Cards & Surfaces": false,
     "Interactive Elements": false,
     "Forms & States": false,
-    "Charts": false,
-    "Sidebar": false,
+    Charts: false,
+    Sidebar: false,
   });
 
   // Detect color format
-  const detectColorFormat = useCallback((colorValue: string): 'hex' | 'oklch' | 'rgb' | 'hsl' | 'unknown' => {
-    const trimmed = colorValue.trim();
-    if (trimmed.startsWith('#')) return 'hex';
-    if (trimmed.startsWith('oklch(')) return 'oklch';
-    if (trimmed.startsWith('rgb(')) return 'rgb';
-    if (trimmed.startsWith('hsl(')) return 'hsl';
-    return 'unknown';
-  }, []);
+  const detectColorFormat = useCallback(
+    (colorValue: string): "hex" | "oklch" | "rgb" | "hsl" | "unknown" => {
+      const trimmed = colorValue.trim();
+      if (trimmed.startsWith("#")) return "hex";
+      if (trimmed.startsWith("oklch(")) return "oklch";
+      if (trimmed.startsWith("rgb(")) return "rgb";
+      if (trimmed.startsWith("hsl(")) return "hsl";
+      return "unknown";
+    },
+    [],
+  );
 
   // Convert any color to hex for color picker
   const convertToHex = useCallback((colorValue: string): string => {
@@ -76,7 +103,7 @@ export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
       const trimmed = colorValue.trim();
 
       // If it's already hex, return it
-      if (trimmed.startsWith('#')) {
+      if (trimmed.startsWith("#")) {
         return trimmed;
       }
 
@@ -84,56 +111,60 @@ export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
       const colorObj = oklch(trimmed);
       if (colorObj) {
         const hex = formatHex(colorObj);
-        return hex || '#000000';
+        return hex || "#000000";
       }
 
-      return '#000000';
+      return "#000000";
     } catch {
-      return '#000000';
+      return "#000000";
     }
   }, []);
 
   // Convert hex back to original format
-  const convertFromHex = useCallback((hexColor: string, originalValue: string): string => {
-    try {
-      const format = detectColorFormat(originalValue);
+  const convertFromHex = useCallback(
+    (hexColor: string, originalValue: string): string => {
+      try {
+        const format = detectColorFormat(originalValue);
 
-      switch (format) {
-        case 'hex':
-          return hexColor;
+        switch (format) {
+          case "hex":
+            return hexColor;
 
-        case 'oklch':
-          const oklchColor = oklch(hexColor);
-          if (oklchColor) {
-            const l = (oklchColor.l || 0);
-            const c = (oklchColor.c || 0);
-            const h = (oklchColor.h || 0);
+          case "oklch": {
+            const oklchColor = oklch(hexColor);
+            if (oklchColor) {
+              const l = oklchColor.l || 0;
+              const c = oklchColor.c || 0;
+              const h = oklchColor.h || 0;
 
-            // Match the original format style
-            if (originalValue.includes(' / ')) {
-              // Handle alpha values like "oklch(1 0 0 / 10%)"
-              const alphaMatch = originalValue.match(/\/\s*([\d.]+%?)/);
-              const alpha = alphaMatch ? ` / ${alphaMatch[1]}` : '';
-              return `oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(3)}${alpha})`;
-            } else {
-              return `oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(3)})`;
+              // Match the original format style
+              if (originalValue.includes(" / ")) {
+                // Handle alpha values like "oklch(1 0 0 / 10%)"
+                const alphaMatch = originalValue.match(/\/\s*([\d.]+%?)/);
+                const alpha = alphaMatch ? ` / ${alphaMatch[1]}` : "";
+                return `oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(3)}${alpha})`;
+              } else {
+                return `oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(3)})`;
+              }
             }
+            return originalValue;
           }
-          return originalValue;
 
-        default:
-          return hexColor;
+          default:
+            return hexColor;
+        }
+      } catch {
+        return originalValue;
       }
-    } catch {
-      return originalValue;
-    }
-  }, [detectColorFormat]);
+    },
+    [detectColorFormat],
+  );
 
   // Load theme from globals.css
   const loadTheme = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/read-globals');
+      const response = await fetch("/api/read-globals");
       if (response.ok) {
         const data = await response.json();
         setTheme(data.theme);
@@ -155,78 +186,84 @@ export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
         // Apply to DOM
         applyThemeToDom(data.theme, mode);
       } else {
-        console.error('Failed to load theme from globals.css');
+        console.error("Failed to load theme from globals.css");
       }
     } catch (error) {
-      console.error('Error loading theme:', error);
+      console.error("Error loading theme:", error);
     }
     setLoading(false);
   }, [mode]);
 
   // Apply theme to DOM
-  const applyThemeToDom = useCallback((currentTheme: ShadcnTheme, currentMode: 'light' | 'dark') => {
-    const root = document.documentElement;
+  const applyThemeToDom = useCallback(
+    (currentTheme: ShadcnTheme, currentMode: "light" | "dark") => {
+      const root = document.documentElement;
 
-    // Set mode class
-    if (currentMode === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+      // Set mode class
+      if (currentMode === "dark") {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
 
-    // Apply CSS custom properties
-    const tokens = currentTheme[currentMode];
-    Object.entries(tokens).forEach(([key, value]) => {
-      root.style.setProperty(`--${key}`, value);
-    });
-  }, []);
+      // Apply CSS custom properties
+      const tokens = currentTheme[currentMode];
+      Object.entries(tokens).forEach(([key, value]) => {
+        root.style.setProperty(`--${key}`, value);
+      });
+    },
+    [],
+  );
 
   // Initialize theme
   useEffect(() => {
     const root = document.documentElement;
-    const isDark = root.classList.contains('dark');
-    setMode(isDark ? 'dark' : 'light');
+    const isDark = root.classList.contains("dark");
+    setMode(isDark ? "dark" : "light");
     loadTheme();
   }, [loadTheme]);
 
-  const handleTokenEdit = useCallback((token: string, hexColor: string) => {
-    const originalValue = originalFormats[mode][token] || hexColor;
-    const newValue = convertFromHex(hexColor, originalValue);
+  const handleTokenEdit = useCallback(
+    (token: string, hexColor: string) => {
+      const originalValue = originalFormats[mode][token] || hexColor;
+      const newValue = convertFromHex(hexColor, originalValue);
 
-    setTheme(prev => {
-      const updated = {
+      setTheme((prev) => {
+        const updated = {
+          ...prev,
+          [mode]: {
+            ...prev[mode],
+            [token]: newValue,
+          },
+        };
+
+        // Apply immediately to DOM
+        applyThemeToDom(updated, mode);
+        onChange?.(updated);
+
+        return updated;
+      });
+
+      // Update original formats with new value
+      setOriginalFormats((prev) => ({
         ...prev,
         [mode]: {
           ...prev[mode],
           [token]: newValue,
         },
-      };
-
-      // Apply immediately to DOM
-      applyThemeToDom(updated, mode);
-      onChange?.(updated);
-
-      return updated;
-    });
-
-    // Update original formats with new value
-    setOriginalFormats(prev => ({
-      ...prev,
-      [mode]: {
-        ...prev[mode],
-        [token]: newValue,
-      }
-    }));
-  }, [mode, originalFormats, convertFromHex, applyThemeToDom, onChange]);
+      }));
+    },
+    [mode, originalFormats, convertFromHex, applyThemeToDom, onChange],
+  );
 
   const handleModeToggle = useCallback(() => {
-    const newMode = mode === 'light' ? 'dark' : 'light';
+    const newMode = mode === "light" ? "dark" : "light";
     setMode(newMode);
     applyThemeToDom(theme, newMode);
   }, [mode, theme, applyThemeToDom]);
 
   const toggleGroup = useCallback((groupName: string) => {
-    setOpenGroups(prev => ({
+    setOpenGroups((prev) => ({
       ...prev,
       [groupName]: !prev[groupName],
     }));
@@ -237,37 +274,40 @@ export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
     try {
       const lightTokens = Object.entries(theme.light)
         .map(([key, value]) => `  --${key}: ${value};`)
-        .join('\n');
+        .join("\n");
 
       const darkTokens = Object.entries(theme.dark)
         .map(([key, value]) => `  --${key}: ${value};`)
-        .join('\n');
+        .join("\n");
 
       const cssContent = `:root {\n${lightTokens}\n}\n\n.dark {\n${darkTokens}\n}`;
 
-      const response = await fetch('/api/write-globals', {
-        method: 'POST',
+      const response = await fetch("/api/write-globals", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ css: cssContent })
+        body: JSON.stringify({ css: cssContent }),
       });
 
       if (response.ok) {
         const result = await response.json();
-        alert('✅ ' + result.message);
+        alert(`✅ ${result.message}`);
       } else {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to write globals.css');
+        throw new Error(error.error || "Failed to write globals.css");
       }
     } catch (error) {
-      console.error('Failed to write globals.css:', error);
-      alert('❌ Failed to write globals.css: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      console.error("Failed to write globals.css:", error);
+      alert(
+        "❌ Failed to write globals.css: " +
+          (error instanceof Error ? error.message : "Unknown error"),
+      );
     }
   }, [theme]);
 
-  const availableTokens = TOKEN_GROUPS.flatMap(group =>
-    group.tokens.filter(token => theme[mode][token] !== undefined)
+  const availableTokens = TOKEN_GROUPS.flatMap((group) =>
+    group.tokens.filter((token) => theme[mode][token] !== undefined),
   );
 
   return (
@@ -305,13 +345,16 @@ export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
                   className="p-1.5 hover:bg-accent rounded-md transition-colors disabled:opacity-50"
                   title="Reload from globals.css"
                 >
-                  <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                  <RefreshCw
+                    size={16}
+                    className={loading ? "animate-spin" : ""}
+                  />
                 </button>
                 <button
                   onClick={handleModeToggle}
                   className="px-3 py-1.5 text-sm border border-border rounded-md hover:bg-accent transition-colors"
                 >
-                  {mode === 'light' ? '☀️ Light' : '🌙 Dark'}
+                  {mode === "light" ? "☀️ Light" : "🌙 Dark"}
                 </button>
                 <button
                   onClick={writeToGlobals}
@@ -338,11 +381,16 @@ export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
               ) : (
                 <div className="space-y-3">
                   {TOKEN_GROUPS.map((group) => {
-                    const groupTokens = group.tokens.filter(token => theme[mode][token] !== undefined);
+                    const groupTokens = group.tokens.filter(
+                      (token) => theme[mode][token] !== undefined,
+                    );
                     if (groupTokens.length === 0) return null;
 
                     return (
-                      <div key={group.label} className="border border-border rounded-md overflow-hidden">
+                      <div
+                        key={group.label}
+                        className="border border-border rounded-md overflow-hidden"
+                      >
                         <button
                           onClick={() => toggleGroup(group.label)}
                           className="flex w-full items-center justify-between px-3 py-2.5 text-sm font-medium hover:bg-accent/50 transition-colors"
@@ -361,16 +409,18 @@ export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
                               {groupTokens.map((token) => (
                                 <div key={token} className="space-y-1.5">
                                   <div className="flex items-center justify-between">
-                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                                       {token.replace(/_/g, "-")}
-                                    </label>
+                                    </span>
                                     <span className="text-xs text-muted-foreground font-mono">
                                       {detectColorFormat(theme[mode][token])}
                                     </span>
                                   </div>
                                   <ColorPickerInput
                                     color={convertToHex(theme[mode][token])}
-                                    onChange={(hexColor) => handleTokenEdit(token, hexColor)}
+                                    onChange={(hexColor) =>
+                                      handleTokenEdit(token, hexColor)
+                                    }
                                   />
                                 </div>
                               ))}
@@ -387,8 +437,14 @@ export function FloatingThemeEditor({ onChange }: FloatingThemeEditorProps) {
             {/* Footer */}
             <div className="p-4 border-t border-border bg-muted/50">
               <div className="text-xs text-muted-foreground space-y-1">
-                <p>• Changes apply instantly • Original formats preserved (oklch→oklch, hex→hex)</p>
-                <p>• Use reload button to refresh from globals.css • Save writes to file</p>
+                <p>
+                  • Changes apply instantly • Original formats preserved
+                  (oklch→oklch, hex→hex)
+                </p>
+                <p>
+                  • Use reload button to refresh from globals.css • Save writes
+                  to file
+                </p>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { eq } from "drizzle-orm";
 import { convertTinteToVSCode } from "@/lib/providers/vscode";
 import type { TinteTheme } from "@/types/tinte";
 
@@ -11,19 +11,28 @@ interface RouteContext {
   }>;
 }
 
-function generateSettingsJsonContent(tinteTheme: TinteTheme, themeName: string, themeId: string, vscodeOverrides?: any): string {
+function generateSettingsJsonContent(
+  tinteTheme: TinteTheme,
+  themeName: string,
+  themeId: string,
+  vscodeOverrides?: any,
+): string {
   // Convert theme to VS Code format using the existing provider functions
-  const vscodeTheme = convertTinteToVSCode(tinteTheme, themeName, vscodeOverrides);
+  const vscodeTheme = convertTinteToVSCode(
+    tinteTheme,
+    themeName,
+    vscodeOverrides,
+  );
 
   // Extract workbench colors (UI colors) - these are the exact same colors the provider generates
   const workbenchColors = vscodeTheme.dark.colors;
 
   // Create token color customizations using textMateRules format
   const tokenColorCustomizations = {
-    textMateRules: vscodeTheme.dark.tokenColors.map(tokenColor => ({
+    textMateRules: vscodeTheme.dark.tokenColors.map((tokenColor) => ({
       scope: tokenColor.scope,
-      settings: tokenColor.settings
-    }))
+      settings: tokenColor.settings,
+    })),
   };
 
   // Create the complete settings.json content - tema-agnóstico and dominante
@@ -57,20 +66,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .limit(1);
 
     if (themeData.length === 0) {
-      return NextResponse.json(
-        { error: "Theme not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Theme not found" }, { status: 404 });
     }
 
     const themeRecord = themeData[0];
 
     // Only allow public themes for registry access
     if (!themeRecord.is_public) {
-      return NextResponse.json(
-        { error: "Theme not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Theme not found" }, { status: 404 });
     }
 
     // Reconstruct TinteTheme from database record
@@ -108,48 +111,57 @@ export async function GET(request: NextRequest, context: RouteContext) {
     };
 
     const themeName = themeRecord.name;
-    const themeSlug = themeRecord.slug || themeRecord.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const themeSlug =
+      themeRecord.slug ||
+      themeRecord.name
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
 
     // Generate the settings.json content
-    const settingsJsonContent = generateSettingsJsonContent(tinteTheme, themeName, themeRecord.id, themeRecord.vscode_override);
+    const settingsJsonContent = generateSettingsJsonContent(
+      tinteTheme,
+      themeName,
+      themeRecord.id,
+      themeRecord.vscode_override,
+    );
 
     // Escape the content for registry format
-    const escapedContent = settingsJsonContent
+    const escapedContent = settingsJsonContent;
 
     // Create shadcn registry-compatible format for VS Code settings
     const registryItem = {
-      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-      "name": `${themeSlug}-vscode-theme`,
-      "type": "registry:ui",
-      "title": `${themeName} VS Code Theme`,
-      "description": `${themeName} - VS Code theme configuration created with Tinte. Copy the settings to your VS Code settings.json file.`,
-      "author": "Tinte User",
-      "dependencies": [],
-      "registryDependencies": [],
-      "files": [
+      $schema: "https://ui.shadcn.com/schema/registry-item.json",
+      name: `${themeSlug}-vscode-theme`,
+      type: "registry:ui",
+      title: `${themeName} VS Code Theme`,
+      description: `${themeName} - VS Code theme configuration created with Tinte. Copy the settings to your VS Code settings.json file.`,
+      author: "Tinte User",
+      dependencies: [],
+      registryDependencies: [],
+      files: [
         {
-          "path": `registry/default/themes/${themeSlug}-settings.json`,
-          "content": escapedContent,
-          "type": "registry:file",
-          "target": ".vscode/settings.json"
-        }
+          path: `registry/default/themes/${themeSlug}-settings.json`,
+          content: escapedContent,
+          type: "registry:file",
+          target: ".vscode/settings.json",
+        },
       ],
-      "docs": `To use this VS Code theme glance:\\n\\n1. The .vscode/settings.json file will be created automatically in your project\\n2. This theme glance takes precedence over any installed theme for this workspace\\n3. Works with any base theme - the glance overrides colors independently\\n4. Semantic highlighting is disabled to ensure consistent appearance\\n\\nNote: This creates a 'theme glance' that dominates over user themes. The settings will merge with existing .vscode/settings.json if present.`,
-      "categories": ["theme", "vscode", "editor"]
+      docs: `To use this VS Code theme glance:\\n\\n1. The .vscode/settings.json file will be created automatically in your project\\n2. This theme glance takes precedence over any installed theme for this workspace\\n3. Works with any base theme - the glance overrides colors independently\\n4. Semantic highlighting is disabled to ensure consistent appearance\\n\\nNote: This creates a 'theme glance' that dominates over user themes. The settings will merge with existing .vscode/settings.json if present.`,
+      categories: ["theme", "vscode", "editor"],
     };
 
     return NextResponse.json(registryItem, {
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
-      }
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=3600", // Cache for 1 hour
+      },
     });
-
   } catch (error) {
     console.error("Error generating VS Code registry theme:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   ChatContainerContent,
@@ -8,13 +9,16 @@ import {
 import { Message, MessageContent } from "@/components/ui/message";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ChatInput } from "@/components/workbench/chat-input";
+import { useTheme } from "@/hooks/use-theme";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
-
+import { useAgentSessionStore } from "@/stores/agent-session-store";
 import { AssistantAvatar } from "./components/assistant-avatar";
 import { ChatEmptyState } from "./components/chat-empty-state";
 import { MessageAttachment } from "./components/message-attachment";
 import { ThemeResultCard } from "./components/theme-result-card";
+import { ToolStatusCard } from "./components/tool-status-card";
 import { useChatLogic } from "./hooks/use-chat-logic";
 import { useLoadingTimer } from "./hooks/use-loading-timer";
 import { useThemeApplication } from "./hooks/use-theme-application";
@@ -26,6 +30,15 @@ interface AgentTabProps {
 export function AgentTab({ initialPrompt }: AgentTabProps) {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
+  const { clearSession } = useAgentSessionStore();
+  const { isAuthenticated } = useTheme();
+
+  // Clear agent session when component unmounts or when starting fresh
+  useEffect(() => {
+    return () => {
+      clearSession();
+    };
+  }, [clearSession]);
 
   const {
     messages,
@@ -42,6 +55,20 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
     hasActiveTool,
   });
 
+  // Check if anonymous user has generated at least one theme
+  const hasGeneratedTheme = useMemo(() => {
+    return messages.some((message) =>
+      message.parts.some(
+        (part) =>
+          part.type === "tool-generateTheme" &&
+          part.state === "output-available",
+      ),
+    );
+  }, [messages]);
+
+  // Block chat input for anonymous users after first theme generation
+  const shouldBlockInput = !isAuthenticated && hasGeneratedTheme;
+
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <ScrollArea className="flex-1 min-h-0 pl-1 pr-4">
@@ -52,13 +79,11 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
             )}
 
             {messages.map((message) => {
-              // Skip messages with no content or only step-start
               const hasContent = message.parts.some(
                 (part) =>
                   (part.type === "text" && part.text.trim()) ||
                   (part.type.startsWith("tool-") && part.type !== "step-start"),
               );
-
 
               if (!hasContent) return null;
 
@@ -80,7 +105,6 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                           )
                           .join("")}
                       </MessageContent>
-                      {/* Display file attachments from message parts */}
                       {(() => {
                         const fileParts = message.parts.filter(
                           (part) => part.type === "file",
@@ -101,11 +125,9 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                     </div>
                   ) : (
                     <div className="group flex w-full">
-                      {/* Assistant Avatar */}
                       <AssistantAvatar />
 
                       <div className="flex flex-col gap-3 flex-1 min-w-0">
-                        {/* Text content - Regular chat text */}
                         {message.parts.some((part) => part.type === "text") && (
                           <div className="w-full max-w-2xl">
                             <MessageContent className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">
@@ -119,125 +141,125 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                           </div>
                         )}
 
-                        {/* Tool calls - Enhanced with better state handling */}
                         {(() => {
-                          // Count all generated themes across all messages to determine if this is the first theme
-                          const allGeneratedThemes = messages.flatMap(msg =>
-                            msg.parts.filter(part =>
-                              part.type === "tool-generateTheme" && part.state === "output-available"
-                            )
+                          const allGeneratedThemes = messages.flatMap((msg) =>
+                            msg.parts.filter(
+                              (part) =>
+                                part.type === "tool-generateTheme" &&
+                                part.state === "output-available",
+                            ),
                           );
 
                           return message.parts
-                            .filter((part) => part.type === "tool-generateTheme" || part.type === "tool-getCurrentTheme")
+                            .filter(
+                              (part) =>
+                                part.type === "tool-generateTheme" ||
+                                part.type === "tool-getCurrentTheme",
+                            )
                             .map((part, index) => {
-                            if (part.type === "tool-getCurrentTheme") {
-                              // Handle getCurrentTheme tool silently - just show brief status
+                              if (part.type === "tool-getCurrentTheme") {
+                                switch (part.state) {
+                                  case "input-available":
+                                  case "input-streaming":
+                                    return (
+                                      <ToolStatusCard
+                                        key={index}
+                                        toolName="getCurrentTheme"
+                                        state={part.state}
+                                        timer={loadingTimer}
+                                      />
+                                    );
+                                  case "output-available":
+                                  case "output-error":
+                                    return null;
+                                  default:
+                                    return null;
+                                }
+                              }
+
+                              if (part.type !== "tool-generateTheme")
+                                return null;
+
                               switch (part.state) {
                                 case "input-available":
                                 case "input-streaming":
                                   return (
+                                    <ToolStatusCard
+                                      key={index}
+                                      toolName="generateTheme"
+                                      state={part.state}
+                                      message={currentToolMessage}
+                                      timer={loadingTimer}
+                                    />
+                                  );
+                                case "output-available": {
+                                  const themeOutput = part.output as any;
+                                  const isFirstTheme =
+                                    allGeneratedThemes.length === 1 &&
+                                    part === allGeneratedThemes[0];
+                                  return (
+                                    <ThemeResultCard
+                                      key={index}
+                                      themeOutput={themeOutput}
+                                      currentMode={currentMode}
+                                      loadingTimer={loadingTimer}
+                                      onApplyTheme={handleApplyTheme}
+                                      isFirstTheme={isFirstTheme}
+                                    />
+                                  );
+                                }
+                                case "output-error":
+                                  return (
                                     <div
                                       key={index}
-                                      className="pl-2 flex items-center py-2 w-full max-w-md"
+                                      className="w-full max-w-md"
                                     >
-                                      <span className="text-xs text-muted-foreground animate-pulse">
-                                        Retrieving current theme...
-                                      </span>
+                                      <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg space-y-2">
+                                        <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                                          <div className="w-2 h-2 rounded-full bg-red-500" />
+                                          <span>Theme generation failed</span>
+                                        </div>
+                                        <p className="text-red-700 dark:text-red-400 text-sm">
+                                          {part.errorText ||
+                                            "An unexpected error occurred"}
+                                        </p>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => {
+                                            if (messages.length > 0) {
+                                              const lastUserMessage = [
+                                                ...messages,
+                                              ]
+                                                .reverse()
+                                                .find((m) => m.role === "user");
+                                              if (lastUserMessage) {
+                                                const textPart =
+                                                  lastUserMessage.parts.find(
+                                                    (p) => p.type === "text",
+                                                  );
+                                                if (
+                                                  textPart &&
+                                                  textPart.type === "text"
+                                                ) {
+                                                  sendMessage({
+                                                    text: textPart.text,
+                                                  });
+                                                }
+                                              }
+                                            }
+                                          }}
+                                          className="h-7 text-xs"
+                                        >
+                                          Try Again
+                                        </Button>
+                                      </div>
                                     </div>
                                   );
-                                case "output-available":
-                                case "output-error":
-                                  // Don't show anything for getCurrentTheme completion - it's used internally
-                                  return null;
                                 default:
                                   return null;
                               }
-                            }
-
-                            if (part.type !== "tool-generateTheme") return null;
-
-                            switch (part.state) {
-                              case "input-available":
-                              case "input-streaming":
-                                return (
-                                  <div
-                                    key={index}
-                                    className="pl-2 flex items-center justify-between py-4 w-full max-w-md"
-                                  >
-                                    <span className="text-sm text-muted-foreground animate-pulse">
-                                      {currentToolMessage}
-                                    </span>
-                                    <span className="text-xs text-muted-foreground/60">
-                                      {loadingTimer}s
-                                    </span>
-                                  </div>
-                                );
-                              case "output-available": {
-                                const themeOutput = part.output as any;
-                                // Check if this is the first theme generated (across all messages)
-                                const isFirstTheme = allGeneratedThemes.length === 1 && part === allGeneratedThemes[0];
-                                return (
-                                  <ThemeResultCard
-                                    key={index}
-                                    themeOutput={themeOutput}
-                                    currentMode={currentMode}
-                                    loadingTimer={loadingTimer}
-                                    onApplyTheme={handleApplyTheme}
-                                    isFirstTheme={isFirstTheme}
-                                  />
-                                );
-                              }
-                              case "output-error":
-                                return (
-                                  <div key={index} className="w-full max-w-md">
-                                    <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg space-y-2">
-                                      <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
-                                        <div className="w-2 h-2 rounded-full bg-red-500" />
-                                        <span>Theme generation failed</span>
-                                      </div>
-                                      <p className="text-red-700 dark:text-red-400 text-sm">
-                                        {part.errorText ||
-                                          "An unexpected error occurred"}
-                                      </p>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => {
-                                          // Retry the last message
-                                          if (messages.length > 0) {
-                                            const lastUserMessage = [
-                                              ...messages,
-                                            ]
-                                              .reverse()
-                                              .find((m) => m.role === "user");
-                                            if (lastUserMessage) {
-                                              const textPart =
-                                                lastUserMessage.parts.find(
-                                                  (p) => p.type === "text",
-                                                );
-                                              if (
-                                                textPart &&
-                                                textPart.type === "text"
-                                              ) {
-                                                sendMessage({
-                                                  text: textPart.text,
-                                                });
-                                              }
-                                            }
-                                          }
-                                        }}
-                                        className="h-7 text-xs"
-                                      >
-                                        Try Again
-                                      </Button>
-                                    </div>
-                                  </div>
-                                );
-                              default:
-                                return null;
-                            }
-                          });
+                            });
                         })()}
                       </div>
                     </div>
@@ -246,7 +268,6 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
               );
             })}
 
-            {/* Simple shimmer loading */}
             {isLoading && (
               <Message className="flex w-full max-w-3xl flex-col items-start gap-2">
                 <div className="group flex w-full gap-3">
@@ -255,7 +276,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                     <span className="text-sm text-muted-foreground animate-pulse">
                       Thinking...
                     </span>
-                    <span className="text-xs text-muted-foreground/60">
+                    <span className="text-xs text-muted-foreground/60 tabular-nums">
                       {loadingTimer}s
                     </span>
                   </div>
@@ -267,10 +288,37 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
         <ScrollBar />
       </ScrollArea>
 
+      {/* Login prompt for anonymous users after first theme */}
+      {shouldBlockInput && (
+        <div className="px-4 py-3 border-t border-border bg-muted/50">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              🎨 <strong>Sign in to continue</strong> creating theme variations
+            </p>
+            <Button
+              size="sm"
+              variant="default"
+              onClick={() =>
+                authClient.signIn.social({
+                  provider: "github",
+                  callbackURL: window.location.href,
+                })
+              }
+            >
+              Sign In
+            </Button>
+          </div>
+        </div>
+      )}
+
       <ChatInput
         onSubmit={handleSubmit}
-        placeholder="Describe your ideal theme or drag & drop an image..."
-        disabled={isChatDisabled}
+        placeholder={
+          shouldBlockInput
+            ? "Sign in to continue creating themes..."
+            : "Describe your ideal theme or drag & drop an image..."
+        }
+        disabled={isChatDisabled || shouldBlockInput}
         isStreaming={isLoading}
       />
     </div>

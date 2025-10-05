@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { useThemeStore } from "@/stores/theme";
 import { useAuthStore } from "@/stores/auth";
+import { useThemeStore } from "@/stores/theme";
 
 export function useTheme() {
   // Use direct selectors - Zustand will handle memoization
@@ -12,7 +12,7 @@ export function useTheme() {
   // Memoize combined arrays to prevent infinite re-renders
   const allThemes = useMemo(
     () => [...authStore.userThemes, ...authStore.favoriteThemes],
-    [authStore.userThemes, authStore.favoriteThemes]
+    [authStore.userThemes, authStore.favoriteThemes],
   );
 
   return {
@@ -56,7 +56,7 @@ export function useTheme() {
         themeStore.currentTokens["font-mono"] ||
         "JetBrains Mono, ui-monospace, SFMono-Regular, monospace",
     },
-    radius: themeStore.currentTokens["radius"] || "0.5rem",
+    radius: themeStore.currentTokens.radius || "0.5rem",
     shadows: {
       color: themeStore.currentTokens["shadow-color"] || "hsl(0 0% 0%)",
       opacity: themeStore.currentTokens["shadow-opacity"] || "0.1",
@@ -106,7 +106,7 @@ export function useTheme() {
       ];
       if (!themeStore.activeTheme || currentAllThemes.length <= 1) return;
       const currentIndex = currentAllThemes.findIndex(
-        (t) => t.id === themeStore.activeTheme.id
+        (t) => t.id === themeStore.activeTheme.id,
       );
       let nextTheme;
       switch (direction) {
@@ -122,12 +122,13 @@ export function useTheme() {
               currentIndex >= currentAllThemes.length - 1 ? 0 : currentIndex + 1
             ];
           break;
-        case "random":
+        case "random": {
           const available = currentAllThemes.filter(
-            (t) => t.id !== themeStore.activeTheme.id
+            (t) => t.id !== themeStore.activeTheme.id,
           );
           nextTheme = available[Math.floor(Math.random() * available.length)];
           break;
+        }
       }
       if (nextTheme) themeStore.selectTheme(nextTheme);
     },
@@ -140,21 +141,23 @@ export function useTheme() {
     saveCurrentTheme: async (
       name?: string,
       makePublic?: boolean,
-      shadcnOverride?: any
+      shadcnOverride?: any,
     ) => {
       // Create theme with current overrides from store
       console.log("🔍 [saveCurrentTheme] activeTheme:", themeStore.activeTheme);
       console.log(
         "🔍 [saveCurrentTheme] activeTheme.rawTheme:",
-        themeStore.activeTheme?.rawTheme
+        themeStore.activeTheme?.rawTheme,
       );
       console.log(
         "🔍 [saveCurrentTheme] activeTheme.concept:",
-        themeStore.activeTheme?.concept
+        themeStore.activeTheme?.concept,
       );
 
       // Import denormalization function
-      const { denormalizeProviderOverride } = await import("@/lib/override-normalization");
+      const { denormalizeProviderOverride } = await import(
+        "@/lib/override-normalization"
+      );
 
       // Convert normalized overrides back to DB format
       const convertOverrideForDB = (override: any) => {
@@ -169,28 +172,24 @@ export function useTheme() {
         overrides: {
           ...themeStore.activeTheme.overrides,
           shadcn: convertOverrideForDB(
-            shadcnOverride || themeStore.overrides.shadcn
+            shadcnOverride || themeStore.overrides.shadcn,
           ),
-          vscode: convertOverrideForDB(
-            themeStore.overrides.vscode
-          ),
-          shiki: convertOverrideForDB(
-            themeStore.overrides.shiki
-          ),
+          vscode: convertOverrideForDB(themeStore.overrides.vscode),
+          shiki: convertOverrideForDB(themeStore.overrides.shiki),
         },
       };
 
       console.log(
         "🔍 [saveCurrentTheme] themeWithOverrides:",
-        themeWithOverrides
+        themeWithOverrides,
       );
       console.log(
         "🔍 [saveCurrentTheme] themeWithOverrides.rawTheme:",
-        themeWithOverrides.rawTheme
+        themeWithOverrides.rawTheme,
       );
       console.log(
         "🔍 [saveCurrentTheme] themeWithOverrides.concept:",
-        themeWithOverrides.concept
+        themeWithOverrides.concept,
       );
 
       return authStore.saveTheme(themeWithOverrides, name, makePublic);
@@ -216,10 +215,12 @@ export const useThemeActions = () => {
       saveCurrentTheme: async (
         name?: string,
         makePublic?: boolean,
-        shadcnOverride?: any
+        shadcnOverride?: any,
       ) => {
         // Import denormalization function
-        const { denormalizeProviderOverride } = await import("@/lib/override-normalization");
+        const { denormalizeProviderOverride } = await import(
+          "@/lib/override-normalization"
+        );
 
         // Convert normalized overrides back to DB format
         const convertOverrideForDB = (override: any) => {
@@ -232,14 +233,10 @@ export const useThemeActions = () => {
           overrides: {
             ...themeStore.activeTheme.overrides,
             shadcn: convertOverrideForDB(
-              shadcnOverride || themeStore.overrides.shadcn
+              shadcnOverride || themeStore.overrides.shadcn,
             ),
-            vscode: convertOverrideForDB(
-              themeStore.overrides.vscode
-            ),
-            shiki: convertOverrideForDB(
-              themeStore.overrides.shiki
-            ),
+            vscode: convertOverrideForDB(themeStore.overrides.vscode),
+            shiki: convertOverrideForDB(themeStore.overrides.shiki),
           },
         };
         return authStore.saveTheme(themeWithOverrides, name, makePublic);
@@ -252,7 +249,7 @@ export const useThemeActions = () => {
         ];
         if (!themeStore.activeTheme || allThemes.length <= 1) return;
         const currentIndex = allThemes.findIndex(
-          (t) => t.id === themeStore.activeTheme.id
+          (t) => t.id === themeStore.activeTheme.id,
         );
         let nextTheme;
         switch (direction) {
@@ -268,16 +265,17 @@ export const useThemeActions = () => {
                 currentIndex >= allThemes.length - 1 ? 0 : currentIndex + 1
               ];
             break;
-          case "random":
+          case "random": {
             const available = allThemes.filter(
-              (t) => t.id !== themeStore.activeTheme.id
+              (t) => t.id !== themeStore.activeTheme.id,
             );
             nextTheme = available[Math.floor(Math.random() * available.length)];
             break;
+          }
         }
         if (nextTheme) themeStore.selectTheme(nextTheme);
       },
     }),
-    [authStore, themeStore]
+    [authStore, themeStore],
   );
 };

@@ -5,7 +5,8 @@ import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
-  description: "The page you are looking for does not exist. Return to Tinte to continue creating and converting themes.",
+  description:
+    "The page you are looking for does not exist. Return to Tinte to continue creating and converting themes.",
   robots: {
     index: false,
     follow: true,
@@ -27,21 +28,17 @@ export default function NotFound() {
             Page Not Found
           </h2>
           <p className="text-muted-foreground max-w-lg">
-            The page you are looking for does not exist. It might have been moved, deleted,
-            or you entered the wrong URL.
+            The page you are looking for does not exist. It might have been
+            moved, deleted, or you entered the wrong URL.
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild>
-            <Link href="/">
-              Go Home
-            </Link>
+            <Link href="/">Go Home</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/themes">
-              Browse Themes
-            </Link>
+            <Link href="/themes">Browse Themes</Link>
           </Button>
         </div>
 
@@ -52,11 +49,17 @@ export default function NotFound() {
               Theme Workbench
             </Link>
             <span>•</span>
-            <Link href="/themes?category=tinte" className="text-primary hover:underline">
+            <Link
+              href="/themes?category=tinte"
+              className="text-primary hover:underline"
+            >
               Tinte Themes
             </Link>
             <span>•</span>
-            <Link href="/themes?category=rayso" className="text-primary hover:underline">
+            <Link
+              href="/themes?category=rayso"
+              className="text-primary hover:underline"
+            >
               Ray.so Themes
             </Link>
           </div>

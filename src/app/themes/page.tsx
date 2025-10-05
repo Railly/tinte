@@ -1,14 +1,22 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { BrowseThemes } from "@/components/themes/browse-themes";
-import { auth } from "@/lib/auth";
-import { getUserThemes, getUserFavoriteThemes, getPublicThemes, getPublicThemesCount, getTweakCNThemes, getTinteThemes, getRaysoThemes } from "@/lib/user-themes";
-
 import { siteConfig } from "@/config/site";
+import { auth } from "@/lib/auth";
+import {
+  getPublicThemes,
+  getPublicThemesCount,
+  getRaysoThemes,
+  getTinteThemes,
+  getTweakCNThemes,
+  getUserFavoriteThemes,
+  getUserThemes,
+} from "@/lib/user-themes";
 
 export const metadata: Metadata = {
   title: "Browse Community Themes",
-  description: "Explore and discover beautiful themes created by the community. Browse themes for VS Code, shadcn/ui, terminals, and more. Get inspired by community creations and find the perfect theme for your workflow.",
+  description:
+    "Explore and discover beautiful themes created by the community. Browse themes for VS Code, shadcn/ui, terminals, and more. Get inspired by community creations and find the perfect theme for your workflow.",
   keywords: [
     ...siteConfig.keywords,
     "browse themes",
@@ -24,7 +32,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Browse Community Themes | Tinte",
-    description: "Explore and discover beautiful themes created by the community. Browse themes for VS Code, shadcn/ui, terminals, and more.",
+    description:
+      "Explore and discover beautiful themes created by the community. Browse themes for VS Code, shadcn/ui, terminals, and more.",
     url: `${siteConfig.url}/themes`,
     type: "website",
     images: [
@@ -38,7 +47,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     title: "Browse Community Themes | Tinte",
-    description: "Explore beautiful themes created by the community. Find inspiration for your next theme.",
+    description:
+      "Explore beautiful themes created by the community. Find inspiration for your next theme.",
     images: [`${siteConfig.url}/og-themes.jpg`],
   },
   other: {
@@ -60,11 +70,7 @@ export default async function ThemesPage({
   });
 
   const userThemes = session
-    ? await getUserThemes(
-        session.user.id,
-        undefined,
-        session.user,
-      )
+    ? await getUserThemes(session.user.id, undefined, session.user)
     : [];
 
   const favoriteThemes = session

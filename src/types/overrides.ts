@@ -49,16 +49,29 @@ export type OverrideKey =
   | `${string}-${string}`;
 
 export const PALETTE_COLOR_PATTERNS = [
-  "color", "background", "foreground", "border", "ring",
-  "primary", "secondary", "accent", "destructive", "muted",
-  "card", "popover", "sidebar", "chart"
+  "color",
+  "background",
+  "foreground",
+  "border",
+  "ring",
+  "primary",
+  "secondary",
+  "accent",
+  "destructive",
+  "muted",
+  "card",
+  "popover",
+  "sidebar",
+  "chart",
 ] as const;
 
 export function isPaletteColor(key: string): boolean {
-  return PALETTE_COLOR_PATTERNS.some(pattern => key.includes(pattern));
+  return PALETTE_COLOR_PATTERNS.some((pattern) => key.includes(pattern));
 }
 
-export function getOverrideCategory(key: string): "palette" | "font" | "radius" | "shadow" | "spacing" {
+export function getOverrideCategory(
+  key: string,
+): "palette" | "font" | "radius" | "shadow" | "spacing" {
   if (key.includes("font")) return "font";
   if (key.includes("radius")) return "radius";
   if (key.includes("shadow")) return "shadow";

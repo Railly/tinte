@@ -68,15 +68,19 @@ export const shadcnPaletteSchema = z.object({
 });
 
 export const shadcnOverrideSchema = z.object({
-  palettes: z.object({
-    light: shadcnPaletteSchema.partial(),
-    dark: shadcnPaletteSchema.partial(),
-  }).optional(),
-  fonts: z.object({
-    sans: z.string(),
-    serif: z.string(),
-    mono: z.string(),
-  }).optional(),
+  palettes: z
+    .object({
+      light: shadcnPaletteSchema.partial(),
+      dark: shadcnPaletteSchema.partial(),
+    })
+    .optional(),
+  fonts: z
+    .object({
+      sans: z.string(),
+      serif: z.string(),
+      mono: z.string(),
+    })
+    .optional(),
   radius: z.string().optional(),
   letter_spacing: z.string().optional(),
 });

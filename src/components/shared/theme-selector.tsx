@@ -78,7 +78,8 @@ export function ThemeSelector({
     const name = theme.name || "Unnamed Theme";
 
     // Check if theme has been properly saved (has a database ID starting with "theme_")
-    const isSaved = theme.id && theme.id.startsWith("theme_") && !theme.id.includes("custom_");
+    const isSaved =
+      theme.id?.startsWith("theme_") && !theme.id.includes("custom_");
 
     // If it's saved, remove any (unsaved) indicator
     if (isSaved && name.includes("(unsaved)")) {
@@ -153,7 +154,7 @@ export function ThemeSelector({
       if (theme.slug && theme.slug !== "default" && theme.slug !== "theme") {
         const currentUrl = new URL(window.location.href);
         const newUrl = `/workbench/${theme.slug}${currentUrl.search}`;
-        window.history.replaceState(null, '', newUrl);
+        window.history.replaceState(null, "", newUrl);
       }
     },
     [searchResults, onSelect],
@@ -163,7 +164,10 @@ export function ThemeSelector({
   const organizedThemes = React.useMemo(() => {
     const combined = [...themes];
 
-    if (selectedSearchTheme && !themes.some((t) => t.id === selectedSearchTheme.id)) {
+    if (
+      selectedSearchTheme &&
+      !themes.some((t) => t.id === selectedSearchTheme.id)
+    ) {
       combined.push(selectedSearchTheme);
     }
 
@@ -171,7 +175,9 @@ export function ThemeSelector({
     if (searchQuery.trim()) {
       const localResults = searchLocal(combined, searchQuery);
       const localIds = new Set(localResults.map((t) => t.id));
-      const remoteOnlyResults = searchResults.filter((t) => !localIds.has(t.id));
+      const remoteOnlyResults = searchResults.filter(
+        (t) => !localIds.has(t.id),
+      );
 
       return {
         localSearchResults: localResults,
@@ -218,7 +224,16 @@ export function ThemeSelector({
       localSearchResults: [],
       remoteSearchResults: [],
     };
-  }, [themes, searchResults, searchQuery, selectedSearchTheme, user, favoriteThemes, isAuthenticated, searchLocal]);
+  }, [
+    themes,
+    searchResults,
+    searchQuery,
+    selectedSearchTheme,
+    user,
+    favoriteThemes,
+    isAuthenticated,
+    searchLocal,
+  ]);
 
   // Find active theme in ALL available themes (user + built-in + search results)
   const active = React.useMemo(() => {
@@ -268,7 +283,9 @@ export function ThemeSelector({
     }
 
     if (!found && organizedThemes.remoteSearchResults?.length > 0) {
-      found = organizedThemes.remoteSearchResults.find((t) => t.id === activeId);
+      found = organizedThemes.remoteSearchResults.find(
+        (t) => t.id === activeId,
+      );
     }
 
     return found;
@@ -278,7 +295,10 @@ export function ThemeSelector({
 
   const flatThemes = React.useMemo(() => {
     if (searchQuery.trim()) {
-      return [...organizedThemes.localSearchResults, ...organizedThemes.remoteSearchResults];
+      return [
+        ...organizedThemes.localSearchResults,
+        ...organizedThemes.remoteSearchResults,
+      ];
     }
     return [
       ...organizedThemes.favoriteThemes,
@@ -295,18 +315,23 @@ export function ThemeSelector({
       if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
 
       const activeElement = document.activeElement;
-      const isInputFocused = activeElement?.tagName === "INPUT" || activeElement?.tagName === "TEXTAREA";
+      const isInputFocused =
+        activeElement?.tagName === "INPUT" ||
+        activeElement?.tagName === "TEXTAREA";
       if (isInputFocused) return;
 
       e.preventDefault();
 
-      const currentIndex = flatThemes.findIndex((t) => t.id === (active?.id || activeId));
-      
+      const currentIndex = flatThemes.findIndex(
+        (t) => t.id === (active?.id || activeId),
+      );
+
       if (currentIndex === -1) return;
 
-      const nextIndex = e.key === "ArrowDown"
-        ? (currentIndex + 1) % flatThemes.length
-        : (currentIndex - 1 + flatThemes.length) % flatThemes.length;
+      const nextIndex =
+        e.key === "ArrowDown"
+          ? (currentIndex + 1) % flatThemes.length
+          : (currentIndex - 1 + flatThemes.length) % flatThemes.length;
 
       const nextTheme = flatThemes[nextIndex];
       if (nextTheme) {
@@ -445,9 +470,7 @@ export function ThemeSelector({
                 </div>
                 <div className="text-center space-y-1">
                   <p className="text-sm font-medium">
-                    {searchQuery.trim()
-                      ? "No themes found"
-                      : "No theme found"}
+                    {searchQuery.trim() ? "No themes found" : "No theme found"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {searchQuery.trim()
@@ -467,7 +490,11 @@ export function ThemeSelector({
                     <CommandItem
                       key={theme.id}
                       value={theme.slug || theme.id}
-                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
+                      keywords={[
+                        theme.name,
+                        theme.author || "",
+                        ...(theme.tags || []),
+                      ]}
                       onSelect={() => {
                         handleThemeSelect(theme);
                         setOpen(false);
@@ -524,7 +551,11 @@ export function ThemeSelector({
                   <CommandItem
                     key={theme.id}
                     value={theme.slug || theme.id}
-                    keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
+                    keywords={[
+                      theme.name,
+                      theme.author || "",
+                      ...(theme.tags || []),
+                    ]}
                     onSelect={() => {
                       handleThemeSelect(theme);
                       setOpen(false);
@@ -567,7 +598,11 @@ export function ThemeSelector({
                     <CommandItem
                       key={theme.id}
                       value={theme.slug || theme.id}
-                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
+                      keywords={[
+                        theme.name,
+                        theme.author || "",
+                        ...(theme.tags || []),
+                      ]}
                       onSelect={() => {
                         handleThemeSelect(theme);
                         setOpen(false);
@@ -620,7 +655,11 @@ export function ThemeSelector({
                     <CommandItem
                       key={theme.id}
                       value={theme.slug || theme.id}
-                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
+                      keywords={[
+                        theme.name,
+                        theme.author || "",
+                        ...(theme.tags || []),
+                      ]}
                       onSelect={() => {
                         handleThemeSelect(theme);
                         setOpen(false);
@@ -685,7 +724,11 @@ export function ThemeSelector({
                     <CommandItem
                       key={theme.id}
                       value={theme.slug || theme.id}
-                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
+                      keywords={[
+                        theme.name,
+                        theme.author || "",
+                        ...(theme.tags || []),
+                      ]}
                       onSelect={() => {
                         handleThemeSelect(theme);
                         setOpen(false);
@@ -766,7 +809,11 @@ export function ThemeSelector({
                     <CommandItem
                       key={theme.id}
                       value={theme.slug || theme.id}
-                      keywords={[theme.name, theme.author || "", ...(theme.tags || [])]}
+                      keywords={[
+                        theme.name,
+                        theme.author || "",
+                        ...(theme.tags || []),
+                      ]}
                       onSelect={() => {
                         handleThemeSelect(theme);
                         setOpen(false);

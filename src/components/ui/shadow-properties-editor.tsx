@@ -1,8 +1,11 @@
 "use client";
 
+import { formatHex, parse } from "culori";
 import * as React from "react";
-import { ColorPickerInput } from "@/components/ui/color-picker-input";
+import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import InvertedLogo from "@/components/shared/inverted-logo";
 import { Button } from "@/components/ui/button";
+import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +14,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { NumberSlider } from "@/components/ui/number-slider";
-import InvertedLogo from "@/components/shared/inverted-logo";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
 import { generateTailwindPalette } from "@/lib/ice-theme";
-import { useThemeContext } from "@/providers/theme";
 import { cn } from "@/lib/utils";
+import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
-import { formatHex, parse } from "culori";
 
 interface ShadowPropertiesEditorProps {
   values: {
@@ -33,25 +33,35 @@ interface ShadowPropertiesEditorProps {
 }
 
 const CANONICAL_COLOR_KEYS: (keyof TinteBlock)[] = [
-  "bg", "bg_2", "ui", "ui_2", "ui_3", 
-  "tx_3", "tx_2", "tx",
-  "pr", "sc", "ac_1", "ac_2", "ac_3"
+  "bg",
+  "bg_2",
+  "ui",
+  "ui_2",
+  "ui_3",
+  "tx_3",
+  "tx_2",
+  "tx",
+  "pr",
+  "sc",
+  "ac_1",
+  "ac_2",
+  "ac_3",
 ];
 
 const COLOR_LABELS: Record<keyof TinteBlock, string> = {
   bg: "BG",
-  bg_2: "BG2", 
+  bg_2: "BG2",
   ui: "UI",
   ui_2: "UI2",
   ui_3: "UI3",
   tx_3: "TX3",
-  tx_2: "TX2", 
+  tx_2: "TX2",
   tx: "TX",
   pr: "PR",
   sc: "SC",
   ac_1: "AC1",
   ac_2: "AC2",
-  ac_3: "AC3"
+  ac_3: "AC3",
 };
 
 const parseColor = (colorValue: string): string => {
@@ -83,7 +93,9 @@ export function ShadowPropertiesEditor({
   const currentColors = tinteTheme?.[currentMode];
 
   // Local state for immediate updates
-  const [localColor, setLocalColor] = React.useState(() => parseColor(values["shadow-color"]));
+  const [localColor, setLocalColor] = React.useState(() =>
+    parseColor(values["shadow-color"]),
+  );
 
   // Sync local state when prop changes (e.g., mode switch or external update)
   React.useEffect(() => {
@@ -96,7 +108,10 @@ export function ShadowPropertiesEditor({
   const handleCanonicalColorSelect = (colorKey: keyof TinteBlock) => {
     const colorValue = currentColors?.[colorKey];
     if (colorValue) {
-      console.log("🎨 [ShadowPropertiesEditor] Canonical color selected:", colorValue);
+      console.log(
+        "🎨 [ShadowPropertiesEditor] Canonical color selected:",
+        colorValue,
+      );
       setLocalColor(parseColor(colorValue));
       onChange("shadow-color", colorValue);
     }
@@ -129,10 +144,7 @@ export function ShadowPropertiesEditor({
         <Label className="text-xs font-medium">shadow-color</Label>
         <div className="flex gap-2">
           <div className="flex-1">
-            <ColorPickerInput
-              color={localColor}
-              onChange={handleColorChange}
-            />
+            <ColorPickerInput color={localColor} onChange={handleColorChange} />
           </div>
 
           {/* Quick Canonical Color Picker */}
@@ -150,7 +162,7 @@ export function ShadowPropertiesEditor({
               {CANONICAL_COLOR_KEYS.map((colorKey) => {
                 const colorValue = currentColors?.[colorKey];
                 const isSelected = parseColor(colorValue || "") === localColor;
-                
+
                 return (
                   <DropdownMenuItem
                     key={colorKey}
@@ -158,14 +170,18 @@ export function ShadowPropertiesEditor({
                     disabled={!colorValue}
                     className="flex items-center gap-2"
                   >
-                    <div 
+                    <div
                       className={cn(
                         "w-4 h-4 rounded border",
-                        isSelected ? "border-foreground border-2" : "border-border"
+                        isSelected
+                          ? "border-foreground border-2"
+                          : "border-border",
                       )}
                       style={{ backgroundColor: colorValue || "#000000" }}
                     />
-                    <span className="font-mono text-xs">{COLOR_LABELS[colorKey]}</span>
+                    <span className="font-mono text-xs">
+                      {COLOR_LABELS[colorKey]}
+                    </span>
                     <span className="ml-auto text-xs text-muted-foreground font-mono">
                       {colorValue}
                     </span>
@@ -187,32 +203,35 @@ export function ShadowPropertiesEditor({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              {localColor && (() => {
-                const palette = generateTailwindPalette(localColor);
-                return palette.map((color) => {
-                  const isSelected = color.value === localColor;
-                  
-                  return (
-                    <DropdownMenuItem
-                      key={color.name}
-                      onClick={() => handleTailwindColorSelect(color.value)}
-                      className="flex items-center gap-2"
-                    >
-                      <div 
-                        className={cn(
-                          "w-4 h-4 rounded border",
-                          isSelected ? "border-foreground border-2" : "border-border"
-                        )}
-                        style={{ backgroundColor: color.value }}
-                      />
-                      <span className="font-mono text-xs">{color.name}</span>
-                      <span className="ml-auto text-xs text-muted-foreground font-mono">
-                        {color.value}
-                      </span>
-                    </DropdownMenuItem>
-                  );
-                });
-              })()}
+              {localColor &&
+                (() => {
+                  const palette = generateTailwindPalette(localColor);
+                  return palette.map((color) => {
+                    const isSelected = color.value === localColor;
+
+                    return (
+                      <DropdownMenuItem
+                        key={color.name}
+                        onClick={() => handleTailwindColorSelect(color.value)}
+                        className="flex items-center gap-2"
+                      >
+                        <div
+                          className={cn(
+                            "w-4 h-4 rounded border",
+                            isSelected
+                              ? "border-foreground border-2"
+                              : "border-border",
+                          )}
+                          style={{ backgroundColor: color.value }}
+                        />
+                        <span className="font-mono text-xs">{color.name}</span>
+                        <span className="ml-auto text-xs text-muted-foreground font-mono">
+                          {color.value}
+                        </span>
+                      </DropdownMenuItem>
+                    );
+                  });
+                })()}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

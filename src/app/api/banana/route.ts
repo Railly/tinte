@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     if (!messages || !Array.isArray(messages)) {
       return Response.json(
         { error: "Messages array is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     if (!apiKey) {
       return Response.json(
         { error: "Google Generative AI API key is not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     return Response.json(
       { error: "Failed to process chat request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -4,8 +4,8 @@ import { motion, stagger, useAnimate } from "motion/react";
 import * as React from "react";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useThemeContext } from "@/providers/theme";
 import { useShadcnOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+import { useThemeContext } from "@/providers/theme";
 
 declare global {
   interface Window {

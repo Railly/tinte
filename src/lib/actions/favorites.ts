@@ -1,11 +1,11 @@
 "use server";
 
+import { and, eq } from "drizzle-orm";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { userFavorites } from "@/db/schema/user";
 import { auth } from "@/lib/auth";
-import { eq, and } from "drizzle-orm";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 export async function toggleFavorite(themeId: string) {
   try {
@@ -25,8 +25,8 @@ export async function toggleFavorite(themeId: string) {
       .where(
         and(
           eq(userFavorites.userId, session.user.id),
-          eq(userFavorites.themeId, themeId)
-        )
+          eq(userFavorites.themeId, themeId),
+        ),
       )
       .limit(1);
 
@@ -37,8 +37,8 @@ export async function toggleFavorite(themeId: string) {
         .where(
           and(
             eq(userFavorites.userId, session.user.id),
-            eq(userFavorites.themeId, themeId)
-          )
+            eq(userFavorites.themeId, themeId),
+          ),
         );
 
       return { success: true, isFavorite: false };
@@ -74,8 +74,8 @@ export async function getFavoriteStatus(themeId: string) {
       .where(
         and(
           eq(userFavorites.userId, session.user.id),
-          eq(userFavorites.themeId, themeId)
-        )
+          eq(userFavorites.themeId, themeId),
+        ),
       )
       .limit(1);
 
@@ -104,7 +104,7 @@ export async function getUserFavorites() {
 
     // Convert to Record<string, boolean> format
     const favoritesMap: Record<string, boolean> = {};
-    favorites.forEach(fav => {
+    favorites.forEach((fav) => {
       favoritesMap[fav.themeId] = true;
     });
 

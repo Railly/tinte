@@ -1,13 +1,13 @@
+import {
+  transformerNotationDiff,
+  transformerNotationErrorLevel,
+  transformerNotationFocus,
+  transformerNotationHighlight,
+  transformerNotationWordHighlight,
+} from "@shikijs/transformers";
 import { useEffect, useMemo, useState } from "react";
 import { codeToHtml } from "shiki";
 import { createCssVariablesTheme } from "shiki/core";
-import {
-  transformerNotationDiff,
-  transformerNotationHighlight,
-  transformerNotationWordHighlight,
-  transformerNotationFocus,
-  transformerNotationErrorLevel,
-} from "@shikijs/transformers";
 
 interface CodeTemplate {
   name: string;
@@ -57,45 +57,45 @@ export function useShikiCssHighlighter({
 
     /* Transformer styles */
     .line.diff.add {
-      background-color: ${isDark ? 'rgba(46, 160, 67, 0.15)' : 'rgba(172, 242, 189, 0.5)'};
-      border-left: 3px solid ${isDark ? '#2ea043' : '#28a745'};
+      background-color: ${isDark ? "rgba(46, 160, 67, 0.15)" : "rgba(172, 242, 189, 0.5)"};
+      border-left: 3px solid ${isDark ? "#2ea043" : "#28a745"};
       padding-left: 8px;
       margin-left: -11px;
     }
 
     .line.diff.remove {
-      background-color: ${isDark ? 'rgba(248, 81, 73, 0.15)' : 'rgba(255, 235, 233, 0.5)'};
-      border-left: 3px solid ${isDark ? '#f85149' : '#dc3545'};
+      background-color: ${isDark ? "rgba(248, 81, 73, 0.15)" : "rgba(255, 235, 233, 0.5)"};
+      border-left: 3px solid ${isDark ? "#f85149" : "#dc3545"};
       padding-left: 8px;
       margin-left: -11px;
     }
 
     .line.highlighted {
-      background-color: ${isDark ? 'rgba(255, 255, 0, 0.1)' : 'rgba(255, 255, 0, 0.2)'};
-      border-left: 3px solid ${isDark ? '#ffd700' : '#ffeb3b'};
+      background-color: ${isDark ? "rgba(255, 255, 0, 0.1)" : "rgba(255, 255, 0, 0.2)"};
+      border-left: 3px solid ${isDark ? "#ffd700" : "#ffeb3b"};
       padding-left: 8px;
       margin-left: -11px;
     }
 
     .line.focused {
-      background-color: ${isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'};
-      border-left: 3px solid ${isDark ? '#6366f1' : '#4f46e5'};
+      background-color: ${isDark ? "rgba(99, 102, 241, 0.1)" : "rgba(99, 102, 241, 0.05)"};
+      border-left: 3px solid ${isDark ? "#6366f1" : "#4f46e5"};
       padding-left: 8px;
       margin-left: -11px;
     }
 
     .line.highlighted.error {
-      background-color: ${isDark ? 'rgba(248, 81, 73, 0.15)' : 'rgba(254, 226, 226, 0.5)'};
-      border-left: 3px solid ${isDark ? '#f85149' : '#dc2626'};
+      background-color: ${isDark ? "rgba(248, 81, 73, 0.15)" : "rgba(254, 226, 226, 0.5)"};
+      border-left: 3px solid ${isDark ? "#f85149" : "#dc2626"};
     }
 
     .line.highlighted.warning {
-      background-color: ${isDark ? 'rgba(251, 191, 36, 0.15)' : 'rgba(254, 243, 199, 0.5)'};
-      border-left: 3px solid ${isDark ? '#fbcf24' : '#d97706'};
+      background-color: ${isDark ? "rgba(251, 191, 36, 0.15)" : "rgba(254, 243, 199, 0.5)"};
+      border-left: 3px solid ${isDark ? "#fbcf24" : "#d97706"};
     }
 
     .highlighted-word {
-      background-color: ${isDark ? 'rgba(88, 166, 255, 0.3)' : 'rgba(59, 130, 246, 0.2)'};
+      background-color: ${isDark ? "rgba(88, 166, 255, 0.3)" : "rgba(59, 130, 246, 0.2)"};
       border-radius: 3px;
       padding: 1px 3px;
       font-weight: 500;
@@ -163,7 +163,13 @@ export function useShikiCssHighlighter({
 
     timeoutId = setTimeout(highlightCode, isInitialLoad ? 0 : 50);
     return () => clearTimeout(timeoutId);
-  }, [template.code, template.language, shikiTheme, isInitialLoad, themeVersion]);
+  }, [
+    template.code,
+    template.language,
+    shikiTheme,
+    isInitialLoad,
+    themeVersion,
+  ]);
 
   return {
     html,

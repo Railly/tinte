@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useThemeStore } from "@/stores/theme";
 
 interface UseThemeSlugRedirectProps {
@@ -102,7 +102,7 @@ export function useThemeSlugRedirect({
       enabled &&
         (detectedSlug || activeTheme?.slug) &&
         (detectedSlug !== chatId || activeTheme?.slug !== chatId) &&
-        window.location.pathname === `/workbench/${initialChatIdRef.current}`
+        window.location.pathname === `/workbench/${initialChatIdRef.current}`,
     ),
   };
 }

@@ -103,7 +103,7 @@ export function WorkbenchToolbar({
   const providerMeta = getProvider(currentProviderId);
   const providerName = providerMeta?.metadata.name || "Theme";
 
-  const shadcnOverrides = useShadcnOverrides();
+  const _shadcnOverrides = useShadcnOverrides();
   const vscodeOverrides = useVSCodeOverrides();
 
   // Restore theme to a specific state
@@ -135,7 +135,6 @@ export function WorkbenchToolbar({
     isExporting,
     handleExport,
     handleCopyTheme,
-    handleCopyCommand,
     handlePrimaryAction,
     getPrimaryActionConfig,
     isTemporaryTheme,

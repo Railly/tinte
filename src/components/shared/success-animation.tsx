@@ -20,19 +20,19 @@ export function SuccessAnimation({
             opacity: 0,
             y: 10,
             scale: 0.7,
-            filter: "blur(5px)"
+            filter: "blur(5px)",
           }}
           animate={{
             opacity: 1,
             y: 0,
             scale: 1,
-            filter: "blur(0px)"
+            filter: "blur(0px)",
           }}
           exit={{
             opacity: 0,
             y: -10,
             scale: 0.7,
-            filter: "blur(5px)"
+            filter: "blur(5px)",
           }}
           transition={{
             type: "spring",
@@ -53,7 +53,7 @@ export function SuccessAnimation({
             transition={{
               delay: 0.05,
               type: "spring",
-              bounce: 0.4
+              bounce: 0.4,
             }}
           >
             <motion.div
@@ -63,7 +63,7 @@ export function SuccessAnimation({
                 delay: 0.1,
                 type: "spring",
                 bounce: 0.5,
-                duration: 0.4
+                duration: 0.4,
               }}
             >
               <Check className="w-3 h-3 text-green-400" />
@@ -76,7 +76,7 @@ export function SuccessAnimation({
               transition={{
                 delay: 0.15,
                 type: "spring",
-                bounce: 0.3
+                bounce: 0.3,
               }}
             >
               {message}

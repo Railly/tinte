@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { theme, type ThemeInsert } from "@/db/schema";
+import { type ThemeInsert, theme } from "@/db/schema";
 import { generateSlug, generateThemeId } from "./generate-slug";
 
 interface ThemeData {
@@ -58,7 +58,7 @@ interface ThemeData {
 
 export async function saveThemeToDatabase(
   themeData: ThemeData,
-  userId?: string
+  userId?: string,
 ): Promise<{ theme: any; slug: string }> {
   const themeId = generateThemeId();
   const slug = generateSlug(themeData.title);
@@ -140,7 +140,7 @@ export async function saveThemeToDatabase(
     installs: 0,
 
     // Extended properties
-    // @ts-ignore
+    // @ts-expect-error
     shadcn_override: shadcnOverride,
   };
 
@@ -148,7 +148,7 @@ export async function saveThemeToDatabase(
     const [savedTheme] = await db.insert(theme).values(themeInsert).returning();
 
     console.log(
-      `✅ Theme "${themeData.title}" saved to database with slug: ${slug}`
+      `✅ Theme "${themeData.title}" saved to database with slug: ${slug}`,
     );
 
     return { theme: savedTheme, slug };

@@ -1,11 +1,11 @@
-import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import {
-  theme,
-  shadcnOverrideSchema,
   type ShadcnOverrideSchema,
+  shadcnOverrideSchema,
+  type theme,
 } from "@/db/schema/theme";
-import type { TinteBlock } from "@/types/tinte";
 import type { ShikiCssTheme } from "@/types/shiki";
+import type { TinteBlock } from "@/types/tinte";
 
 // Base theme types from Drizzle schema (single source of truth)
 export type Theme = InferSelectModel<typeof theme>;

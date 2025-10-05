@@ -2,16 +2,15 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { WorkbenchMain } from "@/components/workbench/workbench-main";
+import { siteConfig } from "@/config/site";
 import { auth } from "@/lib/auth";
+import { getThemeBySlug } from "@/lib/get-theme-by-slug";
 import {
   getRaysoThemes,
   getThemesWithUsers,
   getTinteThemes,
   getTweakCNThemes,
 } from "@/lib/user-themes";
-import { getThemeBySlug } from "@/lib/get-theme-by-slug";
-
-import { siteConfig } from "@/config/site";
 
 export async function generateMetadata({
   params,
@@ -26,19 +25,28 @@ export async function generateMetadata({
   });
   const currentUserId = session?.user?.id;
 
-  const [userThemes, tweakCNThemes, tinteThemes, raysoThemes] = await Promise.all([
-    getThemesWithUsers(20, currentUserId),
-    getTweakCNThemes(),
-    getTinteThemes(),
-    getRaysoThemes(),
-  ]);
+  const [userThemes, tweakCNThemes, tinteThemes, raysoThemes] =
+    await Promise.all([
+      getThemesWithUsers(20, currentUserId),
+      getTweakCNThemes(),
+      getTinteThemes(),
+      getRaysoThemes(),
+    ]);
 
-  const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
+  const allThemes = [
+    ...userThemes,
+    ...tweakCNThemes,
+    ...tinteThemes,
+    ...raysoThemes,
+  ];
   const theme = await getThemeBySlug(slug, allThemes);
 
   if (theme) {
     const themeName = theme.name;
-    const themeDescription = theme.concept || theme.description || `Edit and customize the ${themeName} theme`;
+    const themeDescription =
+      theme.concept ||
+      theme.description ||
+      `Edit and customize the ${themeName} theme`;
 
     return {
       title: `${themeName} - Theme Editor | Tinte`,
@@ -68,7 +76,8 @@ export async function generateMetadata({
 
   return {
     title: "Theme Workbench - Create & Edit Themes",
-    description: "Create, edit, and convert themes with Tinte's powerful workbench. Live preview, real-time editing, and export to multiple formats including VS Code, shadcn/ui, terminals, and more.",
+    description:
+      "Create, edit, and convert themes with Tinte's powerful workbench. Live preview, real-time editing, and export to multiple formats including VS Code, shadcn/ui, terminals, and more.",
     keywords: [
       ...siteConfig.keywords,
       "theme workbench",
@@ -85,7 +94,8 @@ export async function generateMetadata({
     },
     openGraph: {
       title: "Theme Workbench - Create & Edit Themes | Tinte",
-      description: "Create, edit, and convert themes with live preview and real-time editing. Export to VS Code, shadcn/ui, terminals, and more.",
+      description:
+        "Create, edit, and convert themes with live preview and real-time editing. Export to VS Code, shadcn/ui, terminals, and more.",
       url: `${siteConfig.url}/workbench`,
       type: "website",
       images: [
@@ -99,7 +109,8 @@ export async function generateMetadata({
     },
     twitter: {
       title: "Theme Workbench - Create & Edit Themes | Tinte",
-      description: "Create beautiful themes with live preview and real-time editing. Export to multiple formats.",
+      description:
+        "Create beautiful themes with live preview and real-time editing. Export to multiple formats.",
       images: [`${siteConfig.url}/og-workbench.jpg`],
     },
     other: {
@@ -130,15 +141,21 @@ export default async function WorkbenchSlugPage({
   const currentUserId = session?.user?.id;
 
   // Fetch themes in parallel
-  const [userThemes, tweakCNThemes, tinteThemes, raysoThemes] = await Promise.all([
-    getThemesWithUsers(20, currentUserId),
-    getTweakCNThemes(),
-    getTinteThemes(),
-    getRaysoThemes(),
-  ]);
+  const [userThemes, tweakCNThemes, tinteThemes, raysoThemes] =
+    await Promise.all([
+      getThemesWithUsers(20, currentUserId),
+      getTweakCNThemes(),
+      getTinteThemes(),
+      getRaysoThemes(),
+    ]);
 
   // Try to get the theme by slug (server-side)
-  const allThemes = [...userThemes, ...tweakCNThemes, ...tinteThemes, ...raysoThemes];
+  const allThemes = [
+    ...userThemes,
+    ...tweakCNThemes,
+    ...tinteThemes,
+    ...raysoThemes,
+  ];
   const initialTheme = await getThemeBySlug(slug, allThemes);
 
   // No more redirects - workbench can handle any slug, with or without theme

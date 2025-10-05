@@ -7,28 +7,43 @@ export default function TokenEditorTestPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Floating Theme Editor Test</h1>
+          <h1 className="text-3xl font-bold mb-4">
+            Floating Theme Editor Test
+          </h1>
           <p className="text-muted-foreground">
-            This page demonstrates the floating ball theme editor that reads real values from globals.css
-            and preserves original color formats (oklch→oklch, hex→hex).
+            This page demonstrates the floating ball theme editor that reads
+            real values from globals.css and preserves original color formats
+            (oklch→oklch, hex→hex).
           </p>
           <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-            <p className="text-sm font-medium">🎯 Look at the bottom-right corner for the floating theme editor!</p>
-            <p className="text-sm text-muted-foreground mt-1">Click the Tinte logo to open the editor. All changes are applied instantly!</p>
+            <p className="text-sm font-medium">
+              🎯 Look at the bottom-right corner for the floating theme editor!
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Click the Tinte logo to open the editor. All changes are applied
+              instantly!
+            </p>
           </div>
         </div>
 
         {/* Live Preview Section */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Live Preview Components</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Live Preview Components
+          </h2>
           <p className="text-sm text-muted-foreground mb-6">
-            These components will change instantly when you modify colors in the floating editor.
+            These components will change instantly when you modify colors in the
+            floating editor.
           </p>
           <div className="space-y-4">
             {/* Background & Text */}
             <div className="p-4 bg-card border rounded-lg">
-              <h3 className="text-lg font-medium text-foreground mb-2">Card Background</h3>
-              <p className="text-muted-foreground">This card uses card and card-foreground tokens.</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                Card Background
+              </h3>
+              <p className="text-muted-foreground">
+                This card uses card and card-foreground tokens.
+              </p>
             </div>
 
             {/* Primary Elements */}
@@ -82,15 +97,20 @@ export default function TokenEditorTestPage() {
           <li>Modify any token value in the editor to see live changes</li>
           <li>Toggle between light and dark mode to edit both themes</li>
           <li>Use the "Write CSS" button to save changes to globals.css</li>
-          <li>All values should be valid CSS colors (oklch format recommended)</li>
-          <li>The widget is completely self-contained and can be added to any layout</li>
+          <li>
+            All values should be valid CSS colors (oklch format recommended)
+          </li>
+          <li>
+            The widget is completely self-contained and can be added to any
+            layout
+          </li>
         </ul>
       </div>
 
       {/* Floating Theme Editor */}
       <FloatingThemeEditor
         onChange={(theme) => {
-          console.log('Floating theme changed:', theme);
+          console.log("Floating theme changed:", theme);
         }}
       />
     </div>

@@ -92,7 +92,9 @@ export const useWorkbenchActions = () => {
   const setLoading = useWorkbenchStore((state) => state.setLoading);
   const setSeed = useWorkbenchStore((state) => state.setSeed);
   const setDrawerOpen = useWorkbenchStore((state) => state.setDrawerOpen);
-  const initializeWorkbench = useWorkbenchStore((state) => state.initializeWorkbench);
+  const initializeWorkbench = useWorkbenchStore(
+    (state) => state.initializeWorkbench,
+  );
   const toggleDrawer = useWorkbenchStore((state) => state.toggleDrawer);
   const reset = useWorkbenchStore((state) => state.reset);
 

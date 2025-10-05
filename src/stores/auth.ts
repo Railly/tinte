@@ -24,7 +24,7 @@ interface AuthActions {
   saveTheme: (
     theme: ThemeData,
     name?: string,
-    makePublic?: boolean
+    makePublic?: boolean,
   ) => Promise<{ success: boolean; savedTheme: any | null }>;
   deleteTheme: (themeId: string) => Promise<boolean>;
   addThemes: (themes: ThemeData[]) => void;
@@ -36,8 +36,8 @@ const sanitizeFavorites = (input: any): Record<string, boolean> => {
   try {
     return Object.fromEntries(
       Object.entries((input || {}) as Record<string, unknown>).map(
-        ([key, value]) => [key, !!value]
-      )
+        ([key, value]) => [key, !!value],
+      ),
     );
   } catch {
     return {};
@@ -122,7 +122,7 @@ export const useAuthStore = create<AuthStore>()(
           if (typeof window !== "undefined") {
             localStorage.setItem(
               `favorites_${user.id}`,
-              JSON.stringify(sanitized)
+              JSON.stringify(sanitized),
             );
           }
 
@@ -143,7 +143,7 @@ export const useAuthStore = create<AuthStore>()(
               } catch (parseError) {
                 console.error(
                   "Error parsing localStorage favorites:",
-                  parseError
+                  parseError,
                 );
               }
             }
@@ -164,7 +164,7 @@ export const useAuthStore = create<AuthStore>()(
         if (typeof window !== "undefined") {
           localStorage.setItem(
             `favorites_${user.id}`,
-            JSON.stringify(newFavorites)
+            JSON.stringify(newFavorites),
           );
         }
 
@@ -177,7 +177,7 @@ export const useAuthStore = create<AuthStore>()(
             if (typeof window !== "undefined") {
               localStorage.setItem(
                 `favorites_${user.id}`,
-                JSON.stringify(favorites)
+                JSON.stringify(favorites),
               );
             }
             return false;
@@ -192,7 +192,7 @@ export const useAuthStore = create<AuthStore>()(
             if (typeof window !== "undefined") {
               localStorage.setItem(
                 `favorites_${user.id}`,
-                JSON.stringify(corrected)
+                JSON.stringify(corrected),
               );
             }
           }
@@ -205,7 +205,7 @@ export const useAuthStore = create<AuthStore>()(
           if (typeof window !== "undefined") {
             localStorage.setItem(
               `favorites_${user.id}`,
-              JSON.stringify(favorites)
+              JSON.stringify(favorites),
             );
           }
           return false;
@@ -221,7 +221,7 @@ export const useAuthStore = create<AuthStore>()(
         console.log("🔍 [Auth Store] theme.rawTheme:", theme.rawTheme);
         console.log("🔍 [Auth Store] theme.concept:", theme.concept);
 
-        const { isAuthenticated, userThemes, user } = get();
+        const { isAuthenticated, user } = get();
 
         if (!isAuthenticated) {
           return { success: false, savedTheme: null };
@@ -250,8 +250,7 @@ export const useAuthStore = create<AuthStore>()(
           // Check if this is an existing theme owned by the user that should be updated
           // Exclude AI-generated themes which should always create new themes
           const isExistingOwnTheme =
-            themeToSave.id &&
-            themeToSave.id.startsWith("theme_") &&
+            themeToSave.id?.startsWith("theme_") &&
             !themeToSave.id.startsWith("ai-generated-") &&
             (themeToSave.user?.id === user?.id || themeToSave.author === "You");
 
@@ -289,11 +288,11 @@ export const useAuthStore = create<AuthStore>()(
             console.log("📤 [Auth Store] POST payload being sent:", payload);
             console.log(
               "📤 [Auth Store] themeToSave.rawTheme:",
-              themeToSave.rawTheme
+              themeToSave.rawTheme,
             );
             console.log(
               "📤 [Auth Store] themeToSave.concept:",
-              themeToSave.concept
+              themeToSave.concept,
             );
 
             const response = await fetch("/api/themes", {
@@ -354,7 +353,7 @@ export const useAuthStore = create<AuthStore>()(
           const uniqueThemes = themes.filter(
             (theme, index, arr) =>
               !allExistingIds.has(theme.id) &&
-              arr.findIndex((t) => t.id === theme.id) === index
+              arr.findIndex((t) => t.id === theme.id) === index,
           );
 
           return {
@@ -363,6 +362,6 @@ export const useAuthStore = create<AuthStore>()(
         });
       },
     }),
-    { name: "auth-store" }
-  )
+    { name: "auth-store" },
+  ),
 );

@@ -1,6 +1,6 @@
 import { tool } from "ai";
-import { z } from "zod";
 import { headers } from "next/headers";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { saveThemeToDatabase } from "@/lib/save-theme-to-db";
 import description from "./generate-theme.md";
@@ -17,12 +17,12 @@ const TinteBlockSchema = z.object({
   pr: z
     .string()
     .describe(
-      "Primary accent color in hex format - must meet WCAG AA contrast and be different hue family from secondary"
+      "Primary accent color in hex format - must meet WCAG AA contrast and be different hue family from secondary",
     ),
   sc: z
     .string()
     .describe(
-      "Secondary accent color in hex format - must be >60° apart from primary and meet WCAG AA contrast"
+      "Secondary accent color in hex format - must be >60° apart from primary and meet WCAG AA contrast",
     ),
   ac_1: z.string().describe("Accent color 1 in hex format"),
   ac_2: z.string().describe("Accent color 2 in hex format"),
@@ -36,31 +36,31 @@ export const generateThemeTool = tool({
       .string()
       .max(20)
       .describe(
-        "Short theme title, maximum 2 words (e.g., 'Ocean Sunset', 'Dark Forest')"
+        "Short theme title, maximum 2 words (e.g., 'Ocean Sunset', 'Dark Forest')",
       ),
     concept: z.string().describe("Brief theme description and mood"),
     light: TinteBlockSchema.describe(
-      "Light mode palette with perceptual luminance progression from bg (lightest) to tx (darkest)"
+      "Light mode palette with perceptual luminance progression from bg (lightest) to tx (darkest)",
     ),
     dark: TinteBlockSchema.describe(
-      "Dark mode palette with perceptual luminance progression from bg (darkest) to tx (lightest)"
+      "Dark mode palette with perceptual luminance progression from bg (darkest) to tx (lightest)",
     ),
     fonts: z
       .object({
         sans: z
           .string()
           .describe(
-            "Primary sans-serif font family from Google Fonts (e.g., 'Inter', 'Poppins')"
+            "Primary sans-serif font family from Google Fonts (e.g., 'Inter', 'Poppins')",
           ),
         serif: z
           .string()
           .describe(
-            "Serif font family from Google Fonts (e.g., 'Playfair Display', 'Merriweather')"
+            "Serif font family from Google Fonts (e.g., 'Playfair Display', 'Merriweather')",
           ),
         mono: z
           .string()
           .describe(
-            "Monospace font family from Google Fonts (e.g., 'JetBrains Mono', 'Fira Code')"
+            "Monospace font family from Google Fonts (e.g., 'JetBrains Mono', 'Fira Code')",
           ),
       })
       .describe("Google Fonts selection for theme typography"),
@@ -113,7 +113,7 @@ export const generateThemeTool = tool({
         // User is authenticated
         userId = session.user.id;
         console.log(
-          `🔐 Authenticated user generating theme: ${session.user.name} (${userId})`
+          `🔐 Authenticated user generating theme: ${session.user.name} (${userId})`,
         );
       }
 
@@ -128,7 +128,7 @@ export const generateThemeTool = tool({
           radius,
           shadows,
         },
-        userId
+        userId,
       );
 
       console.log(`🎨 Theme "${title}" saved with slug: ${slug}`);

@@ -16,11 +16,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useShikiOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-clear-overrides";
-import { ClearOverridesAlert } from "./clear-overrides-alert";
+import { useShikiOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
+import { ClearOverridesAlert } from "./clear-overrides-alert";
 
 interface ShikiVariable {
   key: string;
@@ -193,7 +193,6 @@ export function ShikiOverridesPanel({
       {},
     ),
   );
-
 
   // Initialize default values from current theme - ensure hex colors
   const getDefaultValue = React.useCallback(
@@ -408,7 +407,6 @@ export function ShikiOverridesPanel({
       shikiOverrides.getValue(key, getDefaultValue(key)) || getDefaultValue(key)
     );
   };
-
 
   return (
     <div className="flex flex-col h-full">

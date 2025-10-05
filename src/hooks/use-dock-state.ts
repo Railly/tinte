@@ -11,7 +11,7 @@ interface DockNavigation {
 export function useDockState() {
   const [navigation, setNavigation] = useState<DockNavigation>({
     current: "main",
-    history: []
+    history: [],
   });
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
   const [lastSaved, setLastSaved] = useState<Date>(new Date());
@@ -49,34 +49,38 @@ export function useDockState() {
     }, 800);
   }, []);
 
-  const navigateTo = useCallback((newState: DockState, addToHistory: boolean = true) => {
-    setNavigation(prev => {
-      const newHistory = addToHistory && prev.current !== "main" 
-        ? [...prev.history, prev.current]
-        : prev.history;
-      
-      return {
-        current: newState,
-        history: newHistory
-      };
-    });
-  }, []);
+  const navigateTo = useCallback(
+    (newState: DockState, addToHistory: boolean = true) => {
+      setNavigation((prev) => {
+        const newHistory =
+          addToHistory && prev.current !== "main"
+            ? [...prev.history, prev.current]
+            : prev.history;
+
+        return {
+          current: newState,
+          history: newHistory,
+        };
+      });
+    },
+    [],
+  );
 
   const navigateBack = useCallback(() => {
-    setNavigation(prev => {
+    setNavigation((prev) => {
       if (prev.history.length === 0) {
         return {
           current: "main",
-          history: []
+          history: [],
         };
       }
-      
+
       const previousState = prev.history[prev.history.length - 1];
       const newHistory = prev.history.slice(0, -1);
-      
+
       return {
         current: previousState,
-        history: newHistory
+        history: newHistory,
       };
     });
   }, []);

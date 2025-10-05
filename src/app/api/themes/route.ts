@@ -1,17 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
+import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 import { theme } from "@/db/schema/theme";
 import { auth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
 import type { TinteTheme } from "@/types/tinte";
-import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 
 // Helper function to generate unique slug
 async function generateUniqueSlug(baseName: string): Promise<string> {
-  const baseSlug = baseName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const baseSlug = baseName
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
   // First, try the base slug
-  const existingTheme = await db.select().from(theme).where(eq(theme.slug, baseSlug)).limit(1);
+  const existingTheme = await db
+    .select()
+    .from(theme)
+    .where(eq(theme.slug, baseSlug))
+    .limit(1);
   if (existingTheme.length === 0) {
     return baseSlug;
   }
@@ -20,7 +27,11 @@ async function generateUniqueSlug(baseName: string): Promise<string> {
   let counter = 1;
   while (true) {
     const candidateSlug = `${baseSlug}-${counter}`;
-    const existing = await db.select().from(theme).where(eq(theme.slug, candidateSlug)).limit(1);
+    const existing = await db
+      .select()
+      .from(theme)
+      .where(eq(theme.slug, candidateSlug))
+      .limit(1);
     if (existing.length === 0) {
       return candidateSlug;
     }
@@ -45,7 +56,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, tinteTheme, overrides = {}, isPublic = true, concept }: {
+    const {
+      name,
+      tinteTheme,
+      overrides = {},
+      isPublic = true,
+      concept,
+    }: {
       name: string;
       tinteTheme: TinteTheme;
       overrides?: {
@@ -60,7 +77,7 @@ export async function POST(request: NextRequest) {
     if (!name || !tinteTheme) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -70,65 +87,67 @@ export async function POST(request: NextRequest) {
     const uniqueSlug = await generateUniqueSlug(name);
 
     // Create theme record
-    const newTheme = await db.insert(theme).values({
-      id: themeId,
-      legacy_id: legacyId,
-      user_id: session.user.id,
-      name,
-      slug: uniqueSlug,
-      concept: concept || null,
+    const newTheme = await db
+      .insert(theme)
+      .values({
+        id: themeId,
+        legacy_id: legacyId,
+        user_id: session.user.id,
+        name,
+        slug: uniqueSlug,
+        concept: concept || null,
 
-      // Light mode colors
-      light_bg: tinteTheme.light.bg,
-      light_bg_2: tinteTheme.light.bg_2,
-      light_ui: tinteTheme.light.ui,
-      light_ui_2: tinteTheme.light.ui_2,
-      light_ui_3: tinteTheme.light.ui_3,
-      light_tx: tinteTheme.light.tx,
-      light_tx_2: tinteTheme.light.tx_2,
-      light_tx_3: tinteTheme.light.tx_3,
-      light_pr: tinteTheme.light.pr,
-      light_sc: tinteTheme.light.sc,
-      light_ac_1: tinteTheme.light.ac_1,
-      light_ac_2: tinteTheme.light.ac_2,
-      light_ac_3: tinteTheme.light.ac_3,
+        // Light mode colors
+        light_bg: tinteTheme.light.bg,
+        light_bg_2: tinteTheme.light.bg_2,
+        light_ui: tinteTheme.light.ui,
+        light_ui_2: tinteTheme.light.ui_2,
+        light_ui_3: tinteTheme.light.ui_3,
+        light_tx: tinteTheme.light.tx,
+        light_tx_2: tinteTheme.light.tx_2,
+        light_tx_3: tinteTheme.light.tx_3,
+        light_pr: tinteTheme.light.pr,
+        light_sc: tinteTheme.light.sc,
+        light_ac_1: tinteTheme.light.ac_1,
+        light_ac_2: tinteTheme.light.ac_2,
+        light_ac_3: tinteTheme.light.ac_3,
 
-      // Dark mode colors
-      dark_bg: tinteTheme.dark.bg,
-      dark_bg_2: tinteTheme.dark.bg_2,
-      dark_ui: tinteTheme.dark.ui,
-      dark_ui_2: tinteTheme.dark.ui_2,
-      dark_ui_3: tinteTheme.dark.ui_3,
-      dark_tx: tinteTheme.dark.tx,
-      dark_tx_2: tinteTheme.dark.tx_2,
-      dark_tx_3: tinteTheme.dark.tx_3,
-      dark_pr: tinteTheme.dark.pr,
-      dark_sc: tinteTheme.dark.sc,
-      dark_ac_1: tinteTheme.dark.ac_1,
-      dark_ac_2: tinteTheme.dark.ac_2,
-      dark_ac_3: tinteTheme.dark.ac_3,
+        // Dark mode colors
+        dark_bg: tinteTheme.dark.bg,
+        dark_bg_2: tinteTheme.dark.bg_2,
+        dark_ui: tinteTheme.dark.ui,
+        dark_ui_2: tinteTheme.dark.ui_2,
+        dark_ui_3: tinteTheme.dark.ui_3,
+        dark_tx: tinteTheme.dark.tx,
+        dark_tx_2: tinteTheme.dark.tx_2,
+        dark_tx_3: tinteTheme.dark.tx_3,
+        dark_pr: tinteTheme.dark.pr,
+        dark_sc: tinteTheme.dark.sc,
+        dark_ac_1: tinteTheme.dark.ac_1,
+        dark_ac_2: tinteTheme.dark.ac_2,
+        dark_ac_3: tinteTheme.dark.ac_3,
 
-      is_public: isPublic,
+        is_public: isPublic,
 
-      // Overrides
-      shadcn_override: overrides.shadcn || null,
-      vscode_override: overrides.vscode || null,
-      shiki_override: overrides.shiki || null,
+        // Overrides
+        shadcn_override: overrides.shadcn || null,
+        vscode_override: overrides.vscode || null,
+        shiki_override: overrides.shiki || null,
 
-      created_at: new Date(),
-      updated_at: new Date(),
-    }).returning();
+        created_at: new Date(),
+        updated_at: new Date(),
+      })
+      .returning();
 
     return NextResponse.json({
       success: true,
-      theme: newTheme[0]
+      theme: newTheme[0],
     });
-
   } catch (error) {
     console.error("Error creating theme:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -146,7 +165,9 @@ export async function GET(request: NextRequest) {
 
     if (isPublic) {
       // Get public themes - no auth required
-      const { getPublicThemes, getAllPublicThemes } = await import("@/lib/user-themes");
+      const { getPublicThemes, getAllPublicThemes } = await import(
+        "@/lib/user-themes"
+      );
 
       if (limit !== undefined && offset !== undefined) {
         const themes = await getPublicThemes(limit, offset);
@@ -170,12 +191,11 @@ export async function GET(request: NextRequest) {
     const themes = await getUserThemes(session.user.id, limit, session.user);
 
     return NextResponse.json(themes);
-
   } catch (error) {
     console.error("Error fetching themes:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

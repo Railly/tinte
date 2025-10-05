@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     // Exclude CLI directory from compilation
     config.watchOptions = {
       ...config.watchOptions,
-      ignored: ['**/cli/**', '**/node_modules/**'],
+      ignored: ["**/cli/**", "**/node_modules/**"],
     };
 
     // Add raw-loader for markdown files

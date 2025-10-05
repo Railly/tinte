@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useThemeContext } from "@/providers/theme";
 import { convertThemeToVSCode } from "@/lib/providers/vscode";
+import { useThemeContext } from "@/providers/theme";
 
 export type ProviderType = "shadcn" | "vscode" | "shiki";
 
@@ -29,7 +29,7 @@ export interface ProviderOverrideHook<T extends object = Record<string, any>> {
   hasAnyOverrides: boolean;
   // Merge base tokens with overrides for current mode
   getMergedTokens: (
-    baseTokens: Record<string, string>
+    baseTokens: Record<string, string>,
   ) => Record<string, string>;
 }
 
@@ -44,7 +44,7 @@ export interface ProviderOverrideHook<T extends object = Record<string, any>> {
  * ```
  */
 export function useProviderOverrides<T extends object = Record<string, any>>(
-  provider: ProviderType
+  provider: ProviderType,
 ): ProviderOverrideHook<T> {
   const context = useThemeContext();
   const {
@@ -92,7 +92,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
       const vscodeTheme = convertThemeToVSCode(
         { rawTheme: tinteTheme },
         {} as any,
-        {}
+        {},
       );
       const currentTheme = vscodeTheme[currentMode as keyof typeof vscodeTheme];
       const values: Record<string, string> = {};
@@ -142,7 +142,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
     (key: string): boolean => {
       return key in overrides && overrides[key as keyof T] !== undefined;
     },
-    [overrides]
+    [overrides],
   );
 
   // Get value with fallback to base theme
@@ -160,7 +160,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
 
       return fallback;
     },
-    [overrides, hasOverride, provider, baseThemeValues]
+    [overrides, hasOverride, provider, baseThemeValues],
   );
 
   // Set single override
@@ -177,7 +177,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
         },
       });
     },
-    [allOverrides, currentMode, updateFunction]
+    [allOverrides, currentMode, updateFunction],
   );
 
   // Set multiple overrides
@@ -194,7 +194,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
         },
       });
     },
-    [allOverrides, currentMode, updateFunction]
+    [allOverrides, currentMode, updateFunction],
   );
 
   // Clear single override
@@ -213,7 +213,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
         [currentMode]: modeOverrides,
       });
     },
-    [allOverrides, currentMode, updateFunction]
+    [allOverrides, currentMode, updateFunction],
   );
 
   // Clear all overrides for current mode
@@ -260,7 +260,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
 
       return merged;
     },
-    [overrides]
+    [overrides],
   );
 
   return {

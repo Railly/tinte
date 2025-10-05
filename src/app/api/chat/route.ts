@@ -1,17 +1,15 @@
 import { openai } from "@ai-sdk/openai";
-import { convertToModelMessages, streamText, stepCountIs } from "ai";
+import { convertToModelMessages, stepCountIs, streamText } from "ai";
 import type { NextRequest } from "next/server";
-import prompt from './prompt.md';
-import { generateThemeTool } from './tools/generate-theme';
-import { getCurrentThemeTool } from './tools/get-current-theme';
+import prompt from "./prompt.md";
+import { generateThemeTool } from "./tools/generate-theme";
+import { getCurrentThemeTool } from "./tools/get-current-theme";
 
 export const maxDuration = 30;
-
 
 export async function POST(request: NextRequest) {
   try {
     const { messages, currentTheme } = await request.json();
-
 
     if (!messages || !Array.isArray(messages)) {
       return Response.json(

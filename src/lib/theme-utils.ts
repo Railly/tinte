@@ -61,7 +61,7 @@ export function computeThemeTokens(theme: ThemeData): {
   if (theme.rawTheme) {
     try {
       const shadcnTheme = convertTheme("shadcn", theme.rawTheme) as ShadcnTheme;
-      if (shadcnTheme && shadcnTheme.light && shadcnTheme.dark) {
+      if (shadcnTheme?.light && shadcnTheme.dark) {
         baseTokens = {
           light: shadcnTheme.light,
           dark: shadcnTheme.dark,
@@ -147,7 +147,7 @@ export function computeThemeTokens(theme: ThemeData): {
 
       console.log("Converted database theme to rawTheme:", rawTheme);
       const shadcnTheme = convertTheme("shadcn", rawTheme) as ShadcnTheme;
-      if (shadcnTheme && shadcnTheme.light && shadcnTheme.dark) {
+      if (shadcnTheme?.light && shadcnTheme.dark) {
         console.log(
           "Successfully converted database theme to shadcn:",
           shadcnTheme,

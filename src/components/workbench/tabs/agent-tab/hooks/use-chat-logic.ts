@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PastedItem } from "@/lib/input-detection";
+import { useThemeContext } from "@/providers/theme";
 import { useWorkbenchStore } from "@/stores/workbench-store";
 import { clearSeed } from "@/utils/anon-seed";
-import { useThemeContext } from "@/providers/theme";
 
 interface UseChatLogicProps {
   initialPrompt?: string;
@@ -35,20 +35,17 @@ export function useChatLogic({ initialPrompt }: UseChatLogicProps = {}) {
 
   const seed = useWorkbenchStore((state) => state.seed);
   const chatId = useWorkbenchStore((state) => state.chatId);
-  const [seedProcessed, setSeedProcessed] = useState(false);
-  const [promptProcessed, setPromptProcessed] = useState(false);
   const processedSeedRef = useRef<string | null>(null);
+  const processedPromptRef = useRef<string | null>(null);
 
   // Handle seed processing
   useEffect(() => {
     if (
       seed &&
-      !seedProcessed &&
-      messages.length === 0 &&
       chatId &&
-      processedSeedRef.current !== seed.id
+      processedSeedRef.current !== seed.id &&
+      messages.length === 0
     ) {
-      setSeedProcessed(true);
       processedSeedRef.current = seed.id;
 
       const files: any[] = [];
@@ -77,23 +74,24 @@ export function useChatLogic({ initialPrompt }: UseChatLogicProps = {}) {
 
       clearSeed(chatId);
     }
-  }, [seed, seedProcessed, chatId, messages.length, sendMessage]);
+  }, [seed, chatId]);
 
   // Handle initial prompt auto-send
   useEffect(() => {
+    const promptKey = `${chatId}-${initialPrompt}`;
     if (
       initialPrompt &&
-      !promptProcessed &&
+      processedPromptRef.current !== promptKey &&
       messages.length === 0 &&
       chatId &&
       !seed // Don't auto-send if we have a seed to process
     ) {
-      setPromptProcessed(true);
+      processedPromptRef.current = promptKey;
       sendMessage({
         text: initialPrompt.trim(),
       });
     }
-  }, [initialPrompt, promptProcessed, chatId, messages.length, sendMessage, seed]);
+  }, [initialPrompt, chatId, seed]);
 
   const handleSubmit = useCallback(
     (content: string, attachments: PastedItem[]) => {
@@ -137,7 +135,8 @@ export function useChatLogic({ initialPrompt }: UseChatLogicProps = {}) {
     return messages.some((message) =>
       message.parts.some(
         (part) =>
-          (part.type === "tool-generateTheme" || part.type === "tool-getCurrentTheme") &&
+          (part.type === "tool-generateTheme" ||
+            part.type === "tool-getCurrentTheme") &&
           (part.state === "input-available" ||
             part.state === "input-streaming"),
       ),

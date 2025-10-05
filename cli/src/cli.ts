@@ -1,5 +1,5 @@
-import { TinteCLI } from './tinte-cli';
-import type { EditorInstallOptions } from './types';
+import { TinteCLI } from "./tinte-cli";
+import type { EditorInstallOptions } from "./types";
 
 // CLI Interface
 async function main() {
@@ -36,40 +36,49 @@ Examples:
 
   const command = args[0];
   const options: EditorInstallOptions = {
-    variant: args.includes('--light') ? 'light' : 'dark',
-    autoClose: args.includes('--close'),
-    timeout: parseInt(args.find(arg => arg.startsWith('--timeout'))?.split('=')[1] || '3000'),
-    editor: args.includes('--cursor') ? 'cursor' : 'code',
+    variant: args.includes("--light") ? "light" : "dark",
+    autoClose: args.includes("--close"),
+    timeout: parseInt(
+      args.find((arg) => arg.startsWith("--timeout"))?.split("=")[1] || "3000",
+    ),
+    editor: args.includes("--cursor") ? "cursor" : "code",
   };
 
   try {
     switch (command) {
-      case 'list':
+      case "list": {
         const installed = cli.listInstalled(options.editor);
-        const listEditorName = options.editor === 'cursor' ? 'Cursor' : 'VS Code';
+        const listEditorName =
+          options.editor === "cursor" ? "Cursor" : "VS Code";
         if (installed.length === 0) {
-          console.log(`📋 No Tinte themes currently installed in ${listEditorName}`);
+          console.log(
+            `📋 No Tinte themes currently installed in ${listEditorName}`,
+          );
         } else {
           console.log(`📋 Installed Tinte themes in ${listEditorName}:`);
-          installed.forEach(theme => console.log(`  - ${theme}`));
+          installed.forEach((theme) => console.log(`  - ${theme}`));
         }
         break;
+      }
 
-      case 'cleanup':
+      case "cleanup":
         cli.cleanup();
         break;
 
-      default:
+      default: {
         await cli.quick(command, options);
-        const installEditorName = options.editor === 'cursor' ? 'Cursor' : 'VS Code';
-        const editorCommand = options.editor === 'cursor' ? 'cursor .' : 'code .';
+        const installEditorName =
+          options.editor === "cursor" ? "Cursor" : "VS Code";
+        const _editorCommand =
+          options.editor === "cursor" ? "cursor ." : "code .";
         console.log(`
 🎉 Open ${installEditorName} and select your new theme from Preferences → Color Theme
         `);
         break;
+      }
     }
   } catch (error) {
-    console.error('❌ Error:', error instanceof Error ? error.message : error);
+    console.error("❌ Error:", error instanceof Error ? error.message : error);
     process.exit(1);
   }
 }

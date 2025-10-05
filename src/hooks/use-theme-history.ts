@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { TinteTheme } from "@/types/tinte";
 import type { ThemeData } from "@/lib/theme-tokens";
+import type { TinteTheme } from "@/types/tinte";
 
 interface HistoryEntry {
   theme: TinteTheme;
@@ -16,7 +16,11 @@ interface HistoryState {
 export function useThemeHistory(
   currentTheme: TinteTheme,
   baseTheme: ThemeData, // The actual theme object (can have unsaved)
-  onRestore: (theme: TinteTheme, shouldSelectTheme: boolean, themeToSelect?: ThemeData) => void
+  onRestore: (
+    theme: TinteTheme,
+    shouldSelectTheme: boolean,
+    themeToSelect?: ThemeData,
+  ) => void,
 ) {
   // Get the clean base theme (without unsaved)
   const cleanBaseTheme = useRef<ThemeData>(baseTheme);
@@ -24,17 +28,25 @@ export function useThemeHistory(
   const [history, setHistory] = useState<HistoryState>(() => {
     // Find the original theme (without unsaved)
     const original = baseTheme.name.includes("(unsaved)")
-      ? { ...baseTheme, name: baseTheme.name.replace(" (unsaved)", "").replace("(unsaved)", "").trim() }
+      ? {
+          ...baseTheme,
+          name: baseTheme.name
+            .replace(" (unsaved)", "")
+            .replace("(unsaved)", "")
+            .trim(),
+        }
       : baseTheme;
 
     cleanBaseTheme.current = original;
 
     return {
-      entries: [{
-        theme: baseTheme.rawTheme as TinteTheme,
-        baseTheme: original,
-        timestamp: Date.now()
-      }],
+      entries: [
+        {
+          theme: baseTheme.rawTheme as TinteTheme,
+          baseTheme: original,
+          timestamp: Date.now(),
+        },
+      ],
       currentIndex: 0,
     };
   });
@@ -48,14 +60,16 @@ export function useThemeHistory(
     const currentBaseThemeId = cleanBaseTheme.current?.id || "";
 
     // Check if selecting the same base theme (e.g., "Flexoki" when you have "Custom (unsaved)" derived from "Flexoki")
-    const isSameBaseTheme = newBaseId === currentBaseThemeId &&
-                           !baseTheme.name.includes("(unsaved)") &&
-                           history.currentIndex > 0;
+    const isSameBaseTheme =
+      newBaseId === currentBaseThemeId &&
+      !baseTheme.name.includes("(unsaved)") &&
+      history.currentIndex > 0;
 
     // Check if it's a different theme (not just unsaved version)
-    const isNewTheme = newBaseId !== baseThemeIdRef.current &&
-                      !newBaseId.startsWith("custom_") &&
-                      !baseThemeIdRef.current.startsWith("custom_");
+    const isNewTheme =
+      newBaseId !== baseThemeIdRef.current &&
+      !newBaseId.startsWith("custom_") &&
+      !baseThemeIdRef.current.startsWith("custom_");
 
     if (isSameBaseTheme) {
       // User selected the same base theme → reset to first entry (like clicking reset)
@@ -71,17 +85,25 @@ export function useThemeHistory(
       baseThemeIdRef.current = newBaseId;
 
       const original = baseTheme.name.includes("(unsaved)")
-        ? { ...baseTheme, name: baseTheme.name.replace(" (unsaved)", "").replace("(unsaved)", "").trim() }
+        ? {
+            ...baseTheme,
+            name: baseTheme.name
+              .replace(" (unsaved)", "")
+              .replace("(unsaved)", "")
+              .trim(),
+          }
         : baseTheme;
 
       cleanBaseTheme.current = original;
 
       setHistory({
-        entries: [{
-          theme: baseTheme.rawTheme as TinteTheme,
-          baseTheme: original,
-          timestamp: Date.now()
-        }],
+        entries: [
+          {
+            theme: baseTheme.rawTheme as TinteTheme,
+            baseTheme: original,
+            timestamp: Date.now(),
+          },
+        ],
         currentIndex: 0,
       });
     }
@@ -98,7 +120,9 @@ export function useThemeHistory(
     const timeoutId = setTimeout(() => {
       setHistory((prev) => {
         const currentThemeStr = JSON.stringify(currentTheme);
-        const currentEntryStr = JSON.stringify(prev.entries[prev.currentIndex]?.theme);
+        const currentEntryStr = JSON.stringify(
+          prev.entries[prev.currentIndex]?.theme,
+        );
 
         // Don't track if it's the same as current entry
         if (currentThemeStr === currentEntryStr) {
@@ -146,7 +170,11 @@ export function useThemeHistory(
       queueMicrotask(() => {
         // If going back to index 0, restore the original theme (no unsaved)
         const shouldSelectTheme = newIndex === 0;
-        onRestore(entry.theme, shouldSelectTheme, shouldSelectTheme ? entry.baseTheme : undefined);
+        onRestore(
+          entry.theme,
+          shouldSelectTheme,
+          shouldSelectTheme ? entry.baseTheme : undefined,
+        );
       });
 
       return {

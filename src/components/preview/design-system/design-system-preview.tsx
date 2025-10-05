@@ -35,7 +35,7 @@ interface DesignSystemPreviewProps {
   className?: string;
 }
 
-const CloverlySybmol = ({ className }: { className?: string }) => (
+const _CloverlySybmol = ({ className }: { className?: string }) => (
   <div
     className={`relative w-10 h-10 flex items-center justify-center ${className}`}
   >

@@ -1,10 +1,11 @@
 "use client";
 
-import { Copy, Palette, Sparkles, Save, RefreshCw } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Palette, RefreshCw, Save, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useThemeContext } from "@/providers/theme";
+import { useTheme } from "@/hooks/use-theme";
+import { useAgentSessionStore } from "@/stores/agent-session-store";
 import { DEFAULT_OPEN_SECTIONS } from "../constants";
 import { ColorsSection } from "./theme-sections/colors-section";
 import { RadiusSection } from "./theme-sections/radius-section";
@@ -36,13 +37,24 @@ export function ThemeResultCard({
     isAuthenticated,
     loadUserThemes,
     selectTheme,
-    shadcnOverride
-  } = useThemeContext();
+    shadcnOverride,
+    activeTheme,
+  } = useTheme();
+
+  const { firstCreatedThemeId, setFirstCreatedTheme } = useAgentSessionStore();
+
+  // Check if this theme is saved (either from database or first creation in session)
+  const isSaved = Boolean(
+    themeOutput.databaseId || firstCreatedThemeId === themeOutput.databaseId,
+  );
 
   // Auto-apply every generated theme (session only, no DB save)
   useEffect(() => {
     if (!hasAutoApplied && themeOutput) {
-      console.log("🎯 [Auto-apply] Applying generated theme (unsaved):", themeOutput.title);
+      console.log(
+        "🎯 [Auto-apply] Applying generated theme:",
+        themeOutput.title,
+      );
       onApplyTheme(themeOutput);
       setHasAutoApplied(true);
     }
@@ -55,7 +67,7 @@ export function ThemeResultCard({
     }));
   };
 
-  const handleSaveTheme = async () => {
+  const handleSaveOrUpdateTheme = async () => {
     if (!canSave) {
       toast.error("Please sign in to save themes");
       return;
@@ -63,14 +75,18 @@ export function ThemeResultCard({
 
     console.log("🎨 [AI Save] About to apply theme:", themeOutput);
     await onApplyTheme(themeOutput);
-    console.log("✅ [AI Save] Theme applied, current shadcnOverride:", shadcnOverride);
 
     setIsSaving(true);
     try {
       const themeName = themeOutput.title || "AI Generated Theme";
 
-      console.log("💾 [AI Save] About to save with:", {
+      // Check if this is an update to the first created theme
+      const isUpdate = Boolean(firstCreatedThemeId);
+
+      console.log("💾 [AI Save] Save operation:", {
         themeName,
+        isUpdate,
+        firstCreatedThemeId,
         shadcnOverride,
       });
 
@@ -79,28 +95,53 @@ export function ThemeResultCard({
       console.log("📥 [AI Save] Save result:", result);
 
       if (result.success && result.savedTheme) {
+        // Track first created theme if this is the first save
+        if (!firstCreatedThemeId && result.savedTheme.id) {
+          setFirstCreatedTheme(
+            result.savedTheme.id,
+            result.savedTheme.slug || "",
+          );
+          console.log(
+            "🎯 [AI Save] Set first created theme:",
+            result.savedTheme.id,
+          );
+        }
+
         console.log("🔄 [AI Save] Refreshing theme lists...");
         await loadUserThemes();
         console.log("✅ [AI Save] Theme lists refreshed");
 
         setTimeout(() => {
-          console.log("🎯 [AI Save] About to select saved theme:", result.savedTheme);
+          console.log(
+            "🎯 [AI Save] About to select saved theme:",
+            result.savedTheme,
+          );
 
           selectTheme(result.savedTheme);
 
           console.log("🌐 [AI Save] Theme selected, updating URL...");
 
-          if (result.savedTheme.slug && result.savedTheme.slug !== "default" && result.savedTheme.slug !== "theme") {
-            const newUrl = `/workbench/${result.savedTheme.slug}`;
-            window.history.replaceState(null, '', newUrl);
+          if (
+            result.savedTheme.slug &&
+            result.savedTheme.slug !== "default" &&
+            result.savedTheme.slug !== "theme"
+          ) {
+            const newUrl = `/workbench/${result.savedTheme.slug}?tab=agent`;
+            window.history.replaceState(null, "", newUrl);
             console.log("🔗 [AI Save] URL updated to:", newUrl);
           }
         }, 100);
 
-        toast.success(`"${themeName}" saved successfully!`);
+        toast.success(
+          isUpdate
+            ? `"${themeName}" updated successfully!`
+            : `"${themeName}" saved successfully!`,
+        );
       } else {
         console.error("❌ [AI Save] Save failed:", result);
-        toast.error("Failed to save theme");
+        toast.error(
+          isUpdate ? "Failed to update theme" : "Failed to save theme",
+        );
       }
     } catch (error) {
       console.error("💥 [AI Save] Error saving theme:", error);
@@ -119,9 +160,14 @@ export function ThemeResultCard({
           <div className="w-2 h-2 rounded-full bg-primary" />
           <span>Crafted in {loadingTimer}s ✨</span>
         </div>
-        {isFirstTheme && (
+        {!isSaved && (
           <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
             Unsaved
+          </span>
+        )}
+        {isSaved && firstCreatedThemeId && (
+          <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded">
+            Saved
           </span>
         )}
       </div>
@@ -181,16 +227,29 @@ export function ThemeResultCard({
             <Sparkles className="h-3 w-3 mr-1.5" />
             Apply Theme
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleSaveTheme}
-            disabled={!canSave || isSaving}
-            className="h-8 px-3"
-          >
-            <Save className="h-3 w-3 mr-1.5" />
-            {isSaving ? "Saving..." : "Save"}
-          </Button>
+
+          {/* Only show Save/Update button if user is authenticated */}
+          {isAuthenticated && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleSaveOrUpdateTheme}
+              disabled={isSaving}
+              className="h-8 px-3"
+            >
+              {firstCreatedThemeId ? (
+                <>
+                  <RefreshCw className="h-3 w-3 mr-1.5" />
+                  {isSaving ? "Updating..." : "Update"}
+                </>
+              ) : (
+                <>
+                  <Save className="h-3 w-3 mr-1.5" />
+                  {isSaving ? "Saving..." : "Save"}
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </div>

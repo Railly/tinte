@@ -1,6 +1,6 @@
+import { sql } from "drizzle-orm";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { sql } from "drizzle-orm";
 
 /**
  * Migration script to move shadow properties from top-level to palettes.light/dark
@@ -51,7 +51,9 @@ async function migrateShadows() {
 
     // Skip if shadow is already in palettes
     if (override.palettes?.light?.shadow || override.palettes?.dark?.shadow) {
-      console.log(`⏭️  Skipping ${themeRecord.name} - shadow already in palettes`);
+      console.log(
+        `⏭️  Skipping ${themeRecord.name} - shadow already in palettes`,
+      );
       skippedCount++;
       continue;
     }

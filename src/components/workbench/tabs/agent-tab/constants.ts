@@ -16,7 +16,7 @@ export const TOOL_MESSAGES = [
 
 export const KIND_ICONS = {
   url: "Globe",
-  cssvars: "CSSIcon", 
+  cssvars: "CSSIcon",
   tailwind: "TailwindIcon",
   palette: "Palette",
 } as const;

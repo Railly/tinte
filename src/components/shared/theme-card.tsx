@@ -1,19 +1,25 @@
 "use client";
 
-import { Download, Heart, UserX, Edit } from "lucide-react";
+import { Download, Edit, Heart, UserX } from "lucide-react";
 import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
 import { nanoid } from "nanoid";
+import { useRouter } from "next/navigation";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
 import Logo from "@/components/shared/logo";
 import { ThemeCardPreview } from "@/components/shared/theme-card-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { ThemeData } from "@/lib/theme-tokens";
-import { extractThemeColors, extractShadcnColors, extractShadcnFonts, extractShadcnShadows, formatNumber } from "@/utils/theme-card-helpers";
-import { useThemeContext } from "@/providers/theme";
 import { useThemeFonts } from "@/hooks/use-theme-fonts";
+import type { ThemeData } from "@/lib/theme-tokens";
+import { useThemeContext } from "@/providers/theme";
+import {
+  extractShadcnColors,
+  extractShadcnFonts,
+  extractShadcnShadows,
+  extractThemeColors,
+  formatNumber,
+} from "@/utils/theme-card-helpers";
 
 interface ThemeCardProps {
   theme: ThemeData;
@@ -108,7 +114,12 @@ export function ThemeCardSkeleton() {
   );
 }
 
-export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo = false }: ThemeCardProps) {
+export function ThemeCard({
+  theme,
+  onThemeSelect,
+  variant = "grid",
+  showUserInfo = false,
+}: ThemeCardProps) {
   const { isDark } = useThemeContext();
   const router = useRouter();
 
@@ -134,7 +145,9 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
     } else {
       const workbenchId = nanoid();
       const prompt = `Create a theme similar to "${theme.name}" with these colors: primary ${theme.colors?.primary}, background ${theme.colors?.background}, accent ${theme.colors?.accent}`;
-      router.push(`/workbench/${workbenchId}?prompt=${encodeURIComponent(prompt)}`);
+      router.push(
+        `/workbench/${workbenchId}?prompt=${encodeURIComponent(prompt)}`,
+      );
     }
   };
 
@@ -160,7 +173,13 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
         transition={{ duration: 0.2, ease: "easeOut" }}
         className="group relative bg-background/50 backdrop-blur-sm rounded-lg border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
         onClick={handleThemeClick}
-        style={{ ...shadcnColors, ...shadcnFonts, ...shadcnShadows } as React.CSSProperties}
+        style={
+          {
+            ...shadcnColors,
+            ...shadcnFonts,
+            ...shadcnShadows,
+          } as React.CSSProperties
+        }
       >
         <div className="p-4">
           {/* Top section - Theme info and stats */}
@@ -172,7 +191,9 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
                 </h3>
                 {theme.author && (
                   <div className="flex items-center gap-1">
-                    {showUserInfo && theme.provider === "tinte" && (theme as any).user?.image ? (
+                    {showUserInfo &&
+                    theme.provider === "tinte" &&
+                    (theme as any).user?.image ? (
                       <>
                         <Avatar className="w-3.5 h-3.5">
                           <AvatarImage
@@ -180,15 +201,21 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
                             alt={(theme as any).user.name || "User"}
                           />
                           <AvatarFallback className="text-[8px]">
-                            {((theme as any).user.name?.[0] || "U").toUpperCase()}
+                            {(
+                              (theme as any).user.name?.[0] || "U"
+                            ).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-xs text-muted-foreground">by {(theme as any).user.name || "Anonymous"}</span>
+                        <span className="text-xs text-muted-foreground">
+                          by {(theme as any).user.name || "Anonymous"}
+                        </span>
                       </>
                     ) : showUserInfo && theme.provider === "tinte" ? (
                       <>
                         <UserX className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">by Anonymous</span>
+                        <span className="text-xs text-muted-foreground">
+                          by Anonymous
+                        </span>
                       </>
                     ) : theme.author === "tweakcn" ? (
                       <TweakCNIcon className="w-3.5 h-3.5 text-muted-foreground" />
@@ -197,7 +224,9 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
                     ) : theme.author === "tinte" ? (
                       <Logo size={14} className="text-muted-foreground" />
                     ) : (
-                      <span className="text-xs text-muted-foreground">by {theme.author}</span>
+                      <span className="text-xs text-muted-foreground">
+                        by {theme.author}
+                      </span>
                     )}
                   </div>
                 )}
@@ -215,7 +244,11 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
                 </div>
                 <div className="flex items-center gap-1">
                   <Download className="w-3 h-3" />
-                  <span>{formatNumber((theme as any).installs || theme.downloads || 0)}</span>
+                  <span>
+                    {formatNumber(
+                      (theme as any).installs || theme.downloads || 0,
+                    )}
+                  </span>
                 </div>
               </div>
 
@@ -245,13 +278,15 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
           <div className="space-y-2">
             {/* Primary color bar */}
             <div className="flex h-2 rounded-full overflow-hidden border border-border/20">
-              {Object.values(colors).slice(0, 8).map((color, i) => (
-                <div
-                  key={i}
-                  className="flex-1 first:rounded-l-full last:rounded-r-full"
-                  style={{ backgroundColor: color }}
-                />
-              ))}
+              {Object.values(colors)
+                .slice(0, 8)
+                .map((color, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 first:rounded-l-full last:rounded-r-full"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
             </div>
 
             {/* Color labels/tokens preview */}
@@ -260,7 +295,9 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
                 <span>{Object.keys(colors).length} colors</span>
                 <span>•</span>
                 {(shadcnFonts as any).fontFamily ? (
-                  <span className="font-sans">Font: {(shadcnFonts as any).fontFamily.split(',')[0]}</span>
+                  <span className="font-sans">
+                    Font: {(shadcnFonts as any).fontFamily.split(",")[0]}
+                  </span>
                 ) : (
                   <span>Compatible with shadcn/ui</span>
                 )}
@@ -268,14 +305,16 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
 
               {/* Quick color dots for key colors */}
               <div className="flex gap-1">
-                {Object.entries(colors).slice(0, 4).map(([key, color]) => (
-                  <div
-                    key={key}
-                    className="w-2 h-2 rounded-full border border-border/40"
-                    style={{ backgroundColor: color }}
-                    title={key}
-                  />
-                ))}
+                {Object.entries(colors)
+                  .slice(0, 4)
+                  .map(([key, color]) => (
+                    <div
+                      key={key}
+                      className="w-2 h-2 rounded-full border border-border/40"
+                      style={{ backgroundColor: color }}
+                      title={key}
+                    />
+                  ))}
               </div>
             </div>
           </div>
@@ -290,17 +329,25 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="group relative bg-background/50 backdrop-blur-sm rounded-xl border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
       onClick={handleThemeClick}
-      style={{ ...shadcnColors, ...shadcnFonts, ...shadcnShadows } as React.CSSProperties}
+      style={
+        {
+          ...shadcnColors,
+          ...shadcnFonts,
+          ...shadcnShadows,
+        } as React.CSSProperties
+      }
     >
       {/* Color preview dots */}
       <div className="absolute top-3 right-3 flex gap-1 z-10">
-        {Object.values(colors).slice(0, 4).map((color, i) => (
-          <div
-            key={i}
-            className="w-1.5 h-1.5 rounded-full border border-white/40 shadow-sm"
-            style={{ backgroundColor: color }}
-          />
-        ))}
+        {Object.values(colors)
+          .slice(0, 4)
+          .map((color, i) => (
+            <div
+              key={i}
+              className="w-1.5 h-1.5 rounded-full border border-white/40 shadow-sm"
+              style={{ backgroundColor: color }}
+            />
+          ))}
       </div>
 
       {/* Theme Preview */}
@@ -361,7 +408,9 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
           {/* Author */}
           {theme.author && (
             <div className="flex items-center gap-1">
-              {showUserInfo && theme.provider === "tinte" && (theme as any).user?.image ? (
+              {showUserInfo &&
+              theme.provider === "tinte" &&
+              (theme as any).user?.image ? (
                 <>
                   <Avatar className="w-3.5 h-3.5">
                     <AvatarImage
@@ -372,12 +421,16 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
                       {((theme as any).user.name?.[0] || "U").toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-gray-400 dark:text-gray-500">{(theme as any).user.name || "Anonymous"}</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    {(theme as any).user.name || "Anonymous"}
+                  </span>
                 </>
               ) : showUserInfo && theme.provider === "tinte" ? (
                 <>
                   <UserX className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
-                  <span className="text-xs text-gray-400 dark:text-gray-500">Anonymous</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    Anonymous
+                  </span>
                 </>
               ) : theme.author === "tweakcn" ? (
                 <TweakCNIcon className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
@@ -386,7 +439,9 @@ export function ThemeCard({ theme, onThemeSelect, variant = "grid", showUserInfo
               ) : theme.author === "tinte" ? (
                 <Logo size={14} className="text-gray-400 dark:text-gray-500" />
               ) : (
-                <span className="text-xs text-gray-400 dark:text-gray-500">{theme.author}</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {theme.author}
+                </span>
               )}
             </div>
           )}

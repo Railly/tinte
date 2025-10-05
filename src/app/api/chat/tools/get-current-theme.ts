@@ -2,7 +2,8 @@ import { tool } from "ai";
 import { z } from "zod";
 
 export const getCurrentThemeTool = tool({
-  description: "Get the current active theme colors, fonts, radius, and shadows. Use this before making theme modifications to understand the current state.",
+  description:
+    "Get the current active theme colors, fonts, radius, and shadows. Use this before making theme modifications to understand the current state.",
   inputSchema: z.object({}),
   execute: async () => {
     // This tool will receive the current theme via the context passed from the client

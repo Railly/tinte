@@ -1,8 +1,10 @@
 "use client";
 
 import type * as React from "react";
-import { ColorPickerInput } from "@/components/ui/color-picker-input";
+import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import InvertedLogo from "@/components/shared/inverted-logo";
 import { Button } from "@/components/ui/button";
+import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,16 +14,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { NumberSlider } from "@/components/ui/number-slider";
 import { ShadowPropertiesEditor } from "@/components/ui/shadow-properties-editor";
-import InvertedLogo from "@/components/shared/inverted-logo";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
 import { generateTailwindPalette } from "@/lib/ice-theme";
-import { useThemeContext } from "@/providers/theme";
-import { cn } from "@/lib/utils";
 import type { TokenGroup } from "@/lib/theme-editor-utils";
+import { cn } from "@/lib/utils";
+import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
 import type { TinteBlock } from "@/types/tinte";
+import { extractFontFamily, loadGoogleFont } from "@/utils/fonts";
 import { FontSelector } from "./font-selector";
-import { loadGoogleFont, extractFontFamily } from "@/utils/fonts";
 
 interface EnhancedTokenInputProps {
   group: TokenGroup;
@@ -33,25 +33,35 @@ interface EnhancedTokenInputProps {
 }
 
 const CANONICAL_COLOR_KEYS: (keyof TinteBlock)[] = [
-  "bg", "bg_2", "ui", "ui_2", "ui_3", 
-  "tx_3", "tx_2", "tx",
-  "pr", "sc", "ac_1", "ac_2", "ac_3"
+  "bg",
+  "bg_2",
+  "ui",
+  "ui_2",
+  "ui_3",
+  "tx_3",
+  "tx_2",
+  "tx",
+  "pr",
+  "sc",
+  "ac_1",
+  "ac_2",
+  "ac_3",
 ];
 
 const COLOR_LABELS: Record<keyof TinteBlock, string> = {
   bg: "BG",
-  bg_2: "BG2", 
+  bg_2: "BG2",
   ui: "UI",
   ui_2: "UI2",
   ui_3: "UI3",
   tx_3: "TX3",
-  tx_2: "TX2", 
+  tx_2: "TX2",
   tx: "TX",
   pr: "PR",
   sc: "SC",
   ac_1: "AC1",
   ac_2: "AC2",
-  ac_3: "AC3"
+  ac_3: "AC3",
 };
 
 export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
@@ -89,7 +99,7 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
         </div>
       );
     }
-    
+
     if (group.type === "color") {
       return (
         <div className="flex gap-2">
@@ -99,12 +109,8 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
         </div>
       );
     }
-    
-    return (
-      <div
-        className="h-8 bg-muted/30 rounded animate-pulse"
-      ></div>
-    );
+
+    return <div className="h-8 bg-muted/30 rounded animate-pulse"></div>;
   }
 
   if (group.type === "color") {
@@ -116,7 +122,7 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
             onChange={(newValue) => onEdit(tokenKey, newValue)}
           />
         </div>
-        
+
         {/* Quick Canonical Color Picker */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -132,7 +138,7 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
             {CANONICAL_COLOR_KEYS.map((colorKey) => {
               const colorValue = currentColors?.[colorKey];
               const isSelected = colorValue === value;
-              
+
               return (
                 <DropdownMenuItem
                   key={colorKey}
@@ -140,14 +146,18 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
                   disabled={!colorValue}
                   className="flex items-center gap-2"
                 >
-                  <div 
+                  <div
                     className={cn(
                       "w-4 h-4 rounded border",
-                      isSelected ? "border-foreground border-2" : "border-border"
+                      isSelected
+                        ? "border-foreground border-2"
+                        : "border-border",
                     )}
                     style={{ backgroundColor: colorValue || "#000000" }}
                   />
-                  <span className="font-mono text-xs">{COLOR_LABELS[colorKey]}</span>
+                  <span className="font-mono text-xs">
+                    {COLOR_LABELS[colorKey]}
+                  </span>
                   <span className="ml-auto text-xs text-muted-foreground font-mono">
                     {colorValue}
                   </span>
@@ -169,32 +179,35 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            {value && (() => {
-              const palette = generateTailwindPalette(value);
-              return palette.map((color) => {
-                const isSelected = color.value === value;
-                
-                return (
-                  <DropdownMenuItem
-                    key={color.name}
-                    onClick={() => handleTailwindColorSelect(color.value)}
-                    className="flex items-center gap-2"
-                  >
-                    <div 
-                      className={cn(
-                        "w-4 h-4 rounded border",
-                        isSelected ? "border-foreground border-2" : "border-border"
-                      )}
-                      style={{ backgroundColor: color.value }}
-                    />
-                    <span className="font-mono text-xs">{color.name}</span>
-                    <span className="ml-auto text-xs text-muted-foreground font-mono">
-                      {color.value}
-                    </span>
-                  </DropdownMenuItem>
-                );
-              });
-            })()}
+            {value &&
+              (() => {
+                const palette = generateTailwindPalette(value);
+                return palette.map((color) => {
+                  const isSelected = color.value === value;
+
+                  return (
+                    <DropdownMenuItem
+                      key={color.name}
+                      onClick={() => handleTailwindColorSelect(color.value)}
+                      className="flex items-center gap-2"
+                    >
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded border",
+                          isSelected
+                            ? "border-foreground border-2"
+                            : "border-border",
+                        )}
+                        style={{ backgroundColor: color.value }}
+                      />
+                      <span className="font-mono text-xs">{color.name}</span>
+                      <span className="ml-auto text-xs text-muted-foreground font-mono">
+                        {color.value}
+                      </span>
+                    </DropdownMenuItem>
+                  );
+                });
+              })()}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -204,8 +217,8 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
   if (group.type === "fonts") {
     // Extract and preload the current font
     const currentFontFamily = extractFontFamily(value);
-    if (currentFontFamily && typeof window !== 'undefined') {
-      loadGoogleFont(currentFontFamily, ['400', '500']);
+    if (currentFontFamily && typeof window !== "undefined") {
+      loadGoogleFont(currentFontFamily, ["400", "500"]);
     }
 
     return (
@@ -224,11 +237,17 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
         placeholder="Select font..."
         className="h-7 text-xs"
         style={{
-          fontFamily: currentFontFamily ? `"${currentFontFamily}", ${
-            tokenKey.includes("sans") ? "sans-serif" :
-            tokenKey.includes("serif") ? "serif" :
-            tokenKey.includes("mono") ? "monospace" : "sans-serif"
-          }` : undefined
+          fontFamily: currentFontFamily
+            ? `"${currentFontFamily}", ${
+                tokenKey.includes("sans")
+                  ? "sans-serif"
+                  : tokenKey.includes("serif")
+                    ? "serif"
+                    : tokenKey.includes("mono")
+                      ? "monospace"
+                      : "sans-serif"
+              }`
+            : undefined,
         }}
       />
     );

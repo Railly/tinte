@@ -1,5 +1,6 @@
 "use client";
 
+import { FileText, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, Loader2 } from "lucide-react";
 
 interface ImportThemeDialogProps {
   isOpen: boolean;
@@ -163,7 +163,9 @@ export function ImportThemeDialog({
           <Button
             type="button"
             onClick={handleImport}
-            disabled={!themeName.trim() || !themeCSS.trim() || isImporting || isLoading}
+            disabled={
+              !themeName.trim() || !themeCSS.trim() || isImporting || isLoading
+            }
             className="min-w-[120px]"
           >
             {isImporting || isLoading ? (

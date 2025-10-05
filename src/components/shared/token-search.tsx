@@ -16,7 +16,7 @@ export function TokenSearch({
   placeholder = "Search tokens...",
   onSearch,
   className,
-  value: externalValue
+  value: externalValue,
 }: TokenSearchProps) {
   const [query, setQuery] = React.useState(externalValue || "");
 

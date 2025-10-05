@@ -1,6 +1,6 @@
-import fs from "fs";
-import path from "path";
-import archiver from 'archiver';
+import fs from "node:fs";
+import path from "node:path";
+import archiver from "archiver";
 
 // Token to scope mapping from current VS Code provider
 export const tokenToScopeMapping = {
@@ -271,7 +271,11 @@ function getVSCodeColors(palette, mode) {
   return vsCodeColors;
 }
 
-function generateTokenColors(palette, tokenColors = defaultTokenColorMap, overrides) {
+function generateTokenColors(
+  palette,
+  tokenColors = defaultTokenColorMap,
+  overrides,
+) {
   return Object.entries(tokenColors).map(([token, colorKey]) => ({
     name: token,
     scope: tokenToScopeMapping[token],
@@ -287,7 +291,11 @@ function convertTinteToVSCode(tinteTheme, name = "Tinte Theme", overrides) {
     displayName: `${name} (Light)`,
     type: "light",
     colors: getVSCodeColors(tinteTheme.light, "light"),
-    tokenColors: generateTokenColors(tinteTheme.light, defaultTokenColorMap, overrides),
+    tokenColors: generateTokenColors(
+      tinteTheme.light,
+      defaultTokenColorMap,
+      overrides,
+    ),
   };
 
   const darkTheme = {
@@ -295,13 +303,22 @@ function convertTinteToVSCode(tinteTheme, name = "Tinte Theme", overrides) {
     displayName: `${name} (Dark)`,
     type: "dark",
     colors: getVSCodeColors(tinteTheme.dark, "dark"),
-    tokenColors: generateTokenColors(tinteTheme.dark, defaultTokenColorMap, overrides),
+    tokenColors: generateTokenColors(
+      tinteTheme.dark,
+      defaultTokenColorMap,
+      overrides,
+    ),
   };
 
   return { light: lightTheme, dark: darkTheme };
 }
 
-const allowedOrigins = ["https://tinte-rh.netlify.app", "https://www.tinte.dev", "https://tinte.dev", "http://localhost:3000"];
+const allowedOrigins = [
+  "https://tinte-rh.netlify.app",
+  "https://www.tinte.dev",
+  "https://tinte.dev",
+  "http://localhost:3000",
+];
 
 export async function handler(event) {
   const origin = event.headers.origin;
@@ -349,12 +366,20 @@ export async function handler(event) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: "Invalid theme format. Expected tinteTheme with light and dark variants." }),
+      body: JSON.stringify({
+        error:
+          "Invalid theme format. Expected tinteTheme with light and dark variants.",
+      }),
     };
   }
 
   try {
-    const vsixBuffer = await createVSIXFile(tinteTheme, themeName || "Custom Theme", variant, overrides);
+    const vsixBuffer = await createVSIXFile(
+      tinteTheme,
+      themeName || "Custom Theme",
+      variant,
+      overrides,
+    );
 
     return {
       statusCode: 200,
@@ -380,13 +405,14 @@ function generateThemeIcon(tinteTheme, variant) {
   const palette = tinteTheme[variant];
 
   // Use primary colors for the gradient
-  const primaryColor = palette.pr || palette.primary || '#007ACC';
-  const secondaryColor = palette.ac_1 || palette.accent || '#FF6F61';
-  const backgroundColor = palette.bg || (variant === 'dark' ? '#1E1E1E' : '#FFFFFF');
+  const primaryColor = palette.pr || palette.primary || "#007ACC";
+  const secondaryColor = palette.ac_1 || palette.accent || "#FF6F61";
+  const backgroundColor =
+    palette.bg || (variant === "dark" ? "#1E1E1E" : "#FFFFFF");
 
   // Additional colors from the palette
-  const accentColor = palette.ac_2 || palette.secondary || '#8aadf4';
-  const uiColor = palette.ui || '#636572';
+  const accentColor = palette.ac_2 || palette.secondary || "#8aadf4";
+  const uiColor = palette.ui || "#636572";
 
   // Generate SVG with the logo shape prominently in front
   const svgContent = `<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
@@ -436,7 +462,7 @@ async function createVSIXFile(tinteTheme, themeName, variant, overrides) {
     homepage: "https://tinte.dev",
     repository: {
       type: "git",
-      url: "https://github.com/Railly/tinte"
+      url: "https://github.com/Railly/tinte",
     },
     contributes: {
       themes: [
@@ -468,12 +494,12 @@ Visit [tinte.dev](https://tinte.dev) to create your own themes!
 `;
 
   return new Promise((resolve, reject) => {
-    const archive = archiver('zip', { zlib: { level: 9 } });
+    const archive = archiver("zip", { zlib: { level: 9 } });
     const chunks = [];
 
-    archive.on('data', (chunk) => chunks.push(chunk));
-    archive.on('end', () => resolve(Buffer.concat(chunks)));
-    archive.on('error', reject);
+    archive.on("data", (chunk) => chunks.push(chunk));
+    archive.on("end", () => resolve(Buffer.concat(chunks)));
+    archive.on("error", reject);
 
     // Add extension.vsixmanifest
     const extensionManifest = `<?xml version="1.0" encoding="utf-8"?>
@@ -501,7 +527,7 @@ Visit [tinte.dev](https://tinte.dev) to create your own themes!
   </Assets>
 </PackageManifest>`;
 
-    archive.append(extensionManifest, { name: 'extension.vsixmanifest' });
+    archive.append(extensionManifest, { name: "extension.vsixmanifest" });
 
     // Add [Content_Types].xml
     const contentTypes = `<?xml version="1.0" encoding="utf-8"?>
@@ -512,18 +538,21 @@ Visit [tinte.dev](https://tinte.dev) to create your own themes!
   <Default Extension="svg" ContentType="image/svg+xml" />
 </Types>`;
 
-    archive.append(contentTypes, { name: '[Content_Types].xml' });
+    archive.append(contentTypes, { name: "[Content_Types].xml" });
 
     // Generate and add icon
     const iconSvg = generateThemeIcon(tinteTheme, variant);
-    archive.append(iconSvg, { name: 'extension/icon.svg' });
+    archive.append(iconSvg, { name: "extension/icon.svg" });
 
     // Add extension files
-    archive.append(JSON.stringify(packageJson, null, 2), { name: 'extension/package.json' });
-    archive.append(JSON.stringify(selectedTheme, null, 2), { name: 'extension/themes/theme.json' });
-    archive.append(readmeContent, { name: 'extension/README.md' });
+    archive.append(JSON.stringify(packageJson, null, 2), {
+      name: "extension/package.json",
+    });
+    archive.append(JSON.stringify(selectedTheme, null, 2), {
+      name: "extension/themes/theme.json",
+    });
+    archive.append(readmeContent, { name: "extension/README.md" });
 
     archive.finalize();
   });
 }
-

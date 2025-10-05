@@ -47,17 +47,17 @@ export function WorkbenchHeader({
     toggleFavorite,
     getFavoriteStatus,
   } = useThemeContext();
-  const { data: session } = authClient.useSession();
+  authClient.useSession();
   const activeId = activeTheme?.id || null;
   // Add themes to store once on mount
   useEffect(() => {
     if (!mounted) return;
 
     const allNewThemes: ThemeData[] = [
-      ...userThemes.map(theme => ({ ...theme, user: theme.user })),
+      ...userThemes.map((theme) => ({ ...theme, user: theme.user })),
       ...tweakCNThemes,
       ...tinteThemes,
-      ...raysoThemes
+      ...raysoThemes,
     ];
 
     if (allNewThemes.length > 0) {

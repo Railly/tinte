@@ -62,7 +62,7 @@ export function useThemeApplication() {
         if (document.documentElement) {
           document.documentElement.style.setProperty(
             "--force-update",
-            Date.now().toString()
+            Date.now().toString(),
           );
           requestAnimationFrame(() => {
             document.documentElement.style.removeProperty("--force-update");
@@ -70,7 +70,7 @@ export function useThemeApplication() {
         }
       }, 100);
     },
-    [handleThemeSelect]
+    [handleThemeSelect],
   );
 
   return { handleApplyTheme };

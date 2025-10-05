@@ -1,10 +1,10 @@
 import { useQueryState } from "nuqs";
 import { useVSCodeOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+import { WorkbenchToolbar } from "@/components/workbench/workbench-toolbar";
 import { convertTheme, getPreviewableProvider } from "@/lib/providers";
 import { convertTinteToVSCode } from "@/lib/providers/vscode";
 import { cn } from "@/lib/utils";
 import type { TinteTheme } from "@/types/tinte";
-import { WorkbenchToolbar } from "@/components/workbench/workbench-toolbar";
 
 interface UnifiedPreviewProps {
   theme: TinteTheme;
@@ -48,10 +48,7 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
 
   return (
     <div
-      className={cn(
-        "h-[calc(100dvh-var(--header-height)_-_2rem)]",
-        className,
-      )}
+      className={cn("h-[calc(100dvh-var(--header-height)_-_2rem)]", className)}
     >
       <PreviewComponent theme={converted} />
     </div>

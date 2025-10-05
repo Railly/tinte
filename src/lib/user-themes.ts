@@ -268,7 +268,9 @@ export async function getUserFavoriteThemes(
           {
             author: result.user?.name || "Anonymous",
             description: `${result.theme.name} ${
-              result.user?.name ? `by ${result.user.name}` : "from the community"
+              result.user?.name
+                ? `by ${result.user.name}`
+                : "from the community"
             }`,
             tags: ["favorite", "starred"],
             isFavorite: true,
@@ -494,9 +496,9 @@ function transformOverridesFromDb(dbTheme: Theme): ThemeOverrides {
   // Don't normalize here - the direct override properties are already in DB format
   // and will be normalized when needed by the normalizeOverrides function
   return {
-    shadcn: dbTheme.shadcn_override as any || undefined,
-    vscode: dbTheme.vscode_override as any || undefined,
-    shiki: dbTheme.shiki_override as any || undefined,
+    shadcn: (dbTheme.shadcn_override as any) || undefined,
+    vscode: (dbTheme.vscode_override as any) || undefined,
+    shiki: (dbTheme.shiki_override as any) || undefined,
   };
 }
 

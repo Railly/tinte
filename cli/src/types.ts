@@ -5,7 +5,7 @@ export interface TinteTheme {
 
 export interface EditorInstallOptions {
   autoClose?: boolean;
-  variant?: 'light' | 'dark';
+  variant?: "light" | "dark";
   timeout?: number;
-  editor?: 'code' | 'cursor';
+  editor?: "code" | "cursor";
 }

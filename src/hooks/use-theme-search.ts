@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ThemeData } from "@/lib/theme-tokens";
 import { useDebounce } from "./use-debounce";
 
@@ -21,22 +21,27 @@ export function useThemeSearch(): UseThemeSearchResult {
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const searchLocal = useCallback((themes: ThemeData[], query: string): ThemeData[] => {
-    if (!query.trim()) return [];
+  const searchLocal = useCallback(
+    (themes: ThemeData[], query: string): ThemeData[] => {
+      if (!query.trim()) return [];
 
-    const lowerQuery = query.toLowerCase();
+      const lowerQuery = query.toLowerCase();
 
-    return themes.filter((theme) => {
-      const nameMatch = theme.name?.toLowerCase().includes(lowerQuery);
-      const authorMatch = theme.author?.toLowerCase().includes(lowerQuery);
-      const tagsMatch = theme.tags?.some((tag) =>
-        tag.toLowerCase().includes(lowerQuery)
-      );
-      const providerMatch = theme.provider?.toLowerCase().includes(lowerQuery);
+      return themes.filter((theme) => {
+        const nameMatch = theme.name?.toLowerCase().includes(lowerQuery);
+        const authorMatch = theme.author?.toLowerCase().includes(lowerQuery);
+        const tagsMatch = theme.tags?.some((tag) =>
+          tag.toLowerCase().includes(lowerQuery),
+        );
+        const providerMatch = theme.provider
+          ?.toLowerCase()
+          .includes(lowerQuery);
 
-      return nameMatch || authorMatch || tagsMatch || providerMatch;
-    });
-  }, []);
+        return nameMatch || authorMatch || tagsMatch || providerMatch;
+      });
+    },
+    [],
+  );
 
   const searchThemes = useCallback(async (query: string) => {
     if (!query.trim()) {
@@ -50,10 +55,12 @@ export function useThemeSearch(): UseThemeSearchResult {
     setSearchError(null);
 
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=20`);
+      const response = await fetch(
+        `/api/search?q=${encodeURIComponent(query)}&limit=20`,
+      );
 
       if (!response.ok) {
-        throw new Error('Search failed');
+        throw new Error("Search failed");
       }
 
       const data = await response.json();

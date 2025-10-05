@@ -5,28 +5,31 @@ import { getAllPublicThemes } from "@/lib/user-themes";
 export async function GET() {
   try {
     console.log("Getting remaining themes list...");
-    
+
     // Get all themes from database
     const allThemes = await getAllPublicThemes();
-    
+
     // Get remaining themes to upload
     const remainingThemes = await searchService.getRemainingThemes(allThemes);
-    
+
     return NextResponse.json({
       totalThemes: allThemes.length,
       remainingCount: remainingThemes.length,
-      remainingThemes: remainingThemes.map(theme => ({
+      remainingThemes: remainingThemes.map((theme) => ({
         id: theme.id,
         name: theme.name,
         author: theme.author,
-        createdAt: theme.createdAt
-      }))
+        createdAt: theme.createdAt,
+      })),
     });
   } catch (error) {
     console.error("Remaining themes API error:", error);
-    return NextResponse.json({ 
-      error: "Failed to get remaining themes", 
-      details: error instanceof Error ? error.message : "Unknown error" 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Failed to get remaining themes",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    );
   }
 }

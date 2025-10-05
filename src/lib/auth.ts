@@ -29,7 +29,10 @@ export const auth = betterAuth({
             .set({ user_id: newUser.user.id })
             .where(eq(schema.theme.user_id, anonymousUser.user.id));
         } catch (error) {
-          console.error("Error transferring themes to authenticated user:", error);
+          console.error(
+            "Error transferring themes to authenticated user:",
+            error,
+          );
         }
       },
     }),

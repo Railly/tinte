@@ -2,7 +2,6 @@
 
 import { MoreHorizontal, Share } from "lucide-react";
 import { toast } from "sonner";
-import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { siteConfig } from "@/config/site";
 import DiscordIcon from "./icons/discord";
 import GithubIcon from "./icons/github";
 import TwitterIcon from "./icons/twitter";
@@ -25,7 +25,7 @@ export function SocialsDropdown() {
           title: "Tinte - Theme Converter",
           url: url,
         });
-      } catch (error) {
+      } catch (_error) {
         // User cancelled or error occurred
       }
     } else {
@@ -33,7 +33,7 @@ export function SocialsDropdown() {
       try {
         await navigator.clipboard.writeText(url);
         toast.success("URL copied to clipboard");
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to copy URL");
       }
     }
@@ -48,7 +48,10 @@ export function SocialsDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={handleShare} className="flex items-center gap-2">
+        <DropdownMenuItem
+          onClick={handleShare}
+          className="flex items-center gap-2"
+        >
           <Share className="h-4 w-4" />
           Share
         </DropdownMenuItem>

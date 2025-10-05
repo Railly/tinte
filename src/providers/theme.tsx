@@ -3,8 +3,8 @@
 import React, { useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { useThemeFonts } from "@/hooks/use-theme-fonts";
-import { useThemeStore } from "@/stores/theme";
 import { useAuthStore } from "@/stores/auth";
+import { useThemeStore } from "@/stores/theme";
 
 type ThemeContextValue = ReturnType<typeof useTheme>;
 
@@ -40,8 +40,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [authStore.mounted]);
 
   return (
-    <ThemeContext.Provider value={themeValue}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={themeValue}>{children}</ThemeContext.Provider>
   );
 }

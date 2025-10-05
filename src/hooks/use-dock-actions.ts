@@ -1,10 +1,10 @@
-import { Copy, Download, Palette, Terminal, Save } from "lucide-react";
+import { Copy, Download, Palette, Save, Terminal } from "lucide-react";
 import { useState } from "react";
-import { incrementThemeInstalls } from "@/lib/actions/themes";
-import { exportTheme } from "@/lib/providers";
-import { downloadVSCodeTheme } from "@/lib/download-vscode-theme";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import { incrementThemeInstalls } from "@/lib/actions/themes";
+import { downloadVSCodeTheme } from "@/lib/download-vscode-theme";
+import { exportTheme } from "@/lib/providers";
 import type { TinteTheme } from "@/types/tinte";
 
 interface UseDockActionsProps {
@@ -163,9 +163,10 @@ export function useDockActions({
       // For temporary themes, show save-first action
       return {
         label: "Save to Copy",
-        description: canSave === false
-          ? "Sign in to save theme and generate install command"
-          : "Save theme first to generate install command",
+        description:
+          canSave === false
+            ? "Sign in to save theme and generate install command"
+            : "Save theme first to generate install command",
         icon: Save,
         variant: "outline" as const,
       };

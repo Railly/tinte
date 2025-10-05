@@ -104,7 +104,7 @@ export function CanonicalTab() {
 
     // Second, try flattened format (dark_bg, light_bg, etc.)
     const colors: Record<string, string> = {};
-    const prefix = currentMode + "_";
+    const prefix = `${currentMode}_`;
 
     for (const key in preloadedTheme) {
       if (key.startsWith(prefix)) {

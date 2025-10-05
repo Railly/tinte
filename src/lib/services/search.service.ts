@@ -139,11 +139,11 @@ class SearchService {
             console.error(
               "Error fetching user data for theme:",
               themeData.id,
-              error
+              error,
             );
             return themeData;
           }
-        })
+        }),
       );
 
       return themesWithUsers;
@@ -199,7 +199,7 @@ class SearchService {
     }
 
     console.log(
-      `Resuming upload for ${remainingThemes.length} remaining themes...`
+      `Resuming upload for ${remainingThemes.length} remaining themes...`,
     );
 
     const results = await this.upsertThemes(remainingThemes);

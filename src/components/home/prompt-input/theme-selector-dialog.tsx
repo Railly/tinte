@@ -1,7 +1,7 @@
 "use client";
 
 import { Users } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ThemeSelector } from "@/components/shared/theme-selector";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { ThemeData } from "@/lib/theme-tokens";
 import type { PastedItem } from "@/lib/input-detection";
+import type { ThemeData } from "@/lib/theme-tokens";
 
 interface ThemeSelectorDialogProps {
   open: boolean;
@@ -69,7 +69,7 @@ export function ThemeSelectorDialog({
           <p className="text-sm text-muted-foreground">
             Select a new theme to replace the current one:
           </p>
-          
+
           <ThemeSelector
             themes={themes}
             activeId={selectedTheme?.id}

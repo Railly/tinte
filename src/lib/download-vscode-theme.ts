@@ -16,7 +16,8 @@ export async function downloadVSCodeTheme({
 }: DownloadVSCodeThemeOptions): Promise<void> {
   try {
     // Use environment variable for Netlify function URL
-    const baseUrl = process.env.NEXT_PUBLIC_NETLIFY_FUNCTIONS_URL || "/.netlify/functions";
+    const baseUrl =
+      process.env.NEXT_PUBLIC_NETLIFY_FUNCTIONS_URL || "/.netlify/functions";
     const endpoint = `${baseUrl}/generate-vscode-theme`;
 
     // Call our Netlify function
@@ -35,7 +36,9 @@ export async function downloadVSCodeTheme({
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      throw new Error(
+        errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+      );
     }
 
     // Get the VSIX file as a blob
@@ -56,10 +59,11 @@ export async function downloadVSCodeTheme({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-
   } catch (error) {
     console.error("Failed to download VS Code theme:", error);
-    toast.error(`Failed to download theme: ${error instanceof Error ? error.message : "Unknown error"}`);
+    toast.error(
+      `Failed to download theme: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
     throw error;
   }
 }

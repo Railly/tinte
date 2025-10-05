@@ -1,8 +1,11 @@
 "use client";
 
+import { Info } from "lucide-react";
 import * as React from "react";
-import { ColorPickerInput } from "@/components/ui/color-picker-input";
+import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import Logo from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
+import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,16 +13,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import Logo from "@/components/shared/logo";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { generateTailwindPalette } from "@/lib/ice-theme";
-import { useThemeContext } from "@/providers/theme";
-import { cn } from "@/lib/utils";
 import type { SemanticToken } from "@/lib/providers/vscode";
+import { cn } from "@/lib/utils";
+import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
 import InvertedLogo from "./inverted-logo";
-import { Info } from "lucide-react";
 
 interface VSCodeTokenInputProps {
   tokenKey: SemanticToken;
@@ -31,9 +35,19 @@ interface VSCodeTokenInputProps {
 }
 
 const CANONICAL_COLOR_KEYS: (keyof TinteBlock)[] = [
-  "bg", "bg_2", "ui", "ui_2", "ui_3",
-  "tx_3", "tx_2", "tx",
-  "pr", "sc", "ac_1", "ac_2", "ac_3"
+  "bg",
+  "bg_2",
+  "ui",
+  "ui_2",
+  "ui_3",
+  "tx_3",
+  "tx_2",
+  "tx",
+  "pr",
+  "sc",
+  "ac_1",
+  "ac_2",
+  "ac_3",
 ];
 
 const COLOR_LABELS: Record<keyof TinteBlock, string> = {
@@ -49,7 +63,7 @@ const COLOR_LABELS: Record<keyof TinteBlock, string> = {
   sc: "SC",
   ac_1: "AC1",
   ac_2: "AC2",
-  ac_3: "AC3"
+  ac_3: "AC3",
 };
 
 export function VSCodeTokenInput({
@@ -99,8 +113,14 @@ export function VSCodeTokenInput({
 
   return (
     <div className="space-y-1">
-      <Label htmlFor={tokenKey} className="text-xs font-medium flex items-center gap-1">
-        {displayName || tokenKey.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
+      <Label
+        htmlFor={tokenKey}
+        className="text-xs font-medium flex items-center gap-1"
+      >
+        {displayName ||
+          tokenKey
+            .replace(/([A-Z])/g, " $1")
+            .replace(/^./, (str) => str.toUpperCase())}
         {description && (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -147,11 +167,15 @@ export function VSCodeTokenInput({
                   <div
                     className={cn(
                       "w-4 h-4 rounded border",
-                      isSelected ? "border-foreground border-2" : "border-border"
+                      isSelected
+                        ? "border-foreground border-2"
+                        : "border-border",
                     )}
                     style={{ backgroundColor: colorValue || "#000000" }}
                   />
-                  <span className="font-mono text-xs">{COLOR_LABELS[colorKey]}</span>
+                  <span className="font-mono text-xs">
+                    {COLOR_LABELS[colorKey]}
+                  </span>
                   <span className="ml-auto text-xs text-muted-foreground font-mono">
                     {colorValue}
                   </span>
@@ -173,32 +197,35 @@ export function VSCodeTokenInput({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            {value && (() => {
-              const palette = generateTailwindPalette(value);
-              return palette.map((color) => {
-                const isSelected = color.value === value;
-                
-                return (
-                  <DropdownMenuItem
-                    key={color.name}
-                    onClick={() => handleTailwindColorSelect(color.value)}
-                    className="flex items-center gap-2"
-                  >
-                    <div 
-                      className={cn(
-                        "w-4 h-4 rounded border",
-                        isSelected ? "border-foreground border-2" : "border-border"
-                      )}
-                      style={{ backgroundColor: color.value }}
-                    />
-                    <span className="font-mono text-xs">{color.name}</span>
-                    <span className="ml-auto text-xs text-muted-foreground font-mono">
-                      {color.value}
-                    </span>
-                  </DropdownMenuItem>
-                );
-              });
-            })()}
+            {value &&
+              (() => {
+                const palette = generateTailwindPalette(value);
+                return palette.map((color) => {
+                  const isSelected = color.value === value;
+
+                  return (
+                    <DropdownMenuItem
+                      key={color.name}
+                      onClick={() => handleTailwindColorSelect(color.value)}
+                      className="flex items-center gap-2"
+                    >
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded border",
+                          isSelected
+                            ? "border-foreground border-2"
+                            : "border-border",
+                        )}
+                        style={{ backgroundColor: color.value }}
+                      />
+                      <span className="font-mono text-xs">{color.name}</span>
+                      <span className="ml-auto text-xs text-muted-foreground font-mono">
+                        {color.value}
+                      </span>
+                    </DropdownMenuItem>
+                  );
+                });
+              })()}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

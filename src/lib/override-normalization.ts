@@ -1,5 +1,5 @@
-import type { ThemeData } from "./theme-tokens";
 import type { NormalizedOverrides, ProviderOverride } from "@/types/overrides";
+import type { ThemeData } from "./theme-tokens";
 
 function normalizeProviderOverride(data: any): ProviderOverride | undefined {
   if (!data || typeof data !== "object") return undefined;
@@ -70,7 +70,10 @@ export function normalizeOverrides(theme: ThemeData): NormalizedOverrides {
   return normalized;
 }
 
-export function validateOverride(provider: string, override: any): ProviderOverride {
+export function validateOverride(
+  provider: string,
+  override: any,
+): ProviderOverride {
   const validProviders = ["shadcn", "vscode", "shiki"];
   if (!validProviders.includes(provider)) {
     throw new Error(`Invalid provider: ${provider}`);
@@ -88,7 +91,7 @@ export function validateOverride(provider: string, override: any): ProviderOverr
 
 export function mergeOverrides(
   base: NormalizedOverrides,
-  updates: Partial<NormalizedOverrides>
+  updates: Partial<NormalizedOverrides>,
 ): NormalizedOverrides {
   const merged: NormalizedOverrides = { ...base };
 
@@ -106,7 +109,9 @@ export function mergeOverrides(
   return merged;
 }
 
-export function denormalizeProviderOverride(normalized: ProviderOverride | undefined): any {
+export function denormalizeProviderOverride(
+  normalized: ProviderOverride | undefined,
+): any {
   if (!normalized) return undefined;
 
   // Already in DB schema format, return as-is

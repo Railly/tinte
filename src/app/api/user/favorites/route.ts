@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server";
+import { headers } from "next/headers";
+import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { getUserFavoriteThemes } from "@/lib/user-themes";
-import { headers } from "next/headers";
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,9 +19,6 @@ export async function GET(request: NextRequest) {
     return Response.json(favoriteThemes);
   } catch (error) {
     console.error("Error fetching user favorite themes:", error);
-    return Response.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }

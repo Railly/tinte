@@ -29,13 +29,15 @@ function buildRamp(seed: string): string[] {
 }
 
 const pick = (ramp: string[], step: number) => {
-  const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(step);
+  const idx = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].indexOf(
+    step,
+  );
   return ramp[Math.max(0, idx)];
 };
 
 export function generateFullNeutralRamp(
   baseColor: string,
-  mode: "light" | "dark"
+  mode: "light" | "dark",
 ): Partial<TinteBlock> {
   const ramp = buildRamp(baseColor);
   const A = FLEXOKI_ANCHORS[mode];

@@ -1,11 +1,11 @@
 "use client";
 
+import { AlertTriangle, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import { Button } from "@/components/ui/button";
 
 const BETA_BANNER_KEY = "tinte-beta-banner-dismissed";
 
@@ -36,7 +36,8 @@ export function BetaBanner() {
             Tinte is currently in beta
           </div>
           <div className="text-sm text-muted-foreground">
-            We're actively improving the experience! Try our VS Code theme export feature and help us make it better.
+            We're actively improving the experience! Try our VS Code theme
+            export feature and help us make it better.
           </div>
           <Button
             variant="outline"
@@ -63,7 +64,7 @@ export function BetaBanner() {
       {
         duration: Infinity,
         dismissible: false,
-      }
+      },
     );
 
     return () => {

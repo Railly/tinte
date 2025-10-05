@@ -1,7 +1,7 @@
-import { TinteTheme } from "@/types/tinte";
-import { ShadcnTheme, ShadcnBlock, ColorToken } from "@/types/shadcn";
-import { shadcnToTinte } from "./shadcn-to-tinte";
 import { formatHex, parse } from "culori";
+import type { ColorToken, ShadcnBlock, ShadcnTheme } from "@/types/shadcn";
+import type { TinteTheme } from "@/types/tinte";
+import { shadcnToTinte } from "./shadcn-to-tinte";
 
 /**
  * Parse CSS variables from a CSS string
@@ -11,11 +11,12 @@ function parseCSSVariables(css: string): Record<string, string> {
 
   // Match CSS variable declarations like --variable-name: value;
   const variableRegex = /--([a-zA-Z0-9-]+):\s*([^;]+);/g;
-  let match;
 
-  while ((match = variableRegex.exec(css)) !== null) {
+  let match = variableRegex.exec(css);
+  while (match !== null) {
     const [, name, value] = match;
     variables[name] = value.trim();
+    match = variableRegex.exec(css);
   }
 
   return variables;
@@ -45,7 +46,9 @@ function normalizeColor(colorValue: string): string {
 /**
  * Convert parsed CSS variables to ShadcnBlock with proper color normalization
  */
-function variablesToShadcnBlock(variables: Record<string, string>): ShadcnBlock {
+function variablesToShadcnBlock(
+  variables: Record<string, string>,
+): ShadcnBlock {
   const block = {} as ShadcnBlock;
 
   // Map CSS variable names to ShadcnBlock properties
@@ -121,4 +124,3 @@ export function importShadcnTheme(css: string): {
 
   return { tinteTheme, shadcnTheme };
 }
-

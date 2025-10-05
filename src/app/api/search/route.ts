@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { searchService } from "@/lib/services/search.service";
 
 export async function GET(request: NextRequest) {
@@ -7,7 +7,10 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get("limit") || "20");
 
   if (!query) {
-    return NextResponse.json({ error: "Query parameter 'q' is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Query parameter 'q' is required" },
+      { status: 400 },
+    );
   }
 
   try {

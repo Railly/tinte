@@ -6,7 +6,7 @@ export const VENDORS = {
   TINTE: "tinte", // Default for user-generated themes
 } as const;
 
-export type Vendor = typeof VENDORS[keyof typeof VENDORS];
+export type Vendor = (typeof VENDORS)[keyof typeof VENDORS];
 
 export const VENDOR_LABELS: Record<Vendor, string> = {
   [VENDORS.TWEAKCN]: "TweakCN",

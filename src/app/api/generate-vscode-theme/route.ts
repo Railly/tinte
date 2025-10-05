@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const NETLIFY_FUNCTION_URL = "/.netlify/functions/generate-vscode-theme";
 
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Origin": request.headers.get("origin") || "http://localhost:3000",
+        Origin: request.headers.get("origin") || "http://localhost:3000",
       },
       body,
     });
@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
         status: 200,
         headers: {
           "Content-Type": "application/octet-stream",
-          "Content-Disposition": response.headers.get("content-disposition") || "",
+          "Content-Disposition":
+            response.headers.get("content-disposition") || "",
         },
       });
     } else {
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     console.error("Error proxying to Netlify function:", error);
     return NextResponse.json(
       { error: "Failed to generate VS Code theme" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

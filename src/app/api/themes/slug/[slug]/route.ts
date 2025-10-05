@@ -28,10 +28,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     // Only allow public themes for CLI access
     if (!themeRecord.is_public) {
-      return NextResponse.json(
-        { error: "Theme not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Theme not found" }, { status: 404 });
     }
 
     // Transform to the format expected by the CLI (same as /api/themes/[id])

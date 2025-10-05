@@ -96,7 +96,7 @@ export async function duplicateTheme(
   themeId: string,
   name: string,
   makePublic: boolean,
-  originalThemeData?: { author?: string; provider?: string }
+  originalThemeData?: { author?: string; provider?: string },
 ) {
   try {
     const headersList = await headers();
@@ -198,13 +198,13 @@ export async function duplicateTheme(
             letter_spacing: "0",
           };
           console.log(
-            "✅ Successfully generated mandatory shadcn_overrides for TweakCN theme"
+            "✅ Successfully generated mandatory shadcn_overrides for TweakCN theme",
           );
         }
       } catch (error) {
         console.error(
           "Error generating mandatory shadcn overrides for TweakCN theme:",
-          error
+          error,
         );
       }
     }

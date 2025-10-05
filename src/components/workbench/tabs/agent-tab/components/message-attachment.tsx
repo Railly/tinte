@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  FileCode,
-  Globe,
-  Image as ImageIcon,
-  Palette,
-} from "lucide-react";
+import { FileCode, Globe, Image as ImageIcon, Palette } from "lucide-react";
 import { CSSIcon } from "@/components/shared/icons/css";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
 

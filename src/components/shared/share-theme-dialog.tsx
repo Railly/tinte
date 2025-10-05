@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useId } from "react";
+import { Check, Copy, Share } from "lucide-react";
+import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Share, Copy, Check } from "lucide-react";
 import { cn } from "@/lib";
 
 interface ShareThemeDialogProps {
@@ -101,7 +101,9 @@ export function ShareThemeDialog({
                 <div
                   className={cn(
                     "flex items-center transition-all duration-300",
-                    copied ? "opacity-0 scale-75 blur-sm" : "opacity-100 scale-100 blur-0",
+                    copied
+                      ? "opacity-0 scale-75 blur-sm"
+                      : "opacity-100 scale-100 blur-0",
                   )}
                 >
                   <Copy className="h-4 w-4 mr-1" />
@@ -110,7 +112,9 @@ export function ShareThemeDialog({
                 <div
                   className={cn(
                     "absolute inset-0 flex items-center justify-center transition-all duration-300",
-                    copied ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-75 blur-sm",
+                    copied
+                      ? "opacity-100 scale-100 blur-0"
+                      : "opacity-0 scale-75 blur-sm",
                   )}
                 >
                   <Check className="h-4 w-4 mr-1" />

@@ -15,9 +15,7 @@ import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hoo
 import { useShadcnOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { convertTinteToShadcn } from "@/lib/providers/shadcn";
 import { getShadcnPaletteWithOverrides } from "@/lib/shadcn-theme-utils";
-import {
-  createSkeletonGroups,
-} from "@/lib/theme-editor-utils";
+import { createSkeletonGroups } from "@/lib/theme-editor-utils";
 import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";
@@ -84,7 +82,7 @@ export function ShadcnOverridesPanel({
   const handleTokenEdit = React.useCallback(
     (key: string, value: string) => {
       const currentOverrides = shadcnOverride || {};
-      const currentModePalette =
+      const _currentModePalette =
         currentOverrides.palettes?.[currentMode] || {};
 
       // Determine which section this key belongs to
@@ -140,7 +138,10 @@ export function ShadcnOverridesPanel({
         if (shadowKey === "offset-x") shadowKey = "offset_x";
         if (shadowKey === "offset-y") shadowKey = "offset_y";
 
-        const currentPalettes = currentOverrides.palettes || { light: {}, dark: {} };
+        const currentPalettes = currentOverrides.palettes || {
+          light: {},
+          dark: {},
+        };
         const currentModePalette = currentPalettes[currentMode] || {};
         const currentModeShadow = currentModePalette.shadow || {};
 
@@ -166,11 +167,17 @@ export function ShadcnOverridesPanel({
           },
         };
 
-        console.log("🔧 [handleTokenEdit] Updated overrides:", updatedOverrides);
+        console.log(
+          "🔧 [handleTokenEdit] Updated overrides:",
+          updatedOverrides,
+        );
         updateShadcnOverride(updatedOverrides);
       } else {
         // Handle palette colors - save to palettes.{mode} (DB schema)
-        const currentPalettes = currentOverrides.palettes || { light: {}, dark: {} };
+        const currentPalettes = currentOverrides.palettes || {
+          light: {},
+          dark: {},
+        };
         const currentModePalette = currentPalettes[currentMode] || {};
 
         const updatedOverrides = {
@@ -191,7 +198,10 @@ export function ShadcnOverridesPanel({
 
   // Shadow tokens - read from palettes.{mode}.shadow (DB schema)
   console.log("🔧 [ShadcnOverridesPanel] shadcnOverride:", shadcnOverride);
-  console.log("🔧 [ShadcnOverridesPanel] shadcnOverride.palettes:", shadcnOverride?.palettes);
+  console.log(
+    "🔧 [ShadcnOverridesPanel] shadcnOverride.palettes:",
+    shadcnOverride?.palettes,
+  );
   console.log("🔧 [ShadcnOverridesPanel] currentMode:", currentMode);
 
   const shadowFromDB = shadcnOverride?.palettes?.[currentMode]?.shadow;

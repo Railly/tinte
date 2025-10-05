@@ -6,10 +6,17 @@ import { Hero } from "@/components/home/hero";
 import { Roadmap } from "@/components/home/roadmap";
 import { Showcase } from "@/components/home/showcase";
 import { Footer } from "@/components/shared/footer";
-import { auth } from "@/lib/auth";
-import { getUserThemes, getUserFavoriteThemes, getPublicThemes, getTweakCNThemes, getTinteThemes, getRaysoThemes } from "@/lib/user-themes";
 import { siteConfig } from "@/config/site";
-import { generatePageSchema, generateOrganizationSchema } from "@/lib/seo";
+import { auth } from "@/lib/auth";
+import { generateOrganizationSchema, generatePageSchema } from "@/lib/seo";
+import {
+  getPublicThemes,
+  getRaysoThemes,
+  getTinteThemes,
+  getTweakCNThemes,
+  getUserFavoriteThemes,
+  getUserThemes,
+} from "@/lib/user-themes";
 
 export const metadata: Metadata = {
   title: "Multi-Platform Theme Generator & Converter",

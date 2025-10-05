@@ -2,11 +2,11 @@
 
 import { Heart, Loader2, Search, User, Users } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { nanoid } from "nanoid";
 import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";
 import { toast } from "sonner";
-import { nanoid } from "nanoid";
 import { Header } from "@/components/home/header";
 import { Footer } from "@/components/shared/footer";
 import RaycastIcon from "@/components/shared/icons/raycast";
@@ -66,7 +66,7 @@ export function BrowseThemes({
   initialSearch = "",
   fromWorkbench = false,
 }: BrowseThemesProps) {
-  const { isDark, handleThemeSelect, mounted } = useThemeContext();
+  const { handleThemeSelect, mounted } = useThemeContext();
 
   // Animation hooks for provider cycling
   const [ref, bounds] = useMeasure();
@@ -86,7 +86,8 @@ export function BrowseThemes({
   useEffect(() => {
     if (fromWorkbench && initialSearch) {
       toast.info(`Theme "${initialSearch}" not found`, {
-        description: "We've searched for similar themes below. You can also create a new theme in the workbench.",
+        description:
+          "We've searched for similar themes below. You can also create a new theme in the workbench.",
         duration: 6000,
         action: {
           label: "Create Theme",
@@ -325,7 +326,6 @@ export function BrowseThemes({
                 paste, and ship beautiful designs instantly.
               </p>
             </div>
-
           </div>
 
           {/* Compact Filter Bar */}

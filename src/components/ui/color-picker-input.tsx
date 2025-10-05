@@ -40,7 +40,12 @@ export function ColorPickerInput({
   const [inputValue, setInputValue] = useState(color);
   const [activeTab, setActiveTab] = useState("hex");
 
-  console.log("🎨 [ColorPickerInput] Render - color prop:", color, "inputValue:", inputValue);
+  console.log(
+    "🎨 [ColorPickerInput] Render - color prop:",
+    color,
+    "inputValue:",
+    inputValue,
+  );
 
   // Sync inputValue when color prop changes (e.g., when mode changes)
   useEffect(() => {

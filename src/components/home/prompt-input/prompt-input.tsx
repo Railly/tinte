@@ -140,7 +140,9 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
       });
       router.push(`/workbench/${chatId}?tab=agent`);
     } else {
-      router.push(`/workbench/new?tab=agent&prompt=${encodeURIComponent(allContent)}`);
+      router.push(
+        `/workbench/new?tab=agent&prompt=${encodeURIComponent(allContent)}`,
+      );
     }
     onSubmit?.("prompt", allContent);
   }

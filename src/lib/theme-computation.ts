@@ -1,11 +1,11 @@
-import { formatHex, rgb, oklch } from "culori";
+import { formatHex, oklch, rgb } from "culori";
+import type { NormalizedOverrides, ProviderOverride } from "@/types/overrides";
+import { isPaletteColor } from "@/types/overrides";
+import type { ShadcnTheme } from "@/types/shadcn";
+import type { TinteTheme } from "@/types/tinte";
 import { convertTheme } from "./providers";
 import { computeShadowVars } from "./providers/shadcn";
 import type { ThemeData } from "./theme-tokens";
-import type { TinteTheme } from "@/types/tinte";
-import type { ShadcnTheme } from "@/types/shadcn";
-import type { NormalizedOverrides, ProviderOverride } from "@/types/overrides";
-import { isPaletteColor } from "@/types/overrides";
 
 type ThemeMode = "light" | "dark";
 
@@ -75,7 +75,10 @@ function extractTinteTheme(theme: ThemeData): TinteTheme {
   throw new Error("Unable to extract TinteTheme from theme data");
 }
 
-function computeBaseTokens(tinteTheme: TinteTheme, mode: ThemeMode): Record<string, string> {
+function computeBaseTokens(
+  tinteTheme: TinteTheme,
+  mode: ThemeMode,
+): Record<string, string> {
   const shadcnTheme = convertTheme("shadcn", tinteTheme) as ShadcnTheme;
   const modeData = shadcnTheme[mode];
 
@@ -93,7 +96,7 @@ function computeBaseTokens(tinteTheme: TinteTheme, mode: ThemeMode): Record<stri
 function applyProviderOverride(
   tokens: Record<string, string>,
   override: ProviderOverride | undefined,
-  mode: ThemeMode
+  mode: ThemeMode,
 ): void {
   if (!override) return;
 
@@ -127,9 +130,9 @@ function applyProviderOverride(
       Object.entries(override.radius).forEach(([key, value]) => {
         tokens[`radius-${key}`] = value;
       });
-      tokens["radius"] = override.radius.md || override.radius.lg || "0.5rem";
+      tokens.radius = override.radius.md || override.radius.lg || "0.5rem";
     } else {
-      tokens["radius"] = override.radius;
+      tokens.radius = override.radius;
     }
   }
 
@@ -142,7 +145,7 @@ export function computeFinalTokens(
   theme: ThemeData,
   mode: ThemeMode,
   overrides: NormalizedOverrides,
-  editedTokens: Record<string, string> = {}
+  editedTokens: Record<string, string> = {},
 ): Record<string, string> {
   const tinteTheme = extractTinteTheme(theme);
   const tokens = computeBaseTokens(tinteTheme, mode);
@@ -153,7 +156,9 @@ export function computeFinalTokens(
 
   Object.assign(tokens, editedTokens);
 
-  const hasShadowProps = Object.keys(tokens).some(key => key.startsWith("shadow-"));
+  const hasShadowProps = Object.keys(tokens).some((key) =>
+    key.startsWith("shadow-"),
+  );
   if (hasShadowProps) {
     const shadowVars = computeShadowVars(tokens);
     Object.assign(tokens, shadowVars);

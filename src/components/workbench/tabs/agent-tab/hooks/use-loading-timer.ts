@@ -8,7 +8,10 @@ interface UseLoadingTimerProps {
   hasActiveTool: boolean;
 }
 
-export function useLoadingTimer({ isLoading, hasActiveTool }: UseLoadingTimerProps) {
+export function useLoadingTimer({
+  isLoading,
+  hasActiveTool,
+}: UseLoadingTimerProps) {
   const [loadingTimer, setLoadingTimer] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [completedTime, setCompletedTime] = useState<number | null>(null);
