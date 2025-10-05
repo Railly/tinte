@@ -341,7 +341,11 @@ export function buildFontFamily(
     handwriting: "sans-serif",
   };
 
-  return `${family}, ${fallbacks[category] || fallbacks["sans-serif"]}`;
+  // Quote font names with spaces or special characters
+  const needsQuotes = /[\s,]/.test(family);
+  const quotedFamily = needsQuotes ? `"${family}"` : family;
+
+  return `${quotedFamily}, ${fallbacks[category] || fallbacks["sans-serif"]}`;
 }
 
 // Extract default weights for font loading
