@@ -384,23 +384,29 @@ export function ShikiOverridesPanel({
   // Note: Overrides are now managed centrally by the theme store
   // and will be automatically synced across mode changes
 
-  // Apply default CSS variables when theme changes
+  // Apply CSS variables (overrides or defaults) when theme changes
   React.useEffect(() => {
     if (!mounted || !tinteTheme) return;
 
-    // Apply all default Shiki CSS variables
+    // Apply all Shiki CSS variables (with overrides taking precedence)
     SHIKI_VARIABLE_GROUPS.forEach((group) => {
       group.variables.forEach((variable) => {
-        const defaultValue = getDefaultValue(variable.key);
-        if (defaultValue) {
-          document.documentElement.style.setProperty(
-            variable.key,
-            defaultValue,
-          );
+        const value =
+          shikiOverrides.getValue(variable.key) ||
+          getDefaultValue(variable.key);
+        if (value) {
+          document.documentElement.style.setProperty(variable.key, value);
         }
       });
     });
-  }, [mounted, tinteTheme, currentMode, getDefaultValue, themeHash]);
+  }, [
+    mounted,
+    tinteTheme,
+    currentMode,
+    getDefaultValue,
+    themeHash,
+    shikiOverrides.overrides,
+  ]);
 
   const getVariableValue = (key: string): string => {
     return (

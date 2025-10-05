@@ -1,12 +1,18 @@
 import type { NormalizedOverrides, ProviderOverride } from "@/types/overrides";
 import type { ThemeData } from "./theme-tokens";
 
-function normalizeProviderOverride(data: any): ProviderOverride | undefined {
+function normalizeProviderOverride(data: any, provider?: string): any {
   if (!data || typeof data !== "object") return undefined;
 
+  // VSCode/Shiki use direct mode structure: { light: {...}, dark: {...} }
+  // Just return as-is for these providers
+  if (provider === "vscode" || provider === "shiki") {
+    return data;
+  }
+
+  // Shadcn uses structured format with palettes, fonts, radius, letter_spacing
   const normalized: ProviderOverride = {};
 
-  // Keep DB schema structure - palettes.{mode} with shadow inside
   if (data.palettes) {
     normalized.palettes = {
       light: data.palettes.light ? { ...data.palettes.light } : undefined,
@@ -42,12 +48,9 @@ export function normalizeOverrides(theme: ThemeData): NormalizedOverrides {
 
   for (const [provider, data] of Object.entries(dbOverrides)) {
     if (data) {
-      const providerNormalized = normalizeProviderOverride(data);
+      const providerNormalized = normalizeProviderOverride(data, provider);
       if (providerNormalized) {
-        normalized[provider as keyof NormalizedOverrides] = {
-          ...normalized[provider as keyof NormalizedOverrides],
-          ...providerNormalized,
-        };
+        normalized[provider as keyof NormalizedOverrides] = providerNormalized;
       }
     }
   }
@@ -56,12 +59,10 @@ export function normalizeOverrides(theme: ThemeData): NormalizedOverrides {
   if (legacyOverrides && typeof legacyOverrides === "object") {
     for (const [provider, data] of Object.entries(legacyOverrides)) {
       if (data) {
-        const providerNormalized = normalizeProviderOverride(data);
+        const providerNormalized = normalizeProviderOverride(data, provider);
         if (providerNormalized) {
-          normalized[provider as keyof NormalizedOverrides] = {
-            ...normalized[provider as keyof NormalizedOverrides],
-            ...providerNormalized,
-          };
+          normalized[provider as keyof NormalizedOverrides] =
+            providerNormalized;
         }
       }
     }
@@ -70,10 +71,7 @@ export function normalizeOverrides(theme: ThemeData): NormalizedOverrides {
   return normalized;
 }
 
-export function validateOverride(
-  provider: string,
-  override: any,
-): ProviderOverride {
+export function validateOverride(provider: string, override: any): any {
   const validProviders = ["shadcn", "vscode", "shiki"];
   if (!validProviders.includes(provider)) {
     throw new Error(`Invalid provider: ${provider}`);
@@ -83,9 +81,7 @@ export function validateOverride(
     throw new Error("Override must be an object");
   }
 
-  // Keep DB schema format as-is
-  const normalized = normalizeProviderOverride(override) || {};
-  console.log("🔧 [validateOverride] Normalized:", normalized);
+  const normalized = normalizeProviderOverride(override, provider) || {};
   return normalized;
 }
 

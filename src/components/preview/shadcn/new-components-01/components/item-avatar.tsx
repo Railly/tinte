@@ -17,12 +17,12 @@ export function ItemAvatar() {
       <Item variant="outline" className="hidden">
         <ItemMedia>
           <Avatar className="size-10">
-            <AvatarImage src="https://github.com/maxleiter.png" />
-            <AvatarFallback>LR</AvatarFallback>
+            <AvatarImage src="/avatars/01.webp" />
+            <AvatarFallback>MA</AvatarFallback>
           </Avatar>
         </ItemMedia>
         <ItemContent>
-          <ItemTitle>Max Leiter</ItemTitle>
+          <ItemTitle>midudev</ItemTitle>
           <ItemDescription>Last seen 5 months ago</ItemDescription>
         </ItemContent>
         <ItemActions>
@@ -40,22 +40,16 @@ export function ItemAvatar() {
         <ItemMedia>
           <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
             <Avatar className="hidden sm:flex">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src="/avatars/02.webp" alt="Team member" />
+              <AvatarFallback>RH</AvatarFallback>
             </Avatar>
             <Avatar className="hidden sm:flex">
-              <AvatarImage
-                src="https://github.com/maxleiter.png"
-                alt="@maxleiter"
-              />
-              <AvatarFallback>LR</AvatarFallback>
+              <AvatarImage src="/avatars/03.webp" alt="Team member" />
+              <AvatarFallback>MD</AvatarFallback>
             </Avatar>
             <Avatar>
-              <AvatarImage
-                src="https://github.com/evilrabbit.png"
-                alt="@evilrabbit"
-              />
-              <AvatarFallback>ER</AvatarFallback>
+              <AvatarImage src="/avatars/04.webp" alt="Team member" />
+              <AvatarFallback>MA</AvatarFallback>
             </Avatar>
           </div>
         </ItemMedia>

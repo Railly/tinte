@@ -187,16 +187,8 @@ export function extractThemeColors(
   }
 
   // Check if theme already has colors property (direct color extraction)
-  if ((theme as any).colors) {
-    const themeColors = (theme as any).colors;
-    return {
-      primary: themeColors.primary || "#000000",
-      secondary: themeColors.secondary || "#666666",
-      accent: themeColors.accent || "#0066cc",
-      background: themeColors.background || "#ffffff",
-      foreground: themeColors.foreground || "#000000",
-    };
-  }
+  // Note: This path should not be used for mode-aware themes
+  // Skip this and let it fall through to computed/rawTheme which are mode-aware
 
   try {
     const computed = computeThemeTokens(theme);

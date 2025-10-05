@@ -25,9 +25,9 @@ export function ThemeColorPreview({
 
   return (
     <div className={`flex ${gapClasses} ${className}`}>
-      {displayColors.map(([name, color], index) => (
+      {displayColors.map(([name, color]) => (
         <div
-          key={index}
+          key={`${name}-${color}`}
           className={`${sizeClasses} rounded-sm border border-border/20`}
           style={{ backgroundColor: color }}
           title={`${name}: ${color}`}

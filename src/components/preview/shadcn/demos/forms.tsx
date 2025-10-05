@@ -45,7 +45,7 @@ export function CardsForms() {
           <div className="flex flex-col gap-3 md:flex-row">
             <div className="flex flex-1 flex-col gap-2">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" placeholder="Evil Rabbit" />
+              <Input id="name" placeholder="Railly Hugo" />
             </div>
             <div className="flex flex-1 flex-col gap-2">
               <Label htmlFor="email">Email</Label>

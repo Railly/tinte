@@ -10,7 +10,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   editorColorMap,
   type SemanticToken,
@@ -816,58 +816,66 @@ export function VSCodeOverridesPanel({
   };
 
   // Get the current token value (either from overrides or default mapping)
-  const getTokenValue = (tokenKey: SemanticToken): string | undefined => {
-    if (vscodeOverrides.hasOverride(tokenKey)) {
-      return vscodeOverrides.getValue(tokenKey);
-    }
+  const getTokenValue = React.useCallback(
+    (tokenKey: SemanticToken): string | undefined => {
+      if (vscodeOverrides.hasOverride(tokenKey)) {
+        return vscodeOverrides.getValue(tokenKey);
+      }
 
-    // Get from default mapping if available
-    const defaultTokenColorMap: TokenColorMap = {
-      plain: "tx",
-      punctuation: "tx_2",
-      classes: "pr",
-      interfaces: "pr",
-      structs: "pr",
-      enums: "pr",
-      types: "sc",
-      typeParameters: "pr",
-      functions: "pr",
-      methods: "sc",
-      calls: "tx",
-      variables: "tx",
-      variablesOther: "sc",
-      globalVariables: "ac_2",
-      localVariables: "tx",
-      parameters: "tx",
-      properties: "tx",
-      keys: "tx",
-      keywords: "sc",
-      keywordsControl: "sc",
-      storageModifiers: "sc",
-      operators: "sc",
-      strings: "ac_2",
-      stringEscapeSequences: "tx",
-      numbers: "ac_3",
-      booleans: "ac_3",
-      constants: "sc",
-      comments: "tx_3",
-      docComments: "tx_3",
-      tags: "sc",
-      jsxTags: "sc",
-      attributes: "pr",
-      urls: "sc",
-      namespaces: "pr",
-      modules: "sc",
-      macros: "sc",
-      preprocessor: "ac_2",
-      exceptions: "sc",
-      decorators: "pr",
-      labels: "ac_2",
-    };
+      // Get from default mapping if available
+      const defaultTokenColorMap: TokenColorMap = {
+        plain: "tx",
+        punctuation: "tx_2",
+        classes: "pr",
+        interfaces: "pr",
+        structs: "pr",
+        enums: "pr",
+        types: "sc",
+        typeParameters: "pr",
+        functions: "pr",
+        methods: "sc",
+        calls: "tx",
+        variables: "tx",
+        variablesOther: "sc",
+        globalVariables: "ac_2",
+        localVariables: "tx",
+        parameters: "tx",
+        properties: "tx",
+        keys: "tx",
+        keywords: "sc",
+        keywordsControl: "sc",
+        storageModifiers: "sc",
+        operators: "sc",
+        strings: "ac_2",
+        stringEscapeSequences: "tx",
+        numbers: "ac_3",
+        booleans: "ac_3",
+        constants: "sc",
+        comments: "tx_3",
+        docComments: "tx_3",
+        tags: "sc",
+        jsxTags: "sc",
+        attributes: "pr",
+        urls: "sc",
+        namespaces: "pr",
+        modules: "sc",
+        macros: "sc",
+        preprocessor: "ac_2",
+        exceptions: "sc",
+        decorators: "pr",
+        labels: "ac_2",
+      };
 
-    const mappedKey = defaultTokenColorMap[tokenKey];
-    return currentColors?.[mappedKey];
-  };
+      const mappedKey = defaultTokenColorMap[tokenKey];
+      return currentColors?.[mappedKey];
+    },
+    [
+      vscodeOverrides.overrides,
+      vscodeOverrides.hasOverride,
+      vscodeOverrides.getValue,
+      currentColors,
+    ],
+  );
 
   // Get editor color value from theme using the imported editorColorMap
   const getEditorColorValue = (colorKey: string): string | undefined => {
@@ -958,16 +966,19 @@ export function VSCodeOverridesPanel({
                     <p className="text-xs text-muted-foreground mb-3">
                       {group.description}
                     </p>
-                    {group.tokens.map((token) => (
-                      <VSCodeTokenInput
-                        key={token.key}
-                        tokenKey={token.key}
-                        value={getTokenValue(token.key)}
-                        onChange={handleTokenChange}
-                        displayName={token.displayName}
-                        description={token.description}
-                      />
-                    ))}
+                    {group.tokens.map((token) => {
+                      const tokenValue = getTokenValue(token.key);
+                      return (
+                        <VSCodeTokenInput
+                          key={`${token.key}-${tokenValue}`}
+                          tokenKey={token.key}
+                          value={tokenValue}
+                          onChange={handleTokenChange}
+                          displayName={token.displayName}
+                          description={token.description}
+                        />
+                      );
+                    })}
                   </div>
                 </CollapsibleContent>
               </Collapsible>

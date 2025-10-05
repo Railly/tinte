@@ -879,7 +879,6 @@ export function ShikiPreview({ theme, className }: ShikiPreviewProps) {
   const [themeVersion, setThemeVersion] = useState(0);
   const [currentThemeSet, setCurrentThemeSet] = useState(theme);
 
-  // Apply theme changes
   useEffect(() => {
     setCurrentThemeSet(theme);
     setThemeVersion((prev) => prev + 1);

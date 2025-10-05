@@ -61,16 +61,28 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
 
   // Get the appropriate override data based on provider
   const allOverrides = useMemo(() => {
+    let override;
     switch (provider) {
       case "shadcn":
-        return shadcnOverride || null;
+        override = shadcnOverride;
+        break;
       case "vscode":
-        return vscodeOverride || null;
+        override = vscodeOverride;
+        break;
       case "shiki":
-        return shikiOverride || null;
+        override = shikiOverride;
+        break;
       default:
         return null;
     }
+
+    // For shadcn: overrides have structure { palettes: { light: {...}, dark: {...} } }
+    // For vscode/shiki: overrides are directly { light: {...}, dark: {...} }
+    if (provider === "shadcn" && override?.palettes) {
+      return override.palettes as Record<string, T>;
+    }
+
+    return override || null;
   }, [provider, shadcnOverride, vscodeOverride, shikiOverride]) as Record<
     string,
     T
@@ -89,10 +101,11 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
     if (provider !== "vscode" || !tinteTheme) return {};
 
     try {
+      // Pass current overrides to get merged theme
       const vscodeTheme = convertThemeToVSCode(
         { rawTheme: tinteTheme },
         {} as any,
-        {},
+        allOverrides || {},
       );
       const currentTheme = vscodeTheme[currentMode as keyof typeof vscodeTheme];
       const values: Record<string, string> = {};
@@ -116,7 +129,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
       console.warn("Failed to convert theme to VSCode for fallback:", error);
       return {};
     }
-  }, [provider, tinteTheme, currentMode]);
+  }, [provider, tinteTheme, currentMode, allOverrides]);
 
   // Get the appropriate update function
   const updateFunction = useMemo(() => {
@@ -169,15 +182,28 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
       const currentOverrides = allOverrides || {};
       const modeOverrides = currentOverrides[currentMode] || {};
 
-      updateFunction({
-        ...currentOverrides,
-        [currentMode]: {
-          ...modeOverrides,
-          [key]: value,
-        },
-      });
+      // For shadcn: wrap in palettes, for vscode/shiki: direct structure
+      if (provider === "shadcn") {
+        updateFunction({
+          palettes: {
+            ...currentOverrides,
+            [currentMode]: {
+              ...modeOverrides,
+              [key]: value,
+            },
+          },
+        });
+      } else {
+        updateFunction({
+          ...currentOverrides,
+          [currentMode]: {
+            ...modeOverrides,
+            [key]: value,
+          },
+        });
+      }
     },
-    [allOverrides, currentMode, updateFunction],
+    [allOverrides, currentMode, updateFunction, provider],
   );
 
   // Set multiple overrides
@@ -186,15 +212,28 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
       const currentOverrides = allOverrides || {};
       const modeOverrides = currentOverrides[currentMode] || {};
 
-      updateFunction({
-        ...currentOverrides,
-        [currentMode]: {
-          ...modeOverrides,
-          ...newOverrides,
-        },
-      });
+      // For shadcn: wrap in palettes, for vscode/shiki: direct structure
+      if (provider === "shadcn") {
+        updateFunction({
+          palettes: {
+            ...currentOverrides,
+            [currentMode]: {
+              ...modeOverrides,
+              ...newOverrides,
+            },
+          },
+        });
+      } else {
+        updateFunction({
+          ...currentOverrides,
+          [currentMode]: {
+            ...modeOverrides,
+            ...newOverrides,
+          },
+        });
+      }
     },
-    [allOverrides, currentMode, updateFunction],
+    [allOverrides, currentMode, updateFunction, provider],
   );
 
   // Clear single override
@@ -208,12 +247,22 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
       };
       delete modeOverrides[key];
 
-      updateFunction({
-        ...currentOverrides,
-        [currentMode]: modeOverrides,
-      });
+      // For shadcn: wrap in palettes, for vscode/shiki: direct structure
+      if (provider === "shadcn") {
+        updateFunction({
+          palettes: {
+            ...currentOverrides,
+            [currentMode]: modeOverrides,
+          },
+        });
+      } else {
+        updateFunction({
+          ...currentOverrides,
+          [currentMode]: modeOverrides,
+        });
+      }
     },
-    [allOverrides, currentMode, updateFunction],
+    [allOverrides, currentMode, updateFunction, provider],
   );
 
   // Clear all overrides for current mode
@@ -223,8 +272,15 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
     const currentOverrides = { ...allOverrides };
     delete currentOverrides[currentMode];
 
-    updateFunction(currentOverrides);
-  }, [allOverrides, currentMode, updateFunction]);
+    // For shadcn: wrap in palettes, for vscode/shiki: direct structure
+    if (provider === "shadcn") {
+      updateFunction({
+        palettes: currentOverrides,
+      });
+    } else {
+      updateFunction(currentOverrides);
+    }
+  }, [allOverrides, currentMode, updateFunction, provider]);
 
   // Clear all overrides for all modes
   const resetAllOverrides = useCallback(() => {

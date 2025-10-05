@@ -16,29 +16,6 @@ import GithubIcon from "./icons/github";
 import TwitterIcon from "./icons/twitter";
 
 export function SocialsDropdown() {
-  const handleShare = async () => {
-    const url = window.location.href;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Tinte - Theme Converter",
-          url: url,
-        });
-      } catch (_error) {
-        // User cancelled or error occurred
-      }
-    } else {
-      // Fallback to clipboard
-      try {
-        await navigator.clipboard.writeText(url);
-        toast.success("URL copied to clipboard");
-      } catch (_error) {
-        toast.error("Failed to copy URL");
-      }
-    }
-  };
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
