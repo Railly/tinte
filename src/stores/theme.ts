@@ -126,25 +126,6 @@ const applyToDOMDebounced = (() => {
         const fontFamily = extractFontFamily(value);
         if (fontFamily) {
           loadGoogleFont(fontFamily, ["400", "500", "600"]);
-
-          if (fontFamily === "Press Start 2P") {
-            setTimeout(() => {
-              const specialLink = document.createElement("link");
-              specialLink.rel = "stylesheet";
-              specialLink.href =
-                "https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap";
-
-              specialLink.onload = () => {
-                document.documentElement.style.setProperty(
-                  "--font-sans",
-                  '"Press Start 2P", monospace',
-                );
-                document.body.offsetHeight;
-              };
-
-              document.head.appendChild(specialLink);
-            }, 200);
-          }
         }
       });
 

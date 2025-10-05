@@ -305,17 +305,17 @@ export function buildFontCssUrl(
   return `https://fonts.googleapis.com/css2?family=${encodedFamily}:wght@${weightsParam}&display=swap`;
 }
 
-// Simple font loading using native browser APIs
+/**
+ * Load Google Font dynamically
+ * Google Fonts API automatically handles unavailable weights by ignoring them
+ * This means requesting weights like 400,500,600,700 will work for all fonts
+ * even if some weights don't exist - they're simply not included in the response
+ */
 export function loadGoogleFont(
   family: string,
   weights: string[] = ["400", "700"],
 ): void {
   if (typeof document === "undefined") return;
-
-  // Special handling for Press Start 2P - it only has weight 400
-  if (family === "Press Start 2P") {
-    weights = ["400"];
-  }
 
   // Check if already loaded
   const href = buildFontCssUrl(family, weights);
