@@ -31,7 +31,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
   const { isAuthenticated, loadUserThemes, selectTheme } = useTheme();
-  const lastProcessedThemeRef = useRef<string | null>(null);
+  const lastProcessedThemeIdRef = useRef<string | null>(null);
   const isSavingRef = useRef(false);
 
   // Keep stable references
@@ -96,57 +96,47 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
     if (!latestThemeOutput) return;
 
-    // Create simple key from title and first color
-    const themeKey = `${latestThemeOutput.title}-${latestThemeOutput.theme?.light?.bg || ""}`;
+    // Use the tool call ID as unique identifier to prevent duplicates
+    const toolCallId =
+      latestTheme.type === "tool-generateTheme" ? latestTheme.toolCallId : null;
+    if (!toolCallId) return;
 
-    // Only process if different from last processed
-    if (lastProcessedThemeRef.current === themeKey) return;
-    lastProcessedThemeRef.current = themeKey;
+    // Only process if this exact tool call hasn't been processed yet
+    if (lastProcessedThemeIdRef.current === toolCallId) return;
+    lastProcessedThemeIdRef.current = toolCallId;
 
-    // Save first, then apply (authenticated users)
+    // For authenticated users: theme is already saved by generate-theme tool
+    // Just reload user themes and select the saved theme
     if (isAuthenticated && !isSavingRef.current) {
       isSavingRef.current = true;
 
-      const saveAndApplyTheme = async () => {
+      const reloadAndSelectTheme = async () => {
         try {
-          const extendedRawTheme = {
-            light: latestThemeOutput.theme.light,
-            dark: latestThemeOutput.theme.dark,
-            fonts: latestThemeOutput.fonts,
-            radius: latestThemeOutput.radius,
-            shadows: latestThemeOutput.shadows,
-          };
+          // Reload user themes to get the newly saved theme
+          await loadUserThemesRef.current();
 
-          const response = await fetch("/api/themes", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: latestThemeOutput.title || "AI Generated Theme",
-              tinteTheme: extendedRawTheme,
-              overrides: {},
-              isPublic: true,
-              concept: latestThemeOutput.concept,
-            }),
-          });
+          // The tool already saved the theme and returned the slug
+          const savedSlug = latestThemeOutput.slug;
+          const savedTheme = latestThemeOutput.databaseTheme;
 
-          if (response.ok) {
-            const result = await response.json();
-            const savedTheme = result.theme;
-
-            toast.success(`"${savedTheme.name}" saved!`);
-
-            // Reload and select theme
-            await loadUserThemesRef.current();
-            selectThemeRef.current(savedTheme);
+          if (savedSlug) {
+            // If we have the full theme object from the tool, select it directly
+            if (savedTheme) {
+              selectThemeRef.current(savedTheme);
+            }
+            toast.success(`"${latestThemeOutput.title}" saved!`);
           }
+
+          // Apply the theme
+          handleApplyThemeRef.current(latestThemeOutput);
         } catch (error) {
-          console.error("Error saving theme:", error);
+          console.error("Error reloading themes:", error);
         } finally {
           isSavingRef.current = false;
         }
       };
 
-      saveAndApplyTheme();
+      reloadAndSelectTheme();
     } else if (!isAuthenticated) {
       // Anonymous users: just apply without saving
       handleApplyThemeRef.current(latestThemeOutput);

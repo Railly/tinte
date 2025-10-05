@@ -1,6 +1,7 @@
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { type ThemeInsert, theme } from "@/db/schema";
-import { generateSlug, generateThemeId } from "./generate-slug";
+import { generateThemeId } from "./generate-slug";
 
 interface ThemeData {
   title: string;
@@ -56,12 +57,51 @@ interface ThemeData {
   };
 }
 
+// Generate unique slug without random suffix
+async function generateUniqueSlug(baseName: string): Promise<string> {
+  const baseSlug = baseName
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+
+  // First, try the base slug
+  const existingTheme = await db
+    .select()
+    .from(theme)
+    .where(eq(theme.slug, baseSlug))
+    .limit(1);
+  if (existingTheme.length === 0) {
+    return baseSlug;
+  }
+
+  // If base slug exists, try with incremental numbers
+  let counter = 1;
+  while (true) {
+    const candidateSlug = `${baseSlug}-${counter}`;
+    const existing = await db
+      .select()
+      .from(theme)
+      .where(eq(theme.slug, candidateSlug))
+      .limit(1);
+    if (existing.length === 0) {
+      return candidateSlug;
+    }
+    counter++;
+
+    // Safety limit to prevent infinite loops
+    if (counter > 1000) {
+      // Fallback: use timestamp
+      return `${baseSlug}-${Date.now()}`;
+    }
+  }
+}
+
 export async function saveThemeToDatabase(
   themeData: ThemeData,
   userId?: string,
 ): Promise<{ theme: any; slug: string }> {
   const themeId = generateThemeId();
-  const slug = generateSlug(themeData.title);
+  const slug = await generateUniqueSlug(themeData.title);
 
   // Save only AI-generated overrides (fonts, radius, shadows)
   // Colors are derived from Tinte canonical theme, not stored in shadcn_override

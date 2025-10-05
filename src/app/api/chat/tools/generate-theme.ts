@@ -142,6 +142,7 @@ export const generateThemeTool = tool({
         concept,
         slug, // Return the slug for redirect
         databaseId: savedTheme.id,
+        databaseTheme: savedTheme, // Return full theme object with user info
         success: true,
         timestamp: new Date().toISOString(),
         preloadFonts: {
