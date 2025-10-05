@@ -62,11 +62,51 @@ export async function renameTheme(themeId: string, newName: string) {
       return { success: false, error: "Theme not found or unauthorized" };
     }
 
-    // Update theme name
-    const slug = newName
+    // Generate unique slug with collision prevention
+    const baseSlug = newName
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
+
+    // Check if base slug exists (excluding current theme)
+    let slug = baseSlug;
+    const slugConflict = await db
+      .select()
+      .from(theme)
+      .where(
+        and(
+          eq(theme.slug, baseSlug),
+          sql`${theme.id} != ${themeId}`, // Exclude current theme
+        ),
+      )
+      .limit(1);
+
+    if (slugConflict.length > 0) {
+      // Slug exists, try with incremental numbers
+      let counter = 1;
+      while (true) {
+        const candidateSlug = `${baseSlug}-${counter}`;
+        const existing = await db
+          .select()
+          .from(theme)
+          .where(
+            and(eq(theme.slug, candidateSlug), sql`${theme.id} != ${themeId}`),
+          )
+          .limit(1);
+        if (existing.length === 0) {
+          slug = candidateSlug;
+          break;
+        }
+        counter++;
+
+        // Safety limit to prevent infinite loops
+        if (counter > 1000) {
+          // Fallback: use timestamp
+          slug = `${baseSlug}-${Date.now()}`;
+          break;
+        }
+      }
+    }
 
     const updatedTheme = await db
       .update(theme)
@@ -211,10 +251,45 @@ export async function duplicateTheme(
 
     const newThemeId = `theme_${nanoid()}`;
     const newLegacyId = `tinte_${nanoid()}`;
-    const slug = name
+
+    // Generate unique slug with collision prevention
+    const baseSlug = name
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
+
+    // Check if base slug exists
+    let slug = baseSlug;
+    const existingTheme = await db
+      .select()
+      .from(theme)
+      .where(eq(theme.slug, baseSlug))
+      .limit(1);
+
+    if (existingTheme.length > 0) {
+      // Slug exists, try with incremental numbers
+      let counter = 1;
+      while (true) {
+        const candidateSlug = `${baseSlug}-${counter}`;
+        const existing = await db
+          .select()
+          .from(theme)
+          .where(eq(theme.slug, candidateSlug))
+          .limit(1);
+        if (existing.length === 0) {
+          slug = candidateSlug;
+          break;
+        }
+        counter++;
+
+        // Safety limit to prevent infinite loops
+        if (counter > 1000) {
+          // Fallback: use timestamp
+          slug = `${baseSlug}-${Date.now()}`;
+          break;
+        }
+      }
+    }
 
     const duplicatedTheme = await db
       .insert(theme)
