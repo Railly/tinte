@@ -41,6 +41,7 @@ interface PromptInputProps {
 
 export default function PromptInput({ onSubmit }: PromptInputProps) {
   const [prompt, setPrompt] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<
@@ -118,6 +119,9 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
   }
 
   function submit() {
+    // Prevent double submission
+    if (isSubmitting) return;
+
     const allContent = [
       ...pastedItems.map((item) => item.content),
       prompt.trim(),
@@ -126,6 +130,9 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
       .join("\n\n");
 
     if (!allContent && pastedItems.length === 0) return;
+
+    // Set loading state immediately
+    setIsSubmitting(true);
 
     // For simple prompts, just go to workbench/new with prompt in URL
     // For complex cases with attachments, use the seed system
@@ -499,17 +506,27 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
             {/* Submit button positioned absolutely over the textarea only */}
             <motion.button
               onClick={submit}
-              disabled={!prompt.trim() && pastedItems.length === 0}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={
+                isSubmitting || (!prompt.trim() && pastedItems.length === 0)
+              }
+              whileHover={!isSubmitting ? { scale: 1.05 } : {}}
+              whileTap={!isSubmitting ? { scale: 0.95 } : {}}
               className={cn(
                 "absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg",
-                prompt.trim() || pastedItems.length > 0
+                !isSubmitting && (prompt.trim() || pastedItems.length > 0)
                   ? "bg-primary text-primary-foreground cursor-pointer"
                   : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
               )}
             >
-              <ArrowUp className="size-4" />
+              {isSubmitting ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="size-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+                />
+              ) : (
+                <ArrowUp className="size-4" />
+              )}
             </motion.button>
           </div>
 
