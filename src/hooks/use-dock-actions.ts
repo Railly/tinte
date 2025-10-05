@@ -2,7 +2,7 @@ import { Copy, Download, Palette, Save, Terminal } from "lucide-react";
 import { useState } from "react";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
-import Logo from "@/components/shared/logo";
+import InvertedLogo from "@/components/shared/inverted-logo";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
 import { downloadVSCodeTheme } from "@/lib/download-vscode-theme";
 import { exportTheme } from "@/lib/providers";
@@ -188,7 +188,7 @@ export function useDockActions({
       return {
         label: "Copy Command",
         description: `bunx tinte@latest ${themeId}`,
-        icon: Terminal,
+        icon: InvertedLogo,
         variant: "default" as const,
       };
     } else {
