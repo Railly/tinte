@@ -2,10 +2,8 @@
 
 import { Palette, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
-import { useAgentSessionStore } from "@/stores/agent-session-store";
 import { DEFAULT_OPEN_SECTIONS } from "../constants";
 import { ColorsSection } from "./theme-sections/colors-section";
 import { RadiusSection } from "./theme-sections/radius-section";
@@ -30,7 +28,6 @@ export function ThemeResultCard({
   const [openSections, setOpenSections] = useState(DEFAULT_OPEN_SECTIONS);
 
   const { isAuthenticated } = useTheme();
-  const { iterationCount } = useAgentSessionStore();
 
   const toggleSection = (section: keyof typeof DEFAULT_OPEN_SECTIONS) => {
     setOpenSections((prev) => ({
@@ -49,7 +46,7 @@ export function ThemeResultCard({
         </div>
         {isAuthenticated && (
           <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded">
-            {isFirstTheme ? "Iteration 1" : `Iteration ${iterationCount + 1}`}
+            Saved
           </span>
         )}
       </div>

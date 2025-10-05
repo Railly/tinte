@@ -31,11 +31,9 @@ interface AgentTabProps {
 export function AgentTab({ initialPrompt }: AgentTabProps) {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
-  const { clearSession, rootThemeId, setRootTheme, incrementIteration } =
-    useAgentSessionStore();
-  const { isAuthenticated, loadUserThemes, selectTheme } = useTheme();
+  const { clearSession, markThemeGenerated } = useAgentSessionStore();
+  const { isAuthenticated } = useTheme();
   const processedThemesRef = useRef<Set<string>>(new Set());
-  const isSavingRef = useRef(false);
 
   // Clear agent session when component unmounts or when starting fresh
   useEffect(() => {
@@ -73,7 +71,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
   // Block chat input for anonymous users after first theme generation
   const shouldBlockInput = !isAuthenticated && hasGeneratedTheme;
 
-  // Auto-apply and auto-save first theme
+  // Auto-apply and auto-save each generated theme
   useEffect(() => {
     const allGeneratedThemes = messages.flatMap((msg) =>
       msg.parts.filter(
@@ -85,101 +83,62 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
     if (allGeneratedThemes.length === 0) return;
 
-    const firstTheme = allGeneratedThemes[0];
-    const firstThemeOutput =
-      firstTheme.type === "tool-generateTheme" &&
-      firstTheme.state === "output-available"
-        ? (firstTheme.output as any)
+    // Process latest theme
+    const latestTheme = allGeneratedThemes[allGeneratedThemes.length - 1];
+    const latestThemeOutput =
+      latestTheme.type === "tool-generateTheme" &&
+      latestTheme.state === "output-available"
+        ? (latestTheme.output as any)
         : null;
 
-    if (!firstThemeOutput) return;
-    const themeKey = `${firstThemeOutput.title}-${JSON.stringify(firstThemeOutput.theme?.light).slice(0, 50)}`;
+    if (!latestThemeOutput) return;
 
-    // Only process first theme once
+    const themeKey = `${latestThemeOutput.title}-${JSON.stringify(latestThemeOutput.theme?.light).slice(0, 50)}`;
+
+    // Only process each theme once
     if (processedThemesRef.current.has(themeKey)) return;
     processedThemesRef.current.add(themeKey);
 
-    // Auto-apply first theme
-    handleApplyTheme(firstThemeOutput);
+    // Auto-apply theme
+    handleApplyTheme(latestThemeOutput);
 
-    // Auto-save/update if authenticated
-    if (isAuthenticated && !isSavingRef.current) {
-      const saveOrUpdateTheme = async () => {
-        isSavingRef.current = true;
+    // Auto-save if authenticated
+    if (isAuthenticated) {
+      const saveTheme = async () => {
         try {
           const extendedRawTheme = {
-            light: firstThemeOutput.theme.light,
-            dark: firstThemeOutput.theme.dark,
-            fonts: firstThemeOutput.fonts,
-            radius: firstThemeOutput.radius,
-            shadows: firstThemeOutput.shadows,
+            light: latestThemeOutput.theme.light,
+            dark: latestThemeOutput.theme.dark,
+            fonts: latestThemeOutput.fonts,
+            radius: latestThemeOutput.radius,
+            shadows: latestThemeOutput.shadows,
           };
 
-          const isFirstIteration = !rootThemeId;
-          const method = isFirstIteration ? "POST" : "PUT";
-          const url = isFirstIteration
-            ? "/api/themes"
-            : `/api/themes/${rootThemeId}`;
-
-          const response = await fetch(url, {
-            method,
+          const response = await fetch("/api/themes", {
+            method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name: firstThemeOutput.title || "AI Generated Theme",
+              name: latestThemeOutput.title || "AI Generated Theme",
               tinteTheme: extendedRawTheme,
               overrides: {},
               isPublic: true,
-              concept: firstThemeOutput.concept,
+              concept: latestThemeOutput.concept,
             }),
           });
 
           if (response.ok) {
             const result = await response.json();
-            const savedTheme = result.theme;
-
-            if (isFirstIteration) {
-              setRootTheme(savedTheme.id, savedTheme.slug || "");
-              toast.success(`"${savedTheme.name}" saved!`);
-            } else {
-              incrementIteration();
-              toast.success(`"${savedTheme.name}" updated!`);
-            }
-
-            await loadUserThemes();
-
-            setTimeout(() => {
-              selectTheme(savedTheme);
-
-              if (
-                isFirstIteration &&
-                savedTheme.slug &&
-                savedTheme.slug !== "default" &&
-                savedTheme.slug !== "theme"
-              ) {
-                const newUrl = `/workbench/${savedTheme.slug}?tab=agent`;
-                window.history.replaceState(null, "", newUrl);
-              }
-            }, 100);
+            markThemeGenerated();
+            toast.success(`"${result.theme.name}" saved!`);
           }
         } catch (error) {
-          console.error("Error saving/updating theme:", error);
-        } finally {
-          isSavingRef.current = false;
+          console.error("Error saving theme:", error);
         }
       };
 
-      saveOrUpdateTheme();
+      saveTheme();
     }
-  }, [
-    messages,
-    isAuthenticated,
-    rootThemeId,
-    handleApplyTheme,
-    setRootTheme,
-    incrementIteration,
-    loadUserThemes,
-    selectTheme,
-  ]);
+  }, [messages, isAuthenticated, handleApplyTheme, markThemeGenerated]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">

@@ -1,36 +1,18 @@
 import { create } from "zustand";
 
 interface AgentSessionState {
-  // Track the root theme (never changes during session)
-  rootThemeId: string | null;
-  rootThemeSlug: string | null;
-  iterationCount: number;
+  // Just track if we've generated themes in this session
+  hasGeneratedThemes: boolean;
 
   // Actions
-  setRootTheme: (themeId: string, slug: string) => void;
-  incrementIteration: () => void;
+  markThemeGenerated: () => void;
   clearSession: () => void;
 }
 
 export const useAgentSessionStore = create<AgentSessionState>((set) => ({
-  rootThemeId: null,
-  rootThemeSlug: null,
-  iterationCount: 0,
+  hasGeneratedThemes: false,
 
-  setRootTheme: (themeId: string, slug: string) =>
-    set({
-      rootThemeId: themeId,
-      rootThemeSlug: slug,
-      iterationCount: 1,
-    }),
+  markThemeGenerated: () => set({ hasGeneratedThemes: true }),
 
-  incrementIteration: () =>
-    set((state) => ({ iterationCount: state.iterationCount + 1 })),
-
-  clearSession: () =>
-    set({
-      rootThemeId: null,
-      rootThemeSlug: null,
-      iterationCount: 0,
-    }),
+  clearSession: () => set({ hasGeneratedThemes: false }),
 }));
