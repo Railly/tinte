@@ -57,8 +57,10 @@ interface ThemeData {
   };
 }
 
-// Generate unique slug without random suffix
+// Generate unique slug with nanoid fallback
 async function generateUniqueSlug(baseName: string): Promise<string> {
+  const { nanoid } = await import("nanoid");
+
   const baseSlug = baseName
     .toLowerCase()
     .replace(/\s+/g, "-")
@@ -74,26 +76,8 @@ async function generateUniqueSlug(baseName: string): Promise<string> {
     return baseSlug;
   }
 
-  // If base slug exists, try with incremental numbers
-  let counter = 1;
-  while (true) {
-    const candidateSlug = `${baseSlug}-${counter}`;
-    const existing = await db
-      .select()
-      .from(theme)
-      .where(eq(theme.slug, candidateSlug))
-      .limit(1);
-    if (existing.length === 0) {
-      return candidateSlug;
-    }
-    counter++;
-
-    // Safety limit to prevent infinite loops
-    if (counter > 1000) {
-      // Fallback: use timestamp
-      return `${baseSlug}-${Date.now()}`;
-    }
-  }
+  // Slug collision - append nanoid for uniqueness
+  return `${baseSlug}-${nanoid(6)}`;
 }
 
 export async function saveThemeToDatabase(

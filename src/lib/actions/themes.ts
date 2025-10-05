@@ -82,30 +82,8 @@ export async function renameTheme(themeId: string, newName: string) {
       .limit(1);
 
     if (slugConflict.length > 0) {
-      // Slug exists, try with incremental numbers
-      let counter = 1;
-      while (true) {
-        const candidateSlug = `${baseSlug}-${counter}`;
-        const existing = await db
-          .select()
-          .from(theme)
-          .where(
-            and(eq(theme.slug, candidateSlug), sql`${theme.id} != ${themeId}`),
-          )
-          .limit(1);
-        if (existing.length === 0) {
-          slug = candidateSlug;
-          break;
-        }
-        counter++;
-
-        // Safety limit to prevent infinite loops
-        if (counter > 1000) {
-          // Fallback: use timestamp
-          slug = `${baseSlug}-${Date.now()}`;
-          break;
-        }
-      }
+      // Slug collision - append nanoid for uniqueness
+      slug = `${baseSlug}-${nanoid(6)}`;
     }
 
     const updatedTheme = await db
@@ -267,28 +245,8 @@ export async function duplicateTheme(
       .limit(1);
 
     if (existingTheme.length > 0) {
-      // Slug exists, try with incremental numbers
-      let counter = 1;
-      while (true) {
-        const candidateSlug = `${baseSlug}-${counter}`;
-        const existing = await db
-          .select()
-          .from(theme)
-          .where(eq(theme.slug, candidateSlug))
-          .limit(1);
-        if (existing.length === 0) {
-          slug = candidateSlug;
-          break;
-        }
-        counter++;
-
-        // Safety limit to prevent infinite loops
-        if (counter > 1000) {
-          // Fallback: use timestamp
-          slug = `${baseSlug}-${Date.now()}`;
-          break;
-        }
-      }
+      // Slug collision - append nanoid for uniqueness
+      slug = `${baseSlug}-${nanoid(6)}`;
     }
 
     const duplicatedTheme = await db
