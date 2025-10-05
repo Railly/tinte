@@ -68,8 +68,7 @@ export async function renameTheme(themeId: string, newName: string) {
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
-    // Check if base slug exists (excluding current theme)
-    let slug = baseSlug;
+    // Check if EXACT base slug exists (excluding current theme)
     const slugConflict = await db
       .select()
       .from(theme)
@@ -81,10 +80,9 @@ export async function renameTheme(themeId: string, newName: string) {
       )
       .limit(1);
 
-    if (slugConflict.length > 0) {
-      // Slug collision - append nanoid for uniqueness
-      slug = `${baseSlug}-${nanoid(6)}`;
-    }
+    // Only use nanoid if the exact base slug is taken
+    const slug =
+      slugConflict.length > 0 ? `${baseSlug}-${nanoid(6)}` : baseSlug;
 
     const updatedTheme = await db
       .update(theme)
@@ -236,18 +234,16 @@ export async function duplicateTheme(
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
-    // Check if base slug exists
-    let slug = baseSlug;
+    // Check if EXACT base slug exists
     const existingTheme = await db
       .select()
       .from(theme)
       .where(eq(theme.slug, baseSlug))
       .limit(1);
 
-    if (existingTheme.length > 0) {
-      // Slug collision - append nanoid for uniqueness
-      slug = `${baseSlug}-${nanoid(6)}`;
-    }
+    // Only use nanoid if the exact base slug is taken
+    const slug =
+      existingTheme.length > 0 ? `${baseSlug}-${nanoid(6)}` : baseSlug;
 
     const duplicatedTheme = await db
       .insert(theme)
