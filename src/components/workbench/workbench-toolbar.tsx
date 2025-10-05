@@ -414,6 +414,9 @@ export function WorkbenchToolbar({
       }
 
       toast.success("Theme deleted successfully");
+
+      // Redirect to workbench home to load next available theme
+      router.replace("/workbench");
     } catch (error) {
       console.error("Error deleting theme:", error);
       throw error;
