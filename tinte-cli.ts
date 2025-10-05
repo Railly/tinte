@@ -277,13 +277,15 @@ Usage:
 Options:
   --light                           # Install light variant
   --dark                            # Install dark variant (default)
+  --both                            # Install both light and dark variants
   --no-close                        # Don't auto-close editor
   --timeout <ms>                    # Auto-close timeout (default: 3000)
   --code                            # Install to VS Code (default)
   --cursor                          # Install to Cursor
 
 Examples:
-  bunx tinte flexoki-theme          # Install to VS Code
+  bunx tinte flexoki-theme          # Install dark variant to VS Code
+  bunx tinte flexoki-theme --both   # Install both variants
   bunx tinte flexoki-theme --cursor # Install to Cursor
   bunx tinte https://tinte.dev/api/themes/abc123 --light
   bunx tinte ./my-theme.json --cursor --no-close
@@ -292,6 +294,7 @@ Examples:
   }
 
   const command = args[0];
+  const installBoth = args.includes("--both");
   const options: EditorInstallOptions = {
     variant: args.includes("--light") ? "light" : "dark",
     autoClose: !args.includes("--no-close"),
@@ -322,18 +325,25 @@ Examples:
         break;
 
       default: {
-        await cli.quick(command, options);
+        if (installBoth) {
+          console.log("📦 Installing both light and dark variants...\n");
+          await cli.quick(command, { ...options, variant: "light" });
+          await cli.quick(command, { ...options, variant: "dark" });
+        } else {
+          await cli.quick(command, options);
+        }
+
         const editorName = options.editor === "cursor" ? "Cursor" : "VS Code";
         const editorCommand =
           options.editor === "cursor" ? "cursor ." : "code .";
         console.log(`
-🎉 Theme installed!
+🎉 Theme${installBoth ? "s" : ""} installed!
 
 Next steps:
 1. Open ${editorName}: ${editorCommand}
 2. Go to: File → Preferences → Color Theme
-3. Select your new Tinte theme
-4. Enjoy your beautiful new theme! ✨
+3. Select your new Tinte theme${installBoth ? "s" : ""}
+4. Enjoy your beautiful new theme${installBoth ? "s" : ""}! ✨
         `);
         break;
       }
