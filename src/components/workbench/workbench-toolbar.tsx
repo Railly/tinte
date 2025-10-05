@@ -272,9 +272,11 @@ export function WorkbenchToolbar({
     makePublic: boolean,
   ) => {
     try {
+      // Step 1: Parse the CSS to extract theme data
       const { tinteTheme, shadcnTheme } = importShadcnTheme(css);
 
-      const themeToSave = {
+      // Step 2: Create a temporary theme object with the imported data
+      const importedTheme = {
         id: `theme_${Date.now()}`,
         name,
         description: `Imported theme: ${name}`,
@@ -303,15 +305,15 @@ export function WorkbenchToolbar({
           : null,
       };
 
-      // Apply the imported theme immediately
-      updateTinteTheme("light", tinteTheme.light);
-      updateTinteTheme("dark", tinteTheme.dark);
+      // Step 3: Select the imported theme so it becomes the active theme
+      selectTheme(importedTheme);
 
+      // Step 4: Apply shadcn overrides if present
       if (shadcnTheme) {
         updateShadcnOverride(shadcnTheme);
       }
 
-      // Save to database
+      // Step 5: Now save the active theme (which is the imported one)
       const result = await saveCurrentTheme(name, makePublic, shadcnTheme);
 
       if (result.success && result.savedTheme) {
