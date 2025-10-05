@@ -51,15 +51,15 @@ function ClassicPreview() {
 
 export function ShadcnPreview() {
   return (
-    <Tabs defaultValue="classic" className="w-full h-full">
-      <TabsList className="mb-4">
+    <Tabs defaultValue="classic" className="w-full h-full flex flex-col">
+      <TabsList className="mb-4 flex-shrink-0">
         <TabsTrigger value="classic">Classic</TabsTrigger>
         <TabsTrigger value="new">New Components</TabsTrigger>
       </TabsList>
-      <TabsContent value="classic" className="h-full">
+      <TabsContent value="classic" className="flex-1 min-h-0 overflow-auto">
         <ClassicPreview />
       </TabsContent>
-      <TabsContent value="new" className="h-full">
+      <TabsContent value="new" className="flex-1 min-h-0 overflow-auto">
         <NewComponentsPreview />
       </TabsContent>
     </Tabs>

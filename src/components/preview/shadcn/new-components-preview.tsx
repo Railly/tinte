@@ -1,9 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Field,
-  FieldLabel,
-  FieldSeparator,
-} from "../shadcn/new-components-01/components/ui/field";
+import { Field, FieldLabel, FieldSeparator } from "@/components/ui/field";
 import { AppearanceSettings } from "./new-components-01/components/appearance-settings";
 import { ButtonGroupDemo } from "./new-components-01/components/button-group-demo";
 import { ButtonGroupInputGroup } from "./new-components-01/components/button-group-input-group";
@@ -21,7 +17,7 @@ import { SpinnerEmpty } from "./new-components-01/components/spinner-empty";
 
 export function NewComponentsPreview() {
   return (
-    <div className="flex flex-col justify-center font-sans h-full">
+    <div className="flex flex-col justify-center font-sans h-full overflow-auto">
       <div className="theme-container mx-auto grid max-w-[2200px] gap-8 p-6 md:grid-cols-2 md:p-8 lg:grid-cols-3 xl:grid-cols-4">
         <div className="flex flex-col gap-6 *:[div]:w-full *:[div]:max-w-full">
           <FieldDemo />
