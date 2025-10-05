@@ -24,7 +24,7 @@ import {
 
 export function InputGroupDemo() {
   return (
-    <div className="grid w-full max-w-sm gap-6">
+    <div className="grid w-full gap-6">
       <InputGroup>
         <InputGroupInput placeholder="Search..." />
         <InputGroupAddon>

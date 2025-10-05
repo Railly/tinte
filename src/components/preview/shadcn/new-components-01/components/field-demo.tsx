@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 export function FieldDemo() {
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full">
       <form>
         <FieldGroup>
           <FieldSet>

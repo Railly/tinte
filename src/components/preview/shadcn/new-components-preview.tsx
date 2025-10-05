@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldLabel, FieldSeparator } from "@/components/ui/field";
 import { AppearanceSettings } from "./new-components-01/components/appearance-settings";
@@ -17,60 +18,68 @@ import { SpinnerEmpty } from "./new-components-01/components/spinner-empty";
 
 export function NewComponentsPreview() {
   return (
-    <div
-      className="font-sans grid gap-4 auto-rows-min"
-      style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
-    >
-      {/* Column 1 */}
-      <div className="flex flex-col gap-4">
-        <FieldDemo />
-        <InputGroupDemo />
-        <FieldSlider />
-      </div>
-
-      {/* Column 2 */}
-      <div className="flex flex-col gap-4">
-        <div className="*:[div]:border">
-          <EmptyAvatarGroup />
+    <div className="@container font-sans">
+      <div className="grid gap-4 @md:grid-cols-2 @4xl:grid-cols-3 @6xl:grid-cols-4">
+        <div className="order-1 flex flex-col gap-4">
+          <Card className="p-6">
+            <FieldDemo />
+          </Card>
         </div>
-        <ButtonGroupInputGroup />
-        <ItemDemo />
-      </div>
-
-      {/* Column 3 */}
-      <div className="flex flex-col gap-4">
-        <NotionPromptForm />
-        <InputGroupButtonExample />
-        <div className="flex gap-2">
-          <SpinnerBadge />
+        <div className="order-2 flex flex-col gap-4">
+          <Card className="p-6 *:[div]:border">
+            <EmptyAvatarGroup />
+          </Card>
+          <Card className="p-6">
+            <ButtonGroupInputGroup />
+          </Card>
+          <Card className="p-6">
+            <FieldSlider />
+          </Card>
+          <Card className="p-6">
+            <InputGroupDemo />
+          </Card>
         </div>
-      </div>
-
-      {/* Column 4 */}
-      <div className="flex flex-col gap-4">
-        <FieldSeparator>Appearance Settings</FieldSeparator>
-        <AppearanceSettings />
-        <ButtonGroupDemo />
-      </div>
-
-      {/* Column 5 */}
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-6">
-          <FieldLabel htmlFor="checkbox-demo">
-            <Field orientation="horizontal">
-              <Checkbox id="checkbox-demo" defaultChecked />
-              <FieldLabel htmlFor="checkbox-demo" className="line-clamp-1">
-                I agree to the terms and conditions
-              </FieldLabel>
-            </Field>
-          </FieldLabel>
+        <div className="order-3 flex flex-col gap-4 @md:col-span-2 @4xl:col-span-1">
+          <div className="grid gap-4 @md:grid-cols-2 @4xl:grid-cols-1">
+            <Card className="p-6">
+              <ItemDemo />
+            </Card>
+            <Card className="p-6">
+              <FieldSeparator>Appearance Settings</FieldSeparator>
+              <AppearanceSettings />
+            </Card>
+          </div>
         </div>
-        <div className="flex gap-4">
-          <ButtonGroupNested />
-          <ButtonGroupPopover />
-        </div>
-        <div className="*:[div]:border">
-          <SpinnerEmpty />
+        <div className="order-first flex flex-col gap-4 @4xl:order-4 @md:col-span-2 @4xl:col-span-3 @6xl:col-span-1">
+          <Card className="p-6 flex gap-2">
+            <SpinnerBadge />
+          </Card>
+          <Card className="p-6">
+            <InputGroupButtonExample />
+          </Card>
+          <Card className="p-6">
+            <NotionPromptForm />
+          </Card>
+          <Card className="p-6">
+            <ButtonGroupDemo />
+          </Card>
+          <Card className="p-6">
+            <FieldLabel htmlFor="checkbox-demo">
+              <Field orientation="horizontal">
+                <Checkbox id="checkbox-demo" defaultChecked />
+                <FieldLabel htmlFor="checkbox-demo" className="line-clamp-1">
+                  I agree to the terms and conditions
+                </FieldLabel>
+              </Field>
+            </FieldLabel>
+          </Card>
+          <Card className="p-6 flex gap-4">
+            <ButtonGroupNested />
+            <ButtonGroupPopover />
+          </Card>
+          <Card className="p-6 *:[div]:border">
+            <SpinnerEmpty />
+          </Card>
         </div>
       </div>
     </div>

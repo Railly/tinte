@@ -8,7 +8,7 @@ import { Slider } from "@/components/ui/slider";
 export function FieldSlider() {
   const [value, setValue] = useState([200, 800]);
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full">
       <Field>
         <FieldTitle>Price Range</FieldTitle>
         <FieldDescription>

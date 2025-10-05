@@ -12,7 +12,7 @@ import {
 
 export function ItemDemo() {
   return (
-    <div className="flex w-full max-w-md flex-col gap-6">
+    <div className="flex w-full flex-col gap-6">
       <Item variant="outline">
         <ItemContent>
           <ItemTitle>Two-factor authentication</ItemTitle>
