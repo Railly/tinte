@@ -184,11 +184,15 @@ export function WorkbenchToolbar({
       return;
     }
 
-    const isOwnTheme =
-      (user && activeTheme?.user?.id === user?.id) ||
-      (user && activeTheme?.author === "You");
+    // Check if this is user's own saved theme (not a temporary/custom theme)
+    const isOwnSavedTheme =
+      isOwnTheme &&
+      activeTheme?.id &&
+      !activeTheme.name?.includes("(unsaved)") &&
+      activeTheme.name !== "Custom";
 
-    if (isOwnTheme && activeTheme?.id && activeTheme.id.startsWith("theme_")) {
+    if (isOwnSavedTheme) {
+      // Direct update without dialog
       try {
         const result = await saveCurrentTheme();
         if (result.success) {
@@ -204,6 +208,7 @@ export function WorkbenchToolbar({
       return;
     }
 
+    // Show save dialog for new/unsaved themes
     setShowSaveDialog(true);
   };
 
