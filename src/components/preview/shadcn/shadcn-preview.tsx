@@ -1,5 +1,6 @@
 "use client";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardsActivityGoal } from "./demos/activity-goal";
 import { CardsCalendar } from "./demos/calendar";
@@ -14,8 +15,8 @@ import { NewComponentsPreview } from "./new-components-preview";
 
 function ClassicPreview() {
   return (
-    <div className="font-sans h-full md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-13">
-      <div className="h-full grid gap-4 lg:col-span-4 xl:col-span-6">
+    <div className="font-sans md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-13">
+      <div className="grid gap-4 lg:col-span-4 xl:col-span-6">
         <CardsStats />
         <div className="grid gap-1 sm:grid-cols-[auto_1fr] md:hidden">
           <CardsCalendar />
@@ -52,15 +53,19 @@ function ClassicPreview() {
 export function ShadcnPreview() {
   return (
     <Tabs defaultValue="classic" className="w-full h-full flex flex-col">
-      <TabsList className="mb-4 flex-shrink-0">
+      <TabsList className="mb-4">
         <TabsTrigger value="classic">Classic</TabsTrigger>
         <TabsTrigger value="new">New Components</TabsTrigger>
       </TabsList>
-      <TabsContent value="classic" className="flex-1 min-h-0 overflow-auto">
-        <ClassicPreview />
+      <TabsContent value="classic" className="flex-1 min-h-0 mt-0">
+        <ScrollArea className="h-full">
+          <ClassicPreview />
+        </ScrollArea>
       </TabsContent>
-      <TabsContent value="new" className="flex-1 min-h-0 overflow-auto">
-        <NewComponentsPreview />
+      <TabsContent value="new" className="flex-1 min-h-0 mt-0">
+        <ScrollArea className="h-full">
+          <NewComponentsPreview />
+        </ScrollArea>
       </TabsContent>
     </Tabs>
   );
