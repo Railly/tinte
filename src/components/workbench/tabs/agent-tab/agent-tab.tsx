@@ -91,14 +91,11 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
     if (processedThemesRef.current.has(themeKey)) return;
     processedThemesRef.current.add(themeKey);
 
-    // Auto-apply theme
-    handleApplyTheme(latestThemeOutput);
-
-    // Auto-save if authenticated (with guard to prevent concurrent saves)
+    // Save first, then apply (authenticated users)
     if (isAuthenticated && !isSavingRef.current) {
       isSavingRef.current = true;
 
-      const saveTheme = async () => {
+      const saveAndApplyTheme = async () => {
         try {
           const extendedRawTheme = {
             light: latestThemeOutput.theme.light,
@@ -126,10 +123,10 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
             toast.success(`"${savedTheme.name}" saved!`);
 
-            // Reload user themes to update selector
+            // Reload user themes
             await loadUserThemes();
 
-            // Select the saved theme to sync UI
+            // Apply saved theme directly
             setTimeout(() => {
               selectTheme(savedTheme);
             }, 100);
@@ -141,7 +138,10 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
         }
       };
 
-      saveTheme();
+      saveAndApplyTheme();
+    } else if (!isAuthenticated) {
+      // Anonymous users: just apply without saving
+      handleApplyTheme(latestThemeOutput);
     }
   }, [
     messages,
