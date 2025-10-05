@@ -25,6 +25,7 @@ interface AuthActions {
     theme: ThemeData,
     name?: string,
     makePublic?: boolean,
+    updateThemeId?: string,
   ) => Promise<{ success: boolean; savedTheme: any | null }>;
   deleteTheme: (themeId: string) => Promise<boolean>;
   addThemes: (themes: ThemeData[]) => void;
@@ -212,11 +213,17 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      saveTheme: async (theme: ThemeData, name?: string, makePublic = true) => {
+      saveTheme: async (
+        theme: ThemeData,
+        name?: string,
+        makePublic = true,
+        updateThemeId?: string,
+      ) => {
         console.log("🚀 [Auth Store] saveTheme called with:", {
           theme,
           name,
           makePublic,
+          updateThemeId,
         });
         console.log("🔍 [Auth Store] theme.rawTheme:", theme.rawTheme);
         console.log("🔍 [Auth Store] theme.concept:", theme.concept);
@@ -247,16 +254,21 @@ export const useAuthStore = create<AuthStore>()(
             ],
           };
 
-          // Check if this is an existing theme owned by the user that should be updated
-          // Exclude AI-generated themes which should always create new themes
-          const isExistingOwnTheme =
-            themeToSave.id?.startsWith("theme_") &&
-            !themeToSave.id.startsWith("ai-generated-") &&
-            (themeToSave.user?.id === user?.id || themeToSave.author === "You");
+          // Check if we should update an existing theme
+          // Priority 1: Explicit updateThemeId (from AI chat session)
+          // Priority 2: Existing owned theme (original logic)
+          const shouldUpdate =
+            updateThemeId ||
+            (themeToSave.id?.startsWith("theme_") &&
+              !themeToSave.id.startsWith("ai-generated-") &&
+              (themeToSave.user?.id === user?.id ||
+                themeToSave.author === "You"));
 
-          if (isExistingOwnTheme) {
+          const themeIdToUpdate = updateThemeId || themeToSave.id;
+
+          if (shouldUpdate && themeIdToUpdate) {
             // Update existing theme using PUT
-            const response = await fetch(`/api/themes/${themeToSave.id}`, {
+            const response = await fetch(`/api/themes/${themeIdToUpdate}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

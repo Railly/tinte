@@ -67,59 +67,102 @@ export function ThemeResultCard({
     }));
   };
 
-  const handleSaveOrUpdateTheme = async () => {
-    if (!canSave) {
-      toast.error("Please sign in to save themes");
-      return;
-    }
+  // Auto-save first theme without showing Save button
+  useEffect(() => {
+    if (isFirstTheme && isAuthenticated && !firstCreatedThemeId) {
+      const autoSaveFirstTheme = async () => {
+        setIsSaving(true);
+        try {
+          const themeName = themeOutput.title || "AI Generated Theme";
 
-    console.log("🎨 [AI Save] About to apply theme:", themeOutput);
+          console.log("💾 [AI Auto-Save] First theme auto-save:", {
+            themeName,
+            shadcnOverride,
+          });
+
+          const result = await saveCurrentTheme(
+            themeName,
+            true,
+            shadcnOverride,
+          );
+
+          if (result.success && result.savedTheme?.id) {
+            setFirstCreatedTheme(
+              result.savedTheme.id,
+              result.savedTheme.slug || "",
+            );
+            console.log(
+              "🎯 [AI Auto-Save] Set first created theme:",
+              result.savedTheme.id,
+            );
+
+            await loadUserThemes();
+
+            setTimeout(() => {
+              selectTheme(result.savedTheme);
+
+              if (
+                result.savedTheme.slug &&
+                result.savedTheme.slug !== "default" &&
+                result.savedTheme.slug !== "theme"
+              ) {
+                const newUrl = `/workbench/${result.savedTheme.slug}?tab=agent`;
+                window.history.replaceState(null, "", newUrl);
+              }
+            }, 100);
+
+            toast.success(`"${themeName}" saved successfully!`);
+          }
+        } catch (error) {
+          console.error("💥 [AI Auto-Save] Error:", error);
+        } finally {
+          setIsSaving(false);
+        }
+      };
+
+      autoSaveFirstTheme();
+    }
+  }, [isFirstTheme, isAuthenticated, firstCreatedThemeId]);
+
+  const handleUpdateTheme = async () => {
+    if (!canSave || !firstCreatedThemeId) return;
+
+    console.log("🎨 [AI Update] About to apply theme:", themeOutput);
     await onApplyTheme(themeOutput);
 
     setIsSaving(true);
     try {
       const themeName = themeOutput.title || "AI Generated Theme";
 
-      // Check if this is an update to the first created theme
-      const isUpdate = Boolean(firstCreatedThemeId);
-
-      console.log("💾 [AI Save] Save operation:", {
+      console.log("💾 [AI Update] Update operation:", {
         themeName,
-        isUpdate,
         firstCreatedThemeId,
         shadcnOverride,
       });
 
-      const result = await saveCurrentTheme(themeName, true, shadcnOverride);
+      const result = await saveCurrentTheme(
+        themeName,
+        true,
+        shadcnOverride,
+        firstCreatedThemeId,
+      );
 
-      console.log("📥 [AI Save] Save result:", result);
+      console.log("📥 [AI Update] Update result:", result);
 
       if (result.success && result.savedTheme) {
-        // Track first created theme if this is the first save
-        if (!firstCreatedThemeId && result.savedTheme.id) {
-          setFirstCreatedTheme(
-            result.savedTheme.id,
-            result.savedTheme.slug || "",
-          );
-          console.log(
-            "🎯 [AI Save] Set first created theme:",
-            result.savedTheme.id,
-          );
-        }
-
-        console.log("🔄 [AI Save] Refreshing theme lists...");
+        console.log("🔄 [AI Update] Refreshing theme lists...");
         await loadUserThemes();
-        console.log("✅ [AI Save] Theme lists refreshed");
+        console.log("✅ [AI Update] Theme lists refreshed");
 
         setTimeout(() => {
           console.log(
-            "🎯 [AI Save] About to select saved theme:",
+            "🎯 [AI Update] About to select updated theme:",
             result.savedTheme,
           );
 
           selectTheme(result.savedTheme);
 
-          console.log("🌐 [AI Save] Theme selected, updating URL...");
+          console.log("🌐 [AI Update] Theme selected, updating URL...");
 
           if (
             result.savedTheme.slug &&
@@ -128,27 +171,21 @@ export function ThemeResultCard({
           ) {
             const newUrl = `/workbench/${result.savedTheme.slug}?tab=agent`;
             window.history.replaceState(null, "", newUrl);
-            console.log("🔗 [AI Save] URL updated to:", newUrl);
+            console.log("🔗 [AI Update] URL updated to:", newUrl);
           }
         }, 100);
 
-        toast.success(
-          isUpdate
-            ? `"${themeName}" updated successfully!`
-            : `"${themeName}" saved successfully!`,
-        );
+        toast.success(`"${themeName}" updated successfully!`);
       } else {
-        console.error("❌ [AI Save] Save failed:", result);
-        toast.error(
-          isUpdate ? "Failed to update theme" : "Failed to save theme",
-        );
+        console.error("❌ [AI Update] Update failed:", result);
+        toast.error("Failed to update theme");
       }
     } catch (error) {
-      console.error("💥 [AI Save] Error saving theme:", error);
-      toast.error("Error saving theme");
+      console.error("💥 [AI Update] Error updating theme:", error);
+      toast.error("Error updating theme");
     } finally {
       setIsSaving(false);
-      console.log("🏁 [AI Save] Save process completed");
+      console.log("🏁 [AI Update] Update process completed");
     }
   };
 
@@ -228,26 +265,17 @@ export function ThemeResultCard({
             Apply Theme
           </Button>
 
-          {/* Only show Save/Update button if user is authenticated */}
-          {isAuthenticated && (
+          {/* Only show Update button on subsequent themes (not first) */}
+          {isAuthenticated && !isFirstTheme && firstCreatedThemeId && (
             <Button
               size="sm"
               variant="outline"
-              onClick={handleSaveOrUpdateTheme}
+              onClick={handleUpdateTheme}
               disabled={isSaving}
               className="h-8 px-3"
             >
-              {firstCreatedThemeId ? (
-                <>
-                  <RefreshCw className="h-3 w-3 mr-1.5" />
-                  {isSaving ? "Updating..." : "Update"}
-                </>
-              ) : (
-                <>
-                  <Save className="h-3 w-3 mr-1.5" />
-                  {isSaving ? "Saving..." : "Save"}
-                </>
-              )}
+              <RefreshCw className="h-3 w-3 mr-1.5" />
+              {isSaving ? "Updating..." : "Update"}
             </Button>
           )}
         </div>

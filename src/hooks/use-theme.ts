@@ -142,6 +142,7 @@ export function useTheme() {
       name?: string,
       makePublic?: boolean,
       shadcnOverride?: any,
+      updateThemeId?: string,
     ) => {
       // Create theme with current overrides from store
       console.log("🔍 [saveCurrentTheme] activeTheme:", themeStore.activeTheme);
@@ -192,7 +193,12 @@ export function useTheme() {
         themeWithOverrides.concept,
       );
 
-      return authStore.saveTheme(themeWithOverrides, name, makePublic);
+      return authStore.saveTheme(
+        themeWithOverrides,
+        name,
+        makePublic,
+        updateThemeId,
+      );
     },
   };
 }
