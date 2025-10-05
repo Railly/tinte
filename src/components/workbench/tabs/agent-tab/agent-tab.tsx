@@ -35,6 +35,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
     useAgentSessionStore();
   const { isAuthenticated, loadUserThemes, selectTheme } = useTheme();
   const processedThemesRef = useRef<Set<string>>(new Set());
+  const isSavingRef = useRef(false);
 
   // Clear agent session when component unmounts or when starting fresh
   useEffect(() => {
@@ -102,8 +103,9 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
     handleApplyTheme(firstThemeOutput);
 
     // Auto-save/update if authenticated
-    if (isAuthenticated) {
+    if (isAuthenticated && !isSavingRef.current) {
       const saveOrUpdateTheme = async () => {
+        isSavingRef.current = true;
         try {
           const extendedRawTheme = {
             light: firstThemeOutput.theme.light,
@@ -161,6 +163,8 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
           }
         } catch (error) {
           console.error("Error saving/updating theme:", error);
+        } finally {
+          isSavingRef.current = false;
         }
       };
 
