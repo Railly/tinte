@@ -13,7 +13,7 @@ function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
       showScrollIndicators={true}
       indicatorType="shadow"
     >
-      <div className="h-full p-4">
+      <div className="h-full px-4 pt-4">
         <UnifiedPreview theme={theme} />
       </div>
     </ScrollArea>

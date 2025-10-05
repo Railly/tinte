@@ -48,7 +48,7 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
 
   return (
     <div
-      className={cn("h-[calc(100dvh-var(--header-height)_-_2rem)]", className)}
+      className={cn("h-[calc(100dvh-var(--header-height)_-_5rem)]", className)}
     >
       <PreviewComponent theme={converted} />
     </div>

@@ -178,7 +178,7 @@ export const designSystemProvider: PreviewableProvider<DesignSystemOutput> = {
       },
       typography: {
         heading: {
-          family: "Inter, system-ui, sans-serif",
+          family: "inherit",
           weights: ["400", "500", "600", "700"],
           sizes: [
             {
@@ -220,7 +220,7 @@ export const designSystemProvider: PreviewableProvider<DesignSystemOutput> = {
           ],
         },
         body: {
-          family: "Inter, system-ui, sans-serif",
+          family: "inherit",
           weights: ["400", "500", "600"],
           variants: [
             {
@@ -413,7 +413,7 @@ export const designSystemProvider: PreviewableProvider<DesignSystemOutput> = {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
             line-height: 1.6;
             color: ${theme.light.tx};
             background: ${theme.light.bg};

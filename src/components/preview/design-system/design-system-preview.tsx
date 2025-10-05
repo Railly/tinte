@@ -5,6 +5,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+} from "@/components/ui/button-group";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -12,9 +17,47 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemGroup,
+  ItemHeader,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
-// UI Components
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -24,37 +67,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { DesignSystemOutput } from "@/lib/providers/design-system";
 import { useThemeStore } from "@/stores/theme";
+import { TypographySection } from "./typography-section";
 
 interface DesignSystemPreviewProps {
   theme: DesignSystemOutput;
   className?: string;
 }
 
-const _CloverlySybmol = ({ className }: { className?: string }) => (
-  <div
-    className={`relative w-10 h-10 flex items-center justify-center ${className}`}
-  >
-    <div
-      className="absolute w-4 h-4 bg-current rounded-sm rotate-45 transform-gpu"
-      style={{ borderRadius: "2px 8px 2px 8px" }}
-    />
-    <div
-      className="absolute w-3 h-3 bg-current rounded-sm -rotate-45 transform-gpu"
-      style={{ borderRadius: "8px 2px 8px 2px" }}
-    />
-  </div>
-);
-
 export function DesignSystemPreview({
   theme,
   className,
 }: DesignSystemPreviewProps) {
-  // Subscribe directly to tinteTheme and mode from the store
   const tinteTheme = useThemeStore((state) => state.tinteTheme);
   const currentMode = useThemeStore((state) => state.mode);
   const [demoTab, setDemoTab] = useState("tab1");
@@ -76,95 +105,67 @@ export function DesignSystemPreview({
   };
 
   return (
-    <div className={`h-full ${className}`}>
-      <ScrollArea className="h-full" showScrollIndicators>
-        <div className="p-6 space-y-6">
-          {/* Header */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold">Design System</h1>
-            <p className="text-muted-foreground text-lg">
-              {theme.brand.description}
-            </p>
-          </div>
+    <div className={`h-full font-sans ${className}`}>
+      <div className="">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">Design System</h1>
+          <p className="text-muted-foreground text-sm">
+            {theme.brand.description}
+          </p>
+        </div>
 
-          <Tabs defaultValue="typography" className="w-full">
-            <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
-              <TabsTrigger value="typography">Typography</TabsTrigger>
-              <TabsTrigger value="colors">Colors</TabsTrigger>
-              <TabsTrigger value="buttons">Buttons</TabsTrigger>
-              <TabsTrigger value="inputs">Inputs</TabsTrigger>
-              <TabsTrigger value="cards">Cards</TabsTrigger>
-              <TabsTrigger value="spacing">Spacing</TabsTrigger>
-              <TabsTrigger value="borders">Borders</TabsTrigger>
-              <TabsTrigger value="effects">Effects</TabsTrigger>
-              <TabsTrigger value="states">States</TabsTrigger>
-              <TabsTrigger value="toggles">Toggles</TabsTrigger>
-              <TabsTrigger value="tags">Tags</TabsTrigger>
-              <TabsTrigger value="tabs">Tabs</TabsTrigger>
-            </TabsList>
+        <Tabs defaultValue="foundation" className="w-full">
+          <TabsList className="h-auto flex-wrap justify-start gap-1 bg-transparent p-0">
+            <TabsTrigger
+              value="foundation"
+              className="data-[state=active]:bg-muted"
+            >
+              Foundation
+            </TabsTrigger>
+            <TabsTrigger
+              value="components"
+              className="data-[state=active]:bg-muted"
+            >
+              Components
+            </TabsTrigger>
+            <TabsTrigger value="forms" className="data-[state=active]:bg-muted">
+              Forms
+            </TabsTrigger>
+            <TabsTrigger value="data" className="data-[state=active]:bg-muted">
+              Data Display
+            </TabsTrigger>
+            <TabsTrigger
+              value="feedback"
+              className="data-[state=active]:bg-muted"
+            >
+              Feedback
+            </TabsTrigger>
+          </TabsList>
 
-            {/* Typography Tab */}
-            <TabsContent value="typography" className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Headings</CardTitle>
-                  <CardDescription>
-                    Font hierarchy and sizing system
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {theme.typography.heading.sizes.map((heading, i) => (
-                    <div key={i} className="space-y-2">
-                      <div
-                        className="font-semibold"
-                        style={{
-                          fontSize: heading.size,
-                          fontFamily: theme.typography.heading.family,
-                        }}
-                      >
-                        {heading.sample}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {heading.usage}
-                      </p>
-                      <Separator />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
+          <TabsContent value="foundation" className="space-y-4 mt-4">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Typography
+                </CardTitle>
+                <CardDescription>
+                  Font hierarchy and text styles
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4">
+                <TypographySection theme={theme} />
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Text Variants</CardTitle>
-                  <CardDescription>Body text styles and usage</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {theme.typography.body.variants.map((variant, i) => (
-                    <div key={i} className="space-y-2">
-                      <div
-                        style={{
-                          fontSize: variant.size,
-                          fontFamily: theme.typography.body.family,
-                        }}
-                      >
-                        {variant.sample}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {variant.usage}
-                      </p>
-                      <Separator />
-                    </div>
-                  ))}
+                <Separator className="my-4" />
 
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Special Text</h3>
                   <Alert>
                     <AlertDescription>
-                      "This is a blockquote-style alert. It's styled to
-                      distinguish quoted content from regular text."
+                      This is a blockquote-style alert for quoted content.
                     </AlertDescription>
                   </Alert>
-
                   <Card
-                    className="p-4"
+                    className="p-3"
                     style={{ backgroundColor: currentColors.bg_2 }}
                   >
                     <pre
@@ -174,22 +175,46 @@ export function DesignSystemPreview({
                       {theme.typography.code.sample}
                     </pre>
                   </Card>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
+              </CardContent>
+            </Card>
 
-            {/* Colors Tab */}
-            <TabsContent value="colors" className="space-y-8">
-              {/* CSS Variables Showcase */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>CSS Color Variables</CardTitle>
-                  <CardDescription>
-                    Real shadcn/ui color system variables
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Colors
+                </CardTitle>
+                <CardDescription>Color palette and variables</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Theme Colors</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-lg overflow-hidden border">
+                    {theme.colors.primary.colors.map((color, i) => (
+                      <div
+                        key={i}
+                        className="aspect-video p-4 flex flex-col justify-end text-white"
+                        style={{ backgroundColor: color.hex }}
+                      >
+                        <div className="space-y-0.5">
+                          <div className="text-lg font-semibold">
+                            {color.name}
+                          </div>
+                          <div className="text-xs opacity-90">
+                            <div>HEX - {color.hex}</div>
+                            <div>RGB - ({color.rgb})</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">CSS Variables</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {[
                       {
                         name: "Background",
@@ -231,1930 +256,1203 @@ export function DesignSystemPreview({
                         class: "bg-border",
                         text: "text-foreground",
                       },
-                      {
-                        name: "Input",
-                        class: "bg-input",
-                        text: "text-foreground",
-                      },
-                      {
-                        name: "Ring",
-                        class: "bg-ring",
-                        text: "text-foreground",
-                      },
                     ].map((color, i) => (
                       <Card key={i} className={`${color.class} ${color.text}`}>
-                        <CardContent className="p-4 space-y-2">
-                          <h4 className="font-medium">{color.name}</h4>
+                        <CardContent className="p-3 space-y-1">
+                          <h4 className="font-medium text-sm">{color.name}</h4>
                           <p className="text-xs font-mono opacity-70">
                             {color.class}
                           </p>
-                          <p className="text-xs font-mono opacity-70">
-                            {color.text}
-                          </p>
                         </CardContent>
                       </Card>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Primary Colors Grid */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Theme Color Palette</CardTitle>
-                  <CardDescription>Current theme color values</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-lg overflow-hidden border">
-                    {theme.colors.primary.colors.map((color, i) => (
-                      <div
-                        key={i}
-                        className="aspect-video p-6 flex flex-col justify-end text-white"
-                        style={{ backgroundColor: color.hex }}
-                      >
-                        <div className="space-y-1">
-                          <div className="text-xl font-semibold">
-                            {color.name}
-                          </div>
-                          <div className="text-sm opacity-90">
-                            <div>HEX - {color.hex}</div>
-                            <div>RGB - ({color.rgb})</div>
-                            <div>CMYK - ({color.cmyk})</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Text Colors */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Text Colors</CardTitle>
-                  <CardDescription>Typography color hierarchy</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <p className="text-foreground text-lg font-medium">
-                      Primary text (text-foreground)
-                    </p>
-                    <p className="text-muted-foreground">
-                      Muted text (text-muted-foreground)
-                    </p>
-                    <p className="text-primary">
-                      Primary colored text (text-primary)
-                    </p>
-                    <p className="text-secondary-foreground">
-                      Secondary text (text-secondary-foreground)
-                    </p>
-                    <p className="text-destructive">
-                      Destructive text (text-destructive)
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Buttons Tab */}
-            <TabsContent value="buttons" className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Button Variants</CardTitle>
-                  <CardDescription>
-                    All shadcn/ui button variants and sizes
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  {/* Button Variants */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Variants</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                      <div className="space-y-2">
-                        <Button className="w-full">Default</Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          variant="default"
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button variant="destructive" className="w-full">
-                          Destructive
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          variant="destructive"
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button variant="outline" className="w-full">
-                          Outline
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          variant="outline"
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button variant="secondary" className="w-full">
-                          Secondary
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          variant="secondary"
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button variant="ghost" className="w-full">
-                          Ghost
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          variant="ghost"
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button variant="link" className="w-full">
-                          Link
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          variant="link"
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Button Sizes */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Sizes</h3>
-                    <div className="flex flex-col sm:flex-row items-center gap-4">
-                      <div className="space-y-2 text-center">
-                        <Button size="sm">Small</Button>
-                        <p className="text-xs text-muted-foreground">
-                          size="sm"
-                        </p>
-                      </div>
-                      <div className="space-y-2 text-center">
-                        <Button>Default</Button>
-                        <p className="text-xs text-muted-foreground">
-                          size="default"
-                        </p>
-                      </div>
-                      <div className="space-y-2 text-center">
-                        <Button size="lg">Large</Button>
-                        <p className="text-xs text-muted-foreground">
-                          size="lg"
-                        </p>
-                      </div>
-                      <div className="space-y-2 text-center">
-                        <Button size="icon" className="w-10 h-10">
-                          <svg
-                            className="w-4 h-4"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M10 12l-4-4h8l-4 4z" />
-                          </svg>
-                        </Button>
-                        <p className="text-xs text-muted-foreground">
-                          size="icon"
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Button States */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">States</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <Button className="w-full">Normal</Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          Normal state
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button className="w-full" disabled>
-                          Disabled
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          disabled
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button className="w-full" variant="outline" disabled>
-                          Disabled Outline
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          outline + disabled
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button
-                          className="w-full"
-                          variant="destructive"
-                          disabled
-                        >
-                          Disabled Destructive
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          destructive + disabled
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Inputs Tab */}
-            <TabsContent value="inputs" className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Input Components</CardTitle>
-                  <CardDescription>
-                    Form controls and input variations using shadcn/ui
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  {/* Basic Inputs */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Text Inputs</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="input-default">Default Input</Label>
-                          <Input
-                            id="input-default"
-                            placeholder="Enter text..."
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="input-disabled">Disabled Input</Label>
-                          <Input
-                            id="input-disabled"
-                            placeholder="Disabled input"
-                            disabled
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="input-readonly">Readonly Input</Label>
-                          <Input
-                            id="input-readonly"
-                            value="Read only value"
-                            readOnly
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="input-email">Email Input</Label>
-                          <Input
-                            id="input-email"
-                            type="email"
-                            placeholder="email@example.com"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="input-password">Password Input</Label>
-                          <Input
-                            id="input-password"
-                            type="password"
-                            placeholder="Enter password..."
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="input-number">Number Input</Label>
-                          <Input
-                            id="input-number"
-                            type="number"
-                            placeholder="123"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Input States */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Input States</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="input-normal">Normal State</Label>
-                          <Input id="input-normal" placeholder="Normal input" />
-                          <p className="text-xs text-muted-foreground">
-                            Standard input styling
-                          </p>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="input-focus" className="text-primary">
-                            Focus State
-                          </Label>
-                          <Input
-                            id="input-focus"
-                            placeholder="Focused input"
-                            className="ring-2 ring-ring ring-offset-2"
-                          />
-                          <p className="text-xs text-muted-foreground">
-                            Input with focus ring
-                          </p>
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="input-error"
-                            className="text-destructive"
-                          >
-                            Error State
-                          </Label>
-                          <Input
-                            id="input-error"
-                            placeholder="Invalid input"
-                            className="border-destructive focus-visible:ring-destructive"
-                          />
-                          <p className="text-xs text-destructive">
-                            This field has an error
-                          </p>
-                        </div>
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="input-success"
-                            className="text-green-600"
-                          >
-                            Success State
-                          </Label>
-                          <Input
-                            id="input-success"
-                            placeholder="Valid input"
-                            className="border-green-500 focus-visible:ring-green-500"
-                          />
-                          <p className="text-xs text-green-600">
-                            Input validation passed
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Form Controls */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Form Controls</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="select-basic">Select Dropdown</Label>
-                          <Select>
-                            <SelectTrigger id="select-basic">
-                              <SelectValue placeholder="Choose an option" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="option1">
-                                First Option
-                              </SelectItem>
-                              <SelectItem value="option2">
-                                Second Option
-                              </SelectItem>
-                              <SelectItem value="option3">
-                                Third Option
-                              </SelectItem>
-                              <SelectItem value="option4" disabled>
-                                Disabled Option
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="textarea-basic">Textarea</Label>
-                          <Textarea
-                            id="textarea-basic"
-                            placeholder="Enter your message here..."
-                            rows={4}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="textarea-disabled">
-                            Disabled Textarea
-                          </Label>
-                          <Textarea
-                            id="textarea-disabled"
-                            placeholder="This textarea is disabled"
-                            disabled
-                            rows={3}
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="textarea-resize">
-                            Resizable Textarea
-                          </Label>
-                          <Textarea
-                            id="textarea-resize"
-                            placeholder="You can resize this textarea"
-                            className="resize-y"
-                            rows={3}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Input Sizes */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Input Sizes</h3>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label>Small Input</Label>
-                        <Input
-                          placeholder="Small size input"
-                          className="h-8 text-sm"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Default Input</Label>
-                        <Input placeholder="Default size input" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Large Input</Label>
-                        <Input
-                          placeholder="Large size input"
-                          className="h-12 text-lg"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Input with Icons/Buttons */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Input Variations</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Input with Button</Label>
-                          <div className="flex gap-2">
-                            <Input placeholder="Search..." className="flex-1" />
-                            <Button type="submit">Search</Button>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>File Input</Label>
-                          <Input
-                            type="file"
-                            className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/80"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Input Group</Label>
-                          <div className="flex">
-                            <span className="inline-flex items-center px-3 text-sm bg-muted border border-r-0 border-input rounded-l-md">
-                              https://
-                            </span>
-                            <Input
-                              placeholder="example.com"
-                              className="rounded-l-none"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Range Input</Label>
-                          <Input
-                            type="range"
-                            min="0"
-                            max="100"
-                            defaultValue="50"
-                            className="accent-primary"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Cards Tab */}
-            <TabsContent value="cards" className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Card Components</CardTitle>
-                  <CardDescription>
-                    Different card layouts and content examples
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  {/* Basic Cards */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Basic Cards</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Simple Card</CardTitle>
-                          <CardDescription>
-                            Basic card with header and content
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-muted-foreground">
-                            This is a simple card component with standard
-                            styling.
-                          </p>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="bg-muted">
-                        <CardHeader>
-                          <CardTitle>Muted Card</CardTitle>
-                          <CardDescription>
-                            Card with muted background
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-muted-foreground">
-                            This card uses bg-muted for subtle differentiation.
-                          </p>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="border-primary">
-                        <CardHeader>
-                          <CardTitle className="text-primary">
-                            Primary Border
-                          </CardTitle>
-                          <CardDescription>
-                            Card with primary border accent
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-muted-foreground">
-                            This card has a primary colored border.
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-
-                  {/* Interactive Cards */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Interactive Cards</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                        <CardHeader>
-                          <CardTitle>Hoverable Card</CardTitle>
-                          <CardDescription>
-                            Card with hover effects
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-muted-foreground mb-4">
-                            This card responds to hover with shadow effects.
-                          </p>
-                          <div className="flex gap-2">
-                            <Button size="sm">Primary Action</Button>
-                            <Button variant="outline" size="sm">
-                              Secondary
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="bg-accent">
-                        <CardHeader>
-                          <CardTitle className="text-accent-foreground">
-                            Accent Card
-                          </CardTitle>
-                          <CardDescription className="text-accent-foreground/70">
-                            Card with accent background
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-accent-foreground/80 mb-4">
-                            This card uses the accent color system.
-                          </p>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            className="bg-background text-foreground"
-                          >
-                            Action
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Spacing Tab */}
-            <TabsContent value="spacing" className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Spacing System</CardTitle>
-                  <CardDescription>
-                    Consistent spacing scale using Tailwind classes
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  {/* Padding Examples */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Padding Examples</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[
-                        { name: "p-1", class: "p-1", size: "4px" },
-                        { name: "p-2", class: "p-2", size: "8px" },
-                        { name: "p-4", class: "p-4", size: "16px" },
-                        { name: "p-6", class: "p-6", size: "24px" },
-                      ].map((space, i) => (
-                        <div key={i} className="space-y-2">
-                          <div className="bg-muted rounded">
-                            <div
-                              className={`bg-primary text-primary-foreground rounded text-center text-sm ${space.class}`}
-                            >
-                              {space.name}
-                            </div>
-                          </div>
-                          <p className="text-xs text-muted-foreground text-center">
-                            {space.size}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Margin Examples */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Margin Examples</h3>
-                    <div className="bg-muted p-4 rounded space-y-4">
-                      {[
-                        { name: "m-2", class: "m-2", size: "8px" },
-                        { name: "m-4", class: "m-4", size: "16px" },
-                        { name: "m-6", class: "m-6", size: "24px" },
-                        { name: "m-8", class: "m-8", size: "32px" },
-                      ].map((space, i) => (
-                        <div key={i} className="bg-background rounded p-2">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Spacing
+                </CardTitle>
+                <CardDescription>
+                  Padding, margin, and gap system
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Padding</h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { name: "p-1", class: "p-1", size: "4px" },
+                      { name: "p-2", class: "p-2", size: "8px" },
+                      { name: "p-4", class: "p-4", size: "16px" },
+                      { name: "p-6", class: "p-6", size: "24px" },
+                    ].map((space, i) => (
+                      <div key={i} className="space-y-1">
+                        <div className="bg-muted rounded">
                           <div
-                            className={`bg-primary text-primary-foreground rounded text-center text-sm p-2 ${space.class}`}
+                            className={`bg-primary text-primary-foreground rounded text-center text-xs ${space.class}`}
                           >
-                            {space.name} ({space.size})
+                            {space.name}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        <p className="text-xs text-muted-foreground text-center">
+                          {space.size}
+                        </p>
+                      </div>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Gap Examples */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Gap Examples</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {[
-                        { name: "gap-2", class: "gap-2", size: "8px" },
-                        { name: "gap-4", class: "gap-4", size: "16px" },
-                        { name: "gap-6", class: "gap-6", size: "24px" },
-                        { name: "gap-8", class: "gap-8", size: "32px" },
-                      ].map((space, i) => (
-                        <div key={i} className="space-y-2">
-                          <div className={`flex ${space.class}`}>
-                            <div className="bg-primary text-primary-foreground p-2 rounded text-sm">
-                              Item 1
-                            </div>
-                            <div className="bg-secondary text-secondary-foreground p-2 rounded text-sm">
-                              Item 2
-                            </div>
-                            <div className="bg-accent text-accent-foreground p-2 rounded text-sm">
-                              Item 3
-                            </div>
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Gap</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      { name: "gap-2", class: "gap-2", size: "8px" },
+                      { name: "gap-4", class: "gap-4", size: "16px" },
+                    ].map((space, i) => (
+                      <div key={i} className="space-y-1">
+                        <div className={`flex ${space.class}`}>
+                          <div className="bg-primary text-primary-foreground p-2 rounded text-xs">
+                            Item 1
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {space.name} ({space.size})
-                          </p>
+                          <div className="bg-secondary text-secondary-foreground p-2 rounded text-xs">
+                            Item 2
+                          </div>
+                          <div className="bg-accent text-accent-foreground p-2 rounded text-xs">
+                            Item 3
+                          </div>
                         </div>
-                      ))}
-                    </div>
+                        <p className="text-xs text-muted-foreground">
+                          {space.name} ({space.size})
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
+              </CardContent>
+            </Card>
 
-            {/* Borders Tab */}
-            <TabsContent value="borders" className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Border Widths</CardTitle>
-                    <CardDescription>
-                      Different border thicknesses
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Borders
+                </CardTitle>
+                <CardDescription>Border widths and radius</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Widths</h3>
+                  <div className="space-y-2">
                     <Card className="border">
-                      <CardContent className="p-4">
-                        <div className="font-mono text-sm">border (1px)</div>
+                      <CardContent className="p-3">
+                        <div className="font-mono text-xs">border (1px)</div>
                       </CardContent>
                     </Card>
                     <Card className="border-2">
-                      <CardContent className="p-4">
-                        <div className="font-mono text-sm">border-2 (2px)</div>
+                      <CardContent className="p-3">
+                        <div className="font-mono text-xs">border-2 (2px)</div>
                       </CardContent>
                     </Card>
-                    <Card className="border-4">
-                      <CardContent className="p-4">
-                        <div className="font-mono text-sm">border-4 (4px)</div>
-                      </CardContent>
-                    </Card>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Border Radius</CardTitle>
-                    <CardDescription>
-                      Different corner roundness
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Card className="rounded-none border">
-                      <CardContent className="p-4">
-                        <div className="font-mono text-sm">rounded-none</div>
-                      </CardContent>
-                    </Card>
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Radius</h3>
+                  <div className="space-y-2">
                     <Card className="rounded-sm border">
-                      <CardContent className="p-4">
-                        <div className="font-mono text-sm">rounded-sm</div>
+                      <CardContent className="p-3">
+                        <div className="font-mono text-xs">rounded-sm</div>
                       </CardContent>
                     </Card>
                     <Card className="rounded-lg border">
-                      <CardContent className="p-4">
-                        <div className="font-mono text-sm">rounded-lg</div>
+                      <CardContent className="p-3">
+                        <div className="font-mono text-xs">rounded-lg</div>
                       </CardContent>
                     </Card>
                     <Card className="rounded-full border">
-                      <CardContent className="p-4">
-                        <div className="font-mono text-sm text-center">
+                      <CardContent className="p-3">
+                        <div className="font-mono text-xs text-center">
                           rounded-full
                         </div>
                       </CardContent>
                     </Card>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            {/* Effects Tab */}
-            <TabsContent value="effects" className="space-y-8">
-              {/* Shadows Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Shadows & Elevation</CardTitle>
-                  <CardDescription>
-                    Shadow system for depth and hierarchy
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Card className="shadow-none border">
-                      <CardHeader>
-                        <CardTitle className="text-base">No Shadow</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          shadow-none
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Flat design with border only
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="shadow-sm">
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Small Shadow
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          shadow-sm
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Subtle depth for cards
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="shadow-md">
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Medium Shadow
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          shadow-md
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Standard elevation
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="shadow-lg">
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Large Shadow
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          shadow-lg
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          High elevation for modals
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="shadow-xl">
-                      <CardHeader>
-                        <CardTitle className="text-base">Extra Large</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          shadow-xl
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Maximum elevation
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="shadow-2xl">
-                      <CardHeader>
-                        <CardTitle className="text-base">2XL Shadow</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          shadow-2xl
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Dramatic depth
-                        </p>
-                      </CardContent>
-                    </Card>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              {/* Gradients Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Gradient Effects</CardTitle>
-                  <CardDescription>
-                    Diverse gradient patterns using theme colors
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Linear Gradients */}
-                    <Card className="overflow-hidden">
-                      <div className="h-24 bg-gradient-to-r from-primary via-primary/50 to-transparent" />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Primary Fade
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Horizontal fade to transparent
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <div className="h-24 bg-gradient-to-br from-primary via-accent to-secondary" />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Triple Blend
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Three-color diagonal blend
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <div className="h-24 bg-gradient-to-b from-muted/50 via-muted to-accent/80" />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Subtle Depth
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Soft vertical progression
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Radial Gradients */}
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24"
-                        style={{
-                          background: `radial-gradient(ellipse 100% 50% at top, var(--primary), transparent)`,
-                        }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Top Spotlight
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Elliptical top-focused light
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24"
-                        style={{
-                          background: `radial-gradient(circle, var(--accent), var(--muted), var(--background))`,
-                        }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Central Glow
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Multi-ring radial effect
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24"
-                        style={{
-                          background: `conic-gradient(from 45deg, var(--primary), var(--destructive), var(--accent), var(--secondary), var(--primary))`,
-                        }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">Color Wheel</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Off-center conic spectrum
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Complex Patterns */}
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24"
-                        style={{
-                          background: `repeating-linear-gradient(45deg, var(--muted) 0px, var(--muted) 8px, var(--accent) 8px, var(--accent) 16px)`,
-                        }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Diagonal Stripes
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Repeating stripe pattern
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24"
-                        style={{
-                          background: `
-                            linear-gradient(45deg, var(--primary) 25%, transparent 25%),
-                            linear-gradient(-45deg, var(--accent) 25%, transparent 25%),
-                            linear-gradient(45deg, transparent 75%, var(--secondary) 75%),
-                            linear-gradient(-45deg, transparent 75%, var(--muted) 75%)
-                          `,
-                          backgroundSize: "16px 16px",
-                          backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0px",
-                        }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">Geometric</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Complex layered pattern
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24"
-                        style={{
-                          background: `
-                            radial-gradient(circle at 20% 80%, var(--primary) 0%, transparent 50%),
-                            radial-gradient(circle at 80% 20%, var(--accent) 0%, transparent 50%),
-                            radial-gradient(circle at 40% 40%, var(--secondary) 0%, transparent 50%),
-                            var(--background)
-                          `,
-                        }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Bubble Blend
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          Multiple overlapping circles
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Blur & Filter Effects */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Filter & Transform Effects</CardTitle>
-                  <CardDescription>
-                    Advanced visual filters and transformations
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Backdrop Blur Variations */}
-                    <Card className="relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/60 via-accent/40 to-secondary/50" />
-                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-primary/20 to-accent/30" />
-                      <img
-                        src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop&auto=format"
-                        alt="Mountain landscape"
-                        className="absolute inset-0 w-full h-full object-cover opacity-60"
-                      />
-                      <div className="relative backdrop-blur-sm bg-background/70 border border-white/20 p-4 m-2 rounded-lg">
-                        <CardTitle className="text-sm mb-1">
-                          Light Glass
-                        </CardTitle>
-                        <p className="text-xs text-muted-foreground">
-                          backdrop-blur-sm + border
-                        </p>
-                      </div>
-                    </Card>
-
-                    <Card className="relative overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=300&fit=crop&auto=format"
-                        alt="Abstract colors"
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                      <div className="relative backdrop-blur-md bg-card/40 border border-primary/30 p-4 m-2 rounded-xl shadow-lg">
-                        <CardTitle className="text-sm mb-1">
-                          Heavy Glass
-                        </CardTitle>
-                        <p className="text-xs text-muted-foreground">
-                          backdrop-blur-md + shadow
-                        </p>
-                      </div>
-                    </Card>
-
-                    <Card className="relative overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400&h=300&fit=crop&auto=format"
-                        alt="Gradient mesh"
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                      <div className="relative backdrop-blur-lg bg-background/90 p-4 m-2 rounded-lg backdrop-saturate-150">
-                        <CardTitle className="text-sm mb-1">
-                          Frosted Glass
-                        </CardTitle>
-                        <p className="text-xs text-muted-foreground">
-                          blur-lg + saturate
-                        </p>
-                      </div>
-                    </Card>
-
-                    {/* Color Filters */}
-                    <Card className="overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=300&fit=crop&auto=format"
-                        alt="Colorful abstract"
-                        className="h-24 w-full object-cover saturate-150 contrast-125"
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          High Saturation
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          saturate-150 + contrast-125
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=400&h=300&fit=crop&auto=format"
-                        alt="Vibrant colors"
-                        className="h-24 w-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Grayscale Hover
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          grayscale + hover transition
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=400&h=300&fit=crop&auto=format"
-                        alt="Nature scene"
-                        className="h-24 w-full object-cover sepia-0 hover:sepia transition-all duration-300"
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Sepia Effect
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          sepia filter on hover
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Transform Effects */}
-                    <Card className="overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1561336313-0bd5e0b27ec8?w=400&h=300&fit=crop&auto=format"
-                        alt="Geometric shapes"
-                        className="h-24 w-full object-cover hover:scale-110 transition-transform duration-300"
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Scale Transform
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          hover:scale-110
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop&auto=format"
-                        alt="Abstract patterns"
-                        className="h-24 w-full object-cover hover:rotate-3 hover:skew-x-3 transition-transform duration-500"
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Skew & Rotate
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          rotate + skew transforms
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden perspective-1000">
-                      <img
-                        src="https://images.unsplash.com/photo-1506729623306-b5a934d88b53?w=400&h=300&fit=crop&auto=format"
-                        alt="3D perspective"
-                        className="h-24 w-full object-cover hover:rotate-y-12 transition-transform duration-700 transform-gpu"
-                        style={{ transformStyle: "preserve-3d" }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">3D Rotate</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          3D perspective rotation
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Animated Effects */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Animated Effects</CardTitle>
-                  <CardDescription>
-                    CSS animations with theme colors
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24 animate-pulse"
-                        style={{
-                          background: `linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.3), hsl(var(--primary)))`,
-                        }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Pulse Effect
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          animate-pulse
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <div className="h-24 animate-bounce bg-gradient-to-r from-accent to-secondary" />
-                      <CardHeader>
-                        <CardTitle className="text-base">
-                          Bounce Effect
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          animate-bounce
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="overflow-hidden">
-                      <div
-                        className="h-24 animate-spin bg-gradient-to-r from-primary via-accent to-secondary"
-                        style={{ borderRadius: "50%" }}
-                      />
-                      <CardHeader>
-                        <CardTitle className="text-base">Spin Effect</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          animate-spin
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* States Tab */}
-            <TabsContent value="states" className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Interactive States</CardTitle>
-                  <CardDescription>
-                    Component states using real shadcn/ui interactions
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  {/* Button States */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Button States</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <Button className="w-full">Default</Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          Normal state
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button className="w-full hover:bg-primary/90">
-                          Hover
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          hover:bg-primary/90
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button className="w-full active:scale-95">
-                          Active
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          active:scale-95
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Button className="w-full" disabled>
-                          Disabled
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          disabled
-                        </p>
-                      </div>
+          <TabsContent value="components" className="space-y-4 mt-4">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Buttons
+                </CardTitle>
+                <CardDescription>Button variants and states</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Variants</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <div className="space-y-1">
+                      <Button className="w-full">Default</Button>
+                      <p className="text-xs text-muted-foreground text-center">
+                        variant="default"
+                      </p>
                     </div>
-                  </div>
-
-                  {/* Input States */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Input States</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Default State</Label>
-                          <Input placeholder="Default input" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-primary">Focus State</Label>
-                          <Input
-                            placeholder="Focus state"
-                            className="ring-2 ring-ring ring-offset-2"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-destructive">
-                            Error State
-                          </Label>
-                          <Input
-                            placeholder="Error state"
-                            className="border-destructive focus-visible:ring-destructive"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label className="text-green-600">
-                            Success State
-                          </Label>
-                          <Input
-                            placeholder="Success state"
-                            className="border-green-500 focus-visible:ring-green-500"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Disabled State</Label>
-                          <Input placeholder="Disabled input" disabled />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Loading State</Label>
-                          <div className="relative">
-                            <Input placeholder="Loading..." className="pr-10" />
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="space-y-1">
+                      <Button variant="destructive" className="w-full">
+                        Destructive
+                      </Button>
+                      <p className="text-xs text-muted-foreground text-center">
+                        variant="destructive"
+                      </p>
                     </div>
-                  </div>
-
-                  {/* Card States */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Card States</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Default Card</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-muted-foreground">
-                            Standard card styling
-                          </p>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                        <CardHeader>
-                          <CardTitle>Hoverable Card</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-muted-foreground">
-                            hover:shadow-lg transition-shadow
-                          </p>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="border-primary bg-primary/5">
-                        <CardHeader>
-                          <CardTitle className="text-primary">
-                            Selected Card
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-muted-foreground">
-                            border-primary bg-primary/5
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-
-                  {/* Badge States */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Badge States</h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>Default</Badge>
-                      <Badge className="hover:bg-primary/80 cursor-pointer">
-                        Hoverable
-                      </Badge>
-                      <Badge variant="secondary">Secondary</Badge>
-                      <Badge variant="outline">Outline</Badge>
-                      <Badge variant="destructive">Destructive</Badge>
-                      <Badge className="opacity-50 pointer-events-none">
-                        Disabled
-                      </Badge>
-                    </div>
-                  </div>
-
-                  {/* Toggle States */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Toggle States</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <h4 className="font-medium">Switch States</h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center space-x-2">
-                            <Switch id="switch-off" />
-                            <Label htmlFor="switch-off">Off State</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Switch id="switch-on" defaultChecked />
-                            <Label htmlFor="switch-on">On State</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Switch id="switch-disabled" disabled />
-                            <Label
-                              htmlFor="switch-disabled"
-                              className="text-muted-foreground"
-                            >
-                              Disabled
-                            </Label>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <h4 className="font-medium">Checkbox States</h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="checkbox-unchecked" />
-                            <Label htmlFor="checkbox-unchecked">
-                              Unchecked
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="checkbox-checked" defaultChecked />
-                            <Label htmlFor="checkbox-checked">Checked</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="checkbox-disabled" disabled />
-                            <Label
-                              htmlFor="checkbox-disabled"
-                              className="text-muted-foreground"
-                            >
-                              Disabled
-                            </Label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Toggles Tab */}
-            <TabsContent value="toggles" className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Switches</CardTitle>
-                    <CardDescription>Toggle switches</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Switch id="switch-1" defaultChecked />
-                      <Label htmlFor="switch-1">Enabled</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="switch-2" />
-                      <Label htmlFor="switch-2">Disabled</Label>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Checkboxes</CardTitle>
-                    <CardDescription>Checkbox controls</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="checkbox-1" defaultChecked />
-                      <Label htmlFor="checkbox-1">Checked</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="checkbox-2" />
-                      <Label htmlFor="checkbox-2">Unchecked</Label>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            {/* Tags Tab */}
-            <TabsContent value="tags" className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Badge Components</CardTitle>
-                  <CardDescription>
-                    Various badge and tag styles using shadcn/ui variants
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Badge Variants</h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>Default</Badge>
-                      <Badge variant="secondary">Secondary</Badge>
-                      <Badge variant="destructive">Destructive</Badge>
-                      <Badge variant="outline">Outline</Badge>
-                    </div>
-                    <div className="text-xs font-mono text-muted-foreground space-y-1">
-                      <div>
-                        variant="default" | variant="secondary" |
-                        variant="destructive" | variant="outline"
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Status Examples</h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-green-500 text-white">Active</Badge>
-                      <Badge className="bg-yellow-500 text-black">
-                        Pending
-                      </Badge>
-                      <Badge variant="destructive">Error</Badge>
-                      <Badge variant="outline">Draft</Badge>
-                      <Badge className="bg-blue-500 text-white">
-                        In Progress
-                      </Badge>
-                      <Badge className="bg-purple-500 text-white">Review</Badge>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Category Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "Design",
-                        "Development",
-                        "Marketing",
-                        "Sales",
-                        "Support",
-                      ].map((tag, i) => (
-                        <Badge key={i} variant="secondary">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Interactive Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge className="cursor-pointer hover:bg-primary/80">
-                        Clickable
-                      </Badge>
-                      <Badge
+                    <div className="space-y-1">
+                      <Button variant="outline" className="w-full">
+                        Outline
+                      </Button>
+                      <p className="text-xs text-muted-foreground text-center">
                         variant="outline"
-                        className="cursor-pointer hover:bg-accent"
-                      >
-                        Hoverable
-                      </Badge>
-                      <Badge
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <Button variant="secondary" className="w-full">
+                        Secondary
+                      </Button>
+                      <p className="text-xs text-muted-foreground text-center">
                         variant="secondary"
-                        className="cursor-pointer hover:bg-secondary/80"
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <Button variant="ghost" className="w-full">
+                        Ghost
+                      </Button>
+                      <p className="text-xs text-muted-foreground text-center">
+                        variant="ghost"
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <Button variant="link" className="w-full">
+                        Link
+                      </Button>
+                      <p className="text-xs text-muted-foreground text-center">
+                        variant="link"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Sizes</h3>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="space-y-1 text-center">
+                      <Button size="sm">Small</Button>
+                      <p className="text-xs text-muted-foreground">size="sm"</p>
+                    </div>
+                    <div className="space-y-1 text-center">
+                      <Button>Default</Button>
+                      <p className="text-xs text-muted-foreground">
+                        size="default"
+                      </p>
+                    </div>
+                    <div className="space-y-1 text-center">
+                      <Button size="lg">Large</Button>
+                      <p className="text-xs text-muted-foreground">size="lg"</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">States</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <Button className="w-full">Normal</Button>
+                    <Button className="w-full" disabled>
+                      Disabled
+                    </Button>
+                    <Button className="w-full" variant="outline" disabled>
+                      Disabled Outline
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">Cards</CardTitle>
+                <CardDescription>Card layouts and variations</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Basic Cards</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <Card>
+                      <CardHeader className="p-3">
+                        <CardTitle className="text-sm">Simple Card</CardTitle>
+                        <CardDescription className="text-xs">
+                          Basic card with header
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-3">
+                        <p className="text-xs text-muted-foreground">
+                          Standard card styling
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-muted">
+                      <CardHeader className="p-3">
+                        <CardTitle className="text-sm">Muted Card</CardTitle>
+                        <CardDescription className="text-xs">
+                          Card with muted background
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-3">
+                        <p className="text-xs text-muted-foreground">
+                          Uses bg-muted
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Interactive Cards</h3>
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader className="p-3">
+                      <CardTitle className="text-sm">Hoverable Card</CardTitle>
+                      <CardDescription className="text-xs">
+                        Card with hover effects
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-3">
+                      <div className="flex gap-2">
+                        <Button size="sm">Action</Button>
+                        <Button variant="outline" size="sm">
+                          Cancel
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Badges & Tags
+                </CardTitle>
+                <CardDescription>
+                  Badge variants and status tags
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Badge Variants</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge>Default</Badge>
+                    <Badge variant="secondary">Secondary</Badge>
+                    <Badge variant="destructive">Destructive</Badge>
+                    <Badge variant="outline">Outline</Badge>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Status Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge className="bg-green-500 text-white">Active</Badge>
+                    <Badge className="bg-yellow-500 text-black">Pending</Badge>
+                    <Badge variant="destructive">Error</Badge>
+                    <Badge variant="outline">Draft</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">Tabs</CardTitle>
+                <CardDescription>Tab navigation patterns</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Basic Tabs</h3>
+                  <Tabs value={demoTab} onValueChange={setDemoTab}>
+                    <TabsList>
+                      <TabsTrigger value="tab1">Overview</TabsTrigger>
+                      <TabsTrigger value="tab2">Analytics</TabsTrigger>
+                      <TabsTrigger value="tab3">Settings</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="tab1" className="mt-3">
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">
+                          Overview tab content
+                        </p>
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="tab2" className="mt-3">
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">
+                          Analytics tab content
+                        </p>
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="tab3" className="mt-3">
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">
+                          Settings tab content
+                        </p>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Full Width Tabs</h3>
+                  <Tabs defaultValue="account">
+                    <TabsList className="grid w-full grid-cols-3">
+                      <TabsTrigger value="account">Account</TabsTrigger>
+                      <TabsTrigger value="password">Password</TabsTrigger>
+                      <TabsTrigger value="notifications">
+                        Notifications
+                      </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="account" className="mt-3">
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">
+                          Account settings
+                        </p>
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="password" className="mt-3">
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">
+                          Password settings
+                        </p>
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="notifications" className="mt-3">
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground">
+                          Notification preferences
+                        </p>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="forms" className="space-y-4 mt-4">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Inputs
+                </CardTitle>
+                <CardDescription>Text inputs and form controls</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Text Inputs</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="input-default">Default Input</Label>
+                      <Input id="input-default" placeholder="Enter text..." />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="input-disabled">Disabled Input</Label>
+                      <Input
+                        id="input-disabled"
+                        placeholder="Disabled"
+                        disabled
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="input-email">Email Input</Label>
+                      <Input
+                        id="input-email"
+                        type="email"
+                        placeholder="email@example.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="input-password">Password Input</Label>
+                      <Input
+                        id="input-password"
+                        type="password"
+                        placeholder="Password"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Textarea & Select</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="textarea-basic">Textarea</Label>
+                      <Textarea
+                        id="textarea-basic"
+                        placeholder="Enter message..."
+                        rows={3}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="select-basic">Select</Label>
+                      <Select>
+                        <SelectTrigger id="select-basic">
+                          <SelectValue placeholder="Choose option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="option1">Option 1</SelectItem>
+                          <SelectItem value="option2">Option 2</SelectItem>
+                          <SelectItem value="option3">Option 3</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Fields
+                </CardTitle>
+                <CardDescription>Field components with labels</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Basic Fields</h3>
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel htmlFor="field-name">Full Name</FieldLabel>
+                      <FieldContent>
+                        <Input id="field-name" placeholder="Enter your name" />
+                        <FieldDescription>
+                          Displayed on your profile
+                        </FieldDescription>
+                      </FieldContent>
+                    </Field>
+
+                    <Field>
+                      <FieldLabel htmlFor="field-email">Email</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id="field-email"
+                          type="email"
+                          placeholder="you@example.com"
+                        />
+                        <FieldDescription>
+                          We'll never share your email
+                        </FieldDescription>
+                      </FieldContent>
+                    </Field>
+                  </FieldGroup>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Error State</h3>
+                  <Field data-invalid="true">
+                    <FieldLabel htmlFor="field-error">Username</FieldLabel>
+                    <FieldContent>
+                      <Input
+                        id="field-error"
+                        placeholder="Enter username"
+                        aria-invalid="true"
+                        className="border-destructive focus-visible:ring-destructive"
+                      />
+                      <FieldError>
+                        Username must be at least 3 characters
+                      </FieldError>
+                    </FieldContent>
+                  </Field>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Field Set</h3>
+                  <FieldSet>
+                    <FieldLegend>Personal Information</FieldLegend>
+                    <FieldGroup>
+                      <Field>
+                        <FieldLabel htmlFor="first-name">First Name</FieldLabel>
+                        <Input id="first-name" placeholder="John" />
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor="last-name">Last Name</FieldLabel>
+                        <Input id="last-name" placeholder="Doe" />
+                      </Field>
+                    </FieldGroup>
+                  </FieldSet>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Input Groups
+                </CardTitle>
+                <CardDescription>Input groups with addons</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">With Addons</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Search</Label>
+                      <InputGroup>
+                        <InputGroupAddon align="inline-start">
+                          <svg
+                            className="size-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                          </svg>
+                        </InputGroupAddon>
+                        <InputGroupInput placeholder="Search..." />
+                      </InputGroup>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>URL</Label>
+                      <InputGroup>
+                        <InputGroupAddon align="inline-start">
+                          <InputGroupText>https://</InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput placeholder="example.com" />
+                      </InputGroup>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Amount</Label>
+                      <InputGroup>
+                        <InputGroupAddon align="inline-start">
+                          <InputGroupText>$</InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput type="number" placeholder="0.00" />
+                        <InputGroupAddon align="inline-end">
+                          <InputGroupText>USD</InputGroupText>
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>With Button</Label>
+                      <InputGroup>
+                        <InputGroupInput placeholder="Enter email..." />
+                        <InputGroupAddon align="inline-end">
+                          <InputGroupButton>Subscribe</InputGroupButton>
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Button Groups
+                </CardTitle>
+                <CardDescription>Grouped button layouts</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Horizontal</h3>
+                  <ButtonGroup>
+                    <Button variant="outline">Left</Button>
+                    <Button variant="outline">Middle</Button>
+                    <Button variant="outline">Right</Button>
+                  </ButtonGroup>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">With Separator</h3>
+                  <ButtonGroup>
+                    <Button variant="outline">Copy</Button>
+                    <ButtonGroupSeparator />
+                    <Button variant="outline">Cut</Button>
+                    <ButtonGroupSeparator />
+                    <Button variant="outline">Paste</Button>
+                  </ButtonGroup>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Mixed Elements</h3>
+                  <ButtonGroup>
+                    <Button variant="outline">Action</Button>
+                    <ButtonGroupText>or</ButtonGroupText>
+                    <Button variant="outline">Alternative</Button>
+                  </ButtonGroup>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Toggles, Switches & Checkboxes
+                </CardTitle>
+                <CardDescription>Toggle controls and states</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Switches</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Switch id="switch-on" defaultChecked />
+                      <Label htmlFor="switch-on">Enabled</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch id="switch-off" />
+                      <Label htmlFor="switch-off">Disabled</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch id="switch-disabled" disabled />
+                      <Label
+                        htmlFor="switch-disabled"
+                        className="text-muted-foreground"
                       >
-                        Interactive
-                      </Badge>
+                        Disabled State
+                      </Label>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
 
-            {/* Tabs Tab */}
-            <TabsContent value="tabs" className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Tab Navigation</CardTitle>
-                  <CardDescription>
-                    Real shadcn/ui tab component variations and layouts
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  {/* Basic Tabs */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Basic Tabs</h3>
-                    <Tabs value={demoTab} onValueChange={setDemoTab}>
-                      <TabsList>
-                        <TabsTrigger value="tab1">Overview</TabsTrigger>
-                        <TabsTrigger value="tab2">Analytics</TabsTrigger>
-                        <TabsTrigger value="tab3">Settings</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="tab1" className="mt-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Overview</CardTitle>
-                            <CardDescription>
-                              General information and summary
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-muted-foreground">
-                              This is the overview tab content. It shows a
-                              general summary of the information.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      <TabsContent value="tab2" className="mt-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Analytics</CardTitle>
-                            <CardDescription>
-                              Detailed metrics and statistics
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-muted-foreground">
-                              Analytics content with detailed metrics, charts,
-                              and performance data would be displayed here.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      <TabsContent value="tab3" className="mt-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Settings</CardTitle>
-                            <CardDescription>
-                              Configuration options
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-muted-foreground">
-                              Settings and configuration options for customizing
-                              the application behavior.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                    </Tabs>
-                  </div>
+                <Separator />
 
-                  {/* Full Width Tabs */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Full Width Tabs</h3>
-                    <Tabs defaultValue="account">
-                      <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="account">Account</TabsTrigger>
-                        <TabsTrigger value="password">Password</TabsTrigger>
-                        <TabsTrigger value="notifications">
-                          Notifications
-                        </TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="account" className="mt-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Account Settings</CardTitle>
-                            <CardDescription>
-                              Manage your account information
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="name">Name</Label>
-                              <Input id="name" placeholder="Your name" />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="email">Email</Label>
-                              <Input
-                                id="email"
-                                type="email"
-                                placeholder="your@email.com"
-                              />
-                            </div>
-                            <Button>Save Changes</Button>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      <TabsContent value="password" className="mt-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Password Settings</CardTitle>
-                            <CardDescription>
-                              Change your password
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="current">Current Password</Label>
-                              <Input id="current" type="password" />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="new">New Password</Label>
-                              <Input id="new" type="password" />
-                            </div>
-                            <Button>Update Password</Button>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      <TabsContent value="notifications" className="mt-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Notification Preferences</CardTitle>
-                            <CardDescription>
-                              Configure how you receive notifications
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div className="flex items-center space-x-2">
-                              <Switch id="email-notifications" />
-                              <Label htmlFor="email-notifications">
-                                Email notifications
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Switch id="push-notifications" defaultChecked />
-                              <Label htmlFor="push-notifications">
-                                Push notifications
-                              </Label>
-                            </div>
-                            <Button>Save Preferences</Button>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                    </Tabs>
-                  </div>
-
-                  {/* Vertical Tabs */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Custom Tab Layouts</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Pill Style Tabs */}
-                      <div className="space-y-4">
-                        <h4 className="font-medium">Pill Style</h4>
-                        <Tabs defaultValue="profile">
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger
-                              value="profile"
-                              className="rounded-full"
-                            >
-                              Profile
-                            </TabsTrigger>
-                            <TabsTrigger
-                              value="billing"
-                              className="rounded-full"
-                            >
-                              Billing
-                            </TabsTrigger>
-                          </TabsList>
-                          <TabsContent value="profile" className="mt-4">
-                            <div className="p-4 bg-muted rounded-lg">
-                              <p className="text-sm text-muted-foreground">
-                                Profile information and settings
-                              </p>
-                            </div>
-                          </TabsContent>
-                          <TabsContent value="billing" className="mt-4">
-                            <div className="p-4 bg-muted rounded-lg">
-                              <p className="text-sm text-muted-foreground">
-                                Billing and subscription details
-                              </p>
-                            </div>
-                          </TabsContent>
-                        </Tabs>
-                      </div>
-
-                      {/* Compact Tabs */}
-                      <div className="space-y-4">
-                        <h4 className="font-medium">Compact Size</h4>
-                        <Tabs defaultValue="dashboard">
-                          <TabsList className="h-8">
-                            <TabsTrigger
-                              value="dashboard"
-                              className="text-xs h-6"
-                            >
-                              Dashboard
-                            </TabsTrigger>
-                            <TabsTrigger
-                              value="reports"
-                              className="text-xs h-6"
-                            >
-                              Reports
-                            </TabsTrigger>
-                            <TabsTrigger value="users" className="text-xs h-6">
-                              Users
-                            </TabsTrigger>
-                          </TabsList>
-                          <TabsContent value="dashboard" className="mt-4">
-                            <div className="p-4 bg-muted rounded-lg">
-                              <p className="text-sm text-muted-foreground">
-                                Dashboard overview
-                              </p>
-                            </div>
-                          </TabsContent>
-                          <TabsContent value="reports" className="mt-4">
-                            <div className="p-4 bg-muted rounded-lg">
-                              <p className="text-sm text-muted-foreground">
-                                Reports and analytics
-                              </p>
-                            </div>
-                          </TabsContent>
-                          <TabsContent value="users" className="mt-4">
-                            <div className="p-4 bg-muted rounded-lg">
-                              <p className="text-sm text-muted-foreground">
-                                User management
-                              </p>
-                            </div>
-                          </TabsContent>
-                        </Tabs>
-                      </div>
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Checkboxes</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="checkbox-checked" defaultChecked />
+                      <Label htmlFor="checkbox-checked">Checked</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="checkbox-unchecked" />
+                      <Label htmlFor="checkbox-unchecked">Unchecked</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="checkbox-disabled" disabled />
+                      <Label
+                        htmlFor="checkbox-disabled"
+                        className="text-muted-foreground"
+                      >
+                        Disabled
+                      </Label>
                     </div>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                  {/* Tab with Badges */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Tabs with Badges</h3>
-                    <Tabs defaultValue="inbox">
-                      <TabsList>
-                        <TabsTrigger value="inbox" className="gap-2">
-                          Inbox
-                          <Badge variant="destructive" className="text-xs">
-                            5
-                          </Badge>
-                        </TabsTrigger>
-                        <TabsTrigger value="sent" className="gap-2">
-                          Sent
-                          <Badge variant="secondary" className="text-xs">
-                            12
-                          </Badge>
-                        </TabsTrigger>
-                        <TabsTrigger value="drafts">Drafts</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="inbox" className="mt-4">
-                        <Card>
-                          <CardContent className="p-4">
-                            <p className="text-muted-foreground">
-                              You have 5 new messages in your inbox.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      <TabsContent value="sent" className="mt-4">
-                        <Card>
-                          <CardContent className="p-4">
-                            <p className="text-muted-foreground">
-                              12 messages have been sent.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      <TabsContent value="drafts" className="mt-4">
-                        <Card>
-                          <CardContent className="p-4">
-                            <p className="text-muted-foreground">
-                              No draft messages.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                    </Tabs>
+          <TabsContent value="data" className="space-y-4 mt-4">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  List Items
+                </CardTitle>
+                <CardDescription>Item components for lists</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Basic Items</h3>
+                  <ItemGroup>
+                    <Item>
+                      <ItemMedia variant="icon">
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                          />
+                        </svg>
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>Documents</ItemTitle>
+                        <ItemDescription>
+                          All your important documents
+                        </ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <Badge variant="secondary">24 files</Badge>
+                      </ItemActions>
+                    </Item>
+
+                    <ItemSeparator />
+
+                    <Item>
+                      <ItemMedia variant="icon">
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>Images</ItemTitle>
+                        <ItemDescription>Photos and graphics</ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <Badge variant="secondary">156 files</Badge>
+                      </ItemActions>
+                    </Item>
+                  </ItemGroup>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Item Variants</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Outline</h4>
+                      <ItemGroup>
+                        <Item variant="outline">
+                          <ItemContent>
+                            <ItemTitle>Outlined Item</ItemTitle>
+                            <ItemDescription>With border</ItemDescription>
+                          </ItemContent>
+                        </Item>
+                      </ItemGroup>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Muted</h4>
+                      <ItemGroup>
+                        <Item variant="muted">
+                          <ItemContent>
+                            <ItemTitle>Muted Item</ItemTitle>
+                            <ItemDescription>With background</ItemDescription>
+                          </ItemContent>
+                        </Item>
+                      </ItemGroup>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </ScrollArea>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">With Actions</h3>
+                  <ItemGroup>
+                    <Item variant="outline">
+                      <ItemMedia variant="icon">
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                          />
+                        </svg>
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>Team Members</ItemTitle>
+                        <ItemDescription>Manage your team</ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <Button size="sm" variant="ghost">
+                          View
+                        </Button>
+                        <Button size="sm">Manage</Button>
+                      </ItemActions>
+                    </Item>
+                  </ItemGroup>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">
+                    With Header & Footer
+                  </h3>
+                  <Item variant="outline">
+                    <ItemHeader>
+                      <ItemTitle>Project Alpha</ItemTitle>
+                      <Badge variant="secondary">Active</Badge>
+                    </ItemHeader>
+                    <ItemContent>
+                      <ItemDescription>
+                        A comprehensive redesign with new features
+                      </ItemDescription>
+                    </ItemContent>
+                    <ItemFooter>
+                      <span className="text-xs text-muted-foreground">
+                        Updated 2 hours ago
+                      </span>
+                      <ButtonGroup>
+                        <Button size="sm" variant="ghost">
+                          Share
+                        </Button>
+                        <Button size="sm">Open</Button>
+                      </ButtonGroup>
+                    </ItemFooter>
+                  </Item>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Compact Size</h3>
+                  <ItemGroup>
+                    <Item size="sm" variant="outline">
+                      <ItemMedia variant="icon">
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>Annual Report.pdf</ItemTitle>
+                        <ItemDescription>2.4 MB</ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <Button size="sm" variant="ghost">
+                          Download
+                        </Button>
+                      </ItemActions>
+                    </Item>
+                  </ItemGroup>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="feedback" className="space-y-4 mt-4">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Empty States
+                </CardTitle>
+                <CardDescription>Empty state components</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Basic Empty State</h3>
+                  <Empty className="border">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                          />
+                        </svg>
+                      </EmptyMedia>
+                      <EmptyTitle>No items found</EmptyTitle>
+                      <EmptyDescription>
+                        Get started by creating your first item
+                      </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <Button>Create Item</Button>
+                    </EmptyContent>
+                  </Empty>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Scenarios</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <Empty className="border">
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <svg
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                            />
+                          </svg>
+                        </EmptyMedia>
+                        <EmptyTitle>No files</EmptyTitle>
+                        <EmptyDescription>
+                          Upload your first file
+                        </EmptyDescription>
+                      </EmptyHeader>
+                      <EmptyContent>
+                        <Button>Upload</Button>
+                      </EmptyContent>
+                    </Empty>
+
+                    <Empty className="border">
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <svg
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </EmptyMedia>
+                        <EmptyTitle>No messages</EmptyTitle>
+                        <EmptyDescription>Your inbox is empty</EmptyDescription>
+                      </EmptyHeader>
+                      <EmptyContent>
+                        <Button>Compose</Button>
+                      </EmptyContent>
+                    </Empty>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Multiple Actions</h3>
+                  <Empty className="border">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                      </EmptyMedia>
+                      <EmptyTitle>No projects</EmptyTitle>
+                      <EmptyDescription>
+                        Create a new project or import one
+                      </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <div className="flex flex-col gap-2 w-full">
+                        <Button className="w-full">Create Project</Button>
+                        <Button variant="outline" className="w-full">
+                          Browse Templates
+                        </Button>
+                      </div>
+                    </EmptyContent>
+                  </Empty>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Loading States
+                </CardTitle>
+                <CardDescription>Loading indicators</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Spinner</h3>
+                  <div className="flex items-center gap-3">
+                    <Spinner className="size-4" />
+                    <Spinner className="size-6" />
+                    <Spinner className="size-8" />
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">
+                    Loading Empty State
+                  </h3>
+                  <Empty className="border">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <Spinner className="size-6" />
+                      </EmptyMedia>
+                      <EmptyTitle>Loading content...</EmptyTitle>
+                      <EmptyDescription>
+                        Please wait while we fetch your data
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Input Loading</h3>
+                  <div className="relative">
+                    <Input placeholder="Loading..." className="pr-10" />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <Spinner className="size-4" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">
+                  Alerts
+                </CardTitle>
+                <CardDescription>Alert messages and states</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Basic Alert</h3>
+                  <Alert>
+                    <AlertDescription>
+                      This is a standard alert message for information
+                    </AlertDescription>
+                  </Alert>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Error State</h3>
+                  <Empty className="border">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          className="text-destructive"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          />
+                        </svg>
+                      </EmptyMedia>
+                      <EmptyTitle className="text-destructive">
+                        Something went wrong
+                      </EmptyTitle>
+                      <EmptyDescription>
+                        We encountered an error. Please try again.
+                      </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <ButtonGroup>
+                        <Button variant="outline">Go Back</Button>
+                        <Button>Retry</Button>
+                      </ButtonGroup>
+                    </EmptyContent>
+                  </Empty>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h3 className="text-base font-semibold">Input Validation</h3>
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <Label className="text-destructive">Error State</Label>
+                      <Input
+                        placeholder="Invalid input"
+                        className="border-destructive focus-visible:ring-destructive"
+                      />
+                      <p className="text-xs text-destructive">
+                        This field has an error
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-green-600">Success State</Label>
+                      <Input
+                        placeholder="Valid input"
+                        className="border-green-500 focus-visible:ring-green-500"
+                      />
+                      <p className="text-xs text-green-600">
+                        Validation passed
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

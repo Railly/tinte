@@ -5,7 +5,6 @@ import { BrandGolang } from "@/components/shared/icons/golang";
 import { Javascript } from "@/components/shared/icons/javascript";
 import { Python } from "@/components/shared/icons/python";
 import { Typescript } from "@/components/shared/icons/typescript";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,

@@ -151,8 +151,8 @@ export const brandGuidelinesProvider: PreviewableProvider<BrandGuidelinesOutput>
         },
         typography: {
           primary: {
-            name: "Inter",
-            family: "Inter, system-ui, sans-serif",
+            name: "Geist Sans",
+            family: "var(--font-geist-sans), system-ui, sans-serif",
             weights: ["400", "500", "600", "700"],
             sample:
               "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n1234567890!@#$%^&*()",
