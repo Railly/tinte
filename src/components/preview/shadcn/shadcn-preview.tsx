@@ -1,3 +1,6 @@
+"use client";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardsActivityGoal } from "./demos/activity-goal";
 import { CardsCalendar } from "./demos/calendar";
 import { CardsCookieSettings } from "./demos/cookie-settings";
@@ -7,8 +10,9 @@ import { CardsPayments } from "./demos/payments";
 import { CardsShare } from "./demos/share";
 import { CardsStats } from "./demos/stats";
 import { CardsTeamMembers } from "./demos/team-members";
+import { NewComponentsPreview } from "./new-components-preview";
 
-export function ShadcnPreview() {
+function ClassicPreview() {
   return (
     <div className="font-sans h-full md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-13">
       <div className="h-full grid gap-4 lg:col-span-4 xl:col-span-6">
@@ -42,5 +46,22 @@ export function ShadcnPreview() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function ShadcnPreview() {
+  return (
+    <Tabs defaultValue="classic" className="w-full h-full">
+      <TabsList className="mb-4">
+        <TabsTrigger value="classic">Classic</TabsTrigger>
+        <TabsTrigger value="new">New Components</TabsTrigger>
+      </TabsList>
+      <TabsContent value="classic" className="h-full">
+        <ClassicPreview />
+      </TabsContent>
+      <TabsContent value="new" className="h-full">
+        <NewComponentsPreview />
+      </TabsContent>
+    </Tabs>
   );
 }
