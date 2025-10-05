@@ -333,6 +333,11 @@ export function WorkbenchToolbar({
 
         selectTheme(updatedSavedTheme);
         toast.success(`"${name}" imported and saved successfully!`);
+
+        // Navigate to the new theme's URL
+        if (result.savedTheme.slug) {
+          router.replace(`/workbench/${result.savedTheme.slug}`);
+        }
       } else {
         toast.error("Failed to save imported theme");
       }
