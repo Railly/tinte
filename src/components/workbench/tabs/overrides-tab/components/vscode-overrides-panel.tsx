@@ -701,19 +701,27 @@ export function VSCodeOverridesPanel({
   const [activeTab, setActiveTab] = React.useState("tokens");
   const [openTokenGroups, setOpenTokenGroups] = React.useState<
     Record<string, boolean>
-  >(() =>
-    Object.keys(createInitialVSCodeTokenGroups()).reduce(
-      (acc, key) => ({ ...acc, [key]: false }),
-      {},
-    ),
-  );
+  >(() => {
+    const groups: Record<string, boolean> = {};
+    for (const key of Object.keys(createInitialVSCodeTokenGroups())) {
+      groups[key] = false;
+    }
+    return groups;
+  });
   const [openEditorGroups, setOpenEditorGroups] = React.useState<
     Record<string, boolean>
-  >(
-    EDITOR_COLOR_GROUPS.reduce(
-      (acc, group) => ({ ...acc, [group.label]: false }),
-      {},
-    ),
+  >(() => {
+    const groups: Record<string, boolean> = {};
+    for (const group of EDITOR_COLOR_GROUPS) {
+      groups[group.label] = false;
+    }
+    return groups;
+  });
+
+  // Force re-render when overrides change
+  const overridesVersion = React.useMemo(
+    () => JSON.stringify(vscodeOverrides.overrides),
+    [vscodeOverrides.overrides],
   );
 
   // Determine if we should show skeletons or real data
@@ -797,8 +805,7 @@ export function VSCodeOverridesPanel({
   };
 
   const handleEditorColorChange = (colorKey: string, value: string) => {
-    // TODO: Implement editor color override functionality
-    console.log("Editor color change:", colorKey, value);
+    vscodeOverrides.setOverride(colorKey as SemanticToken, value);
   };
 
   const toggleTokenGroup = (groupName: string) => {
@@ -869,21 +876,21 @@ export function VSCodeOverridesPanel({
       const mappedKey = defaultTokenColorMap[tokenKey];
       return currentColors?.[mappedKey];
     },
-    [
-      vscodeOverrides.overrides,
-      vscodeOverrides.hasOverride,
-      vscodeOverrides.getValue,
-      currentColors,
-    ],
+    [vscodeOverrides.overrides, currentColors],
   );
 
   // Get editor color value from theme using the imported editorColorMap
-  const getEditorColorValue = (colorKey: string): string | undefined => {
-    // TODO: Check for editor color overrides first
-    // For now, return from current theme colors using the imported editorColorMap
-    const mappedKey = editorColorMap[colorKey as keyof typeof editorColorMap];
-    return currentColors?.[mappedKey];
-  };
+  const getEditorColorValue = React.useCallback(
+    (colorKey: string): string | undefined => {
+      if (vscodeOverrides.hasOverride(colorKey as SemanticToken)) {
+        return vscodeOverrides.getValue(colorKey as SemanticToken);
+      }
+
+      const mappedKey = editorColorMap[colorKey as keyof typeof editorColorMap];
+      return currentColors?.[mappedKey];
+    },
+    [vscodeOverrides.overrides, currentColors],
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -962,23 +969,20 @@ export function VSCodeOverridesPanel({
                   />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="border border-t-0 border-border rounded-b-md bg-muted/20">
-                  <div className="p-3 space-y-3">
+                  <div className="p-3 space-y-3" key={overridesVersion}>
                     <p className="text-xs text-muted-foreground mb-3">
                       {group.description}
                     </p>
-                    {group.tokens.map((token) => {
-                      const tokenValue = getTokenValue(token.key);
-                      return (
-                        <VSCodeTokenInput
-                          key={`${token.key}-${tokenValue}`}
-                          tokenKey={token.key}
-                          value={tokenValue}
-                          onChange={handleTokenChange}
-                          displayName={token.displayName}
-                          description={token.description}
-                        />
-                      );
-                    })}
+                    {group.tokens.map((token) => (
+                      <VSCodeTokenInput
+                        key={token.key}
+                        tokenKey={token.key}
+                        value={getTokenValue(token.key)}
+                        onChange={handleTokenChange}
+                        displayName={token.displayName}
+                        description={token.description}
+                      />
+                    ))}
                   </div>
                 </CollapsibleContent>
               </Collapsible>
@@ -1019,7 +1023,7 @@ export function VSCodeOverridesPanel({
                   />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="border border-t-0 border-border rounded-b-md bg-muted/20">
-                  <div className="p-3 space-y-3">
+                  <div className="p-3 space-y-3" key={overridesVersion}>
                     <p className="text-xs text-muted-foreground mb-3">
                       {group.description}
                     </p>

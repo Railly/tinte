@@ -11,18 +11,33 @@ interface VSCodePreviewProps {
 }
 
 export function VSCodePreview({ theme, className }: VSCodePreviewProps) {
-  const { currentMode } = useThemeContext();
+  const { currentMode, vscodeOverride } = useThemeContext();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [themeVersion, setThemeVersion] = useState(0);
   const [currentThemeSet, setCurrentThemeSet] = useState(theme);
 
   useEffect(() => {
-    setCurrentThemeSet(theme);
-    setThemeVersion((prev) => {
-      const newVersion = prev + 1;
-      return newVersion;
-    });
-  }, [theme, currentMode]);
+    // Merge VSCode overrides with base theme
+    // VSCode overrides have structure: { light: {...}, dark: {...} }
+    const mergedTheme = {
+      light: {
+        ...theme.light,
+        colors: {
+          ...theme.light.colors,
+          ...((vscodeOverride as any)?.light || {}),
+        },
+      },
+      dark: {
+        ...theme.dark,
+        colors: {
+          ...theme.dark.colors,
+          ...((vscodeOverride as any)?.dark || {}),
+        },
+      },
+    };
+    setCurrentThemeSet(mergedTheme);
+    setThemeVersion((prev) => prev + 1);
+  }, [theme, currentMode, vscodeOverride]);
 
   const currentTemplate = useMemo(
     () => codeTemplates[selectedTemplate],
