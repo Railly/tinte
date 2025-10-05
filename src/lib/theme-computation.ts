@@ -3,6 +3,7 @@ import type { NormalizedOverrides, ProviderOverride } from "@/types/overrides";
 import { isPaletteColor } from "@/types/overrides";
 import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteTheme } from "@/types/tinte";
+import { buildFontFamily } from "@/utils/fonts";
 import { convertTheme } from "./providers";
 import { computeShadowVars } from "./providers/shadcn";
 import type { ThemeData } from "./theme-tokens";
@@ -120,9 +121,25 @@ function applyProviderOverride(
   }
 
   if (override.fonts) {
-    if (override.fonts.sans) tokens["font-sans"] = override.fonts.sans;
-    if (override.fonts.serif) tokens["font-serif"] = override.fonts.serif;
-    if (override.fonts.mono) tokens["font-mono"] = override.fonts.mono;
+    // Check if fonts already have fallbacks (e.g., "Inter, sans-serif")
+    // If they do, use as-is; if not, extract font name and build proper CSS value
+    const hasCommaOrFallback = (fontValue: string) => fontValue.includes(",");
+
+    if (override.fonts.sans) {
+      tokens["font-sans"] = hasCommaOrFallback(override.fonts.sans)
+        ? override.fonts.sans
+        : buildFontFamily(override.fonts.sans, "sans-serif");
+    }
+    if (override.fonts.serif) {
+      tokens["font-serif"] = hasCommaOrFallback(override.fonts.serif)
+        ? override.fonts.serif
+        : buildFontFamily(override.fonts.serif, "serif");
+    }
+    if (override.fonts.mono) {
+      tokens["font-mono"] = hasCommaOrFallback(override.fonts.mono)
+        ? override.fonts.mono
+        : buildFontFamily(override.fonts.mono, "monospace");
+    }
   }
 
   if (override.radius) {
