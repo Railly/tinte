@@ -96,6 +96,7 @@ export function WorkbenchToolbar({
     loadUserThemes,
     selectTheme,
     tinteTheme: theme,
+    userThemes,
   } = useThemeContext();
 
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
@@ -415,8 +416,13 @@ export function WorkbenchToolbar({
 
       toast.success("Theme deleted successfully");
 
-      // Redirect to workbench home to load next available theme
-      router.replace("/workbench");
+      // Redirect to first available theme after deletion
+      if (userThemes.length > 0) {
+        const nextTheme = userThemes[0];
+        router.replace(`/workbench/${nextTheme.slug}`);
+      } else {
+        router.replace("/workbench");
+      }
     } catch (error) {
       console.error("Error deleting theme:", error);
       throw error;
