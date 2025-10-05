@@ -96,6 +96,7 @@ export interface ThemeTransformOptions {
 export interface ProviderThemeData {
   id: string;
   slug?: string;
+  user_id?: string | null;
   name: string;
   description: string;
   concept?: string | null;

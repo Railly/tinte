@@ -443,10 +443,8 @@ export function WorkbenchToolbar({
     }
   };
 
-  // Check ownership
-  const isOwnTheme =
-    (user && activeTheme?.user?.id === user?.id) ||
-    (user && activeTheme?.author === "You");
+  // Check ownership - only check user_id
+  const isOwnTheme = user && activeTheme?.user_id === user?.id;
 
   // Check if it's a custom unsaved theme (modified someone else's theme)
   const isCustomUnsaved = activeTheme?.name === "Custom (unsaved)";

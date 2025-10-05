@@ -39,6 +39,7 @@ export function useThemeApplication() {
           toolResult.id ||
           `ai-generated-${Date.now()}`,
         slug: toolResult.slug,
+        user_id: toolResult.databaseTheme?.user_id, // Include user_id from database
         name: toolResult.title || "AI Generated Theme",
         description: `AI-generated theme: ${
           toolResult.concept || "Custom theme"
