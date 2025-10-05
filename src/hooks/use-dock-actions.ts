@@ -2,6 +2,7 @@ import { Copy, Download, Palette, Save, Terminal } from "lucide-react";
 import { useState } from "react";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import Logo from "@/components/shared/logo";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
 import { downloadVSCodeTheme } from "@/lib/download-vscode-theme";
 import { exportTheme } from "@/lib/providers";
@@ -149,8 +150,9 @@ export function useDockActions({
       const command = `npx shadcn@latest add ${registryUrl}`;
       await handleCopyCommand(command);
     } else if (providerId === "vscode") {
-      // Download VSIX file directly
-      await handleExport();
+      // Copy bunx tinte command
+      const command = `bunx tinte@latest ${themeId}`;
+      await handleCopyCommand(command);
     } else {
       await handleCopyTheme();
     }
@@ -184,9 +186,9 @@ export function useDockActions({
       };
     } else if (providerId === "vscode") {
       return {
-        label: "Download VSIX",
-        description: "Download VS Code extension file",
-        icon: VSCodeIcon,
+        label: "Copy Command",
+        description: `bunx tinte@latest ${themeId}`,
+        icon: Terminal,
         variant: "default" as const,
       };
     } else {

@@ -621,37 +621,72 @@ export function WorkbenchToolbar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[180px]">
-            <DropdownMenuItem
-              onClick={async () => {
-                await handleExport();
-                setCopiedAction("file");
-                setTimeout(() => setCopiedAction(null), 2000);
-              }}
-              className="relative overflow-hidden"
-            >
-              <div
-                className={cn(
-                  "flex items-center transition-all duration-300",
-                  copiedAction === "file"
-                    ? "opacity-0 scale-75 blur-sm"
-                    : "opacity-100 scale-100 blur-0",
-                )}
+            {currentProviderId === "vscode" && (
+              <DropdownMenuItem
+                onClick={async () => {
+                  await handleExport();
+                  setCopiedAction("file");
+                  setTimeout(() => setCopiedAction(null), 2000);
+                }}
+                className="relative overflow-hidden"
               >
-                <Download className="h-4 w-4 mr-2" />
-                Download File
-              </div>
-              <div
-                className={cn(
-                  "absolute inset-0 flex items-center px-2 transition-all duration-300",
-                  copiedAction === "file"
-                    ? "opacity-100 scale-100 blur-0"
-                    : "opacity-0 scale-75 blur-sm pointer-events-none",
-                )}
+                <div
+                  className={cn(
+                    "flex items-center transition-all duration-300",
+                    copiedAction === "file"
+                      ? "opacity-0 scale-75 blur-sm"
+                      : "opacity-100 scale-100 blur-0",
+                  )}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download VSIX
+                </div>
+                <div
+                  className={cn(
+                    "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                    copiedAction === "file"
+                      ? "opacity-100 scale-100 blur-0"
+                      : "opacity-0 scale-75 blur-sm pointer-events-none",
+                  )}
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  Downloaded!
+                </div>
+              </DropdownMenuItem>
+            )}
+            {currentProviderId !== "vscode" && (
+              <DropdownMenuItem
+                onClick={async () => {
+                  await handleExport();
+                  setCopiedAction("file");
+                  setTimeout(() => setCopiedAction(null), 2000);
+                }}
+                className="relative overflow-hidden"
               >
-                <Check className="h-4 w-4 mr-2" />
-                Downloaded!
-              </div>
-            </DropdownMenuItem>
+                <div
+                  className={cn(
+                    "flex items-center transition-all duration-300",
+                    copiedAction === "file"
+                      ? "opacity-0 scale-75 blur-sm"
+                      : "opacity-100 scale-100 blur-0",
+                  )}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download File
+                </div>
+                <div
+                  className={cn(
+                    "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                    copiedAction === "file"
+                      ? "opacity-100 scale-100 blur-0"
+                      : "opacity-0 scale-75 blur-sm pointer-events-none",
+                  )}
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  Downloaded!
+                </div>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               onClick={async () => {
                 await handleCopyTheme();
