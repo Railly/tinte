@@ -17,30 +17,44 @@ import { SpinnerEmpty } from "./new-components-01/components/spinner-empty";
 
 export function NewComponentsPreview() {
   return (
-    <div className="font-sans grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      className="font-sans grid gap-4 auto-rows-min"
+      style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
+    >
+      {/* Column 1 */}
       <div className="flex flex-col gap-4">
         <FieldDemo />
         <InputGroupDemo />
+        <FieldSlider />
       </div>
+
+      {/* Column 2 */}
       <div className="flex flex-col gap-4">
         <div className="*:[div]:border">
           <EmptyAvatarGroup />
         </div>
         <ButtonGroupInputGroup />
-        <FieldSlider />
-      </div>
-      <div className="flex flex-col gap-4">
         <ItemDemo />
-        <FieldSeparator>Appearance Settings</FieldSeparator>
-        <AppearanceSettings />
       </div>
+
+      {/* Column 3 */}
       <div className="flex flex-col gap-4">
+        <NotionPromptForm />
+        <InputGroupButtonExample />
         <div className="flex gap-2">
           <SpinnerBadge />
         </div>
-        <InputGroupButtonExample />
-        <NotionPromptForm />
+      </div>
+
+      {/* Column 4 */}
+      <div className="flex flex-col gap-4">
+        <FieldSeparator>Appearance Settings</FieldSeparator>
+        <AppearanceSettings />
         <ButtonGroupDemo />
+      </div>
+
+      {/* Column 5 */}
+      <div className="flex flex-col gap-4">
         <div className="flex gap-6">
           <FieldLabel htmlFor="checkbox-demo">
             <Field orientation="horizontal">
