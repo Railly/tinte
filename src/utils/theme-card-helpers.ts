@@ -164,6 +164,20 @@ export function extractShadcnColors(theme: ThemeData, isDark = false) {
 export function extractShadcnFonts(theme: ThemeData) {
   let extractedFonts: any = {};
 
+  // Helper to process font values with buildFontFamily
+  const processFontValue = (
+    fontValue: string | undefined,
+    category: "sans-serif" | "serif" | "monospace",
+  ) => {
+    if (!fontValue) return undefined;
+
+    // If already has comma (fallback), use as-is
+    if (fontValue.includes(",")) return fontValue;
+
+    // Otherwise use buildFontFamily for proper quotes and fallback
+    return buildFontFamily(fontValue, category);
+  };
+
   // First check rawTheme for fonts (tweakcn themes have fonts directly in the palette)
   if (
     "rawTheme" in theme &&
@@ -176,11 +190,24 @@ export function extractShadcnFonts(theme: ThemeData) {
     if ("fonts" in rawTheme) {
       const fonts = rawTheme.fonts;
       if (fonts) {
+        const sansFontValue = processFontValue(
+          fonts.sans || fonts.primary,
+          "sans-serif",
+        );
+        const serifFontValue = processFontValue(
+          fonts.serif || fonts.secondary,
+          "serif",
+        );
+        const monoFontValue = processFontValue(
+          fonts.mono || fonts.code,
+          "monospace",
+        );
+
         extractedFonts = {
-          "--font-sans": fonts.sans || fonts.primary,
-          "--font-serif": fonts.serif || fonts.secondary,
-          "--font-mono": fonts.mono || fonts.code,
-          fontFamily: fonts.sans || fonts.primary,
+          "--font-sans": sansFontValue,
+          "--font-serif": serifFontValue,
+          "--font-mono": monoFontValue,
+          fontFamily: sansFontValue,
         };
 
         // Preload the fonts
@@ -198,11 +225,21 @@ export function extractShadcnFonts(theme: ThemeData) {
         themeData["font-serif"] ||
         themeData["font-mono"])
     ) {
+      const sansFontValue = processFontValue(
+        themeData["font-sans"],
+        "sans-serif",
+      );
+      const serifFontValue = processFontValue(themeData["font-serif"], "serif");
+      const monoFontValue = processFontValue(
+        themeData["font-mono"],
+        "monospace",
+      );
+
       extractedFonts = {
-        "--font-sans": themeData["font-sans"],
-        "--font-serif": themeData["font-serif"],
-        "--font-mono": themeData["font-mono"],
-        fontFamily: themeData["font-sans"], // Apply sans as default
+        "--font-sans": sansFontValue,
+        "--font-serif": serifFontValue,
+        "--font-mono": monoFontValue,
+        fontFamily: sansFontValue, // Apply sans as default
       };
 
       // Preload the fonts
@@ -218,11 +255,16 @@ export function extractShadcnFonts(theme: ThemeData) {
   const themeWithOverride = theme as any;
   if (themeWithOverride.shadcn_override?.fonts) {
     const fonts = themeWithOverride.shadcn_override.fonts;
+
+    const sansFontValue = processFontValue(fonts.sans, "sans-serif");
+    const serifFontValue = processFontValue(fonts.serif, "serif");
+    const monoFontValue = processFontValue(fonts.mono, "monospace");
+
     extractedFonts = {
-      "--font-sans": fonts.sans,
-      "--font-serif": fonts.serif,
-      "--font-mono": fonts.mono,
-      fontFamily: fonts.sans, // Apply sans as default
+      "--font-sans": sansFontValue,
+      "--font-serif": serifFontValue,
+      "--font-mono": monoFontValue,
+      fontFamily: sansFontValue, // Apply sans as default
     };
 
     // Preload the fonts
