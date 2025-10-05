@@ -13,12 +13,24 @@ export function useThemeApplication() {
     async (toolResult: any) => {
       if (!toolResult?.theme) return;
 
-      // Load Google Fonts if they were generated
+      // Load Google Fonts if they were generated and wait for them to load
       if (toolResult.fonts) {
         try {
           loadGoogleFont(toolResult.fonts.sans, FONT_WEIGHTS);
           loadGoogleFont(toolResult.fonts.serif, FONT_WEIGHTS);
           loadGoogleFont(toolResult.fonts.mono, FONT_WEIGHTS);
+
+          // Wait for fonts to actually load before applying theme
+          if (typeof document !== "undefined" && document.fonts) {
+            await Promise.all([
+              document.fonts.load(`400 12px "${toolResult.fonts.sans}"`),
+              document.fonts.load(`400 12px "${toolResult.fonts.serif}"`),
+              document.fonts.load(`400 12px "${toolResult.fonts.mono}"`),
+            ]).catch(() => {
+              // Fonts failed to load, continue anyway with fallback
+              console.warn("Some fonts failed to load");
+            });
+          }
         } catch (error) {
           console.warn("Failed to load fonts:", error);
         }
