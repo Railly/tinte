@@ -31,8 +31,19 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
   const { isAuthenticated, loadUserThemes, selectTheme } = useTheme();
-  const processedThemesRef = useRef<Set<string>>(new Set());
+  const lastProcessedThemeRef = useRef<string | null>(null);
   const isSavingRef = useRef(false);
+
+  // Keep stable references
+  const loadUserThemesRef = useRef(loadUserThemes);
+  const selectThemeRef = useRef(selectTheme);
+  const handleApplyThemeRef = useRef(handleApplyTheme);
+
+  useEffect(() => {
+    loadUserThemesRef.current = loadUserThemes;
+    selectThemeRef.current = selectTheme;
+    handleApplyThemeRef.current = handleApplyTheme;
+  });
 
   const {
     messages,
@@ -85,11 +96,12 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
     if (!latestThemeOutput) return;
 
-    const themeKey = `${latestThemeOutput.title}-${JSON.stringify(latestThemeOutput.theme?.light).slice(0, 50)}`;
+    // Create simple key from title and first color
+    const themeKey = `${latestThemeOutput.title}-${latestThemeOutput.theme?.light?.bg || ""}`;
 
-    // Only process each theme once
-    if (processedThemesRef.current.has(themeKey)) return;
-    processedThemesRef.current.add(themeKey);
+    // Only process if different from last processed
+    if (lastProcessedThemeRef.current === themeKey) return;
+    lastProcessedThemeRef.current = themeKey;
 
     // Save first, then apply (authenticated users)
     if (isAuthenticated && !isSavingRef.current) {
@@ -123,13 +135,9 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
             toast.success(`"${savedTheme.name}" saved!`);
 
-            // Reload user themes
-            await loadUserThemes();
-
-            // Apply saved theme directly
-            setTimeout(() => {
-              selectTheme(savedTheme);
-            }, 100);
+            // Reload and select theme
+            await loadUserThemesRef.current();
+            selectThemeRef.current(savedTheme);
           }
         } catch (error) {
           console.error("Error saving theme:", error);
@@ -141,15 +149,9 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
       saveAndApplyTheme();
     } else if (!isAuthenticated) {
       // Anonymous users: just apply without saving
-      handleApplyTheme(latestThemeOutput);
+      handleApplyThemeRef.current(latestThemeOutput);
     }
-  }, [
-    messages,
-    isAuthenticated,
-    handleApplyTheme,
-    loadUserThemes,
-    selectTheme,
-  ]);
+  }, [messages, isAuthenticated]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
