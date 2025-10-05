@@ -1,16 +1,23 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
+import { toast } from "sonner";
+import { useTheme } from "@/hooks/use-theme";
 import type { ThemeData } from "@/lib/theme-tokens";
 import { useThemeContext } from "@/providers/theme";
+import { useAgentSessionStore } from "@/stores/agent-session-store";
 import { loadGoogleFont } from "@/utils/fonts";
 import { FONT_WEIGHTS } from "../constants";
 
 export function useThemeApplication() {
   const { handleThemeSelect } = useThemeContext();
+  const { saveCurrentTheme, isAuthenticated, loadUserThemes, selectTheme } =
+    useTheme();
+  const { firstCreatedThemeId, setFirstCreatedTheme } = useAgentSessionStore();
+  const isFirstThemeRef = useRef(true);
 
   const handleApplyTheme = useCallback(
-    async (toolResult: any) => {
+    async (toolResult: any, isFirstTheme?: boolean) => {
       if (!toolResult?.theme) return;
 
       // Load Google Fonts if they were generated
@@ -33,8 +40,8 @@ export function useThemeApplication() {
       };
 
       const themeData: ThemeData = {
-        id: `unsaved-${Date.now()}`,
-        name: toolResult.title || "AI Generated Theme (Unsaved)",
+        id: `ai-generated-${Date.now()}`,
+        name: toolResult.title || "AI Generated Theme",
         description: `AI-generated theme: ${
           toolResult.concept || "Custom theme"
         }`,
@@ -51,12 +58,50 @@ export function useThemeApplication() {
           background: toolResult.theme.light.bg,
           foreground: toolResult.theme.light.tx,
         },
-        tags: ["ai-generated", "unsaved"],
+        tags: ["ai-generated"],
         rawTheme: extendedRawTheme,
         concept: toolResult.concept,
       };
 
+      // Apply theme to UI
       handleThemeSelect(themeData);
+
+      // Auto-save first theme if authenticated
+      if (isFirstTheme && isAuthenticated && !firstCreatedThemeId) {
+        try {
+          const result = await saveCurrentTheme(
+            themeData.name,
+            true,
+            undefined,
+            undefined,
+          );
+
+          if (result.success && result.savedTheme?.id) {
+            setFirstCreatedTheme(
+              result.savedTheme.id,
+              result.savedTheme.slug || "",
+            );
+            await loadUserThemes();
+
+            setTimeout(() => {
+              selectTheme(result.savedTheme);
+
+              if (
+                result.savedTheme.slug &&
+                result.savedTheme.slug !== "default" &&
+                result.savedTheme.slug !== "theme"
+              ) {
+                const newUrl = `/workbench/${result.savedTheme.slug}?tab=agent`;
+                window.history.replaceState(null, "", newUrl);
+              }
+            }, 100);
+
+            toast.success(`"${themeData.name}" saved successfully!`);
+          }
+        } catch (error) {
+          console.error("Error auto-saving first theme:", error);
+        }
+      }
 
       setTimeout(() => {
         if (document.documentElement) {
@@ -70,7 +115,15 @@ export function useThemeApplication() {
         }
       }, 100);
     },
-    [handleThemeSelect],
+    [
+      handleThemeSelect,
+      isAuthenticated,
+      firstCreatedThemeId,
+      saveCurrentTheme,
+      setFirstCreatedTheme,
+      loadUserThemes,
+      selectTheme,
+    ],
   );
 
   return { handleApplyTheme };

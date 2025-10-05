@@ -203,7 +203,9 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                                       themeOutput={themeOutput}
                                       currentMode={currentMode}
                                       loadingTimer={loadingTimer}
-                                      onApplyTheme={handleApplyTheme}
+                                      onApplyTheme={(output) =>
+                                        handleApplyTheme(output, isFirstTheme)
+                                      }
                                       isFirstTheme={isFirstTheme}
                                     />
                                   );
