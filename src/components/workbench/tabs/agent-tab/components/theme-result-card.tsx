@@ -30,14 +30,7 @@ export function ThemeResultCard({
   const [openSections, setOpenSections] = useState(DEFAULT_OPEN_SECTIONS);
   const [isSaving, setIsSaving] = useState(false);
 
-  const {
-    saveCurrentTheme,
-    canSave,
-    isAuthenticated,
-    loadUserThemes,
-    selectTheme,
-    shadcnOverride,
-  } = useTheme();
+  const { canSave, isAuthenticated, loadUserThemes, selectTheme } = useTheme();
 
   const { firstCreatedThemeId } = useAgentSessionStore();
 
@@ -57,25 +50,42 @@ export function ThemeResultCard({
     try {
       const themeName = themeOutput.title || "AI Generated Theme";
 
-      const result = await saveCurrentTheme(
-        themeName,
-        true,
-        shadcnOverride,
-        firstCreatedThemeId,
-      );
+      const extendedRawTheme = {
+        light: themeOutput.theme.light,
+        dark: themeOutput.theme.dark,
+        fonts: themeOutput.fonts,
+        radius: themeOutput.radius,
+        shadows: themeOutput.shadows,
+      };
 
-      if (result.success && result.savedTheme) {
+      // Update directly using API with firstCreatedThemeId
+      const response = await fetch(`/api/themes/${firstCreatedThemeId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: themeName,
+          tinteTheme: extendedRawTheme,
+          overrides: {},
+          isPublic: true,
+          concept: themeOutput.concept,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        const savedTheme = result.theme;
+
         await loadUserThemes();
 
         setTimeout(() => {
-          selectTheme(result.savedTheme);
+          selectTheme(savedTheme);
 
           if (
-            result.savedTheme.slug &&
-            result.savedTheme.slug !== "default" &&
-            result.savedTheme.slug !== "theme"
+            savedTheme.slug &&
+            savedTheme.slug !== "default" &&
+            savedTheme.slug !== "theme"
           ) {
-            const newUrl = `/workbench/${result.savedTheme.slug}?tab=agent`;
+            const newUrl = `/workbench/${savedTheme.slug}?tab=agent`;
             window.history.replaceState(null, "", newUrl);
           }
         }, 100);
