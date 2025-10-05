@@ -272,80 +272,47 @@ export function WorkbenchToolbar({
     makePublic: boolean,
   ) => {
     try {
-      // Step 1: Parse the CSS to extract theme data
+      // Step 1: Parse CSS to extract theme data
       const { tinteTheme, shadcnTheme } = importShadcnTheme(css);
 
-      // Step 2: Create a temporary theme object with the imported data
-      const importedTheme = {
-        id: `theme_${Date.now()}`,
-        name,
-        description: `Imported theme: ${name}`,
-        author: "You",
-        provider: "tinte" as const,
-        downloads: 0,
-        likes: 0,
-        installs: 0,
-        tags: ["custom", "imported"],
-        createdAt: new Date().toISOString(),
-        colors: {
-          primary: tinteTheme.light.pr,
-          secondary: tinteTheme.light.sc,
-          background: tinteTheme.light.bg,
-          accent: tinteTheme.light.ac_1,
-          foreground: tinteTheme.light.tx,
-        },
-        rawTheme: tinteTheme,
-        user: user
-          ? {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            }
-          : null,
-      };
+      // Step 2: Save directly to database (like AI theme generation)
+      const response = await fetch("/api/themes/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          concept: `Imported from CSS`,
+          tinteTheme,
+          shadcnTheme,
+          makePublic,
+        }),
+      });
 
-      // Step 3: Select the imported theme so it becomes the active theme
-      selectTheme(importedTheme);
-
-      // Step 4: Apply shadcn overrides if present
-      if (shadcnTheme) {
-        updateShadcnOverride(shadcnTheme);
+      if (!response.ok) {
+        throw new Error("Failed to save imported theme");
       }
 
-      // Step 5: Now save the active theme (which is the imported one)
-      const result = await saveCurrentTheme(name, makePublic, shadcnTheme);
+      const result = await response.json();
 
-      if (result.success && result.savedTheme) {
-        await loadUserThemes();
-
-        const updatedSavedTheme = {
-          ...result.savedTheme,
-          user: user
-            ? {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                image: user.image,
-              }
-            : null,
-          overrides: {
-            shadcn: shadcnTheme,
-            vscode: result.savedTheme.overrides?.vscode,
-            shiki: result.savedTheme.overrides?.shiki,
-          },
-        };
-
-        selectTheme(updatedSavedTheme);
-        toast.success(`"${name}" imported and saved successfully!`);
-
-        // Navigate to the new theme's URL
-        if (result.savedTheme.slug) {
-          router.replace(`/workbench/${result.savedTheme.slug}`);
-        }
-      } else {
+      if (!result.success || !result.savedTheme) {
         toast.error("Failed to save imported theme");
+        return;
       }
+
+      // Step 3: Reload user themes to get the complete list
+      await loadUserThemes();
+
+      // Step 4: Select the saved theme
+      if (result.savedTheme) {
+        selectTheme(result.savedTheme);
+      }
+
+      // Step 5: Navigate to the theme's URL
+      if (result.savedTheme.slug) {
+        router.replace(`/workbench/${result.savedTheme.slug}`);
+      }
+
+      toast.success(`"${name}" imported and saved successfully!`);
     } catch (error) {
       console.error("Error importing theme:", error);
       toast.error("Failed to import theme");
