@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   ChatContainerContent,
@@ -30,8 +31,10 @@ interface AgentTabProps {
 export function AgentTab({ initialPrompt }: AgentTabProps) {
   const { currentMode } = useThemeContext();
   const { handleApplyTheme } = useThemeApplication();
-  const { clearSession } = useAgentSessionStore();
-  const { isAuthenticated } = useTheme();
+  const { clearSession, firstCreatedThemeId, setFirstCreatedTheme } =
+    useAgentSessionStore();
+  const { isAuthenticated, loadUserThemes, selectTheme } = useTheme();
+  const processedThemesRef = useRef<Set<string>>(new Set());
 
   // Clear agent session when component unmounts or when starting fresh
   useEffect(() => {
@@ -68,6 +71,98 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
 
   // Block chat input for anonymous users after first theme generation
   const shouldBlockInput = !isAuthenticated && hasGeneratedTheme;
+
+  // Auto-apply and auto-save first theme
+  useEffect(() => {
+    const allGeneratedThemes = messages.flatMap((msg) =>
+      msg.parts.filter(
+        (part) =>
+          part.type === "tool-generateTheme" &&
+          part.state === "output-available",
+      ),
+    );
+
+    if (allGeneratedThemes.length === 0) return;
+
+    const firstTheme = allGeneratedThemes[0];
+    const firstThemeOutput =
+      firstTheme.type === "tool-generateTheme" &&
+      firstTheme.state === "output-available"
+        ? (firstTheme.output as any)
+        : null;
+
+    if (!firstThemeOutput) return;
+    const themeKey = `${firstThemeOutput.title}-${JSON.stringify(firstThemeOutput.theme?.light).slice(0, 50)}`;
+
+    // Only process first theme once
+    if (processedThemesRef.current.has(themeKey)) return;
+    processedThemesRef.current.add(themeKey);
+
+    // Auto-apply first theme
+    handleApplyTheme(firstThemeOutput);
+
+    // Auto-save first theme if authenticated
+    if (isAuthenticated && !firstCreatedThemeId) {
+      const saveFirstTheme = async () => {
+        try {
+          const extendedRawTheme = {
+            light: firstThemeOutput.theme.light,
+            dark: firstThemeOutput.theme.dark,
+            fonts: firstThemeOutput.fonts,
+            radius: firstThemeOutput.radius,
+            shadows: firstThemeOutput.shadows,
+          };
+
+          const response = await fetch("/api/themes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: firstThemeOutput.title || "AI Generated Theme",
+              tinteTheme: extendedRawTheme,
+              overrides: {},
+              isPublic: true,
+              concept: firstThemeOutput.concept,
+            }),
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            const savedTheme = result.theme;
+
+            setFirstCreatedTheme(savedTheme.id, savedTheme.slug || "");
+            await loadUserThemes();
+
+            setTimeout(() => {
+              selectTheme(savedTheme);
+
+              if (
+                savedTheme.slug &&
+                savedTheme.slug !== "default" &&
+                savedTheme.slug !== "theme"
+              ) {
+                const newUrl = `/workbench/${savedTheme.slug}?tab=agent`;
+                window.history.replaceState(null, "", newUrl);
+              }
+            }, 100);
+
+            toast.success(`"${savedTheme.name}" saved successfully!`);
+          }
+        } catch (error) {
+          console.error("Error auto-saving first theme:", error);
+        }
+      };
+
+      saveFirstTheme();
+    }
+  }, [
+    messages,
+    isAuthenticated,
+    firstCreatedThemeId,
+    handleApplyTheme,
+    setFirstCreatedTheme,
+    loadUserThemes,
+    selectTheme,
+  ]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -203,9 +298,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                                       themeOutput={themeOutput}
                                       currentMode={currentMode}
                                       loadingTimer={loadingTimer}
-                                      onApplyTheme={(output) =>
-                                        handleApplyTheme(output, isFirstTheme)
-                                      }
+                                      onApplyTheme={handleApplyTheme}
                                       isFirstTheme={isFirstTheme}
                                     />
                                   );
