@@ -336,9 +336,10 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
   const booleans = /\b(true|false|null|undefined)\b/g;
   const functions = /\b([a-z][a-zA-Z0-9]*)\s*\(/g;
   const properties = /\.([a-zA-Z][a-zA-Z0-9]*)\b/g;
-  const jsxTags = /<\/?([a-zA-Z][a-zA-Z0-9]*)/g;
+  const jsxTagBrackets = /(<\/?|\/>|>)/g;
+  const jsxTagNames = /<\/?([a-zA-Z][a-zA-Z0-9]*)/g;
   const jsxProps = /\b([a-z][a-zA-Z0-9]*(?:HTML)?)\s*=/g;
-  const variables = /\b([a-z][a-zA-Z0-9]*(?:Schema|Themes|Section))\b/g;
+  const constants = /\b([a-z][a-zA-Z0-9]*(?:Schema|Themes|Section|Config))\b/g;
   const operators = /(=>|=|\?|:|\|\||&&)/g;
 
   const result = line;
@@ -430,12 +431,23 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
     });
   }
 
-  while ((match = jsxTags.exec(line)) !== null) {
-    const tagName = match[1];
+  while ((match = jsxTagBrackets.exec(line)) !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
-      element: <span style={{ color: syntax.tag?.color }}>{match[0]}</span>,
+      element: (
+        <span style={{ color: syntax.punctuation?.color }}>{match[0]}</span>
+      ),
+      priority: 9,
+    });
+  }
+
+  while ((match = jsxTagNames.exec(line)) !== null) {
+    const tagName = match[1];
+    tokens.push({
+      start: match.index + match[0].indexOf(tagName),
+      end: match.index + match[0].indexOf(tagName) + tagName.length,
+      element: <span style={{ color: syntax.tag?.color }}>{tagName}</span>,
       priority: 8,
     });
   }
@@ -470,12 +482,12 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
     });
   }
 
-  while ((match = variables.exec(line)) !== null) {
+  while ((match = constants.exec(line)) !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
       element: (
-        <span style={{ color: syntax.variable?.color }}>{match[0]}</span>
+        <span style={{ color: syntax.constant?.color }}>{match[0]}</span>
       ),
       priority: 5,
     });
