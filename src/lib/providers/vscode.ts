@@ -31,14 +31,14 @@ class UserService:
     def __init__(self, database_url: str):
         self.db_url = database_url
         self.users: List[User] = []
-    
+
     async def get_user(self, user_id: int) -> Optional[User]:
         """Fetch a user by ID"""
         for user in self.users:
             if user.id == user_id:
                 return user
         return None
-    
+
     def create_user(self, name: str, email: str) -> User:
         user = User(
             id=len(self.users) + 1,
@@ -110,7 +110,7 @@ func main() {
   toJSON() {
     return {
       id: this.id,
-      name: this.name, 
+      name: this.name,
       email: this.email,
       isActive: this.isActive
     };
@@ -135,7 +135,7 @@ class UserService {
   updateUser(id, updates) {
     const user = this.getUser(id);
     if (!user) return null;
-    
+
     Object.assign(user, updates);
     return user;
   }
@@ -283,7 +283,7 @@ const defaultTokenColorMap: TokenColorMap = {
 
   // Variables and properties
   variables: "tx", // Local variables
-  variablesOther: "sc", // Object variables
+  variablesOther: "tx", // Object variables
   globalVariables: "ac_2", // Global scope variables
   localVariables: "tx", // Local scope variables
   parameters: "tx", // Function parameters
@@ -301,7 +301,7 @@ const defaultTokenColorMap: TokenColorMap = {
   stringEscapeSequences: "tx", // \n, \t, etc.
   numbers: "ac_3", // Numeric literals
   booleans: "ac_3", // true, false
-  constants: "sc", // CONSTANTS, readonly
+  constants: "tx", // CONSTANTS, readonly
 
   // Documentation and comments
   comments: "tx_3", // Regular comments
