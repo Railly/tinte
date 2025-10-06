@@ -341,13 +341,16 @@ function preloadThemeFonts(fonts: any) {
 }
 
 export function extractShadcnShadows(theme: ThemeData, isDark = false) {
-  // First check for shadcn_override with shadows (database themes)
-  const themeWithOverride = theme as any;
   const mode = isDark ? "dark" : "light";
+  const themeWithOverride = theme as any;
+
+  // Get shadcn overrides from theme - prioritize new structure (same as colors)
+  const shadcnOverride =
+    themeWithOverride.overrides?.shadcn || themeWithOverride.shadcn_override;
 
   // Check for mode-specific shadows in normalized format
-  if (themeWithOverride.shadcn_override?.shadows?.[mode]) {
-    const shadows = themeWithOverride.shadcn_override.shadows[mode];
+  if (shadcnOverride?.shadows?.[mode]) {
+    const shadows = shadcnOverride.shadows[mode];
 
     // Create tokens object for computeShadowVars utility
     const shadowTokens = {
