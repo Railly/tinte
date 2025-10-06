@@ -31,6 +31,13 @@ export function getShadcnPaletteWithOverrides(
     ...modeColorOverrides,
   };
 
+  // Add radius if available from overrides or converted theme
+  if (overrides?.radius) {
+    palette.radius = overrides.radius;
+  } else if (converted[mode]?.radius) {
+    palette.radius = converted[mode].radius;
+  }
+
   return palette;
 }
 
