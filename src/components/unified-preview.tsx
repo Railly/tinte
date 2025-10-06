@@ -104,11 +104,19 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
 
   const PreviewComponent = currentProvider.preview.component;
 
+  // Create a unique key based on overrides to force re-render
+  const previewKey =
+    currentProvider.metadata.id === "zed"
+      ? `zed-${JSON.stringify(zedOverrides.allOverrides)}`
+      : currentProvider.metadata.id === "vscode"
+        ? `vscode-${JSON.stringify(vscodeOverrides.overrides)}`
+        : currentProvider.metadata.id;
+
   return (
     <div
       className={cn("h-[calc(100dvh-var(--header-height)_-_5rem)]", className)}
     >
-      <PreviewComponent theme={converted} />
+      <PreviewComponent key={previewKey} theme={converted} />
     </div>
   );
 }
