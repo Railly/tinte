@@ -333,12 +333,13 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
   const types = /\b(Metadata)\b/g;
   const strings = /"([^"]*)"/g;
   const numbers = /\b(\d+)\b/g;
+  const booleans = /\b(true|false|null|undefined)\b/g;
   const functions = /\b([a-z][a-zA-Z0-9]*)\s*\(/g;
   const properties = /\.([a-zA-Z][a-zA-Z0-9]*)\b/g;
   const jsxTags = /<\/?([a-zA-Z][a-zA-Z0-9]*)/g;
   const jsxProps = /\b([a-z][a-zA-Z0-9]*(?:HTML)?)\s*=/g;
+  const variables = /\b([a-z][a-zA-Z0-9]*(?:Schema|Themes|Section))\b/g;
   const operators = /(=>|=|\?|:|\|\||&&)/g;
-  const punctuation = /([{}[\]();,.])/g;
 
   const result = line;
   const tokens: Array<{
@@ -456,6 +457,26 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       start: match.index,
       end: match.index + match[0].length,
       element: <span style={{ color: syntax.number?.color }}>{match[0]}</span>,
+      priority: 5,
+    });
+  }
+
+  while ((match = booleans.exec(line)) !== null) {
+    tokens.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: <span style={{ color: syntax.boolean?.color }}>{match[0]}</span>,
+      priority: 6,
+    });
+  }
+
+  while ((match = variables.exec(line)) !== null) {
+    tokens.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: (
+        <span style={{ color: syntax.variable?.color }}>{match[0]}</span>
+      ),
       priority: 5,
     });
   }
