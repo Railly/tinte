@@ -301,15 +301,18 @@ export function ShadcnOverridesPanel({
     };
 
     // Fonts are top-level in DB schema
-    const fonts = currentOverrides.fonts || defaultFonts;
+    // Always merge with defaults to ensure all three fonts are shown
+    const fonts = {
+      sans: currentOverrides.fonts?.sans || defaultFonts.sans,
+      serif: currentOverrides.fonts?.serif || defaultFonts.serif,
+      mono: currentOverrides.fonts?.mono || defaultFonts.mono,
+    };
 
-    const fontTokens = Object.entries(fonts)
-      .filter(
-        ([_, value]) => typeof value === "string" && value.trim().length > 0,
-      )
-      .map(([key, value]) => [key, value] as [string, string]);
+    const fontTokens = Object.entries(fonts).map(
+      ([key, value]) => [key, value] as [string, string],
+    );
 
-    // Always show fonts group
+    // Always show fonts group with all three fonts
     groups.push({ label: "Fonts", tokens: fontTokens, type: "fonts" });
 
     // Radius is top-level in DB schema (default from globals.css)
