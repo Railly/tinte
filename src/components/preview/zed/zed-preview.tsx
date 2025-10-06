@@ -52,10 +52,10 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
       }}
     >
       {/* Main content area */}
-      <div className="flex flex-1 min-h-0 w-full">
+      <div className="flex flex-1 min-h-0">
         {/* Sidebar - File tree */}
         <div
-          className="w-56 border-r flex flex-col"
+          className="w-56 border-r flex flex-col shrink-0"
           style={{
             backgroundColor: style["panel.background"],
             borderColor: style["border.variant"],
@@ -63,7 +63,7 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
         >
           {/* Sidebar header */}
           <div
-            className="px-3 py-2 text-xs font-semibold border-b"
+            className="px-3 py-2 text-xs font-semibold border-b shrink-0"
             style={{
               color: style["text.muted"],
               borderColor: style["border.variant"],
@@ -73,9 +73,8 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           </div>
 
           {/* File tree */}
-          <ScrollArea className="flex-1">
+          <ScrollArea className="flex-1 min-h-0">
             <div className="text-xs">
-              <div className="py-1">
                 <div
                   className="px-3 py-1.5 flex items-center gap-2 hover:bg-black/5"
                   style={{ color: style.text }}
@@ -140,10 +139,10 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
         </div>
 
         {/* Editor area */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           {/* Tabs */}
           <div
-            className="flex items-center border-b text-xs"
+            className="flex items-center border-b text-xs shrink-0"
             style={{
               backgroundColor: style["tab_bar.background"],
               borderColor: style["border.variant"],
@@ -174,7 +173,7 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
           {/* Breadcrumb */}
           <div
-            className="px-4 py-1.5 text-[11px] border-b font-mono"
+            className="px-4 py-1.5 text-[11px] border-b font-mono shrink-0"
             style={{
               backgroundColor: style["editor.background"],
               borderColor: style["border.variant"],
@@ -185,7 +184,7 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           </div>
 
           {/* Code editor */}
-          <ScrollArea className="flex-1">
+          <ScrollArea className="flex-1 min-h-0">
             <div className="flex min-h-full">
               {/* Line numbers */}
               <div
@@ -244,35 +243,38 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           </ScrollArea>
         </div>
       </div>
-
-      {/* Status bar */}
-      <div
-        className="h-7 px-4 flex items-center justify-between text-[11px] border-t shrink-0"
-        style={{
-          backgroundColor: style["status_bar.background"],
-          borderColor: style["border.variant"],
-          color: style["text.muted"],
-        }}
-      >
-        <div className="flex items-center gap-4 shrink-0">
-          <span className="font-medium">TypeScript JSX</span>
-          <span>UTF-8</span>
-          <span>Ln 14, Col 16</span>
-        </div>
-        <div className="flex items-center gap-4 shrink-0">
-          <span
-            className="flex items-center gap-1.5"
-            style={{ color: style["version_control.modified"] }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-current" />2
-          </span>
-          <span>74:1</span>
-          <span className="uppercase tracking-wide">--INSERT--</span>
-          <span className="uppercase tracking-wide">TSX</span>
-        </div>
-      </div>
+  <div
+  className =
+    "h-7 px-4 flex items-center justify-between text-[11px] border-t shrink-0";
+  style={{
+      backgroundColor: style["status_bar.background"],
+      borderColor: style["border.variant"],
+      color: style["text.muted"],
+    }
+}
+>
+    <div className="flex items-center gap-4 shrink-0">
+      <span className="font-medium">TypeScript JSX</span>
+      <span>UTF-8</span>
+      <span>Ln 14, Col 16</span>
     </div>
-  );
+    <div className="flex items-center gap-4 shrink-0">
+      <span
+        className="flex items-center gap-1.5"
+        style=
+{
+  color: style["version_control.modified"];
+}
+>
+        <span className="w-1.5 h-1.5 rounded-full bg-current" />2
+      </span>
+      <span>74:1</span>
+      <span className="uppercase tracking-wide">--INSERT--</span>
+      <span className="uppercase tracking-wide">TSX</span>
+    </div>
+  </div>
+</div>
+  )
 }
 
 function highlightLine(line: string, syntax: any): React.ReactNode {
