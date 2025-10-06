@@ -44,14 +44,14 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
   return (
     <div
-      className={`rounded-lg overflow-hidden ${className || ""}`}
+      className={`rounded-lg overflow-hidden h-full flex ${className || ""}`}
       style={{
         backgroundColor: style.background,
         borderColor: style.border,
       }}
     >
       {/* Main content area */}
-      <div className="flex h-full">
+      <div className="flex h-full w-full">
         {/* Sidebar - File tree */}
         <div
           className="w-56 border-r flex flex-col"
