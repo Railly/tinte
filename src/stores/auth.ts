@@ -239,23 +239,19 @@ export const useAuthStore = create<AuthStore>()(
           const themeToSave = {
             ...theme,
             name: cleanName,
-            id: theme.id || `theme_${Date.now()}`,
             tags: theme.tags?.filter((tag: string) => tag !== "unsaved") || [
               "custom",
             ],
           };
 
           // Check if we should update an existing theme
-          // Priority 1: Explicit updateThemeId (from AI chat session)
-          // Priority 2: Existing owned theme (original logic)
-          const shouldUpdate =
-            updateThemeId ||
-            (themeToSave.id?.startsWith("theme_") &&
-              !themeToSave.id.startsWith("ai-generated-") &&
-              (themeToSave.user?.id === user?.id ||
-                themeToSave.author === "You"));
-
+          // Use explicit updateThemeId if provided, otherwise check if theme has an ID and is owned by user
           const themeIdToUpdate = updateThemeId || themeToSave.id;
+          const shouldUpdate =
+            themeIdToUpdate &&
+            (updateThemeId ||
+              themeToSave.user?.id === user?.id ||
+              themeToSave.author === "You");
 
           if (shouldUpdate && themeIdToUpdate) {
             // Update existing theme using PUT

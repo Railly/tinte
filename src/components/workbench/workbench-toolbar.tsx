@@ -194,7 +194,12 @@ export function WorkbenchToolbar({
     if (isOwnSavedTheme) {
       // Direct update without dialog
       try {
-        const result = await saveCurrentTheme();
+        const result = await saveCurrentTheme(
+          undefined,
+          undefined,
+          undefined,
+          activeTheme.id,
+        );
         if (result.success) {
           toast.success("Theme updated successfully!");
           markAsSaved();
