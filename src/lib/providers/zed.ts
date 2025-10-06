@@ -466,7 +466,7 @@ function createZedTheme(
         font_weight: null,
       },
       tag: {
-        color: accent1,
+        color: accent2,
         font_style: null,
         font_weight: null,
       },

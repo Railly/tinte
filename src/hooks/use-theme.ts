@@ -43,6 +43,7 @@ export function useTheme() {
     shadcnOverride: themeStore.overrides.shadcn,
     vscodeOverride: themeStore.overrides.vscode,
     shikiOverride: themeStore.overrides.shiki,
+    zedOverride: themeStore.overrides.zed,
 
     // Typography and styling properties
     fonts: {
@@ -138,6 +139,8 @@ export function useTheme() {
       themeStore.updateOverride("vscode", override),
     updateShikiOverride: (override: any) =>
       themeStore.updateOverride("shiki", override),
+    updateZedOverride: (override: any) =>
+      themeStore.updateOverride("zed", override),
     saveCurrentTheme: async (
       name?: string,
       makePublic?: boolean,
@@ -167,6 +170,7 @@ export function useTheme() {
           ),
           vscode: convertOverrideForDB(themeStore.overrides.vscode),
           shiki: convertOverrideForDB(themeStore.overrides.shiki),
+          zed: convertOverrideForDB(themeStore.overrides.zed),
         },
       };
 
@@ -195,6 +199,8 @@ export const useThemeActions = () => {
         themeStore.updateOverride("vscode", override),
       updateShikiOverride: (override: any) =>
         themeStore.updateOverride("shiki", override),
+      updateZedOverride: (override: any) =>
+        themeStore.updateOverride("zed", override),
       saveCurrentTheme: async (
         name?: string,
         makePublic?: boolean,
@@ -220,6 +226,7 @@ export const useThemeActions = () => {
             ),
             vscode: convertOverrideForDB(themeStore.overrides.vscode),
             shiki: convertOverrideForDB(themeStore.overrides.shiki),
+            zed: convertOverrideForDB(themeStore.overrides.zed),
           },
         };
         return authStore.saveTheme(themeWithOverrides, name, makePublic);

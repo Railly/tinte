@@ -39,6 +39,7 @@ export interface NormalizedOverrides {
   shadcn?: ProviderOverride;
   vscode?: ProviderOverride;
   shiki?: ProviderOverride;
+  zed?: ProviderOverride;
 }
 
 export type OverrideKey =

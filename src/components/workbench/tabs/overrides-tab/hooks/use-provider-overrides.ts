@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { convertThemeToVSCode } from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
 
-export type ProviderType = "shadcn" | "vscode" | "shiki";
+export type ProviderType = "shadcn" | "vscode" | "shiki" | "zed";
 
 export interface ProviderOverrideHook<T extends object = Record<string, any>> {
   // Current override data for the active mode
@@ -53,9 +53,11 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
     shadcnOverride,
     vscodeOverride,
     shikiOverride,
+    zedOverride,
     updateShadcnOverride,
     updateVscodeOverride,
     updateShikiOverride,
+    updateZedOverride,
     resetOverrides,
   } = context;
 
@@ -72,21 +74,27 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
       case "shiki":
         override = shikiOverride;
         break;
+      case "zed":
+        override = zedOverride;
+        break;
       default:
         return null;
     }
 
     // For shadcn: overrides have structure { palettes: { light: {...}, dark: {...} } }
-    // For vscode/shiki: overrides are directly { light: {...}, dark: {...} }
+    // For vscode/shiki/zed: overrides are directly { light: {...}, dark: {...} }
     if (provider === "shadcn" && override?.palettes) {
       return override.palettes as Record<string, T>;
     }
 
     return override || null;
-  }, [provider, shadcnOverride, vscodeOverride, shikiOverride]) as Record<
-    string,
-    T
-  > | null;
+  }, [
+    provider,
+    shadcnOverride,
+    vscodeOverride,
+    shikiOverride,
+    zedOverride,
+  ]) as Record<string, T> | null;
 
   // Get overrides for current mode
   const overrides = useMemo<T>(() => {
@@ -140,6 +148,8 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
         return updateVscodeOverride;
       case "shiki":
         return updateShikiOverride;
+      case "zed":
+        return updateZedOverride;
       default:
         return () => {};
     }
@@ -148,6 +158,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
     updateShadcnOverride,
     updateVscodeOverride,
     updateShikiOverride,
+    updateZedOverride,
   ]);
 
   // Check if override exists for a key
@@ -340,3 +351,4 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
 export const useShadcnOverrides = () => useProviderOverrides("shadcn");
 export const useVSCodeOverrides = () => useProviderOverrides("vscode");
 export const useShikiOverrides = () => useProviderOverrides("shiki");
+export const useZedOverrides = () => useProviderOverrides("zed");
