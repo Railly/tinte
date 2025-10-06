@@ -15,6 +15,7 @@ export const zedProvider: PreviewableProvider<ZedThemeFamily> = {
     icon: ZedIcon,
     website: "https://zed.dev/",
     documentation: "https://zed.dev/docs/themes",
+    experimental: true,
   },
 
   fileExtension: "json",

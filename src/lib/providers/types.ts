@@ -15,6 +15,7 @@ export interface ProviderMetadata {
   icon?: React.ComponentType<{ className?: string }>;
   website?: string;
   documentation?: string;
+  experimental?: boolean;
 }
 
 export interface ThemeProvider<TOutput = any> {

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, Clock } from "lucide-react";
+import { ChevronsUpDown, Clock, FlaskConical } from "lucide-react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
       icon: p.metadata.icon,
       category: p.metadata.category,
       available: true,
+      experimental: p.metadata.experimental,
     }));
   }, []);
 
@@ -95,6 +96,12 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
             {!activeProvider.available && (
               <Clock className="h-3 w-3 text-amber-500 shrink-0 transition-all duration-150" />
             )}
+            {activeProvider.available && activeProvider.experimental && (
+              <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded shrink-0">
+                <FlaskConical className="h-3 w-3" />
+                EXPERIMENTAL
+              </span>
+            )}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -116,6 +123,9 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
                   >
                     {prov.icon && <prov.icon className="h-4 w-4" />}
                     <span className="flex-1">{prov.name}</span>
+                    {prov.experimental && (
+                      <FlaskConical className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                    )}
                   </CommandItem>
                 ))}
               </CommandGroup>

@@ -465,6 +465,15 @@ export function WorkbenchToolbar({
 
   return (
     <div className="flex items-center gap-2 w-full">
+      {/* Development Mode Banner for Experimental Providers */}
+      {providerMeta?.metadata.experimental && (
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-md">
+          <div className="text-xs font-medium text-amber-600 dark:text-amber-400">
+            Development mode — features might be broken
+          </div>
+        </div>
+      )}
+
       {/* Left: Undo/Redo + Reset */}
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1">

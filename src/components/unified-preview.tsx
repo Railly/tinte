@@ -55,19 +55,25 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
         // Apply syntax token overrides
         const syntaxWithOverrides: any = { ...t.style.syntax };
         Object.entries(modeOverrides).forEach(([key, value]) => {
-          if (typeof value === "string" && syntaxWithOverrides[key]) {
-            syntaxWithOverrides[key] = {
-              ...syntaxWithOverrides[key],
-              color: value,
-            };
+          if (typeof value === "string") {
+            // Check if it's a syntax token (exists in syntax object)
+            if (key in syntaxWithOverrides) {
+              syntaxWithOverrides[key] = {
+                ...syntaxWithOverrides[key],
+                color: value,
+              };
+            }
           }
         });
 
-        // Apply UI color overrides
+        // Apply UI color overrides (for non-syntax properties)
         const styleWithOverrides: any = { ...t.style };
         Object.entries(modeOverrides).forEach(([key, value]) => {
-          if (typeof value === "string" && key in styleWithOverrides) {
-            styleWithOverrides[key] = value;
+          if (typeof value === "string") {
+            // Check if it's a UI property (not in syntax)
+            if (key in styleWithOverrides && !(key in syntaxWithOverrides)) {
+              styleWithOverrides[key] = value;
+            }
           }
         });
 
@@ -80,10 +86,18 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
         };
       });
 
-      return {
+      const result = {
         ...baseTheme,
         themes: themesWithOverrides,
       };
+
+      // Debug: log the converted theme
+      console.log("Zed conversion with overrides:", {
+        overrides: zedOverrides.allOverrides,
+        resultSyntax: result.themes[0]?.style?.syntax?.keyword,
+      });
+
+      return result;
     } else {
       return convertTheme(currentProvider.metadata.id, theme);
     }
