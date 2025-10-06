@@ -348,16 +348,17 @@ export function extractShadcnShadows(theme: ThemeData, isDark = false) {
   const shadcnOverride =
     themeWithOverride.overrides?.shadcn || themeWithOverride.shadcn_override;
 
-  // Check for mode-specific shadows in normalized format
-  if (shadcnOverride?.shadows?.[mode]) {
-    const shadows = shadcnOverride.shadows[mode];
+  // Check for mode-specific shadows inside palettes (DB schema structure)
+  const modePalette = shadcnOverride?.palettes?.[mode];
+  if (modePalette?.shadow) {
+    const shadows = modePalette.shadow;
 
-    // Create tokens object for computeShadowVars utility
+    // Create tokens object for computeShadowVars utility (handle both snake_case and camelCase)
     const shadowTokens = {
       "shadow-color": shadows.color,
       "shadow-opacity": shadows.opacity,
-      "shadow-offset-x": shadows.offsetX,
-      "shadow-offset-y": shadows.offsetY,
+      "shadow-offset-x": shadows.offset_x || shadows.offsetX,
+      "shadow-offset-y": shadows.offset_y || shadows.offsetY,
       "shadow-blur": shadows.blur,
       "shadow-spread": shadows.spread,
     };
