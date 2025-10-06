@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useThemeFonts } from "@/hooks/use-theme-fonts";
 import type { ThemeData } from "@/lib/theme-tokens";
+import { getVendorIcon } from "@/lib/vendor-icons";
 import { useThemeContext } from "@/providers/theme";
 import {
   extractShadcnColors,
@@ -163,6 +164,9 @@ export function ThemeCard({
   const shadcnFonts = extractShadcnFonts(theme);
   const shadcnShadows = extractShadcnShadows(theme, isDark);
 
+  // Check if theme has a vendor icon
+  const VendorIcon = theme.slug ? getVendorIcon(theme.slug) : null;
+
   // Debug: uncomment to see font extraction in console
   // console.log('🎨 Theme Card Debug:', { themeName: theme.name, shadcnFonts });
 
@@ -191,9 +195,11 @@ export function ThemeCard({
                 </h3>
                 {theme.author && (
                   <div className="flex items-center gap-1">
-                    {showUserInfo &&
-                    theme.provider === "tinte" &&
-                    (theme as any).user?.image ? (
+                    {VendorIcon ? (
+                      <VendorIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                    ) : showUserInfo &&
+                      theme.provider === "tinte" &&
+                      (theme as any).user?.image ? (
                       <>
                         <Avatar className="w-3.5 h-3.5">
                           <AvatarImage
@@ -412,9 +418,11 @@ export function ThemeCard({
           {/* Author */}
           {theme.author && (
             <div className="flex items-center gap-1">
-              {showUserInfo &&
-              theme.provider === "tinte" &&
-              (theme as any).user?.image ? (
+              {VendorIcon ? (
+                <VendorIcon className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+              ) : showUserInfo &&
+                theme.provider === "tinte" &&
+                (theme as any).user?.image ? (
                 <>
                   <Avatar className="w-3.5 h-3.5">
                     <AvatarImage
