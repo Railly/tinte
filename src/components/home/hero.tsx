@@ -1,14 +1,46 @@
 "use client";
 import { AnimatePresence, motion } from "motion/react";
+import { useEffect } from "react";
 import useMeasure from "react-use-measure";
 import { PromptInput } from "@/components/home/prompt-input";
 import { PROVIDER_ICONS } from "@/config/providers";
 import { useLoop } from "@/hooks/use-loop";
+import type { ThemeData } from "@/lib/theme-tokens";
+import { useThemeContext } from "@/providers/theme";
 import { mergeRefs } from "@/utils/merge-refs";
 
-export function Hero() {
+interface HeroProps {
+  userThemes?: ThemeData[];
+  tweakCNThemes?: ThemeData[];
+  tinteThemes?: ThemeData[];
+  raysoThemes?: ThemeData[];
+}
+
+export function Hero({
+  userThemes = [],
+  tweakCNThemes = [],
+  tinteThemes = [],
+  raysoThemes = [],
+}: HeroProps) {
   const [ref, bounds] = useMeasure();
   const [active, ref2] = useLoop();
+  const { addThemes, mounted } = useThemeContext();
+
+  // Add themes to store once on mount
+  useEffect(() => {
+    if (!mounted) return;
+
+    const allNewThemes: ThemeData[] = [
+      ...userThemes,
+      ...tweakCNThemes,
+      ...tinteThemes,
+      ...raysoThemes,
+    ];
+
+    if (allNewThemes.length > 0) {
+      addThemes(allNewThemes);
+    }
+  }, [mounted, userThemes, tweakCNThemes, tinteThemes, raysoThemes, addThemes]);
 
   return (
     <div className="flex flex-col items-center justify-center px-4 min-h-[65dvh]">

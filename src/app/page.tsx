@@ -86,7 +86,12 @@ export default async function Home() {
       />
       <div className="min-h-screen">
         <Header />
-        <Hero />
+        <Hero
+          userThemes={userThemes}
+          tweakCNThemes={tweakCNThemes}
+          tinteThemes={tinteThemes}
+          raysoThemes={raysoThemes}
+        />
         <Showcase
           session={session}
           userThemes={userThemes}
