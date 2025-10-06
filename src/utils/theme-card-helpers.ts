@@ -92,56 +92,98 @@ export function extractShadcnColors(theme: ThemeData, isDark = false) {
 
       const colorSet = paletteWithOverrides;
 
-      return {
-        // Core colors
-        "--background": colorSet.background,
-        "--foreground": colorSet.foreground,
-        "--card": colorSet.card,
-        "--card-foreground": colorSet["card-foreground"],
-        "--popover": colorSet.popover,
-        "--popover-foreground": colorSet["popover-foreground"],
+      // Define both --variable and --color-variable for Tailwind 4 compatibility
+      const vars: Record<string, string> = {};
 
-        // Primary colors
-        "--primary": colorSet.primary,
-        "--primary-foreground": colorSet["primary-foreground"],
-        "--secondary": colorSet.secondary,
-        "--secondary-foreground": colorSet["secondary-foreground"],
+      // Core colors
+      vars["--background"] = colorSet.background;
+      vars["--color-background"] = colorSet.background;
+      vars["--foreground"] = colorSet.foreground;
+      vars["--color-foreground"] = colorSet.foreground;
+      vars["--card"] = colorSet.card;
+      vars["--color-card"] = colorSet.card;
+      vars["--card-foreground"] = colorSet["card-foreground"];
+      vars["--color-card-foreground"] = colorSet["card-foreground"];
+      vars["--popover"] = colorSet.popover;
+      vars["--color-popover"] = colorSet.popover;
+      vars["--popover-foreground"] = colorSet["popover-foreground"];
+      vars["--color-popover-foreground"] = colorSet["popover-foreground"];
 
-        // Accent colors
-        "--accent": colorSet.accent,
-        "--accent-foreground": colorSet["accent-foreground"],
-        "--muted": colorSet.muted,
-        "--muted-foreground": colorSet["muted-foreground"],
+      // Primary colors
+      vars["--primary"] = colorSet.primary;
+      vars["--color-primary"] = colorSet.primary;
+      vars["--primary-foreground"] = colorSet["primary-foreground"];
+      vars["--color-primary-foreground"] = colorSet["primary-foreground"];
+      vars["--secondary"] = colorSet.secondary;
+      vars["--color-secondary"] = colorSet.secondary;
+      vars["--secondary-foreground"] = colorSet["secondary-foreground"];
+      vars["--color-secondary-foreground"] = colorSet["secondary-foreground"];
 
-        // Destructive
-        "--destructive": colorSet.destructive,
-        "--destructive-foreground": colorSet["destructive-foreground"],
+      // Accent colors
+      vars["--accent"] = colorSet.accent;
+      vars["--color-accent"] = colorSet.accent;
+      vars["--accent-foreground"] = colorSet["accent-foreground"];
+      vars["--color-accent-foreground"] = colorSet["accent-foreground"];
+      vars["--muted"] = colorSet.muted;
+      vars["--color-muted"] = colorSet.muted;
+      vars["--muted-foreground"] = colorSet["muted-foreground"];
+      vars["--color-muted-foreground"] = colorSet["muted-foreground"];
 
-        // Borders and inputs
-        "--border": colorSet.border,
-        "--input": colorSet.input,
-        "--ring": colorSet.ring,
+      // Destructive
+      vars["--destructive"] = colorSet.destructive;
+      vars["--color-destructive"] = colorSet.destructive;
+      vars["--destructive-foreground"] = colorSet["destructive-foreground"];
+      vars["--color-destructive-foreground"] =
+        colorSet["destructive-foreground"];
 
-        // Chart colors
-        "--chart-1": colorSet["chart-1"],
-        "--chart-2": colorSet["chart-2"],
-        "--chart-3": colorSet["chart-3"],
-        "--chart-4": colorSet["chart-4"],
-        "--chart-5": colorSet["chart-5"],
+      // Borders and inputs
+      vars["--border"] = colorSet.border;
+      vars["--color-border"] = colorSet.border;
+      vars["--input"] = colorSet.input;
+      vars["--color-input"] = colorSet.input;
+      vars["--ring"] = colorSet.ring;
+      vars["--color-ring"] = colorSet.ring;
 
-        // Sidebar colors
-        "--sidebar": colorSet.sidebar,
-        "--sidebar-foreground": colorSet["sidebar-foreground"],
-        "--sidebar-primary": colorSet["sidebar-primary"],
-        "--sidebar-primary-foreground": colorSet["sidebar-primary-foreground"],
-        "--sidebar-accent": colorSet["sidebar-accent"],
-        "--sidebar-accent-foreground": colorSet["sidebar-accent-foreground"],
-        "--sidebar-border": colorSet["sidebar-border"],
-        "--sidebar-ring": colorSet["sidebar-ring"],
+      // Chart colors
+      vars["--chart-1"] = colorSet["chart-1"];
+      vars["--color-chart-1"] = colorSet["chart-1"];
+      vars["--chart-2"] = colorSet["chart-2"];
+      vars["--color-chart-2"] = colorSet["chart-2"];
+      vars["--chart-3"] = colorSet["chart-3"];
+      vars["--color-chart-3"] = colorSet["chart-3"];
+      vars["--chart-4"] = colorSet["chart-4"];
+      vars["--color-chart-4"] = colorSet["chart-4"];
+      vars["--chart-5"] = colorSet["chart-5"];
+      vars["--color-chart-5"] = colorSet["chart-5"];
 
-        // Radius (if available)
-        "--radius": colorSet.radius,
-      };
+      // Sidebar colors
+      vars["--sidebar"] = colorSet.sidebar;
+      vars["--color-sidebar"] = colorSet.sidebar;
+      vars["--sidebar-foreground"] = colorSet["sidebar-foreground"];
+      vars["--color-sidebar-foreground"] = colorSet["sidebar-foreground"];
+      vars["--sidebar-primary"] = colorSet["sidebar-primary"];
+      vars["--color-sidebar-primary"] = colorSet["sidebar-primary"];
+      vars["--sidebar-primary-foreground"] =
+        colorSet["sidebar-primary-foreground"];
+      vars["--color-sidebar-primary-foreground"] =
+        colorSet["sidebar-primary-foreground"];
+      vars["--sidebar-accent"] = colorSet["sidebar-accent"];
+      vars["--color-sidebar-accent"] = colorSet["sidebar-accent"];
+      vars["--sidebar-accent-foreground"] =
+        colorSet["sidebar-accent-foreground"];
+      vars["--color-sidebar-accent-foreground"] =
+        colorSet["sidebar-accent-foreground"];
+      vars["--sidebar-border"] = colorSet["sidebar-border"];
+      vars["--color-sidebar-border"] = colorSet["sidebar-border"];
+      vars["--sidebar-ring"] = colorSet["sidebar-ring"];
+      vars["--color-sidebar-ring"] = colorSet["sidebar-ring"];
+
+      // Radius (if available)
+      if (colorSet.radius) {
+        vars["--radius"] = colorSet.radius;
+      }
+
+      return vars;
     } catch (error) {
       console.warn("Failed to extract shadcn colors with overrides:", error);
     }
