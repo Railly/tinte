@@ -487,7 +487,7 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       start: match.index,
       end: match.index + match[0].length,
       element: (
-        <span style={{ color: syntax.constant?.color }}>{match[0]}</span>
+        <span style={{ color: syntax.variable?.color }}>{match[0]}</span>
       ),
       priority: 5,
     });
