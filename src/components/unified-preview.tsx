@@ -1,8 +1,12 @@
 import { useQueryState } from "nuqs";
-import { useVSCodeOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+import {
+  useVSCodeOverrides,
+  useZedOverrides,
+} from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { WorkbenchToolbar } from "@/components/workbench/workbench-toolbar";
 import { convertTheme, getPreviewableProvider } from "@/lib/providers";
 import { convertTinteToVSCode } from "@/lib/providers/vscode";
+import { tinteToZed } from "@/lib/providers/zed";
 import { cn } from "@/lib/utils";
 import type { TinteTheme } from "@/types/tinte";
 
@@ -14,6 +18,7 @@ interface UnifiedPreviewProps {
 export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const vscodeOverrides = useVSCodeOverrides();
+  const zedOverrides = useZedOverrides();
   const currentProvider = getPreviewableProvider(provider || "shadcn");
 
   if (!currentProvider) {
@@ -24,7 +29,7 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
     );
   }
 
-  // Use special conversion for VS Code with overrides
+  // Use special conversion with overrides for VS Code and Zed
   let converted;
   if (currentProvider.metadata.id === "vscode") {
     converted = convertTinteToVSCode(
@@ -32,6 +37,52 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
       "Tinte Theme",
       vscodeOverrides.overrides,
     );
+  } else if (currentProvider.metadata.id === "zed") {
+    // Convert to Zed and apply overrides
+    const baseTheme = tinteToZed(
+      theme.light,
+      theme.dark,
+      theme.name || "Custom Theme",
+      theme.author || "Tinte",
+    );
+
+    // Apply overrides to both light and dark themes
+    const themesWithOverrides = baseTheme.themes.map((t) => {
+      const mode = t.appearance;
+      const modeOverrides = zedOverrides.allOverrides?.[mode] || {};
+
+      // Apply syntax token overrides
+      const syntaxWithOverrides: any = { ...t.style.syntax };
+      Object.entries(modeOverrides).forEach(([key, value]) => {
+        if (typeof value === "string" && syntaxWithOverrides[key]) {
+          syntaxWithOverrides[key] = {
+            ...syntaxWithOverrides[key],
+            color: value,
+          };
+        }
+      });
+
+      // Apply UI color overrides
+      const styleWithOverrides: any = { ...t.style };
+      Object.entries(modeOverrides).forEach(([key, value]) => {
+        if (typeof value === "string" && key in styleWithOverrides) {
+          styleWithOverrides[key] = value;
+        }
+      });
+
+      return {
+        ...t,
+        style: {
+          ...styleWithOverrides,
+          syntax: syntaxWithOverrides,
+        },
+      };
+    });
+
+    converted = {
+      ...baseTheme,
+      themes: themesWithOverrides,
+    };
   } else {
     converted = convertTheme(currentProvider.metadata.id, theme);
   }
