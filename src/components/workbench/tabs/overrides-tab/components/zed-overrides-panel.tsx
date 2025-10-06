@@ -441,7 +441,9 @@ export function ZedOverridesPanel({
       if (key === "editor.line_number") return currentColors.tx_3;
       if (key === "editor.active_line_number") return currentColors.tx_2;
       if (key === "editor.active_line.background") {
-        return isDark ? "#ffffff10" : "#00000010";
+        // Use a slightly lighter/darker version of the background for active line
+        // Zed doesn't support alpha, so we blend manually
+        return isDark ? "#2a2a2a" : "#f5f5f5";
       }
 
       // UI elements
