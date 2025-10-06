@@ -1,4 +1,5 @@
 import { FileCode2, FolderOpen } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
 import type { ZedThemeFamily } from "@/types/zed";
 
@@ -122,7 +123,7 @@ export default async function Home() {
           </div>
 
           {/* File tree */}
-          <div className="flex-1 min-h-0 overflow-auto">
+          <ScrollArea className="flex-1 min-h-0">
             <div className="text-xs py-1">
               <div
                 className="px-3 py-1.5 flex items-center gap-2"
@@ -183,7 +184,7 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollArea>
         </div>
 
         {/* Editor area */}
@@ -232,7 +233,7 @@ export default async function Home() {
           </div>
 
           {/* Code editor */}
-          <div className="flex-1 min-h-0 overflow-auto">
+          <ScrollArea className="flex-1 min-h-0">
             <div className="flex min-h-full">
               {/* Line numbers */}
               <div
@@ -288,7 +289,7 @@ export default async function Home() {
                 </pre>
               </div>
             </div>
-          </div>
+          </ScrollArea>
         </div>
       </div>
 
