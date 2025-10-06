@@ -312,8 +312,8 @@ export function ShadcnOverridesPanel({
     // Always show fonts group
     groups.push({ label: "Fonts", tokens: fontTokens, type: "fonts" });
 
-    // Radius is top-level in DB schema
-    const radius = currentOverrides.radius || "0.5rem";
+    // Radius is top-level in DB schema (default from globals.css)
+    const radius = currentOverrides.radius || "0.625rem";
 
     // Handle radius - check if it's an object (AI format) or string (legacy format)
     let radiusTokens;

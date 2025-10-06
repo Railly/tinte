@@ -157,7 +157,7 @@ export function ChatInput({
   const hasContent = message.trim() || pastedItems.length > 0;
 
   return (
-    <div className="p-3 border-t border-border bg-background">
+    <div className="">
       <div className="relative">
         {/* Unified container for textarea and pasted items */}
         <div

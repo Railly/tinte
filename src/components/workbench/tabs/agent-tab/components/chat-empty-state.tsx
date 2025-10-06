@@ -15,8 +15,8 @@ export function ChatEmptyState({ onSuggestionClick }: ChatEmptyStateProps) {
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center border border-border/30">
           <Logo size={32} />
         </div>
-        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-background flex items-center justify-center border border-amber-300/30">
-          <Sparkles className="h-3 w-3 text-amber-500" />
+        <div className="absolute top-2 -right-2 w-6 h-6">
+          <Sparkles className="h-3 w-3 text-foreground" />
         </div>
       </div>
 
