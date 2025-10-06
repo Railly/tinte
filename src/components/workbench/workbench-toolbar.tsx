@@ -203,7 +203,7 @@ export function WorkbenchToolbar({
         if (result.success && result.savedTheme) {
           toast.success("Theme updated successfully!");
           markAsSaved();
-          await handlePostSaveNavigation(result.savedTheme, "Update");
+          selectTheme(result.savedTheme);
         } else {
           toast.error("Failed to update theme");
         }
