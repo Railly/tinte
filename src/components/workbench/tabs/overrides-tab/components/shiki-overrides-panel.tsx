@@ -2,13 +2,22 @@
 
 import { ChevronDown, Info } from "lucide-react";
 import * as React from "react";
+import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import InvertedLogo from "@/components/shared/inverted-logo";
 import { TokenSearch } from "@/components/shared/token-search";
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -18,8 +27,10 @@ import {
 } from "@/components/ui/tooltip";
 import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-clear-overrides";
 import { useShikiOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+import { generateTailwindPalette } from "@/lib/ice-theme";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
+import type { TinteBlock } from "@/types/tinte";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
 
 interface ShikiVariable {
@@ -123,6 +134,38 @@ const SHIKI_VARIABLE_GROUPS: ShikiVariableGroup[] = [
   },
 ];
 
+const CANONICAL_COLOR_KEYS: (keyof TinteBlock)[] = [
+  "bg",
+  "bg_2",
+  "ui",
+  "ui_2",
+  "ui_3",
+  "tx_3",
+  "tx_2",
+  "tx",
+  "pr",
+  "sc",
+  "ac_1",
+  "ac_2",
+  "ac_3",
+];
+
+const COLOR_LABELS: Record<keyof TinteBlock, string> = {
+  bg: "BG",
+  bg_2: "BG2",
+  ui: "UI",
+  ui_2: "UI2",
+  ui_3: "UI3",
+  tx_3: "TX3",
+  tx_2: "TX2",
+  tx: "TX",
+  pr: "PR",
+  sc: "SC",
+  ac_1: "AC1",
+  ac_2: "AC2",
+  ac_3: "AC3",
+};
+
 interface ShikiTokenInputProps {
   variable: ShikiVariable;
   value: string;
@@ -130,6 +173,9 @@ interface ShikiTokenInputProps {
 }
 
 function ShikiTokenInput({ variable, value, onChange }: ShikiTokenInputProps) {
+  const { tinteTheme, currentMode } = useThemeContext();
+  const currentColors = tinteTheme?.[currentMode];
+
   // Ensure we always have a string value for ColorPickerInput
   const [localValue, setLocalValue] = React.useState(value || "");
 
@@ -140,6 +186,17 @@ function ShikiTokenInput({ variable, value, onChange }: ShikiTokenInputProps) {
   const handleChange = (newValue: string) => {
     setLocalValue(newValue);
     onChange(variable.key, newValue);
+  };
+
+  const handleCanonicalColorSelect = (colorKey: keyof TinteBlock) => {
+    const colorValue = currentColors?.[colorKey];
+    if (colorValue) {
+      handleChange(colorValue);
+    }
+  };
+
+  const handleTailwindColorSelect = (color: string) => {
+    handleChange(color);
   };
 
   return (
@@ -161,10 +218,99 @@ function ShikiTokenInput({ variable, value, onChange }: ShikiTokenInputProps) {
         </Tooltip>
       </div>
 
-      <ColorPickerInput
-        color={localValue || ""} // Ensure never undefined
-        onChange={handleChange}
-      />
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <ColorPickerInput color={localValue || ""} onChange={handleChange} />
+        </div>
+
+        {/* Quick Canonical Color Picker */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="h-10 w-10 p-0 flex items-center justify-center"
+              title="Select from canonical colors"
+            >
+              <InvertedLogo size={20} className="!w-5 !h-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            {CANONICAL_COLOR_KEYS.map((colorKey) => {
+              const colorValue = currentColors?.[colorKey];
+              const isSelected = colorValue === localValue;
+
+              return (
+                <DropdownMenuItem
+                  key={colorKey}
+                  onClick={() => handleCanonicalColorSelect(colorKey)}
+                  disabled={!colorValue}
+                  className="flex items-center gap-2"
+                >
+                  <div
+                    className={cn(
+                      "w-4 h-4 rounded border",
+                      isSelected
+                        ? "border-foreground border-2"
+                        : "border-border",
+                    )}
+                    style={{ backgroundColor: colorValue || "#000000" }}
+                  />
+                  <span className="font-mono text-xs">
+                    {COLOR_LABELS[colorKey]}
+                  </span>
+                  <span className="ml-auto text-xs text-muted-foreground font-mono">
+                    {colorValue}
+                  </span>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Tailwind Palette Generator */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="h-10 w-10 p-0 flex items-center justify-center"
+              title="Generate Tailwind palette from current color"
+            >
+              <TailwindIcon className="w-5 h-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            {localValue &&
+              (() => {
+                const palette = generateTailwindPalette(localValue);
+                return palette.map((color) => {
+                  const isSelected = color.value === localValue;
+
+                  return (
+                    <DropdownMenuItem
+                      key={color.name}
+                      onClick={() => handleTailwindColorSelect(color.value)}
+                      className="flex items-center gap-2"
+                    >
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded border",
+                          isSelected
+                            ? "border-foreground border-2"
+                            : "border-border",
+                        )}
+                        style={{ backgroundColor: color.value }}
+                      />
+                      <span className="font-mono text-xs">{color.name}</span>
+                      <span className="ml-auto text-xs text-muted-foreground font-mono">
+                        {color.value}
+                      </span>
+                    </DropdownMenuItem>
+                  );
+                });
+              })()}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 }
