@@ -97,48 +97,43 @@ export function ThemeSelector({
 
   // Helper function to render author icon
   const renderAuthorIcon = (theme: ThemeData, size: number = 12) => {
-    // Check for vendor-specific themes first
-    if (theme.author === "tweakcn" || theme.provider === "tweakcn") {
+    // Check for vendor-specific built-in themes first
+    if (theme.vendor === "tweakcn") {
       return <TweakCNIcon className="w-3 h-3" />;
     }
 
-    if (theme.author === "ray.so" || theme.provider === "rayso") {
+    if (theme.vendor === "rayso") {
       return <RaycastIcon className="w-3 h-3" />;
     }
 
-    if (theme.author === "tinte" || theme.provider === "tinte") {
-      // If user has an image, show their avatar
-      if (theme.user?.image) {
-        return (
-          <Avatar className="w-3 h-3">
-            <AvatarImage
-              src={theme.user.image}
-              alt={theme.user.name || "User"}
-            />
-            <AvatarFallback className="text-[8px]">
-              {(theme.user.name?.[0] || "U").toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        );
-      }
-
-      // If no user image but has user ID, show anonymous avatar
-      if (theme.user?.id) {
-        return (
-          <Avatar className="w-3 h-3">
-            <AvatarFallback className="text-[8px]">
-              {(theme.user.name?.[0] || "U").toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        );
-      }
-
-      // Anonymous theme - show InvertedLogo
+    if (theme.vendor === "tinte") {
       return <InvertedLogo size={12} />;
     }
 
-    // Fallback for other providers - show InvertedLogo for anonymous themes
-    return <InvertedLogo size={12} />;
+    // Community themes (no vendor) - show user avatar or Users icon
+    if (theme.user?.image) {
+      return (
+        <Avatar className="w-3 h-3">
+          <AvatarImage src={theme.user.image} alt={theme.user.name || "User"} />
+          <AvatarFallback className="text-[8px]">
+            {(theme.user.name?.[0] || "U").toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+      );
+    }
+
+    if (theme.user?.id) {
+      return (
+        <Avatar className="w-3 h-3">
+          <AvatarFallback className="text-[8px]">
+            {(theme.user.name?.[0] || "U").toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+      );
+    }
+
+    // Fallback for community themes without user info - show Users icon
+    return <Users className="w-3 h-3" />;
   };
 
   const handleThemeSelect = React.useCallback(
