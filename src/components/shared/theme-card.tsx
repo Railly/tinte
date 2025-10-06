@@ -196,7 +196,7 @@ export function ThemeCard({
                 {theme.author && (
                   <div className="flex items-center gap-1">
                     {VendorIcon ? (
-                      <VendorIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                      <VendorIcon className="w-3.5 h-3.5 text-foreground" />
                     ) : showUserInfo &&
                       theme.provider === "tinte" &&
                       (theme as any).user?.image ? (
@@ -419,7 +419,7 @@ export function ThemeCard({
           {theme.author && (
             <div className="flex items-center gap-1">
               {VendorIcon ? (
-                <VendorIcon className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                <VendorIcon className="w-3.5 h-3.5 text-foreground" />
               ) : showUserInfo &&
                 theme.provider === "tinte" &&
                 (theme as any).user?.image ? (
