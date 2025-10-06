@@ -5,6 +5,7 @@ import * as React from "react";
 import { ShadcnOverridesPanel } from "./components/shadcn-overrides-panel";
 import { ShikiOverridesPanel } from "./components/shiki-overrides-panel";
 import { VSCodeOverridesPanel } from "./components/vscode-overrides-panel";
+import { ZedOverridesPanel } from "./components/zed-overrides-panel";
 
 export function OverridesTab() {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
@@ -19,6 +20,9 @@ export function OverridesTab() {
     }
     if (provider === "shiki") {
       return "Search CSS variables...";
+    }
+    if (provider === "zed") {
+      return "Search Zed theme properties...";
     }
     return "Search tokens...";
   };
@@ -53,10 +57,20 @@ export function OverridesTab() {
     );
   }
 
+  if (provider === "zed") {
+    return (
+      <ZedOverridesPanel
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder={getSearchPlaceholder()}
+      />
+    );
+  }
+
   return (
     <div className="p-4 text-center text-muted-foreground">
       <h3 className="font-medium mb-2">Provider-Specific Tokens</h3>
-      <p>Select shadcn/ui, VS Code, or Shiki provider to edit tokens</p>
+      <p>Select shadcn/ui, VS Code, Shiki, or Zed provider to edit tokens</p>
     </div>
   );
 }
