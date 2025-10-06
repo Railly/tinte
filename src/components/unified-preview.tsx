@@ -1,4 +1,5 @@
 import { useQueryState } from "nuqs";
+import { useMemo } from "react";
 import {
   useVSCodeOverrides,
   useZedOverrides,
@@ -30,62 +31,68 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   }
 
   // Use special conversion with overrides for VS Code and Zed
-  let converted;
-  if (currentProvider.metadata.id === "vscode") {
-    converted = convertTinteToVSCode(
-      theme,
-      "Tinte Theme",
-      vscodeOverrides.overrides,
-    );
-  } else if (currentProvider.metadata.id === "zed") {
-    // Convert to Zed and apply overrides
-    const baseTheme = tinteToZed(
-      theme.light,
-      theme.dark,
-      theme.name || "Custom Theme",
-      theme.author || "Tinte",
-    );
+  const converted = useMemo(() => {
+    if (currentProvider.metadata.id === "vscode") {
+      return convertTinteToVSCode(
+        theme,
+        "Tinte Theme",
+        vscodeOverrides.overrides,
+      );
+    } else if (currentProvider.metadata.id === "zed") {
+      // Convert to Zed and apply overrides
+      const baseTheme = tinteToZed(
+        theme.light,
+        theme.dark,
+        theme.name || "Custom Theme",
+        theme.author || "Tinte",
+      );
 
-    // Apply overrides to both light and dark themes
-    const themesWithOverrides = baseTheme.themes.map((t) => {
-      const mode = t.appearance;
-      const modeOverrides = zedOverrides.allOverrides?.[mode] || {};
+      // Apply overrides to both light and dark themes
+      const themesWithOverrides = baseTheme.themes.map((t) => {
+        const mode = t.appearance;
+        const modeOverrides = zedOverrides.allOverrides?.[mode] || {};
 
-      // Apply syntax token overrides
-      const syntaxWithOverrides: any = { ...t.style.syntax };
-      Object.entries(modeOverrides).forEach(([key, value]) => {
-        if (typeof value === "string" && syntaxWithOverrides[key]) {
-          syntaxWithOverrides[key] = {
-            ...syntaxWithOverrides[key],
-            color: value,
-          };
-        }
-      });
+        // Apply syntax token overrides
+        const syntaxWithOverrides: any = { ...t.style.syntax };
+        Object.entries(modeOverrides).forEach(([key, value]) => {
+          if (typeof value === "string" && syntaxWithOverrides[key]) {
+            syntaxWithOverrides[key] = {
+              ...syntaxWithOverrides[key],
+              color: value,
+            };
+          }
+        });
 
-      // Apply UI color overrides
-      const styleWithOverrides: any = { ...t.style };
-      Object.entries(modeOverrides).forEach(([key, value]) => {
-        if (typeof value === "string" && key in styleWithOverrides) {
-          styleWithOverrides[key] = value;
-        }
+        // Apply UI color overrides
+        const styleWithOverrides: any = { ...t.style };
+        Object.entries(modeOverrides).forEach(([key, value]) => {
+          if (typeof value === "string" && key in styleWithOverrides) {
+            styleWithOverrides[key] = value;
+          }
+        });
+
+        return {
+          ...t,
+          style: {
+            ...styleWithOverrides,
+            syntax: syntaxWithOverrides,
+          },
+        };
       });
 
       return {
-        ...t,
-        style: {
-          ...styleWithOverrides,
-          syntax: syntaxWithOverrides,
-        },
+        ...baseTheme,
+        themes: themesWithOverrides,
       };
-    });
-
-    converted = {
-      ...baseTheme,
-      themes: themesWithOverrides,
-    };
-  } else {
-    converted = convertTheme(currentProvider.metadata.id, theme);
-  }
+    } else {
+      return convertTheme(currentProvider.metadata.id, theme);
+    }
+  }, [
+    currentProvider,
+    theme,
+    vscodeOverrides.overrides,
+    zedOverrides.allOverrides,
+  ]);
 
   if (!converted) {
     return (
