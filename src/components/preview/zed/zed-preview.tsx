@@ -74,63 +74,62 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
           {/* File tree */}
           <ScrollArea className="flex-1 min-h-0">
-            <div className="text-xs">
+            <div className="text-xs py-1">
+              <div
+                className="px-3 py-1.5 flex items-center gap-2 hover:bg-black/5"
+                style={{ color: style.text }}
+              >
+                <FolderOpen className="w-4 h-4" />
+                <span className="font-medium">tinte</span>
+              </div>
+              <div className="pl-6">
                 <div
-                  className="px-3 py-1.5 flex items-center gap-2 hover:bg-black/5"
-                  style={{ color: style.text }}
+                  className="px-3 py-1.5 flex items-center gap-2"
+                  style={{ color: style["text.muted"] }}
                 >
-                  <FolderOpen className="w-4 h-4" />
-                  <span className="font-medium">tinte</span>
+                  <FolderOpen className="w-3.5 h-3.5" />
+                  <span>src</span>
                 </div>
-                <div className="pl-6">
+                <div className="pl-4">
                   <div
                     className="px-3 py-1.5 flex items-center gap-2"
                     style={{ color: style["text.muted"] }}
                   >
                     <FolderOpen className="w-3.5 h-3.5" />
-                    <span>src</span>
+                    <span>app</span>
                   </div>
                   <div className="pl-4">
                     <div
                       className="px-3 py-1.5 flex items-center gap-2"
-                      style={{ color: style["text.muted"] }}
+                      style={{
+                        backgroundColor: style["element.selected"],
+                        color: style.text,
+                      }}
                     >
-                      <FolderOpen className="w-3.5 h-3.5" />
-                      <span>app</span>
-                    </div>
-                    <div className="pl-4">
-                      <div
-                        className="px-3 py-1.5 flex items-center gap-2"
-                        style={{
-                          backgroundColor: style["element.selected"],
-                          color: style.text,
-                        }}
-                      >
-                        <FileCode2 className="w-3.5 h-3.5" />
-                        <span className="font-medium">page.tsx</span>
-                      </div>
-                      <div
-                        className="px-3 py-1.5 flex items-center gap-2"
-                        style={{ color: style["text.muted"] }}
-                      >
-                        <FileCode2 className="w-3.5 h-3.5" />
-                        <span>layout.tsx</span>
-                      </div>
+                      <FileCode2 className="w-3.5 h-3.5" />
+                      <span className="font-medium">page.tsx</span>
                     </div>
                     <div
                       className="px-3 py-1.5 flex items-center gap-2"
                       style={{ color: style["text.muted"] }}
                     >
-                      <FolderOpen className="w-3.5 h-3.5" />
-                      <span>components</span>
+                      <FileCode2 className="w-3.5 h-3.5" />
+                      <span>layout.tsx</span>
                     </div>
-                    <div
-                      className="px-3 py-1.5 flex items-center gap-2"
-                      style={{ color: style["text.muted"] }}
-                    >
-                      <FolderOpen className="w-3.5 h-3.5" />
-                      <span>lib</span>
-                    </div>
+                  </div>
+                  <div
+                    className="px-3 py-1.5 flex items-center gap-2"
+                    style={{ color: style["text.muted"] }}
+                  >
+                    <FolderOpen className="w-3.5 h-3.5" />
+                    <span>components</span>
+                  </div>
+                  <div
+                    className="px-3 py-1.5 flex items-center gap-2"
+                    style={{ color: style["text.muted"] }}
+                  >
+                    <FolderOpen className="w-3.5 h-3.5" />
+                    <span>lib</span>
                   </div>
                 </div>
               </div>
@@ -243,38 +242,35 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           </ScrollArea>
         </div>
       </div>
-  <div
-  className =
-    "h-7 px-4 flex items-center justify-between text-[11px] border-t shrink-0";
-  style={{
-      backgroundColor: style["status_bar.background"],
-      borderColor: style["border.variant"],
-      color: style["text.muted"],
-    }
-}
->
-    <div className="flex items-center gap-4 shrink-0">
-      <span className="font-medium">TypeScript JSX</span>
-      <span>UTF-8</span>
-      <span>Ln 14, Col 16</span>
+
+      {/* Status bar */}
+      <div
+        className="h-7 px-4 flex items-center justify-between text-[11px] border-t shrink-0"
+        style={{
+          backgroundColor: style["status_bar.background"],
+          borderColor: style["border.variant"],
+          color: style["text.muted"],
+        }}
+      >
+        <div className="flex items-center gap-4 shrink-0">
+          <span className="font-medium">TypeScript JSX</span>
+          <span>UTF-8</span>
+          <span>Ln 14, Col 16</span>
+        </div>
+        <div className="flex items-center gap-4 shrink-0">
+          <span
+            className="flex items-center gap-1.5"
+            style={{ color: style["version_control.modified"] }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-current" />2
+          </span>
+          <span>74:1</span>
+          <span className="uppercase tracking-wide">--INSERT--</span>
+          <span className="uppercase tracking-wide">TSX</span>
+        </div>
+      </div>
     </div>
-    <div className="flex items-center gap-4 shrink-0">
-      <span
-        className="flex items-center gap-1.5"
-        style=
-{
-  color: style["version_control.modified"];
-}
->
-        <span className="w-1.5 h-1.5 rounded-full bg-current" />2
-      </span>
-      <span>74:1</span>
-      <span className="uppercase tracking-wide">--INSERT--</span>
-      <span className="uppercase tracking-wide">TSX</span>
-    </div>
-  </div>
-</div>
-  )
+  );
 }
 
 function highlightLine(line: string, syntax: any): React.ReactNode {
