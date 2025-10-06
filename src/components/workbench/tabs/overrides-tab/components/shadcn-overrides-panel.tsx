@@ -313,25 +313,18 @@ export function ShadcnOverridesPanel({
     groups.push({ label: "Fonts", tokens: fontTokens, type: "fonts" });
 
     // Radius is top-level in DB schema (default from globals.css)
-    const radius = currentOverrides.radius || "0.625rem";
+    // Always use single radius value - other variants are calculated via CSS
+    let baseRadius = currentOverrides.radius || "0.625rem";
 
-    // Handle radius - check if it's an object (AI format) or string (legacy format)
-    let radiusTokens;
-    if (typeof radius === "object" && radius !== null) {
-      // AI format: { sm: "0.125rem", md: "0.25rem", lg: "0.5rem", xl: "0.75rem" }
-      radiusTokens = Object.entries(radius).map(([key, value]) => [
-        `radius-${key}`,
-        String(value),
-      ]);
-    } else {
-      // Legacy format: single radius value
-      radiusTokens = [["radius", String(radius)]];
+    // If AI format (object), extract the base value from lg variant
+    if (typeof baseRadius === "object" && baseRadius !== null) {
+      baseRadius = (baseRadius as any).lg || "0.625rem";
     }
 
-    // Always show radius group
+    // Always show single radius slider
     groups.push({
       label: "Border Radius",
-      tokens: radiusTokens as [string, string][],
+      tokens: [["radius", String(baseRadius)]],
       type: "base",
     });
 

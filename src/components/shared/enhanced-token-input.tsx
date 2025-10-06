@@ -253,7 +253,7 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
     );
   }
 
-  if (tokenKey === "radius" || tokenKey.startsWith("radius-")) {
+  if (tokenKey === "radius") {
     return (
       <NumberSlider
         value={parseFloat(value.replace(/px|rem|em/, "")) || 0}
