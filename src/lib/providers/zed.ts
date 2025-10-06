@@ -4,15 +4,29 @@ import type { ZedTheme, ZedThemeFamily, ZedThemeStyle } from "@/types/zed";
 
 // Helper functions for color manipulation
 function ensureAlpha(color: string, alpha: number = 1): string {
+  // Zed only accepts 6-digit hex colors (#RRGGBB), no alpha channel
+  // If alpha < 1, we blend with white/black to simulate transparency
   const parsed = rgb(color);
   if (!parsed) return color;
 
-  const r = Math.round(parsed.r * 255);
-  const g = Math.round(parsed.g * 255);
-  const b = Math.round(parsed.b * 255);
-  const a = Math.round(alpha * 255);
+  let r = parsed.r * 255;
+  let g = parsed.g * 255;
+  let b = parsed.b * 255;
 
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}${a.toString(16).padStart(2, "0")}`;
+  // If alpha < 1, blend with white (for light backgrounds) or black (for dark)
+  // This is a simplification since we can't use true alpha in Zed
+  if (alpha < 1) {
+    const blend = 255; // Blend with white for now
+    r = r * alpha + blend * (1 - alpha);
+    g = g * alpha + blend * (1 - alpha);
+    b = b * alpha + blend * (1 - alpha);
+  }
+
+  const rHex = Math.round(r).toString(16).padStart(2, "0");
+  const gHex = Math.round(g).toString(16).padStart(2, "0");
+  const bHex = Math.round(b).toString(16).padStart(2, "0");
+
+  return `#${rHex}${gHex}${bHex}`;
 }
 
 function adjustLuminance(color: string, amount: number): string {
