@@ -185,42 +185,42 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           </div>
 
           {/* Code editor */}
-          <div className="flex flex-1 overflow-hidden">
-            {/* Line numbers */}
-            <div
-              className="w-12 py-3 text-[11px] text-right font-mono select-none border-r"
-              style={{
-                backgroundColor: style["editor.gutter.background"],
-                color: style["editor.line_number"],
-                borderColor: style["border.variant"],
-              }}
-            >
-              {codeExample.split("\n").map((_, index) => (
-                <div
-                  key={index}
-                  className="px-2 leading-[1.6] h-[19.2px]"
-                  style={{
-                    color:
-                      index === 13
-                        ? style["editor.active_line_number"]
-                        : style["editor.line_number"],
-                    fontWeight: index === 13 ? 600 : 400,
-                  }}
-                >
-                  {index + 1}
-                </div>
-              ))}
-            </div>
+          <ScrollArea className="flex-1">
+            <div className="flex min-h-full">
+              {/* Line numbers */}
+              <div
+                className="w-12 py-3 text-[11px] text-right font-mono select-none border-r shrink-0"
+                style={{
+                  backgroundColor: style["editor.gutter.background"],
+                  color: style["editor.line_number"],
+                  borderColor: style["border.variant"],
+                }}
+              >
+                {codeExample.split("\n").map((_, index) => (
+                  <div
+                    key={index}
+                    className="px-2 leading-[1.6] h-[19.2px]"
+                    style={{
+                      color:
+                        index === 13
+                          ? style["editor.active_line_number"]
+                          : style["editor.line_number"],
+                      fontWeight: index === 13 ? 600 : 400,
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                ))}
+              </div>
 
-            {/* Code content */}
-            <ScrollArea
-              className="flex-1 font-mono text-[11px]"
-              style={{
-                backgroundColor: style["editor.background"],
-                color: style["editor.foreground"],
-              }}
-            >
-              <div className="py-3 px-4">
+              {/* Code content */}
+              <div
+                className="flex-1 py-3 px-4 font-mono text-[11px]"
+                style={{
+                  backgroundColor: style["editor.background"],
+                  color: style["editor.foreground"],
+                }}
+              >
                 <pre className="leading-[1.6]">
                   {codeExample.split("\n").map((line, index) => {
                     const isActiveLine = index === 13;
@@ -240,8 +240,8 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
                   })}
                 </pre>
               </div>
-            </ScrollArea>
-          </div>
+            </div>
+          </ScrollArea>
         </div>
       </div>
 
