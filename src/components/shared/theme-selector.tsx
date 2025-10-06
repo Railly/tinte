@@ -218,6 +218,14 @@ export function ThemeSelector({
       return dateB - dateA;
     });
 
+    // Sort built-in themes: tinte first, then tweakcn, then rayso
+    builtInThemes.sort((a, b) => {
+      const vendorOrder = { tinte: 0, tweakcn: 1, rayso: 2 };
+      const vendorA = vendorOrder[a.vendor as keyof typeof vendorOrder] ?? 3;
+      const vendorB = vendorOrder[b.vendor as keyof typeof vendorOrder] ?? 3;
+      return vendorA - vendorB;
+    });
+
     return {
       favoriteThemes: isAuthenticated ? favoriteThemes : [],
       userThemes,
