@@ -31,7 +31,7 @@ export function Showcase({
   tinteThemes,
   raysoThemes,
 }: ShowcaseProps) {
-  const [activeTab, setActiveTab] = useState("community");
+  const [activeTab, setActiveTab] = useState("tinte");
   const { handleThemeSelect, mounted } = useThemeContext();
   const shouldShowSkeletons = !mounted;
 
@@ -101,18 +101,18 @@ export function Showcase({
             <TabsList className="bg-background h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse border rounded-sm w-full sm:w-auto overflow-x-auto">
               <div className="flex min-w-max w-full sm:w-auto">
                 <TabsTrigger
-                  value="community"
-                  className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
-                >
-                  <Users className="w-3 h-3" />
-                  <span className="hidden sm:inline">Community</span>
-                </TabsTrigger>
-                <TabsTrigger
                   value="tinte"
                   className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
                 >
                   <Logo size={12} />
                   <span className="hidden sm:inline">tinte</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="community"
+                  className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border-none py-2 px-3 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e text-xs gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
+                >
+                  <Users className="w-3 h-3" />
+                  <span className="hidden sm:inline">Community</span>
                 </TabsTrigger>
                 {session && (
                   <TabsTrigger

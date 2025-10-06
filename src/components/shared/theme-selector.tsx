@@ -199,14 +199,16 @@ export function ThemeSelector({
       if (favoriteThemeIds.has(theme.id)) return;
 
       const isOwnTheme = theme.user?.id === user?.id;
-      const hasUser = Boolean(theme.user?.id);
+      const isBuiltIn = ["tweakcn", "tinte", "rayso"].includes(
+        theme.vendor || "",
+      );
 
       if (isOwnTheme) {
         userThemes.push(theme);
-      } else if (hasUser) {
-        communityThemes.push(theme);
-      } else {
+      } else if (isBuiltIn) {
         builtInThemes.push(theme);
+      } else {
+        communityThemes.push(theme);
       }
     });
 
