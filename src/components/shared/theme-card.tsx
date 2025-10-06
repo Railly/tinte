@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useThemeFonts } from "@/hooks/use-theme-fonts";
 import type { ThemeData } from "@/lib/theme-tokens";
-import { getVendorIcon } from "@/lib/vendor-icons";
+import { getVendorIcon, getVendorImage } from "@/lib/vendor-icons";
 import { useThemeContext } from "@/providers/theme";
 import {
   extractShadcnColors,
@@ -164,8 +164,9 @@ export function ThemeCard({
   const shadcnFonts = extractShadcnFonts(theme);
   const shadcnShadows = extractShadcnShadows(theme, isDark);
 
-  // Check if theme has a vendor icon
+  // Check if theme has a vendor icon or image
   const VendorIcon = theme.slug ? getVendorIcon(theme.slug) : null;
+  const vendorImage = theme.slug ? getVendorImage(theme.slug) : null;
 
   // Debug: uncomment to see font extraction in console
   // console.log('🎨 Theme Card Debug:', { themeName: theme.name, shadcnFonts });
@@ -195,7 +196,14 @@ export function ThemeCard({
                 </h3>
                 {theme.author && (
                   <div className="flex items-center gap-1">
-                    {VendorIcon ? (
+                    {vendorImage ? (
+                      <Avatar className="w-3.5 h-3.5">
+                        <AvatarImage src={vendorImage} alt={theme.name} />
+                        <AvatarFallback className="text-[8px]">
+                          {theme.name[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    ) : VendorIcon ? (
                       <VendorIcon className="w-3.5 h-3.5 text-foreground" />
                     ) : showUserInfo &&
                       theme.provider === "tinte" &&
@@ -418,7 +426,14 @@ export function ThemeCard({
           {/* Author */}
           {theme.author && (
             <div className="flex items-center gap-1">
-              {VendorIcon ? (
+              {vendorImage ? (
+                <Avatar className="w-3.5 h-3.5">
+                  <AvatarImage src={vendorImage} alt={theme.name} />
+                  <AvatarFallback className="text-[8px]">
+                    {theme.name[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              ) : VendorIcon ? (
                 <VendorIcon className="w-3.5 h-3.5 text-foreground" />
               ) : showUserInfo &&
                 theme.provider === "tinte" &&
