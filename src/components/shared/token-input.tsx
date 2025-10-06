@@ -75,15 +75,15 @@ export const TokenInput: React.FC<TokenInputProps> = ({
     );
   }
 
-  if (tokenKey === "radius") {
+  if (tokenKey === "radius" || tokenKey.startsWith("radius-")) {
     return (
       <NumberSlider
         value={parseFloat(value.replace(/px|rem|em/, "")) || 0}
-        onChange={(newValue) => onEdit(tokenKey, `${newValue}px`)}
+        onChange={(newValue) => onEdit(tokenKey, `${newValue}rem`)}
         min={0}
-        max={50}
-        step={1}
-        unit="px"
+        max={2}
+        step={0.125}
+        unit="rem"
         className="mt-1"
       />
     );
