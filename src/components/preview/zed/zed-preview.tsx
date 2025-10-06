@@ -324,175 +324,200 @@ export default async function Home() {
 }
 
 function highlightLine(line: string, syntax: any): React.ReactNode {
-  // Breadcrumb line
   if (line.includes("src/app/page.tsx")) {
     return <span style={{ color: syntax.comment?.color }}>{line}</span>;
   }
 
-  // Const declarations
-  if (line.includes("const ")) {
-    const match = line.match(/(\s*)(const\s+)(\w+)(\s*=\s*)(.*)/);
-    if (match) {
-      const [, indent, constKw, varName, equals, rest] = match;
-      return (
-        <>
-          <span>{indent}</span>
-          <span style={{ color: syntax.keyword?.color }}>{constKw}</span>
-          <span style={{ color: syntax.variable?.color }}>{varName}</span>
-          <span>{equals}</span>
-          {highlightExpression(rest, syntax)}
-        </>
-      );
+  const keywords =
+    /\b(import|export|from|const|let|var|async|await|function|return|if|else|default)\b/g;
+  const types = /\b(Metadata)\b/g;
+  const strings = /"([^"]*)"/g;
+  const numbers = /\b(\d+)\b/g;
+  const functions = /\b([a-z][a-zA-Z0-9]*)\s*\(/g;
+  const properties = /\.([a-zA-Z][a-zA-Z0-9]*)\b/g;
+  const jsxTags = /<\/?([a-zA-Z][a-zA-Z0-9]*)/g;
+  const jsxProps = /\b([a-z][a-zA-Z0-9]*(?:HTML)?)\s*=/g;
+  const operators = /(=>|=|\?|:|\|\||&&)/g;
+  const punctuation = /([{}[\]();,.])/g;
+
+  const result = line;
+  const tokens: Array<{
+    start: number;
+    end: number;
+    element: React.ReactNode;
+    priority: number;
+  }> = [];
+
+  let match;
+
+  while ((match = strings.exec(line)) !== null) {
+    tokens.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: <span style={{ color: syntax.string?.color }}>{match[0]}</span>,
+      priority: 10,
+    });
+  }
+
+  while ((match = keywords.exec(line)) !== null) {
+    tokens.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: (
+        <span
+          style={{
+            color: syntax.keyword?.color,
+            fontWeight: syntax.keyword?.font_weight || undefined,
+            fontStyle: syntax.keyword?.font_style || undefined,
+          }}
+        >
+          {match[0]}
+        </span>
+      ),
+      priority: 9,
+    });
+  }
+
+  while ((match = types.exec(line)) !== null) {
+    tokens.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: (
+        <span
+          style={{
+            color: syntax.type?.color,
+            fontWeight: syntax.type?.font_weight || undefined,
+            fontStyle: syntax.type?.font_style || undefined,
+          }}
+        >
+          {match[0]}
+        </span>
+      ),
+      priority: 8,
+    });
+  }
+
+  while ((match = functions.exec(line)) !== null) {
+    const funcName = match[1];
+    tokens.push({
+      start: match.index,
+      end: match.index + funcName.length,
+      element: (
+        <span
+          style={{
+            color: syntax.function?.color,
+            fontWeight: syntax.function?.font_weight || undefined,
+            fontStyle: syntax.function?.font_style || undefined,
+          }}
+        >
+          {funcName}
+        </span>
+      ),
+      priority: 7,
+    });
+  }
+
+  while ((match = properties.exec(line)) !== null) {
+    const propName = match[1];
+    tokens.push({
+      start: match.index + 1,
+      end: match.index + 1 + propName.length,
+      element: (
+        <span style={{ color: syntax.property?.color }}>{propName}</span>
+      ),
+      priority: 6,
+    });
+  }
+
+  while ((match = jsxTags.exec(line)) !== null) {
+    const tagName = match[1];
+    tokens.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: <span style={{ color: syntax.tag?.color }}>{match[0]}</span>,
+      priority: 8,
+    });
+  }
+
+  while ((match = jsxProps.exec(line)) !== null) {
+    const propName = match[1];
+    tokens.push({
+      start: match.index,
+      end: match.index + propName.length,
+      element: (
+        <span style={{ color: syntax.property?.color }}>{propName}</span>
+      ),
+      priority: 7,
+    });
+  }
+
+  while ((match = numbers.exec(line)) !== null) {
+    tokens.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: <span style={{ color: syntax.number?.color }}>{match[0]}</span>,
+      priority: 5,
+    });
+  }
+
+  while ((match = operators.exec(line)) !== null) {
+    tokens.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      element: (
+        <span style={{ color: syntax.operator?.color }}>{match[0]}</span>
+      ),
+      priority: 4,
+    });
+  }
+
+  tokens.sort((a, b) => {
+    if (a.start !== b.start) return a.start - b.start;
+    return b.priority - a.priority;
+  });
+
+  const filtered: typeof tokens = [];
+  for (const token of tokens) {
+    const overlaps = filtered.some(
+      (existing) =>
+        (token.start >= existing.start && token.start < existing.end) ||
+        (token.end > existing.start && token.end <= existing.end),
+    );
+    if (!overlaps) {
+      filtered.push(token);
     }
   }
 
-  // Function calls
-  if (
-    line.includes("await get") ||
-    line.includes("await getUserFavoriteThemes")
-  ) {
-    const parts = line.split(/(\bawait\b|\bget\w+)/);
-    return (
-      <>
-        {parts.map((part, i) => {
-          if (part === "await") {
-            return (
-              <span key={i} style={{ color: syntax.keyword?.color }}>
-                {part}
-              </span>
-            );
-          } else if (part.match(/^get\w+/)) {
-            return (
-              <span key={i} style={{ color: syntax.function?.color }}>
-                {part}
-              </span>
-            );
-          }
-          return <span key={i}>{part}</span>;
-        })}
-      </>
-    );
-  }
+  filtered.sort((a, b) => a.start - b.start);
 
-  // Return statement
-  if (line.trim() === "return (") {
-    return (
-      <>
-        <span>{"  "}</span>
-        <span style={{ color: syntax.keyword?.color }}>return</span>
-        <span> (</span>
-      </>
-    );
-  }
-
-  // JSX/HTML tags
-  if (line.includes("<script") || line.includes("dangerouslySetInnerHTML")) {
-    const parts = line.split(/(<\/?script>?|type=|dangerouslySetInnerHTML=)/);
-    return (
-      <>
-        {parts.map((part, i) => {
-          if (part.match(/<\/?script>?/)) {
-            return (
-              <span key={i} style={{ color: syntax.tag?.color }}>
-                {part}
-              </span>
-            );
-          } else if (part === "type=" || part === "dangerouslySetInnerHTML=") {
-            return (
-              <span key={i} style={{ color: syntax.property?.color }}>
-                {part}
-              </span>
-            );
-          } else if (part.match(/^"[^"]*"$/)) {
-            return (
-              <span key={i} style={{ color: syntax.string?.color }}>
-                {part}
-              </span>
-            );
-          }
-          return <span key={i}>{part}</span>;
-        })}
-      </>
-    );
-  }
-
-  // Comments
-  if (line.trim().startsWith("//")) {
-    return (
-      <span style={{ color: syntax.comment?.color, fontStyle: "italic" }}>
-        {line}
-      </span>
-    );
-  }
-
-  // Empty lines or plain brackets
-  if (
-    line.trim() === "" ||
-    line.trim() === "<>" ||
-    line.trim().match(/^[(){}[\];,]*$/)
-  ) {
+  if (filtered.length === 0) {
     return line;
   }
 
-  return line;
+  const parts: React.ReactNode[] = [];
+  let lastEnd = 0;
+
+  for (const token of filtered) {
+    if (token.start > lastEnd) {
+      parts.push(line.substring(lastEnd, token.start));
+    }
+    parts.push(token.element);
+    lastEnd = token.end;
+  }
+
+  if (lastEnd < line.length) {
+    parts.push(line.substring(lastEnd));
+  }
+
+  return (
+    <>
+      {parts.map((part, i) => (
+        <span key={i}>{part}</span>
+      ))}
+    </>
+  );
 }
 
 function highlightExpression(expr: string, syntax: any): React.ReactNode {
-  // Session check
-  if (expr.includes("session")) {
-    return (
-      <>
-        <span style={{ color: syntax.variable?.color }}>session</span>
-        {expr.substring(7)}
-      </>
-    );
-  }
-
-  // Function calls
-  if (expr.match(/^\s*await\s+\w+/)) {
-    const parts = expr.split(/(\bawait\b|\w+\()/);
-    return (
-      <>
-        {parts.map((part, i) => {
-          if (part === "await") {
-            return (
-              <span key={i} style={{ color: syntax.keyword?.color }}>
-                {part}
-              </span>
-            );
-          } else if (part.match(/^\w+\($/)) {
-            return (
-              <span key={i} style={{ color: syntax.function?.color }}>
-                {part}
-              </span>
-            );
-          }
-          return <span key={i}>{part}</span>;
-        })}
-      </>
-    );
-  }
-
-  // Numbers
-  if (expr.match(/^\d+/)) {
-    return <span style={{ color: syntax.number?.color }}>{expr}</span>;
-  }
-
-  // Function call
-  if (
-    expr.includes("generatePageSchema") ||
-    expr.includes("generateOrganizationSchema")
-  ) {
-    const match = expr.match(/(\w+)(\()/);
-    if (match) {
-      return (
-        <>
-          <span style={{ color: syntax.function?.color }}>{match[1]}</span>
-          <span>{match[2]}</span>
-        </>
-      );
-    }
-  }
-
-  return expr;
+  return highlightLine(expr, syntax);
 }
