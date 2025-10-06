@@ -460,7 +460,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
                 themes={allThemes}
                 activeId={null}
                 onSelect={handleThemeSelect}
-                triggerClassName="h-8"
+                triggerClassName="h-12"
                 label="Themes"
                 popoverWidth="w-72"
               />
@@ -477,13 +477,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
                   >
                     <Globe className="size-4" />
                     Add web page
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleImageUpload}
-                    className="flex items-center gap-2"
-                  >
-                    <Image className="size-4" />
-                    Add image
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => openDialog("tailwind")}
@@ -503,31 +496,44 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
               </DropdownMenu>
             </div>
 
-            {/* Submit button positioned absolutely over the textarea only */}
-            <motion.button
-              onClick={submit}
-              disabled={
-                isSubmitting || (!prompt.trim() && pastedItems.length === 0)
-              }
-              whileHover={!isSubmitting ? { scale: 1.05 } : {}}
-              whileTap={!isSubmitting ? { scale: 0.95 } : {}}
-              className={cn(
-                "absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg",
-                !isSubmitting && (prompt.trim() || pastedItems.length > 0)
-                  ? "bg-primary text-primary-foreground cursor-pointer"
-                  : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
-              )}
-            >
-              {isSubmitting ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="size-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                />
-              ) : (
-                <ArrowUp className="size-4" />
-              )}
-            </motion.button>
+            {/* Image upload and Submit buttons positioned absolutely over the textarea */}
+            <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+              <button
+                onClick={handleImageUpload}
+                className="inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground"
+                title="Add image"
+              >
+                <Image className="size-4" />
+              </button>
+              <motion.button
+                onClick={submit}
+                disabled={
+                  isSubmitting || (!prompt.trim() && pastedItems.length === 0)
+                }
+                whileHover={!isSubmitting ? { scale: 1.05 } : {}}
+                whileTap={!isSubmitting ? { scale: 0.95 } : {}}
+                className={cn(
+                  "inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg",
+                  !isSubmitting && (prompt.trim() || pastedItems.length > 0)
+                    ? "bg-primary text-primary-foreground cursor-pointer"
+                    : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
+                )}
+              >
+                {isSubmitting ? (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    className="size-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+                  />
+                ) : (
+                  <ArrowUp className="size-4" />
+                )}
+              </motion.button>
+            </div>
           </div>
 
           {/* Pasted items list below textarea */}

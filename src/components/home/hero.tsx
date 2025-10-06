@@ -32,8 +32,8 @@ export function Hero({
 
     const allNewThemes: ThemeData[] = [
       ...userThemes,
-      ...tweakCNThemes,
       ...tinteThemes,
+      ...tweakCNThemes,
       ...raysoThemes,
     ];
 

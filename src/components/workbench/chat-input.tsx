@@ -205,18 +205,11 @@ export function ChatInput({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem
-                    disabled
-                    className="flex items-center gap-2 opacity-50 cursor-not-allowed"
+                    onClick={() => openDialog("url")}
+                    className="flex items-center gap-2"
                   >
                     <Globe className="size-4" />
                     Web page
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleImageUpload}
-                    className="flex items-center gap-2"
-                  >
-                    <Image className="size-4" />
-                    Image
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => openDialog("tailwind")}
@@ -236,27 +229,37 @@ export function ChatInput({
               </DropdownMenu>
             </div>
 
-            {/* Submit/Stop button positioned absolutely over the textarea only */}
-            <motion.button
-              onClick={isStreaming ? onStop : handleSubmit}
-              disabled={(!hasContent && !isStreaming) || disabled}
-              whileHover={{ scale: hasContent || isStreaming ? 1.05 : 1 }}
-              whileTap={{ scale: hasContent || isStreaming ? 0.95 : 1 }}
-              className={cn(
-                "absolute bottom-3 right-3 z-10 inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg transition-colors",
-                (hasContent || isStreaming) && !disabled
-                  ? isStreaming
-                    ? "bg-red-500 hover:bg-red-600 text-white cursor-pointer"
-                    : "bg-primary text-primary-foreground cursor-pointer"
-                  : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
-              )}
-            >
-              {isStreaming ? (
-                <Square className="size-3" />
-              ) : (
-                <ArrowUp className="size-4" />
-              )}
-            </motion.button>
+            {/* Image upload and Submit/Stop buttons positioned absolutely over the textarea */}
+            <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+              <button
+                onClick={handleImageUpload}
+                className="inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground transition-colors"
+                title="Add image"
+                disabled={disabled}
+              >
+                <Image className="size-4" />
+              </button>
+              <motion.button
+                onClick={isStreaming ? onStop : handleSubmit}
+                disabled={(!hasContent && !isStreaming) || disabled}
+                whileHover={{ scale: hasContent || isStreaming ? 1.05 : 1 }}
+                whileTap={{ scale: hasContent || isStreaming ? 0.95 : 1 }}
+                className={cn(
+                  "inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg transition-colors",
+                  (hasContent || isStreaming) && !disabled
+                    ? isStreaming
+                      ? "bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                      : "bg-primary text-primary-foreground cursor-pointer"
+                    : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
+                )}
+              >
+                {isStreaming ? (
+                  <Square className="size-3" />
+                ) : (
+                  <ArrowUp className="size-4" />
+                )}
+              </motion.button>
+            </div>
           </div>
 
           {/* Pasted items list below textarea */}
