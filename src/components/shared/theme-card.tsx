@@ -344,7 +344,7 @@ export function ThemeCard({
           .map((color, i) => (
             <div
               key={i}
-              className="w-1.5 h-1.5 rounded-full border border-white/40 shadow-sm"
+              className="w-1.5 h-1.5 rounded-full border border-white/40"
               style={{ backgroundColor: color }}
             />
           ))}
