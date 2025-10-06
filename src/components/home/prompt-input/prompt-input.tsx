@@ -403,59 +403,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
 
             {/* Controls positioned absolutely over the textarea only */}
             <div className="absolute bottom-3 left-3 flex items-center gap-2 z-10">
-              <DropdownMenu
-                open={paletteDropdownOpen}
-                onOpenChange={setPaletteDropdownOpen}
-              >
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Palette className="size-4" />
-                    <span className="text-xs font-medium">Colors</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-64">
-                  <div className="p-2 border-b border-border/50">
-                    <div className="flex items-center gap-2">
-                      <CustomColorPreview color={customColor} />
-                      <div className="flex-1">
-                        <Input
-                          ref={colorInputRef}
-                          placeholder="#3b82f6"
-                          value={customColor}
-                          onChange={(e) => setCustomColor(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              handleCustomColorSubmit();
-                            }
-                          }}
-                          className="h-8 text-xs"
-                        />
-                      </div>
-                      <Button
-                        onClick={handleCustomColorSubmit}
-                        disabled={!isValidColor(customColor)}
-                        className="h-8 text-xs"
-                      >
-                        Add
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <div className="grid grid-cols-3 gap-2">
-                      {PROMPT_INPUT_PALETTE_PRESETS.map((preset) => (
-                        <button
-                          key={preset.name}
-                          onClick={() => handlePaletteSelect(preset)}
-                          className="group relative rounded-lg overflow-hidden border border-border/50 hover:border-border hover:scale-105 p-2 flex items-center justify-center"
-                          title={preset.description}
-                        >
-                          <MiniPalettePreview preset={preset} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
               <ThemeSelector
                 themes={allThemes}
                 activeId={null}
@@ -471,6 +418,15 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setPaletteDropdownOpen(true);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Palette className="size-4" />
+                    Add colors
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => openDialog("url")}
                     className="flex items-center gap-2"
@@ -496,15 +452,70 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
               </DropdownMenu>
             </div>
 
+            {/* Palette dropdown (hidden, triggered by menu item) */}
+            <DropdownMenu
+              open={paletteDropdownOpen}
+              onOpenChange={setPaletteDropdownOpen}
+            >
+              <DropdownMenuTrigger asChild>
+                <button className="hidden" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-64">
+                <div className="p-2 border-b border-border/50">
+                  <div className="flex items-center gap-2">
+                    <CustomColorPreview color={customColor} />
+                    <div className="flex-1">
+                      <Input
+                        ref={colorInputRef}
+                        placeholder="#3b82f6"
+                        value={customColor}
+                        onChange={(e) => setCustomColor(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleCustomColorSubmit();
+                          }
+                        }}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleCustomColorSubmit}
+                      disabled={!isValidColor(customColor)}
+                      className="h-8 text-xs"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+                <div className="p-3">
+                  <div className="grid grid-cols-3 gap-2">
+                    {PROMPT_INPUT_PALETTE_PRESETS.map((preset) => (
+                      <button
+                        key={preset.name}
+                        onClick={() => handlePaletteSelect(preset)}
+                        className="group relative rounded-lg overflow-hidden border border-border/50 hover:border-border hover:scale-105 p-2 flex items-center justify-center"
+                        title={preset.description}
+                      >
+                        <MiniPalettePreview preset={preset} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {/* Image upload and Submit buttons positioned absolutely over the textarea */}
             <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
-              <button
+              <Button
                 onClick={handleImageUpload}
-                className="inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground"
+                className="inline-flex items-center justify-center"
                 title="Add image"
+                variant="outline"
+                size="sm"
               >
                 <Image className="size-4" />
-              </button>
+                Image
+              </Button>
               <motion.button
                 onClick={submit}
                 disabled={
