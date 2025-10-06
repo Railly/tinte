@@ -99,6 +99,7 @@ export const shikiProvider: PreviewableProvider<ShikiTheme> = {
     website: "https://shiki.style/",
     documentation:
       "https://shiki.style/guide/theme-colors-manipulation#css-variables-theme",
+    experimental: true,
   },
 
   fileExtension: "css",
