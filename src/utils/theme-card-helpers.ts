@@ -2,6 +2,7 @@ import {
   computeShadowVars,
   convertTinteToShadcn,
 } from "@/lib/providers/shadcn";
+import { getShadcnPaletteWithOverrides } from "@/lib/shadcn-theme-utils";
 import type {
   ThemeColors,
   ThemeData,
@@ -73,81 +74,77 @@ export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {
 }
 
 export function extractShadcnColors(theme: ThemeData, isDark = false) {
-  let shadcnTheme;
+  const mode = isDark ? "dark" : "light";
 
-  // Check if theme has rawTheme with shadcn format (tweakcn themes)
-  if (
-    "rawTheme" in theme &&
-    theme.rawTheme &&
-    "light" in theme.rawTheme &&
-    typeof theme.rawTheme.light === "object" &&
-    "background" in theme.rawTheme.light
-  ) {
-    // Already in shadcn format (tweakcn)
-    shadcnTheme = theme.rawTheme as any;
-  } else if ("rawTheme" in theme && theme.rawTheme) {
-    // Tinte format - needs conversion
+  // Get shadcn overrides from theme
+  const themeWithOverride = theme as any;
+  const shadcnOverride =
+    themeWithOverride.shadcn_override || themeWithOverride.overrides?.shadcn;
+
+  // Use getShadcnPaletteWithOverrides if we have rawTheme (Tinte themes)
+  if ("rawTheme" in theme && theme.rawTheme) {
     try {
-      shadcnTheme = convertTinteToShadcn(theme.rawTheme);
+      const paletteWithOverrides = getShadcnPaletteWithOverrides(
+        theme.rawTheme,
+        mode,
+        shadcnOverride,
+      );
+
+      const colorSet = paletteWithOverrides;
+
+      return {
+        // Core colors
+        "--background": colorSet.background,
+        "--foreground": colorSet.foreground,
+        "--card": colorSet.card,
+        "--card-foreground": colorSet["card-foreground"],
+        "--popover": colorSet.popover,
+        "--popover-foreground": colorSet["popover-foreground"],
+
+        // Primary colors
+        "--primary": colorSet.primary,
+        "--primary-foreground": colorSet["primary-foreground"],
+        "--secondary": colorSet.secondary,
+        "--secondary-foreground": colorSet["secondary-foreground"],
+
+        // Accent colors
+        "--accent": colorSet.accent,
+        "--accent-foreground": colorSet["accent-foreground"],
+        "--muted": colorSet.muted,
+        "--muted-foreground": colorSet["muted-foreground"],
+
+        // Destructive
+        "--destructive": colorSet.destructive,
+        "--destructive-foreground": colorSet["destructive-foreground"],
+
+        // Borders and inputs
+        "--border": colorSet.border,
+        "--input": colorSet.input,
+        "--ring": colorSet.ring,
+
+        // Chart colors
+        "--chart-1": colorSet["chart-1"],
+        "--chart-2": colorSet["chart-2"],
+        "--chart-3": colorSet["chart-3"],
+        "--chart-4": colorSet["chart-4"],
+        "--chart-5": colorSet["chart-5"],
+
+        // Sidebar colors
+        "--sidebar": colorSet.sidebar,
+        "--sidebar-foreground": colorSet["sidebar-foreground"],
+        "--sidebar-primary": colorSet["sidebar-primary"],
+        "--sidebar-primary-foreground": colorSet["sidebar-primary-foreground"],
+        "--sidebar-accent": colorSet["sidebar-accent"],
+        "--sidebar-accent-foreground": colorSet["sidebar-accent-foreground"],
+        "--sidebar-border": colorSet["sidebar-border"],
+        "--sidebar-ring": colorSet["sidebar-ring"],
+
+        // Radius (if available)
+        "--radius": colorSet.radius,
+      };
     } catch (error) {
-      console.warn("Failed to convert tinte theme:", error);
-      shadcnTheme = null;
+      console.warn("Failed to extract shadcn colors with overrides:", error);
     }
-  }
-
-  if (shadcnTheme) {
-    const colorSet = isDark ? shadcnTheme.dark : shadcnTheme.light;
-
-    return {
-      // Core colors
-      "--background": colorSet.background,
-      "--foreground": colorSet.foreground,
-      "--card": colorSet.card,
-      "--card-foreground": colorSet["card-foreground"],
-      "--popover": colorSet.popover,
-      "--popover-foreground": colorSet["popover-foreground"],
-
-      // Primary colors
-      "--primary": colorSet.primary,
-      "--primary-foreground": colorSet["primary-foreground"],
-      "--secondary": colorSet.secondary,
-      "--secondary-foreground": colorSet["secondary-foreground"],
-
-      // Accent colors
-      "--accent": colorSet.accent,
-      "--accent-foreground": colorSet["accent-foreground"],
-      "--muted": colorSet.muted,
-      "--muted-foreground": colorSet["muted-foreground"],
-
-      // Destructive
-      "--destructive": colorSet.destructive,
-      "--destructive-foreground": colorSet["destructive-foreground"],
-
-      // Borders and inputs
-      "--border": colorSet.border,
-      "--input": colorSet.input,
-      "--ring": colorSet.ring,
-
-      // Chart colors
-      "--chart-1": colorSet["chart-1"],
-      "--chart-2": colorSet["chart-2"],
-      "--chart-3": colorSet["chart-3"],
-      "--chart-4": colorSet["chart-4"],
-      "--chart-5": colorSet["chart-5"],
-
-      // Sidebar colors
-      "--sidebar": colorSet.sidebar,
-      "--sidebar-foreground": colorSet["sidebar-foreground"],
-      "--sidebar-primary": colorSet["sidebar-primary"],
-      "--sidebar-primary-foreground": colorSet["sidebar-primary-foreground"],
-      "--sidebar-accent": colorSet["sidebar-accent"],
-      "--sidebar-accent-foreground": colorSet["sidebar-accent-foreground"],
-      "--sidebar-border": colorSet["sidebar-border"],
-      "--sidebar-ring": colorSet["sidebar-ring"],
-
-      // Radius (if available)
-      "--radius": colorSet.radius,
-    };
   }
 
   // Fallback to basic colors
