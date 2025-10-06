@@ -77,7 +77,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           role="combobox"
           aria-expanded={open}
           size="sm"
-          className={`justify-between ${className} hover:text-muted-foreground w-[22ch] transition-all duration-150`}
+          className={`justify-between ${className} hover:text-muted-foreground w-fit transition-all duration-150`}
         >
           <div className="flex items-center gap-2 min-w-0">
             {activeProvider.icon && (
@@ -99,10 +99,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-[calc(var(--radix-popover-trigger-width)+2rem)] p-0"
-      >
+      <PopoverContent align="start" className="w-20 p-0">
         <Command>
           <CommandInput placeholder="Search providers..." className="h-9" />
           <CommandList className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-thumb]:bg-border">

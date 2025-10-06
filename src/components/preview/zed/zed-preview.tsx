@@ -75,63 +75,61 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           {/* File tree */}
           <ScrollArea className="flex-1 min-h-0">
             <div className="text-xs py-1">
-              <div className="py-1">
+              <div
+                className="px-3 py-1.5 flex items-center gap-2"
+                style={{ color: style.text }}
+              >
+                <FolderOpen className="w-4 h-4" />
+                <span className="font-medium">tinte</span>
+              </div>
+              <div className="pl-6">
                 <div
-                  className="px-3 py-1.5 flex items-center gap-2 hover:bg-black/5"
-                  style={{ color: style.text }}
+                  className="px-3 py-1.5 flex items-center gap-2"
+                  style={{ color: style["text.muted"] }}
                 >
-                  <FolderOpen className="w-4 h-4" />
-                  <span className="font-medium">tinte</span>
+                  <FolderOpen className="w-3.5 h-3.5" />
+                  <span>src</span>
                 </div>
-                <div className="pl-6">
+                <div className="pl-4">
                   <div
                     className="px-3 py-1.5 flex items-center gap-2"
                     style={{ color: style["text.muted"] }}
                   >
                     <FolderOpen className="w-3.5 h-3.5" />
-                    <span>src</span>
+                    <span>app</span>
                   </div>
                   <div className="pl-4">
                     <div
                       className="px-3 py-1.5 flex items-center gap-2"
-                      style={{ color: style["text.muted"] }}
+                      style={{
+                        backgroundColor: style["element.selected"],
+                        color: style.text,
+                      }}
                     >
-                      <FolderOpen className="w-3.5 h-3.5" />
-                      <span>app</span>
-                    </div>
-                    <div className="pl-4">
-                      <div
-                        className="px-3 py-1.5 flex items-center gap-2"
-                        style={{
-                          backgroundColor: style["element.selected"],
-                          color: style.text,
-                        }}
-                      >
-                        <FileCode2 className="w-3.5 h-3.5" />
-                        <span className="font-medium">page.tsx</span>
-                      </div>
-                      <div
-                        className="px-3 py-1.5 flex items-center gap-2"
-                        style={{ color: style["text.muted"] }}
-                      >
-                        <FileCode2 className="w-3.5 h-3.5" />
-                        <span>layout.tsx</span>
-                      </div>
+                      <FileCode2 className="w-3.5 h-3.5" />
+                      <span className="font-medium">page.tsx</span>
                     </div>
                     <div
                       className="px-3 py-1.5 flex items-center gap-2"
                       style={{ color: style["text.muted"] }}
                     >
-                      <FolderOpen className="w-3.5 h-3.5" />
-                      <span>components</span>
+                      <FileCode2 className="w-3.5 h-3.5" />
+                      <span>layout.tsx</span>
                     </div>
-                    <div
-                      className="px-3 py-1.5 flex items-center gap-2"
-                      style={{ color: style["text.muted"] }}
-                    >
-                      <FolderOpen className="w-3.5 h-3.5" />
-                      <span>lib</span>
-                    </div>
+                  </div>
+                  <div
+                    className="px-3 py-1.5 flex items-center gap-2"
+                    style={{ color: style["text.muted"] }}
+                  >
+                    <FolderOpen className="w-3.5 h-3.5" />
+                    <span>components</span>
+                  </div>
+                  <div
+                    className="px-3 py-1.5 flex items-center gap-2"
+                    style={{ color: style["text.muted"] }}
+                  >
+                    <FolderOpen className="w-3.5 h-3.5" />
+                    <span>lib</span>
                   </div>
                 </div>
               </div>
@@ -185,65 +183,69 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           </div>
 
           {/* Code editor */}
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="flex h-full">
-              {/* Line numbers */}
-              <div
-                className="w-12 py-3 text-[11px] text-right font-mono select-none border-r shrink-0"
-                style={{
-                  backgroundColor: style["editor.gutter.background"],
-                  color: style["editor.line_number"],
-                  borderColor: style["border.variant"],
-                }}
-              >
-                {codeExample.split("\n").map((_, index) => (
-                  <div
-                    key={index}
-                    className="px-2 leading-[1.6] h-[19.2px]"
-                    style={{
-                      color:
-                        index === 13
-                          ? style["editor.active_line_number"]
-                          : style["editor.line_number"],
-                      fontWeight: index === 13 ? 600 : 400,
-                    }}
-                  >
-                    {index + 1}
-                  </div>
-                ))}
-              </div>
+          <div className="flex flex-1 min-h-0">
+            <ScrollArea className="flex-1">
+              <div className="flex h-full">
+                {/* Line numbers */}
+                <div
+                  className="w-12 py-3 text-[11px] text-right font-mono select-none border-r shrink-0"
+                  style={{
+                    backgroundColor: style["editor.gutter.background"],
+                    color: style["editor.line_number"],
+                    borderColor: style["border.variant"],
+                  }}
+                >
+                  {codeExample.split("\n").map((_, index) => (
+                    <div
+                      key={index}
+                      className="px-2 leading-[1.6] h-[19.2px]"
+                      style={{
+                        color:
+                          index === 13
+                            ? style["editor.active_line_number"]
+                            : style["editor.line_number"],
+                        fontWeight: index === 13 ? 600 : 400,
+                      }}
+                    >
+                      {index + 1}
+                    </div>
+                  ))}
+                </div>
 
-              {/* Code content */}
-              <div
-                className="flex-1 h-full py-3 px-4 font-mono text-[11px]"
-                style={{
-                  backgroundColor: style["editor.background"],
-                  color: style["editor.foreground"],
-                }}
-              >
-                <pre className="leading-[1.6]">
-                  {codeExample.split("\n").map((line, index) => {
-                    const isActiveLine = index === 13;
-                    return (
-                      <div
-                        key={index}
-                        className="h-[19.2px] px-2 -mx-2"
-                        style={{
-                          backgroundColor: isActiveLine
-                            ? style["editor.active_line.background"]
-                            : "transparent",
-                        }}
-                      >
-                        {highlightLine(line, style.syntax)}
-                      </div>
-                    );
-                  })}
-                </pre>
+                {/* Code content */}
+                <div
+                  className="flex-1 py-3 px-4 font-mono text-[11px]"
+                  style={{
+                    backgroundColor: style["editor.background"],
+                    color: style["editor.foreground"],
+                  }}
+                >
+                  <pre className="leading-[1.6]">
+                    {codeExample.split("\n").map((line, index) => {
+                      const isActiveLine = index === 13;
+                      return (
+                        <div
+                          key={index}
+                          className="h-[19.2px] px-2 -mx-2"
+                          style={{
+                            backgroundColor: isActiveLine
+                              ? style["editor.active_line.background"]
+                              : "transparent",
+                          }}
+                        >
+                          {highlightLine(line, style.syntax)}
+                        </div>
+                      );
+                    })}
+                  </pre>
+                </div>
               </div>
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
         </div>
       </div>
+
+      {/* Status bar */}
       <div
         className="h-7 px-4 flex items-center justify-between text-[11px] border-t shrink-0"
         style={{
@@ -260,9 +262,7 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
         <div className="flex items-center gap-4 shrink-0">
           <span
             className="flex items-center gap-1.5"
-            style={{
-              color: style["version_control.modified"],
-            }}
+            style={{ color: style["version_control.modified"] }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-current" />2
           </span>
