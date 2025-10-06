@@ -32,7 +32,7 @@ export function ThemeCardPreview() {
     <div className="w-full h-full p-2 space-y-2 overflow-hidden">
       {/* Mini stats cards */}
       <div className="grid grid-cols-2 gap-2">
-        <div className="bg-card border rounded-lg p-2">
+        <div className="bg-card border rounded-lg p-2 shadow-sm">
           <div className="space-y-1.5">
             <p className="text-muted-foreground text-[10px]">
               Subscribe to newsletter
@@ -47,7 +47,7 @@ export function ThemeCardPreview() {
           </div>
         </div>
 
-        <div className="bg-card border rounded-lg p-2">
+        <div className="bg-card border rounded-lg p-2 shadow-sm">
           <div className="space-y-1">
             <p className="text-muted-foreground text-[10px]">Subscriptions</p>
             <p className="font-semibold text-xs">+2,350</p>
@@ -75,7 +75,7 @@ export function ThemeCardPreview() {
       </div>
 
       {/* UI Components Showcase */}
-      <div className="bg-card border rounded-lg p-2">
+      <div className="bg-card border rounded-lg p-2 shadow-sm">
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1.5">
             <div className="flex items-center space-x-1">
