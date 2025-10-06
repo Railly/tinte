@@ -9,6 +9,12 @@ import { CSSIcon } from "@/components/shared/icons/css";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
 import { ThemeSelector } from "@/components/shared/theme-selector";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -49,7 +55,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
   >("url");
   const [editingItem, setEditingItem] = useState<PastedItem | null>(null);
   const [customColor, setCustomColor] = useState("");
-  const [paletteDropdownOpen, setPaletteDropdownOpen] = useState(false);
+  const [paletteDialogOpen, setPaletteDialogOpen] = useState(false);
   const [themeSelectorOpen, setThemeSelectorOpen] = useState(false);
   const [selectedThemeItem, setSelectedThemeItem] = useState<PastedItem | null>(
     null,
@@ -66,12 +72,12 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
   const { allThemes } = useThemeContext();
 
   useEffect(() => {
-    if (paletteDropdownOpen) {
+    if (paletteDialogOpen) {
       setTimeout(() => {
         colorInputRef.current?.focus();
       }, 100);
     }
-  }, [paletteDropdownOpen]);
+  }, [paletteDialogOpen]);
 
   function handlePaste(e: React.ClipboardEvent) {
     const clipboardData = e.clipboardData;
@@ -244,7 +250,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
       "palette",
       paletteColors.map((c) => c.value),
     );
-    setPaletteDropdownOpen(false);
+    setPaletteDialogOpen(false);
   }
 
   function handleThemeSelect(theme: ThemeData) {
@@ -272,7 +278,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
       paletteColors.map((c) => c.value),
     );
     setCustomColor("");
-    setPaletteDropdownOpen(false);
+    setPaletteDialogOpen(false);
   }
 
   function isValidColor(color: string): boolean {
@@ -420,7 +426,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem
                     onClick={() => {
-                      setPaletteDropdownOpen(true);
+                      setPaletteDialogOpen(true);
                     }}
                     className="flex items-center gap-2"
                   >
@@ -451,58 +457,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-
-            {/* Palette dropdown (hidden, triggered by menu item) */}
-            <DropdownMenu
-              open={paletteDropdownOpen}
-              onOpenChange={setPaletteDropdownOpen}
-            >
-              <DropdownMenuTrigger asChild>
-                <button className="hidden" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-64">
-                <div className="p-2 border-b border-border/50">
-                  <div className="flex items-center gap-2">
-                    <CustomColorPreview color={customColor} />
-                    <div className="flex-1">
-                      <Input
-                        ref={colorInputRef}
-                        placeholder="#3b82f6"
-                        value={customColor}
-                        onChange={(e) => setCustomColor(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handleCustomColorSubmit();
-                          }
-                        }}
-                        className="h-8 text-xs"
-                      />
-                    </div>
-                    <Button
-                      onClick={handleCustomColorSubmit}
-                      disabled={!isValidColor(customColor)}
-                      className="h-8 text-xs"
-                    >
-                      Add
-                    </Button>
-                  </div>
-                </div>
-                <div className="p-3">
-                  <div className="grid grid-cols-3 gap-2">
-                    {PROMPT_INPUT_PALETTE_PRESETS.map((preset) => (
-                      <button
-                        key={preset.name}
-                        onClick={() => handlePaletteSelect(preset)}
-                        className="group relative rounded-lg overflow-hidden border border-border/50 hover:border-border hover:scale-105 p-2 flex items-center justify-center"
-                        title={preset.description}
-                      >
-                        <MiniPalettePreview preset={preset} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
 
             {/* Image upload and Submit buttons positioned absolutely over the textarea */}
             <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
@@ -577,6 +531,53 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
           </button>
         ))}
       </div>
+
+      <Dialog open={paletteDialogOpen} onOpenChange={setPaletteDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Color Palette</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Custom color input */}
+            <div className="flex items-center gap-2">
+              <Input
+                ref={colorInputRef}
+                type="text"
+                placeholder="#000000"
+                value={customColor}
+                onChange={(e) => setCustomColor(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleCustomColorSubmit();
+                  }
+                }}
+                className="flex-1"
+              />
+              <CustomColorPreview color={customColor} />
+            </div>
+
+            {/* Preset palette buttons */}
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Or choose a preset:
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {PROMPT_INPUT_PALETTE_PRESETS.map((preset, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePaletteSelect(preset)}
+                    className="flex items-center gap-3 px-3 py-2 text-sm bg-muted/50 hover:bg-muted border border-border/50 hover:border-border/70 rounded-md transition-colors"
+                  >
+                    <MiniPalettePreview preset={preset} />
+                    <span>{preset.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <PasteDialog
         open={dialogOpen}

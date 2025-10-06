@@ -97,16 +97,16 @@ export function ThemeSelector({
 
   // Helper function to render author icon
   const renderAuthorIcon = (theme: ThemeData, size: number = 12) => {
-    // Check for vendor-specific built-in themes first
-    if (theme.vendor === "tweakcn") {
+    // Check for provider-specific built-in themes first
+    if (theme.provider === "tweakcn") {
       return <TweakCNIcon className="w-3 h-3" />;
     }
 
-    if (theme.vendor === "rayso") {
+    if (theme.provider === "rayso") {
       return <RaycastIcon className="w-3 h-3" />;
     }
 
-    if (theme.vendor === "tinte") {
+    if (theme.provider === "tinte") {
       return <InvertedLogo size={12} />;
     }
 
@@ -195,7 +195,7 @@ export function ThemeSelector({
 
       const isOwnTheme = theme.user?.id === user?.id;
       const isBuiltIn = ["tweakcn", "tinte", "rayso"].includes(
-        theme.vendor || "",
+        theme.provider || "",
       );
 
       if (isOwnTheme) {
@@ -215,10 +215,12 @@ export function ThemeSelector({
 
     // Sort built-in themes: tinte first, then tweakcn, then rayso
     builtInThemes.sort((a, b) => {
-      const vendorOrder = { tinte: 0, tweakcn: 1, rayso: 2 };
-      const vendorA = vendorOrder[a.vendor as keyof typeof vendorOrder] ?? 3;
-      const vendorB = vendorOrder[b.vendor as keyof typeof vendorOrder] ?? 3;
-      return vendorA - vendorB;
+      const providerOrder = { tinte: 0, tweakcn: 1, rayso: 2 };
+      const providerA =
+        providerOrder[a.provider as keyof typeof providerOrder] ?? 3;
+      const providerB =
+        providerOrder[b.provider as keyof typeof providerOrder] ?? 3;
+      return providerA - providerB;
     });
 
     return {
