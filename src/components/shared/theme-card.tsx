@@ -171,15 +171,24 @@ export function ThemeCard({
       <motion.div
         whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="group relative bg-background/50 backdrop-blur-sm rounded-lg border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
+        className="group relative backdrop-blur-sm rounded-lg border hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
         onClick={handleThemeClick}
         style={
           {
             ...shadcnColors,
             ...shadcnFonts,
             ...shadcnShadows,
+            backgroundColor: "hsl(var(--background) / 0.5)",
+            borderColor: "hsl(var(--border) / 0.6)",
+            "--hover-border": "hsl(var(--border) / 0.8)",
           } as React.CSSProperties
         }
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = "hsl(var(--border) / 0.8)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = "hsl(var(--border) / 0.6)";
+        }}
       >
         <div className="p-4">
           {/* Top section - Theme info and stats */}
@@ -327,15 +336,23 @@ export function ThemeCard({
     <motion.div
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="group relative bg-background/50 backdrop-blur-sm rounded-xl border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
+      className="group relative backdrop-blur-sm rounded-xl border hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
       onClick={handleThemeClick}
       style={
         {
           ...shadcnColors,
           ...shadcnFonts,
           ...shadcnShadows,
+          backgroundColor: "hsl(var(--background) / 0.5)",
+          borderColor: "hsl(var(--border) / 0.6)",
         } as React.CSSProperties
       }
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = "hsl(var(--border) / 0.8)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "hsl(var(--border) / 0.6)";
+      }}
     >
       {/* Color preview dots */}
       <div className="absolute top-3 right-3 flex gap-1 z-10">
