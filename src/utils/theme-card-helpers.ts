@@ -76,10 +76,10 @@ export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {
 export function extractShadcnColors(theme: ThemeData, isDark = false) {
   const mode = isDark ? "dark" : "light";
 
-  // Get shadcn overrides from theme
+  // Get shadcn overrides from theme - prioritize new structure
   const themeWithOverride = theme as any;
   const shadcnOverride =
-    themeWithOverride.shadcn_override || themeWithOverride.overrides?.shadcn;
+    themeWithOverride.overrides?.shadcn || themeWithOverride.shadcn_override;
 
   // Use getShadcnPaletteWithOverrides if we have rawTheme (Tinte themes)
   if ("rawTheme" in theme && theme.rawTheme) {

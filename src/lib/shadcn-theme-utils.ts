@@ -12,6 +12,12 @@ export function getShadcnPaletteWithOverrides(
   const overrides = shadcnOverride || {};
   const modeShadows = overrides?.shadows?.[mode];
 
+  // Get mode-specific color overrides - support both structures:
+  // 1. DB format: overrides.palettes.{mode}
+  // 2. Direct format: overrides.{mode}
+  const modeColorOverrides =
+    overrides?.palettes?.[mode] || overrides?.[mode] || {};
+
   const themeWithOverrides = {
     ...tinteTheme,
     ...(overrides?.fonts && { fonts: overrides.fonts }),
@@ -22,7 +28,7 @@ export function getShadcnPaletteWithOverrides(
   const converted = convertTinteToShadcn(themeWithOverrides);
   const palette = {
     ...converted[mode],
-    ...(overrides?.[mode] || {}),
+    ...modeColorOverrides,
   };
 
   return palette;
