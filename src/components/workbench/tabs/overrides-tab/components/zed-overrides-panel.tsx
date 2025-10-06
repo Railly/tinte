@@ -396,6 +396,7 @@ export function ZedOverridesPanel({
     providerDisplayName: "Zed",
   });
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
+    // biome-ignore lint/performance/noAccumulatingSpread: Small array, performance impact negligible
     ZED_VARIABLE_GROUPS.reduce(
       (acc, group) => ({ ...acc, [group.label]: true }),
       {},

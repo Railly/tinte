@@ -334,6 +334,7 @@ export function ShikiOverridesPanel({
     providerDisplayName: "Shiki",
   });
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
+    // biome-ignore lint/performance/noAccumulatingSpread: Small array, performance impact negligible
     SHIKI_VARIABLE_GROUPS.reduce(
       (acc, group) => ({ ...acc, [group.label]: true }),
       {},

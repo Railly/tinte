@@ -47,6 +47,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
       (p) => ({
         ...p,
         available: false,
+        experimental: false,
       }),
     );
   }, [availableProviders]);

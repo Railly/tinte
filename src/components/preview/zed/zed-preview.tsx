@@ -1,3 +1,4 @@
+// biome-ignore lint/suspicious/noAssignInExpressions: Regex matching requires assignment in expressions
 import { FileCode2, FolderOpen } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
