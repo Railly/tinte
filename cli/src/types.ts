@@ -7,5 +7,5 @@ export interface EditorInstallOptions {
   autoClose?: boolean;
   variant?: "light" | "dark";
   timeout?: number;
-  editor?: "code" | "cursor";
+  editor?: "code" | "cursor" | "zed";
 }

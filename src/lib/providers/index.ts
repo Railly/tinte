@@ -14,6 +14,7 @@ export { shikiProvider } from "./shiki";
 export { slackProvider } from "./slack";
 export * from "./types";
 export * from "./vscode";
+export { zedProvider } from "./zed-provider";
 
 import { brandGuidelinesProvider } from "./brand-guidelines";
 import { designSystemProvider } from "./design-system";
@@ -21,6 +22,7 @@ import { ProviderRegistry } from "./registry";
 import { shadcnProvider } from "./shadcn";
 import { shikiProvider } from "./shiki";
 import { vscodeProvider } from "./vscode";
+import { zedProvider } from "./zed-provider";
 
 // import { alacrittyProvider } from "./alacritty";
 // import { bananaProvider } from "./banana";
@@ -38,6 +40,7 @@ registry.registerPreviewable(vscodeProvider);
 registry.registerPreviewable(shikiProvider);
 registry.registerPreviewable(brandGuidelinesProvider);
 registry.registerPreviewable(designSystemProvider);
+registry.registerPreviewable(zedProvider);
 // registry.registerPreviewable(alacrittyProvider);
 // registry.registerPreviewable(bananaProvider);
 // registry.registerPreviewable(kittyProvider);

@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import type { EditorInstallOptions, TinteTheme } from "./types";
 
@@ -32,6 +32,11 @@ export class TinteCLI {
       editor = "code",
     } = options;
 
+    // Handle Zed installation separately
+    if (editor === "zed") {
+      return this.installToZed(tinteTheme, themeName);
+    }
+
     const editorName = editor === "cursor" ? "Cursor" : "VS Code";
     console.log(`🎨 Installing ${themeName} to ${editorName}...`);
 
@@ -54,6 +59,52 @@ export class TinteCLI {
     await this.installToEditor(vsixPath, autoClose, timeout, editor);
 
     return vsixPath;
+  }
+
+  /**
+   * Install theme to Zed editor
+   */
+  private async installToZed(
+    tinteTheme: TinteTheme,
+    themeName: string,
+  ): Promise<string> {
+    console.log(`🎨 Installing ${themeName} to Zed...`);
+
+    // Import Zed converter
+    const { tinteToZed } = await import("../../src/lib/providers/zed");
+
+    // Convert theme
+    const zedTheme = tinteToZed(
+      tinteTheme.light,
+      tinteTheme.dark,
+      themeName,
+      "Tinte",
+    );
+
+    // Determine Zed themes directory
+    const zedThemesDir = join(homedir(), ".config", "zed", "themes");
+
+    // Ensure directory exists
+    if (!existsSync(zedThemesDir)) {
+      mkdirSync(zedThemesDir, { recursive: true });
+    }
+
+    // Generate filename
+    const sanitizedName = themeName.toLowerCase().replace(/\s+/g, "-");
+    const themeFilePath = join(zedThemesDir, `${sanitizedName}.json`);
+
+    // Write theme file
+    writeFileSync(themeFilePath, JSON.stringify(zedTheme, null, 2));
+
+    console.log(`✅ Theme installed to ${themeFilePath}`);
+    console.log(`
+🎉 Open Zed and select your new theme:
+   1. Open Command Palette (Cmd+Shift+P / Ctrl+Shift+P)
+   2. Type "theme selector: Toggle"
+   3. Select "${themeName} Light" or "${themeName} Dark"
+    `);
+
+    return themeFilePath;
   }
 
   /**
@@ -126,8 +177,20 @@ export class TinteCLI {
   /**
    * List installed Tinte themes in editor
    */
-  listInstalled(editor: "code" | "cursor" = "code"): string[] {
+  listInstalled(editor: "code" | "cursor" | "zed" = "code"): string[] {
     try {
+      if (editor === "zed") {
+        const zedThemesDir = join(homedir(), ".config", "zed", "themes");
+        if (!existsSync(zedThemesDir)) {
+          return [];
+        }
+        const fs = require("node:fs");
+        const files = fs.readdirSync(zedThemesDir);
+        return files
+          .filter((file: string) => file.endsWith(".json"))
+          .map((file: string) => file.replace(".json", ""));
+      }
+
       const command =
         editor === "cursor"
           ? "cursor --list-extensions --show-versions"
@@ -139,7 +202,8 @@ export class TinteCLI {
         .map((line) => line.trim())
         .filter(Boolean);
     } catch (_error) {
-      const editorName = editor === "cursor" ? "Cursor" : "VS Code";
+      const editorName =
+        editor === "cursor" ? "Cursor" : editor === "zed" ? "Zed" : "VS Code";
       console.warn(`⚠️  Could not list extensions. Is ${editorName} installed?`);
       return [];
     }

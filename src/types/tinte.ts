@@ -25,4 +25,6 @@ export type TinteBlock = z.infer<typeof TinteBlockSchema>;
 export type TinteTheme = {
   light: TinteBlock;
   dark: TinteBlock;
+  name?: string;
+  author?: string;
 };

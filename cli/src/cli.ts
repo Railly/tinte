@@ -24,12 +24,14 @@ Options:
   --timeout <ms>                    # Auto-close timeout (default: 3000)
   --code                            # Install to VS Code (default)
   --cursor                          # Install to Cursor
+  --zed                             # Install to Zed
 
 Examples:
   bunx tinte flexoki-theme          # Install to VS Code
   bunx tinte flexoki-theme --cursor # Install to Cursor
+  bunx tinte flexoki-theme --zed    # Install to Zed
   bunx tinte https://tinte.dev/api/themes/slug/flexoki-theme --light
-  bunx tinte ./my-theme.json --cursor --close
+  bunx tinte ./my-theme.json --zed
     `);
     process.exit(0);
   }
@@ -41,7 +43,11 @@ Examples:
     timeout: parseInt(
       args.find((arg) => arg.startsWith("--timeout"))?.split("=")[1] || "3000",
     ),
-    editor: args.includes("--cursor") ? "cursor" : "code",
+    editor: args.includes("--zed")
+      ? "zed"
+      : args.includes("--cursor")
+        ? "cursor"
+        : "code",
   };
 
   try {
@@ -49,7 +55,11 @@ Examples:
       case "list": {
         const installed = cli.listInstalled(options.editor);
         const listEditorName =
-          options.editor === "cursor" ? "Cursor" : "VS Code";
+          options.editor === "zed"
+            ? "Zed"
+            : options.editor === "cursor"
+              ? "Cursor"
+              : "VS Code";
         if (installed.length === 0) {
           console.log(
             `📋 No Tinte themes currently installed in ${listEditorName}`,
@@ -68,12 +78,18 @@ Examples:
       default: {
         await cli.quick(command, options);
         const installEditorName =
-          options.editor === "cursor" ? "Cursor" : "VS Code";
-        const _editorCommand =
-          options.editor === "cursor" ? "cursor ." : "code .";
-        console.log(`
+          options.editor === "zed"
+            ? "Zed"
+            : options.editor === "cursor"
+              ? "Cursor"
+              : "VS Code";
+
+        // Only show post-install message for VS Code/Cursor (Zed shows its own)
+        if (options.editor !== "zed") {
+          console.log(`
 🎉 Open ${installEditorName} and select your new theme from Preferences → Color Theme
-        `);
+          `);
+        }
         break;
       }
     }
