@@ -1,4 +1,5 @@
 import { FileCode2, FolderOpen } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
 import type { ZedThemeFamily } from "@/types/zed";
 
@@ -44,14 +45,14 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
   return (
     <div
-      className={`rounded-lg overflow-hidden h-full flex ${className || ""}`}
+      className={`rounded-lg overflow-hidden h-full flex flex-col ${className || ""}`}
       style={{
         backgroundColor: style.background,
         borderColor: style.border,
       }}
     >
       {/* Main content area */}
-      <div className="flex h-full w-full">
+      <div className="flex flex-1 min-h-0 w-full">
         {/* Sidebar - File tree */}
         <div
           className="w-56 border-r flex flex-col"
@@ -72,68 +73,70 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           </div>
 
           {/* File tree */}
-          <div className="flex-1 overflow-y-auto text-xs">
-            <div className="py-1">
-              <div
-                className="px-3 py-1.5 flex items-center gap-2 hover:bg-black/5"
-                style={{ color: style.text }}
-              >
-                <FolderOpen className="w-4 h-4" />
-                <span className="font-medium">tinte</span>
-              </div>
-              <div className="pl-6">
+          <ScrollArea className="flex-1">
+            <div className="text-xs">
+              <div className="py-1">
                 <div
-                  className="px-3 py-1.5 flex items-center gap-2"
-                  style={{ color: style["text.muted"] }}
+                  className="px-3 py-1.5 flex items-center gap-2 hover:bg-black/5"
+                  style={{ color: style.text }}
                 >
-                  <FolderOpen className="w-3.5 h-3.5" />
-                  <span>src</span>
+                  <FolderOpen className="w-4 h-4" />
+                  <span className="font-medium">tinte</span>
                 </div>
-                <div className="pl-4">
+                <div className="pl-6">
                   <div
                     className="px-3 py-1.5 flex items-center gap-2"
                     style={{ color: style["text.muted"] }}
                   >
                     <FolderOpen className="w-3.5 h-3.5" />
-                    <span>app</span>
+                    <span>src</span>
                   </div>
                   <div className="pl-4">
                     <div
                       className="px-3 py-1.5 flex items-center gap-2"
-                      style={{
-                        backgroundColor: style["element.selected"],
-                        color: style.text,
-                      }}
+                      style={{ color: style["text.muted"] }}
                     >
-                      <FileCode2 className="w-3.5 h-3.5" />
-                      <span className="font-medium">page.tsx</span>
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      <span>app</span>
+                    </div>
+                    <div className="pl-4">
+                      <div
+                        className="px-3 py-1.5 flex items-center gap-2"
+                        style={{
+                          backgroundColor: style["element.selected"],
+                          color: style.text,
+                        }}
+                      >
+                        <FileCode2 className="w-3.5 h-3.5" />
+                        <span className="font-medium">page.tsx</span>
+                      </div>
+                      <div
+                        className="px-3 py-1.5 flex items-center gap-2"
+                        style={{ color: style["text.muted"] }}
+                      >
+                        <FileCode2 className="w-3.5 h-3.5" />
+                        <span>layout.tsx</span>
+                      </div>
                     </div>
                     <div
                       className="px-3 py-1.5 flex items-center gap-2"
                       style={{ color: style["text.muted"] }}
                     >
-                      <FileCode2 className="w-3.5 h-3.5" />
-                      <span>layout.tsx</span>
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      <span>components</span>
                     </div>
-                  </div>
-                  <div
-                    className="px-3 py-1.5 flex items-center gap-2"
-                    style={{ color: style["text.muted"] }}
-                  >
-                    <FolderOpen className="w-3.5 h-3.5" />
-                    <span>components</span>
-                  </div>
-                  <div
-                    className="px-3 py-1.5 flex items-center gap-2"
-                    style={{ color: style["text.muted"] }}
-                  >
-                    <FolderOpen className="w-3.5 h-3.5" />
-                    <span>lib</span>
+                    <div
+                      className="px-3 py-1.5 flex items-center gap-2"
+                      style={{ color: style["text.muted"] }}
+                    >
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      <span>lib</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollArea>
         </div>
 
         {/* Editor area */}
@@ -210,51 +213,53 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
             </div>
 
             {/* Code content */}
-            <div
-              className="flex-1 py-3 px-4 overflow-auto font-mono text-[11px]"
+            <ScrollArea
+              className="flex-1 font-mono text-[11px]"
               style={{
                 backgroundColor: style["editor.background"],
                 color: style["editor.foreground"],
               }}
             >
-              <pre className="leading-[1.6]">
-                {codeExample.split("\n").map((line, index) => {
-                  const isActiveLine = index === 13;
-                  return (
-                    <div
-                      key={index}
-                      className="h-[19.2px] px-2 -mx-2"
-                      style={{
-                        backgroundColor: isActiveLine
-                          ? style["editor.active_line.background"]
-                          : "transparent",
-                      }}
-                    >
-                      {highlightLine(line, style.syntax)}
-                    </div>
-                  );
-                })}
-              </pre>
-            </div>
+              <div className="py-3 px-4">
+                <pre className="leading-[1.6]">
+                  {codeExample.split("\n").map((line, index) => {
+                    const isActiveLine = index === 13;
+                    return (
+                      <div
+                        key={index}
+                        className="h-[19.2px] px-2 -mx-2"
+                        style={{
+                          backgroundColor: isActiveLine
+                            ? style["editor.active_line.background"]
+                            : "transparent",
+                        }}
+                      >
+                        {highlightLine(line, style.syntax)}
+                      </div>
+                    );
+                  })}
+                </pre>
+              </div>
+            </ScrollArea>
           </div>
         </div>
       </div>
 
       {/* Status bar */}
       <div
-        className="h-7 px-4 flex items-center justify-between text-[11px] border-t"
+        className="h-7 px-4 flex items-center justify-between text-[11px] border-t shrink-0"
         style={{
           backgroundColor: style["status_bar.background"],
           borderColor: style["border.variant"],
           color: style["text.muted"],
         }}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 shrink-0">
           <span className="font-medium">TypeScript JSX</span>
           <span>UTF-8</span>
           <span>Ln 14, Col 16</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 shrink-0">
           <span
             className="flex items-center gap-1.5"
             style={{ color: style["version_control.modified"] }}
