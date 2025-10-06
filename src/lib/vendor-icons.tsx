@@ -23,8 +23,7 @@ export const VENDOR_ICONS: Record<
 };
 
 export const VENDOR_IMAGES: Record<string, string> = {
-  "8-bit-gameboy":
-    "https://pbs.twimg.com/profile_images/1862281954830327808/qfgiXjYN_400x400.jpg",
+  "8-bit-gameboy": "/avatars/orcdev.webp",
 };
 
 export function getVendorIcon(
