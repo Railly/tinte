@@ -75,61 +75,63 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           {/* File tree */}
           <ScrollArea className="flex-1 min-h-0">
             <div className="text-xs py-1">
-              <div
-                className="px-3 py-1.5 flex items-center gap-2 hover:bg-black/5"
-                style={{ color: style.text }}
-              >
-                <FolderOpen className="w-4 h-4" />
-                <span className="font-medium">tinte</span>
-              </div>
-              <div className="pl-6">
+              <div className="py-1">
                 <div
-                  className="px-3 py-1.5 flex items-center gap-2"
-                  style={{ color: style["text.muted"] }}
+                  className="px-3 py-1.5 flex items-center gap-2 hover:bg-black/5"
+                  style={{ color: style.text }}
                 >
-                  <FolderOpen className="w-3.5 h-3.5" />
-                  <span>src</span>
+                  <FolderOpen className="w-4 h-4" />
+                  <span className="font-medium">tinte</span>
                 </div>
-                <div className="pl-4">
+                <div className="pl-6">
                   <div
                     className="px-3 py-1.5 flex items-center gap-2"
                     style={{ color: style["text.muted"] }}
                   >
                     <FolderOpen className="w-3.5 h-3.5" />
-                    <span>app</span>
+                    <span>src</span>
                   </div>
                   <div className="pl-4">
                     <div
                       className="px-3 py-1.5 flex items-center gap-2"
-                      style={{
-                        backgroundColor: style["element.selected"],
-                        color: style.text,
-                      }}
+                      style={{ color: style["text.muted"] }}
                     >
-                      <FileCode2 className="w-3.5 h-3.5" />
-                      <span className="font-medium">page.tsx</span>
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      <span>app</span>
+                    </div>
+                    <div className="pl-4">
+                      <div
+                        className="px-3 py-1.5 flex items-center gap-2"
+                        style={{
+                          backgroundColor: style["element.selected"],
+                          color: style.text,
+                        }}
+                      >
+                        <FileCode2 className="w-3.5 h-3.5" />
+                        <span className="font-medium">page.tsx</span>
+                      </div>
+                      <div
+                        className="px-3 py-1.5 flex items-center gap-2"
+                        style={{ color: style["text.muted"] }}
+                      >
+                        <FileCode2 className="w-3.5 h-3.5" />
+                        <span>layout.tsx</span>
+                      </div>
                     </div>
                     <div
                       className="px-3 py-1.5 flex items-center gap-2"
                       style={{ color: style["text.muted"] }}
                     >
-                      <FileCode2 className="w-3.5 h-3.5" />
-                      <span>layout.tsx</span>
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      <span>components</span>
                     </div>
-                  </div>
-                  <div
-                    className="px-3 py-1.5 flex items-center gap-2"
-                    style={{ color: style["text.muted"] }}
-                  >
-                    <FolderOpen className="w-3.5 h-3.5" />
-                    <span>components</span>
-                  </div>
-                  <div
-                    className="px-3 py-1.5 flex items-center gap-2"
-                    style={{ color: style["text.muted"] }}
-                  >
-                    <FolderOpen className="w-3.5 h-3.5" />
-                    <span>lib</span>
+                    <div
+                      className="px-3 py-1.5 flex items-center gap-2"
+                      style={{ color: style["text.muted"] }}
+                    >
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      <span>lib</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -138,7 +140,7 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
         </div>
 
         {/* Editor area */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0">
           {/* Tabs */}
           <div
             className="flex items-center border-b text-xs shrink-0"
@@ -184,7 +186,7 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
           {/* Code editor */}
           <ScrollArea className="flex-1 min-h-0">
-            <div className="flex min-h-full">
+            <div className="flex h-full">
               {/* Line numbers */}
               <div
                 className="w-12 py-3 text-[11px] text-right font-mono select-none border-r shrink-0"
@@ -213,7 +215,7 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
               {/* Code content */}
               <div
-                className="flex-1 py-3 px-4 font-mono text-[11px]"
+                className="flex-1 h-full py-3 px-4 font-mono text-[11px]"
                 style={{
                   backgroundColor: style["editor.background"],
                   color: style["editor.foreground"],
@@ -242,8 +244,6 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
           </ScrollArea>
         </div>
       </div>
-
-      {/* Status bar */}
       <div
         className="h-7 px-4 flex items-center justify-between text-[11px] border-t shrink-0"
         style={{
@@ -260,7 +260,9 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
         <div className="flex items-center gap-4 shrink-0">
           <span
             className="flex items-center gap-1.5"
-            style={{ color: style["version_control.modified"] }}
+            style={{
+              color: style["version_control.modified"],
+            }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-current" />2
           </span>
