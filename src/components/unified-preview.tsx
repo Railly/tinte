@@ -22,16 +22,9 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const zedOverrides = useZedOverrides();
   const currentProvider = getPreviewableProvider(provider || "shadcn");
 
-  if (!currentProvider) {
-    return (
-      <div className="flex items-center justify-center h-64 text-muted-foreground">
-        No preview available for {provider}
-      </div>
-    );
-  }
-
   // Use special conversion with overrides for VS Code and Zed
   const converted = useMemo(() => {
+    if (!currentProvider) return null;
     if (currentProvider.metadata.id === "vscode") {
       return convertTinteToVSCode(
         theme,
@@ -108,10 +101,12 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
     zedOverrides.allOverrides,
   ]);
 
-  if (!converted) {
+  if (!currentProvider || !converted) {
     return (
       <div className="flex items-center justify-center h-64 text-muted-foreground">
-        Failed to convert theme for {currentProvider.metadata.name}
+        {!currentProvider
+          ? `No preview available for ${provider}`
+          : `Failed to convert theme for ${currentProvider.metadata.name}`}
       </div>
     );
   }

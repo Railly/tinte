@@ -346,7 +346,7 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
   const constants = /\b([a-z][a-zA-Z0-9]*(?:Schema|Themes|Section|Config))\b/g;
   const operators = /(=>|=|\?|:|\|\||&&)/g;
 
-  const result = line;
+  const _result = line;
   const tokens: Array<{
     start: number;
     end: number;
@@ -555,6 +555,6 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
   );
 }
 
-function highlightExpression(expr: string, syntax: any): React.ReactNode {
+function _highlightExpression(expr: string, syntax: any): React.ReactNode {
   return highlightLine(expr, syntax);
 }

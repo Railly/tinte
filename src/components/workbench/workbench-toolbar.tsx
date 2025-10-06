@@ -93,7 +93,6 @@ export function WorkbenchToolbar({
     unsavedChanges,
     markAsSaved,
     isSaving,
-    updateShadcnOverride,
     loadUserThemes,
     selectTheme,
     tinteTheme: theme,
