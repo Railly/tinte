@@ -72,7 +72,7 @@ export function normalizeOverrides(theme: ThemeData): NormalizedOverrides {
 }
 
 export function validateOverride(provider: string, override: any): any {
-  const validProviders = ["shadcn", "vscode", "shiki"];
+  const validProviders = ["shadcn", "vscode", "shiki", "zed"];
   if (!validProviders.includes(provider)) {
     throw new Error(`Invalid provider: ${provider}`);
   }
