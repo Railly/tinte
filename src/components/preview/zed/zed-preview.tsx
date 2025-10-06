@@ -18,6 +18,21 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
   const codeExample = `src/app/page.tsx > async function Home()
 
+import { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { ThemeGrid } from "@/components/theme-grid";
+import { HeroSection } from "@/components/hero-section";
+import { FeatureSection } from "@/components/feature-section";
+
+export const metadata: Metadata = {
+  title: "Tinte - Universal Theme Generator",
+  description: "Convert themes between Rayso, TweakCN, VS Code, shadcn/ui, and more",
+};
+
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
   const favoriteThemes = session
     ? await getUserFavoriteThemes(session.user.id, 6, session.user)
     : [];
@@ -40,7 +55,42 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{`;
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(pageSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationSchema),
+        }}
+      />
+
+      <main className="min-h-screen">
+        <HeroSection />
+
+        <section className="container mx-auto px-4 py-16">
+          <h2 className="text-3xl font-bold mb-8">Popular Themes</h2>
+          <ThemeGrid themes={publicThemes} />
+        </section>
+
+        {favoriteThemes.length > 0 && (
+          <section className="container mx-auto px-4 py-16">
+            <h2 className="text-3xl font-bold mb-8">Your Favorites</h2>
+            <ThemeGrid themes={favoriteThemes} />
+          </section>
+        )}
+
+        <section className="container mx-auto px-4 py-16">
+          <h2 className="text-3xl font-bold mb-8">TweakCN Themes</h2>
+          <ThemeGrid themes={tweakCNThemes} />
+        </section>
+
+        <FeatureSection />
+      </main>
+    </>
+  );
+}`;
 
   return (
     <div
