@@ -153,6 +153,10 @@ export function useDockActions({
       // Copy bunx tinte command
       const command = `bunx tinte@latest ${themeId}`;
       await handleCopyCommand(command);
+    } else if (providerId === "zed") {
+      // Copy bunx tinte command with --zed flag
+      const command = `bunx tinte@latest ${themeId} --zed`;
+      await handleCopyCommand(command);
     } else {
       await handleCopyTheme();
     }
@@ -188,6 +192,13 @@ export function useDockActions({
       return {
         label: "Copy Command",
         description: `bunx tinte@latest ${themeId}`,
+        icon: InvertedLogo,
+        variant: "default" as const,
+      };
+    } else if (providerId === "zed") {
+      return {
+        label: "Copy Command",
+        description: `bunx tinte@latest ${themeId} --zed`,
         icon: InvertedLogo,
         variant: "default" as const,
       };

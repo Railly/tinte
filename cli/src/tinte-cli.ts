@@ -71,7 +71,7 @@ export class TinteCLI {
     console.log(`🎨 Installing ${themeName} to Zed...`);
 
     // Import Zed converter
-    const { tinteToZed } = await import("../../src/lib/providers/zed");
+    const { tinteToZed } = await import("./lib/providers/zed");
 
     // Convert theme
     const zedTheme = tinteToZed(
