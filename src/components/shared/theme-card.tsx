@@ -178,16 +178,25 @@ export function ThemeCard({
             ...shadcnColors,
             ...shadcnFonts,
             ...shadcnShadows,
-            backgroundColor: "hsl(var(--background) / 0.5)",
-            borderColor: "hsl(var(--border) / 0.6)",
-            "--hover-border": "hsl(var(--border) / 0.8)",
+            backgroundColor: shadcnColors["--background"]
+              ? `hsl(${shadcnColors["--background"]} / 0.5)`
+              : "hsl(var(--background) / 0.5)",
+            borderColor: shadcnColors["--border"]
+              ? `hsl(${shadcnColors["--border"]} / 0.6)`
+              : "hsl(var(--border) / 0.6)",
           } as React.CSSProperties
         }
         onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = "hsl(var(--border) / 0.8)";
+          const borderValue = shadcnColors["--border"];
+          if (borderValue) {
+            e.currentTarget.style.borderColor = `hsl(${borderValue} / 0.8)`;
+          }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = "hsl(var(--border) / 0.6)";
+          const borderValue = shadcnColors["--border"];
+          if (borderValue) {
+            e.currentTarget.style.borderColor = `hsl(${borderValue} / 0.6)`;
+          }
         }}
       >
         <div className="p-4">
@@ -343,15 +352,25 @@ export function ThemeCard({
           ...shadcnColors,
           ...shadcnFonts,
           ...shadcnShadows,
-          backgroundColor: "hsl(var(--background) / 0.5)",
-          borderColor: "hsl(var(--border) / 0.6)",
+          backgroundColor: shadcnColors["--background"]
+            ? `hsl(${shadcnColors["--background"]} / 0.5)`
+            : "hsl(var(--background) / 0.5)",
+          borderColor: shadcnColors["--border"]
+            ? `hsl(${shadcnColors["--border"]} / 0.6)`
+            : "hsl(var(--border) / 0.6)",
         } as React.CSSProperties
       }
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "hsl(var(--border) / 0.8)";
+        const borderValue = shadcnColors["--border"];
+        if (borderValue) {
+          e.currentTarget.style.borderColor = `hsl(${borderValue} / 0.8)`;
+        }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "hsl(var(--border) / 0.6)";
+        const borderValue = shadcnColors["--border"];
+        if (borderValue) {
+          e.currentTarget.style.borderColor = `hsl(${borderValue} / 0.6)`;
+        }
       }}
     >
       {/* Color preview dots */}
