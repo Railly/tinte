@@ -44,42 +44,14 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
   return (
     <div
-      className={`rounded-lg overflow-hidden shadow-2xl ${className || ""}`}
+      className={`rounded-lg overflow-hidden ${className || ""}`}
       style={{
         backgroundColor: style.background,
         borderColor: style.border,
       }}
     >
-      {/* Title bar - macOS style */}
-      <div
-        className="h-11 px-4 flex items-center justify-between border-b"
-        style={{
-          backgroundColor: style["title_bar.background"],
-          borderColor: style["border.variant"],
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <div className="flex gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#ec695e]" />
-            <div className="w-3 h-3 rounded-full bg-[#f4bf4f]" />
-            <div className="w-3 h-3 rounded-full bg-[#61c554]" />
-          </div>
-          <span
-            className="text-xs font-medium tracking-wide"
-            style={{ color: style.text }}
-          >
-            tinte — bun dev
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs" style={{ color: style["text.muted"] }}>
-            main
-          </span>
-        </div>
-      </div>
-
       {/* Main content area */}
-      <div className="flex h-[500px]">
+      <div className="flex h-full">
         {/* Sidebar - File tree */}
         <div
           className="w-56 border-r flex flex-col"
