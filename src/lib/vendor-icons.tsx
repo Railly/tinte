@@ -1,6 +1,11 @@
 import { ChatGPTIcon } from "@/components/shared/icons/chatgpt";
 import { ClerkIcon } from "@/components/shared/icons/clerk";
+import { CrafterStationIcon } from "@/components/shared/icons/crafter-station";
 import { ElevenLabsIcon } from "@/components/shared/icons/elevenlabs";
+import { KeboIcon } from "@/components/shared/icons/kebo";
+import { LinearIcon } from "@/components/shared/icons/linear";
+import { PerplexityIcon } from "@/components/shared/icons/perplexity";
+import { SpotifyIcon } from "@/components/shared/icons/spotify";
 import { SupabaseIcon } from "@/components/shared/icons/supabase";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
 import { TriggerIcon } from "@/components/shared/icons/trigger";
@@ -17,6 +22,11 @@ export const VENDOR_ICONS: Record<
   chatgpt: ChatGPTIcon,
   tailwind: TailwindIcon,
   supabase: SupabaseIcon,
+  perplexity: PerplexityIcon,
+  linear: LinearIcon,
+  kebo: KeboIcon,
+  "crafter-station": CrafterStationIcon,
+  spotify: SpotifyIcon,
   sketchpad: null, // No icon provided
   "8-bit-gameboy": null, // Uses image instead
   "one-hunter": null, // No icon provided
