@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { ElementsBanner } from "@/components/home/elements-banner";
 import { FAQ } from "@/components/home/faq";
 import { Header } from "@/components/home/header";
 import { Hero } from "@/components/home/hero";
@@ -86,6 +87,7 @@ export default async function Home() {
       />
       <div className="min-h-screen">
         <Header />
+        <ElementsBanner />
         <Hero
           userThemes={userThemes}
           tweakCNThemes={tweakCNThemes}
