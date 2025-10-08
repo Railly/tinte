@@ -6,7 +6,7 @@ import type { EditorInstallOptions, TinteTheme } from "./types";
 
 export class TinteCLI {
   private readonly NETLIFY_ENDPOINT =
-    "https://tinte-rh.netlify.app/.netlify/functions/generate-vscode-theme";
+    "https://www.tinte.dev/api/generate-vscode-theme";
   private readonly TMP_DIR = join(tmpdir(), "tinte-themes");
 
   constructor() {
