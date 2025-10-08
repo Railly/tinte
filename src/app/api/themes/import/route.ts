@@ -1,6 +1,5 @@
-import { headers } from "next/headers";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { saveThemeToDatabase } from "@/lib/save-theme-to-db";
 import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteTheme } from "@/types/tinte";
@@ -19,18 +18,13 @@ export async function POST(request: Request) {
     const { name, concept, tinteTheme, shadcnTheme, makePublic } = body;
 
     // Get current session
-    const headersList = await headers();
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
+    const { userId } = await auth();
 
-    let userId: string | undefined;
+    let clerkUserId: string | undefined;
 
-    if (session?.user) {
-      userId = session.user.id;
-      console.log(
-        `🔐 Authenticated user importing theme: ${session.user.name} (${userId})`,
-      );
+    if (userId) {
+      clerkUserId = `clerk_${userId}`;
+      console.log(`🔐 Authenticated user importing theme: ${userId}`);
     }
 
     // Prepare theme data for database (matching AI generation structure)
@@ -47,7 +41,7 @@ export async function POST(request: Request) {
     // Save theme to database using the same function as AI generation
     const { theme: savedTheme, slug } = await saveThemeToDatabase(
       themeData,
-      userId,
+      clerkUserId,
     );
 
     console.log(`🎨 Imported theme "${name}" saved with slug: ${slug}`);
@@ -59,7 +53,7 @@ export async function POST(request: Request) {
       slug: savedTheme.slug,
       name: savedTheme.name,
       concept: savedTheme.concept,
-      author: session?.user?.name || "Anonymous",
+      author: "Anonymous",
       provider: "tinte" as const,
       downloads: 0,
       likes: 0,
@@ -76,14 +70,7 @@ export async function POST(request: Request) {
         foreground: tinteTheme.light.tx,
       },
       rawTheme: tinteTheme,
-      user: session?.user
-        ? {
-            id: session.user.id,
-            name: session.user.name,
-            email: session.user.email,
-            image: session.user.image,
-          }
-        : null,
+      user: null,
       is_public: makePublic,
       overrides: {
         shadcn: shadcnTheme,

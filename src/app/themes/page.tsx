@@ -1,8 +1,7 @@
+import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { BrowseThemes } from "@/components/themes/browse-themes";
 import { siteConfig } from "@/config/site";
-import { auth } from "@/lib/auth";
 import {
   getPublicThemes,
   getPublicThemesCount,
@@ -65,17 +64,13 @@ export default async function ThemesPage({
   const { category, search, from } = await searchParams;
 
   // Fetch user session and themes server-side
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { userId } = await auth();
 
-  const userThemes = session
-    ? await getUserThemes(session.user.id, undefined, session.user)
+  const userThemes = userId
+    ? await getUserThemes(userId, undefined, { id: userId })
     : [];
 
-  const favoriteThemes = session
-    ? await getUserFavoriteThemes(session.user.id)
-    : [];
+  const favoriteThemes = userId ? await getUserFavoriteThemes(userId) : [];
 
   const publicThemes = await getPublicThemes(20);
   const publicThemesCount = await getPublicThemesCount();
@@ -85,7 +80,7 @@ export default async function ThemesPage({
 
   return (
     <BrowseThemes
-      session={session}
+      session={userId ? { user: { id: userId } } : null}
       userThemes={userThemes}
       publicThemes={publicThemes}
       favoriteThemes={favoriteThemes}

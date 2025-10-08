@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInButton } from "@clerk/nextjs";
 import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import { Message, MessageContent } from "@/components/ui/message";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ChatInput } from "@/components/workbench/chat-input";
 import { useTheme } from "@/hooks/use-theme";
-import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 import { AssistantAvatar } from "./components/assistant-avatar";
@@ -376,18 +376,11 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
             <p className="text-sm text-muted-foreground">
               🎨 <strong>Sign in to continue</strong> creating theme variations
             </p>
-            <Button
-              size="sm"
-              variant="default"
-              onClick={() =>
-                authClient.signIn.social({
-                  provider: "github",
-                  callbackURL: window.location.href,
-                })
-              }
-            >
-              Sign In
-            </Button>
+            <SignInButton mode="modal">
+              <Button size="sm" variant="default">
+                Sign In
+              </Button>
+            </SignInButton>
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInButton } from "@clerk/nextjs";
 import {
   Check,
   Code,
@@ -52,7 +53,6 @@ import { useDockActions } from "@/hooks/use-dock-actions";
 import { useThemeHistory } from "@/hooks/use-theme-history";
 import { cn } from "@/lib";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
-import { authClient } from "@/lib/auth-client";
 import { importShadcnTheme } from "@/lib/import-theme";
 import { convertTheme, exportTheme, getProvider } from "@/lib/providers";
 import { useThemeContext } from "@/providers/theme";
@@ -76,7 +76,7 @@ export function WorkbenchToolbar({
   const [showSignInDialog, setShowSignInDialog] = useState(false);
   const [showViewCodeDialog, setShowViewCodeDialog] = useState(false);
   const [isThemePublic, setIsThemePublic] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [_isSigningIn, _setIsSigningIn] = useState(false);
   const [showCopiedFeedback, setShowCopiedFeedback] = useState(false);
   const [copiedAction, setCopiedAction] = useState<
     "file" | "theme" | "command" | null
@@ -907,27 +907,15 @@ export function WorkbenchToolbar({
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-4 pb-2">
-            <Button
-              onClick={async () => {
-                setIsSigningIn(true);
-                try {
-                  await authClient.signIn.social({
-                    provider: "github",
-                    callbackURL: window.location.href,
-                  });
-                } catch (error) {
-                  console.error("Error signing in:", error);
-                  toast.error("Failed to sign in. Please try again.");
-                  setIsSigningIn(false);
-                }
-              }}
-              disabled={isSigningIn}
-              size="lg"
-              className="w-full h-12 gap-3 text-base font-medium"
-            >
-              <GithubIcon className="h-5 w-5" />
-              {isSigningIn ? "Signing in..." : "Continue with GitHub"}
-            </Button>
+            <SignInButton mode="modal">
+              <Button
+                size="lg"
+                className="w-full h-12 gap-3 text-base font-medium"
+              >
+                <GithubIcon className="h-5 w-5" />
+                Continue with GitHub
+              </Button>
+            </SignInButton>
             <p className="text-xs text-center text-muted-foreground px-4">
               By continuing, you agree to our Terms of Service and Privacy
               Policy

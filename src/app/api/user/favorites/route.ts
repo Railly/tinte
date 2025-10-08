@@ -1,20 +1,16 @@
-import { headers } from "next/headers";
+import { auth } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
 import { getUserFavoriteThemes } from "@/lib/user-themes";
 
 export async function GET(request: NextRequest) {
   try {
-    const headersList = await headers();
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
+    if (!userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const favoriteThemes = await getUserFavoriteThemes(session.user.id);
+    const favoriteThemes = await getUserFavoriteThemes(userId);
 
     return Response.json(favoriteThemes);
   } catch (error) {

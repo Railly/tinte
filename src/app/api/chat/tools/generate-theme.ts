@@ -1,7 +1,6 @@
+import { auth } from "@clerk/nextjs/server";
 import { tool } from "ai";
-import { headers } from "next/headers";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
 import { saveThemeToDatabase } from "@/lib/save-theme-to-db";
 import description from "./generate-theme.md";
 
@@ -102,19 +101,10 @@ export const generateThemeTool = tool({
   execute: async ({ title, concept, light, dark, fonts, radius, shadows }) => {
     try {
       // Get current session
-      const headersList = await headers();
-      const session = await auth.api.getSession({
-        headers: headersList,
-      });
+      const { userId } = await auth();
 
-      let userId: string | undefined;
-
-      if (session?.user) {
-        // User is authenticated
-        userId = session.user.id;
-        console.log(
-          `🔐 Authenticated user generating theme: ${session.user.name} (${userId})`,
-        );
+      if (userId) {
+        console.log(`🔐 Authenticated user generating theme: ${userId}`);
       }
 
       // Save theme to database

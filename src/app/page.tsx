@@ -1,5 +1,5 @@
+import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { ElementsBanner } from "@/components/home/elements-banner";
 import { FAQ } from "@/components/home/faq";
 import { Header } from "@/components/home/header";
@@ -8,7 +8,6 @@ import { Roadmap } from "@/components/home/roadmap";
 import { Showcase } from "@/components/home/showcase";
 import { Footer } from "@/components/shared/footer";
 import { siteConfig } from "@/config/site";
-import { auth } from "@/lib/auth";
 import { generateOrganizationSchema, generatePageSchema } from "@/lib/seo";
 import {
   getPublicThemes,
@@ -45,17 +44,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { userId } = await auth();
 
-  const userThemes = session
-    ? await getUserThemes(session.user.id, 8, session.user)
+  const userThemes = userId
+    ? await getUserThemes(userId, 8, { id: userId })
     : [];
 
-  const favoriteThemes = session
-    ? await getUserFavoriteThemes(session.user.id)
-    : [];
+  const favoriteThemes = userId ? await getUserFavoriteThemes(userId) : [];
 
   const publicThemes = await getPublicThemes(8);
   const tweakCNThemes = await getTweakCNThemes(8);
@@ -95,7 +90,7 @@ export default async function Home() {
           raysoThemes={raysoThemes}
         />
         <Showcase
-          session={session}
+          session={userId ? { user: { id: userId } } : null}
           userThemes={userThemes}
           publicThemes={publicThemes}
           favoriteThemes={favoriteThemes}

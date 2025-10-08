@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { ClerkSync } from "@/components/clerk-sync";
 import { useTheme } from "@/hooks/use-theme";
 import { useThemeFonts } from "@/hooks/use-theme-fonts";
 import { useAuthStore } from "@/stores/auth";
@@ -40,6 +41,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [authStore.mounted]);
 
   return (
-    <ThemeContext.Provider value={themeValue}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={themeValue}>
+      <ClerkSync />
+      {children}
+    </ThemeContext.Provider>
   );
 }

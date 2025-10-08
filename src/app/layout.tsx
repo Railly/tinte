@@ -1,4 +1,5 @@
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -143,16 +144,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        <NuqsAdapter>
-          <QueryProvider>
-            <ThemeProvider>
-              {children}
-              <BetaBanner />
-              <Toaster position="bottom-right" />
-              <Analytics />
-            </ThemeProvider>
-          </QueryProvider>
-        </NuqsAdapter>
+        <ClerkProvider>
+          <NuqsAdapter>
+            <QueryProvider>
+              <ThemeProvider>
+                {children}
+                <BetaBanner />
+                <Toaster position="bottom-right" />
+                <Analytics />
+              </ThemeProvider>
+            </QueryProvider>
+          </NuqsAdapter>
+        </ClerkProvider>
       </body>
     </html>
   );

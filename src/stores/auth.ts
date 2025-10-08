@@ -2,7 +2,6 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { authClient } from "@/lib/auth-client";
 import type { ThemeData } from "@/lib/theme-tokens";
 
 interface AuthState {
@@ -17,7 +16,8 @@ interface AuthState {
 }
 
 interface AuthActions {
-  initialize: () => Promise<void>;
+  setUser: (user: any | null, isAuthenticated: boolean) => void;
+  initialize: () => void;
   loadUserThemes: () => Promise<void>;
   loadFavorites: () => Promise<void>;
   toggleFavorite: (themeId: string) => Promise<boolean>;
@@ -57,38 +57,23 @@ export const useAuthStore = create<AuthStore>()(
       isSaving: false,
       lastSaved: null,
 
-      initialize: async () => {
-        try {
-          const sessionResult = await authClient.getSession();
-          const session = sessionResult.data;
-          const user = session?.user || null;
-          const isAuthenticated = !!user;
+      setUser: (user: any | null, isAuthenticated: boolean) => {
+        set({ user, isAuthenticated });
 
-          let userThemes: ThemeData[] = [];
-          let favoriteThemes: ThemeData[] = [];
-          let favorites: Record<string, boolean> = {};
-
-          if (isAuthenticated) {
-            await Promise.all([get().loadUserThemes(), get().loadFavorites()]);
-
-            const state = get();
-            userThemes = state.userThemes;
-            favoriteThemes = state.favoriteThemes;
-            favorites = state.favorites;
-          }
-
+        if (isAuthenticated && user) {
+          get().loadUserThemes();
+          get().loadFavorites();
+        } else {
           set({
-            mounted: true,
-            user,
-            isAuthenticated,
-            userThemes,
-            favoriteThemes,
-            favorites,
+            userThemes: [],
+            favoriteThemes: [],
+            favorites: {},
           });
-        } catch (error) {
-          console.error("Auth initialization error:", error);
-          set({ mounted: true });
         }
+      },
+
+      initialize: () => {
+        set({ mounted: true });
       },
 
       loadUserThemes: async () => {

@@ -1,9 +1,9 @@
+import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 import { theme } from "@/db/schema/theme";
-import { auth } from "@/lib/auth";
 import type { TinteTheme } from "@/types/tinte";
 
 // Helper function to generate unique slug
@@ -47,11 +47,9 @@ async function generateUniqueSlug(baseName: string): Promise<string> {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -82,7 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate theme ID and unique slug
-    const themeId = `theme_${session.user.id}_${Date.now()}`;
+    const themeId = `theme_${userId}_${Date.now()}`;
     const legacyId = `legacy_${Date.now()}`;
     const uniqueSlug = await generateUniqueSlug(name);
 
@@ -92,7 +90,7 @@ export async function POST(request: NextRequest) {
       .values({
         id: themeId,
         legacy_id: legacyId,
-        user_id: session.user.id,
+        user_id: userId,
         name,
         slug: uniqueSlug,
         concept: concept || null,
@@ -179,16 +177,14 @@ export async function GET(request: NextRequest) {
     }
 
     // For non-public themes, require authentication
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { getUserThemes } = await import("@/lib/user-themes");
-    const themes = await getUserThemes(session.user.id, limit, session.user);
+    const themes = await getUserThemes(userId, limit, { id: userId });
 
     return NextResponse.json(themes);
   } catch (error) {

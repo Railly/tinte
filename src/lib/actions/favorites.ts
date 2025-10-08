@@ -1,21 +1,17 @@
 "use server";
 
+import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { userFavorites } from "@/db/schema/user";
-import { auth } from "@/lib/auth";
 
 export async function toggleFavorite(themeId: string) {
   try {
-    const headersList = await headers();
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
-      redirect("/auth/signin");
+    if (!userId) {
+      redirect("/sign-in");
     }
 
     // Check if already favorited
@@ -24,7 +20,7 @@ export async function toggleFavorite(themeId: string) {
       .from(userFavorites)
       .where(
         and(
-          eq(userFavorites.userId, session.user.id),
+          eq(userFavorites.userId, userId),
           eq(userFavorites.themeId, themeId),
         ),
       )
@@ -36,7 +32,7 @@ export async function toggleFavorite(themeId: string) {
         .delete(userFavorites)
         .where(
           and(
-            eq(userFavorites.userId, session.user.id),
+            eq(userFavorites.userId, userId),
             eq(userFavorites.themeId, themeId),
           ),
         );
@@ -45,7 +41,7 @@ export async function toggleFavorite(themeId: string) {
     } else {
       // Add favorite
       await db.insert(userFavorites).values({
-        userId: session.user.id,
+        userId: userId,
         themeId,
       });
 
@@ -59,12 +55,9 @@ export async function toggleFavorite(themeId: string) {
 
 export async function getFavoriteStatus(themeId: string) {
   try {
-    const headersList = await headers();
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
+    if (!userId) {
       return { isFavorite: false };
     }
 
@@ -73,7 +66,7 @@ export async function getFavoriteStatus(themeId: string) {
       .from(userFavorites)
       .where(
         and(
-          eq(userFavorites.userId, session.user.id),
+          eq(userFavorites.userId, userId),
           eq(userFavorites.themeId, themeId),
         ),
       )
@@ -88,19 +81,16 @@ export async function getFavoriteStatus(themeId: string) {
 
 export async function getUserFavorites() {
   try {
-    const headersList = await headers();
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
+    if (!userId) {
       return { favorites: {} };
     }
 
     const favorites = await db
       .select({ themeId: userFavorites.themeId })
       .from(userFavorites)
-      .where(eq(userFavorites.userId, session.user.id));
+      .where(eq(userFavorites.userId, userId));
 
     // Convert to Record<string, boolean> format
     const favoritesMap: Record<string, boolean> = {};

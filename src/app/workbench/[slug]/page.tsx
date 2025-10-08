@@ -1,9 +1,8 @@
+import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { WorkbenchMain } from "@/components/workbench/workbench-main";
 import { siteConfig } from "@/config/site";
-import { auth } from "@/lib/auth";
 import { getThemeBySlug } from "@/lib/get-theme-by-slug";
 import {
   getRaysoThemes,
@@ -19,11 +18,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
-  const headersList = await headers();
-  const session = await auth.api.getSession({
-    headers: headersList,
-  });
-  const currentUserId = session?.user?.id;
+  const { userId: currentUserId } = await auth();
 
   const [userThemes, tweakCNThemes, tinteThemes, raysoThemes] =
     await Promise.all([
@@ -134,11 +129,7 @@ export default async function WorkbenchSlugPage({
     ? "agent"
     : (tab as "canonical" | "overrides" | "agent") || "agent";
 
-  const headersList = await headers();
-  const session = await auth.api.getSession({
-    headers: headersList,
-  });
-  const currentUserId = session?.user?.id;
+  const { userId: currentUserId } = await auth();
 
   // Fetch themes in parallel
   const [userThemes, tweakCNThemes, tinteThemes, raysoThemes] =

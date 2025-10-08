@@ -9,7 +9,6 @@ import { ProviderSwitcher } from "@/components/shared/provider-switcher";
 import { ThemeSelector } from "@/components/shared/theme-selector";
 import { UserDropdown } from "@/components/shared/user-dropdown";
 import { siteConfig } from "@/config/site";
-import { authClient } from "@/lib/auth-client";
 import type { ThemeData } from "@/lib/theme-tokens";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
@@ -47,7 +46,6 @@ export function WorkbenchHeader({
     toggleFavorite,
     getFavoriteStatus,
   } = useThemeContext();
-  authClient.useSession();
   const activeId = activeTheme?.id || null;
   // Add themes to store once on mount
   useEffect(() => {

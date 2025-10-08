@@ -26,7 +26,7 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
 import { Metadata } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@clerk/nextjs/server";
 import { ThemeGrid } from "@/components/theme-grid";
 import { HeroSection } from "@/components/hero-section";
 import { FeatureSection } from "@/components/feature-section";

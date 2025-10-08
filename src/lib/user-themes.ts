@@ -14,7 +14,7 @@ import type { TinteBlock } from "@/types/tinte";
 
 export async function getThemesWithUsers(
   limit?: number,
-  currentUserId?: string,
+  currentUserId?: string | null,
 ): Promise<ThemeWithMetadata[]> {
   try {
     let baseQuery = db

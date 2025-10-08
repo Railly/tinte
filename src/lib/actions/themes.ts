@@ -1,12 +1,11 @@
 "use server";
 
+import { auth } from "@clerk/nextjs/server";
 import { and, eq, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { auth } from "@/lib/auth";
 import { convertTheme } from "@/lib/providers";
 import type { ShadcnTheme } from "@/types/shadcn";
 
@@ -38,13 +37,10 @@ export async function incrementThemeInstalls(themeId: string) {
 
 export async function renameTheme(themeId: string, newName: string) {
   try {
-    const headersList = await headers();
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
-      redirect("/auth/signin");
+    if (!userId) {
+      redirect("/sign-in");
     }
 
     if (!newName?.trim()) {
@@ -55,7 +51,7 @@ export async function renameTheme(themeId: string, newName: string) {
     const existingTheme = await db
       .select()
       .from(theme)
-      .where(and(eq(theme.id, themeId), eq(theme.user_id, session.user.id)))
+      .where(and(eq(theme.id, themeId), eq(theme.user_id, userId)))
       .limit(1);
 
     if (existingTheme.length === 0) {
@@ -91,7 +87,7 @@ export async function renameTheme(themeId: string, newName: string) {
         slug,
         updated_at: new Date(),
       })
-      .where(and(eq(theme.id, themeId), eq(theme.user_id, session.user.id)))
+      .where(and(eq(theme.id, themeId), eq(theme.user_id, userId)))
       .returning();
 
     if (updatedTheme.length === 0) {
@@ -115,15 +111,10 @@ export async function duplicateTheme(
   originalThemeData?: { author?: string; provider?: string },
 ) {
   try {
-    const headersList = await headers();
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
+    const { userId } = await auth();
 
-    const user = session?.user;
-
-    if (!user) {
-      redirect("/auth/signin");
+    if (!userId) {
+      redirect("/sign-in");
     }
 
     if (!name?.trim()) {
@@ -250,7 +241,7 @@ export async function duplicateTheme(
       .values({
         id: newThemeId,
         legacy_id: newLegacyId,
-        user_id: session.user.id,
+        user_id: userId,
         name: name.trim(),
         slug,
 

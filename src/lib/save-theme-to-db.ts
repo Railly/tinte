@@ -84,7 +84,7 @@ async function generateUniqueSlug(baseName: string): Promise<string> {
 
 export async function saveThemeToDatabase(
   themeData: ThemeData,
-  userId?: string,
+  userId?: string | null,
 ): Promise<{ theme: any; slug: string }> {
   const themeId = generateThemeId();
   const slug = await generateUniqueSlug(themeData.title);

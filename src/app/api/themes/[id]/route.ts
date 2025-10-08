@@ -1,9 +1,9 @@
+import { auth } from "@clerk/nextjs/server";
 import { and, eq, ne } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 import { theme } from "@/db/schema/theme";
-import { auth } from "@/lib/auth";
 import { searchService } from "@/lib/services/search.service";
 import type { ThemeData } from "@/lib/theme-tokens";
 import type { TinteTheme } from "@/types/tinte";
@@ -66,11 +66,9 @@ interface RouteContext {
 
 export async function PUT(request: NextRequest, context: RouteContext) {
   try {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -98,7 +96,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     const existingTheme = await db
       .select()
       .from(theme)
-      .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)))
+      .where(and(eq(theme.id, id), eq(theme.user_id, userId)))
       .limit(1);
 
     if (existingTheme.length === 0) {
@@ -173,7 +171,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     const updatedTheme = await db
       .update(theme)
       .set(updates)
-      .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)))
+      .where(and(eq(theme.id, id), eq(theme.user_id, userId)))
       .returning();
 
     if (updatedTheme.length === 0) {
@@ -193,7 +191,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
           id: themeRecord.id,
           name: themeRecord.name,
           description: themeRecord.concept || "",
-          author: session.user.name || "You",
+          author: "You",
           provider: "tinte",
           tags: ["custom"],
           downloads: 0,
@@ -269,11 +267,9 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
 export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    const { userId } = await auth();
 
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -282,7 +278,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     const existingTheme = await db
       .select()
       .from(theme)
-      .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)))
+      .where(and(eq(theme.id, id), eq(theme.user_id, userId)))
       .limit(1);
 
     if (existingTheme.length === 0) {
@@ -294,7 +290,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     await db
       .delete(theme)
-      .where(and(eq(theme.id, id), eq(theme.user_id, session.user.id)));
+      .where(and(eq(theme.id, id), eq(theme.user_id, userId)));
 
     // Remove from search index if it was public
     if (existingTheme[0].is_public) {
@@ -331,11 +327,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     // If theme is not public, check if user owns it
     if (!themeRecord.is_public) {
-      const session = await auth.api.getSession({
-        headers: request.headers,
-      });
+      const { userId } = await auth();
 
-      if (!session?.user || session.user.id !== themeRecord.user_id) {
+      if (!userId || `clerk_${userId}` !== themeRecord.user_id) {
         return NextResponse.json(
           { error: "Theme not found or unauthorized" },
           { status: 404 },
