@@ -1,4 +1,3 @@
-// biome-ignore lint/suspicious/noAssignInExpressions: Regex matching requires assignment in expressions
 import { FileCode2, FolderOpen } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useThemeContext } from "@/providers/theme";
@@ -355,18 +354,19 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
     priority: number;
   }> = [];
 
-  let match;
-
-  while ((match = strings.exec(line)) !== null) {
+  let match = strings.exec(line);
+  while (match !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
       element: <span style={{ color: syntax.string?.color }}>{match[0]}</span>,
       priority: 10,
     });
+    match = strings.exec(line);
   }
 
-  while ((match = keywords.exec(line)) !== null) {
+  match = keywords.exec(line);
+  while (match !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
@@ -383,9 +383,11 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       ),
       priority: 9,
     });
+    match = keywords.exec(line);
   }
 
-  while ((match = types.exec(line)) !== null) {
+  match = types.exec(line);
+  while (match !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
@@ -402,9 +404,11 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       ),
       priority: 8,
     });
+    match = types.exec(line);
   }
 
-  while ((match = functions.exec(line)) !== null) {
+  match = functions.exec(line);
+  while (match !== null) {
     const funcName = match[1];
     tokens.push({
       start: match.index,
@@ -422,9 +426,11 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       ),
       priority: 7,
     });
+    match = functions.exec(line);
   }
 
-  while ((match = properties.exec(line)) !== null) {
+  match = properties.exec(line);
+  while (match !== null) {
     const propName = match[1];
     tokens.push({
       start: match.index + 1,
@@ -434,9 +440,11 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       ),
       priority: 6,
     });
+    match = properties.exec(line);
   }
 
-  while ((match = jsxTagBrackets.exec(line)) !== null) {
+  match = jsxTagBrackets.exec(line);
+  while (match !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
@@ -445,9 +453,11 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       ),
       priority: 9,
     });
+    match = jsxTagBrackets.exec(line);
   }
 
-  while ((match = jsxTagNames.exec(line)) !== null) {
+  match = jsxTagNames.exec(line);
+  while (match !== null) {
     const tagName = match[1];
     tokens.push({
       start: match.index + match[0].indexOf(tagName),
@@ -455,9 +465,11 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       element: <span style={{ color: syntax.tag?.color }}>{tagName}</span>,
       priority: 8,
     });
+    match = jsxTagNames.exec(line);
   }
 
-  while ((match = jsxProps.exec(line)) !== null) {
+  match = jsxProps.exec(line);
+  while (match !== null) {
     const propName = match[1];
     tokens.push({
       start: match.index,
@@ -467,27 +479,33 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       ),
       priority: 7,
     });
+    match = jsxProps.exec(line);
   }
 
-  while ((match = numbers.exec(line)) !== null) {
+  match = numbers.exec(line);
+  while (match !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
       element: <span style={{ color: syntax.number?.color }}>{match[0]}</span>,
       priority: 5,
     });
+    match = numbers.exec(line);
   }
 
-  while ((match = booleans.exec(line)) !== null) {
+  match = booleans.exec(line);
+  while (match !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
       element: <span style={{ color: syntax.boolean?.color }}>{match[0]}</span>,
       priority: 6,
     });
+    match = booleans.exec(line);
   }
 
-  while ((match = constants.exec(line)) !== null) {
+  match = constants.exec(line);
+  while (match !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
@@ -496,9 +514,11 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       ),
       priority: 5,
     });
+    match = constants.exec(line);
   }
 
-  while ((match = operators.exec(line)) !== null) {
+  match = operators.exec(line);
+  while (match !== null) {
     tokens.push({
       start: match.index,
       end: match.index + match[0].length,
@@ -507,6 +527,7 @@ function highlightLine(line: string, syntax: any): React.ReactNode {
       ),
       priority: 4,
     });
+    match = operators.exec(line);
   }
 
   tokens.sort((a, b) => {

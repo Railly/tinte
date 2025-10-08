@@ -53,7 +53,7 @@ async function deleteAnonymousUsers() {
     console.log("\nDeleting anonymous users and their data...");
 
     // Delete users (cascades will handle user_favorites, themes will be set to NULL)
-    const result = await sql`
+    const _result = await sql`
       DELETE FROM "user"
       WHERE id NOT LIKE 'user_%'
     `;
