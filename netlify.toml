@@ -1,11 +1,10 @@
 [build]
-  command = "bun run build"
+  command = "echo 'No build needed for functions only'"
+  publish = "public"
 
 [context.production.environment]
   NODE_VERSION = "20"
 
 [functions]
   directory = "netlify/functions"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+  node_bundler = "esbuild"
