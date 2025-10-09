@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { convertShadcnPaletteToFigma } from "@/lib/figma/color-converter";
+import { categorizeTokens } from "@/lib/figma/token-types";
 import { convertTinteToShadcn } from "@/lib/providers/shadcn";
 import type { TinteTheme } from "@/types/tinte";
 
@@ -75,14 +76,23 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const shadcnTheme = convertTinteToShadcn(tinteTheme);
 
+    const lightTokens = categorizeTokens(shadcnTheme.light);
+    const darkTokens = categorizeTokens(shadcnTheme.dark);
+
     const figmaTheme = {
       id: themeRecord.id,
       slug: themeRecord.slug,
       name: themeRecord.name,
       description: themeRecord.concept || `Theme: ${themeRecord.name}`,
       tokens: {
-        light: convertShadcnPaletteToFigma(shadcnTheme.light),
-        dark: convertShadcnPaletteToFigma(shadcnTheme.dark),
+        light: {
+          colors: convertShadcnPaletteToFigma(lightTokens.colors),
+          numbers: lightTokens.numbers,
+        },
+        dark: {
+          colors: convertShadcnPaletteToFigma(darkTokens.colors),
+          numbers: darkTokens.numbers,
+        },
       },
     };
 

@@ -6,6 +6,7 @@
   "ui": "dist/ui.html",
   "editorType": ["figma"],
   "networkAccess": {
-    "allowedDomains": ["www.tinte.dev", "tinte.dev", "localhost:3000"]
+    "allowedDomains": ["https://www.tinte.dev"],
+    "devAllowedDomains": ["http://localhost:3000"]
   }
 }

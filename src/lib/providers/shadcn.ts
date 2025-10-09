@@ -195,6 +195,24 @@ export function convertTinteToShadcn(tinte: TinteTheme | any): ShadcnTheme {
   const lightBlock = mapBlock(tinte.light, "light", extendedTheme);
   const darkBlock = mapBlock(tinte.dark, "dark", extendedTheme);
 
+  return {
+    light: lightBlock,
+    dark: darkBlock,
+  };
+}
+
+export function convertTinteToShadcnWithShadows(
+  tinte: TinteTheme | any,
+): ShadcnTheme {
+  // Check if we have extended theme data (fonts, radius, shadows)
+  const extendedTheme =
+    (tinte as any).fonts || (tinte as any).radius || (tinte as any).shadows
+      ? (tinte as any)
+      : null;
+
+  const lightBlock = mapBlock(tinte.light, "light", extendedTheme);
+  const darkBlock = mapBlock(tinte.dark, "dark", extendedTheme);
+
   // Add computed shadow variables to each block
   const lightShadowVars = computeShadowVars(lightBlock);
   const darkShadowVars = computeShadowVars(darkBlock);
@@ -310,7 +328,7 @@ export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
   convert: convertTinteToShadcn,
 
   export: (theme: TinteTheme, filename?: string): ProviderOutput => ({
-    content: generateCSSVariables(convertTinteToShadcn(theme)),
+    content: generateCSSVariables(convertTinteToShadcnWithShadows(theme)),
     filename: filename || "shadcn-theme.css",
     mimeType: "text/css",
   }),

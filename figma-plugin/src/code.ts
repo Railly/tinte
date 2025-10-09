@@ -10,8 +10,14 @@ interface FigmaTheme {
   name: string;
   description: string;
   tokens: {
-    light: Record<string, FigmaRGBA>;
-    dark: Record<string, FigmaRGBA>;
+    light: {
+      colors: Record<string, FigmaRGBA>;
+      numbers: Record<string, string>;
+    };
+    dark: {
+      colors: Record<string, FigmaRGBA>;
+      numbers: Record<string, string>;
+    };
   };
 }
 
@@ -40,6 +46,8 @@ figma.ui.onmessage = async (msg) => {
       }
 
       const theme: FigmaTheme = await response.json();
+
+      console.log("Theme data:", JSON.stringify(theme, null, 2));
 
       await createVariableCollection(theme);
 
@@ -91,18 +99,23 @@ async function createVariableCollection(theme: FigmaTheme) {
     throw new Error("Failed to create dark mode");
   }
 
-  const tokenNames = Object.keys(theme.tokens.light);
+  const existingVars = collection.variableIds.map((id) =>
+    figma.variables.getVariableById(id),
+  );
 
-  for (const tokenName of tokenNames) {
-    const lightColor = theme.tokens.light[tokenName];
-    const darkColor = theme.tokens.dark[tokenName];
+  let totalVars = 0;
+
+  // Create COLOR variables
+  const colorTokenNames = theme.tokens.light.colors
+    ? Object.keys(theme.tokens.light.colors)
+    : [];
+  for (const tokenName of colorTokenNames) {
+    const lightColor = theme.tokens.light.colors[tokenName];
+    const darkColor = theme.tokens.dark.colors[tokenName];
 
     if (!lightColor || !darkColor) continue;
 
-    const existingVars = collection.variableIds.map((id) =>
-      figma.variables.getVariableById(id),
-    );
-    let variable = existingVars.find((v) => v?.name === tokenName) as
+    let variable = existingVars.find((v) => v && v.name === tokenName) as
       | Variable
       | undefined;
 
@@ -112,7 +125,34 @@ async function createVariableCollection(theme: FigmaTheme) {
 
     variable.setValueForMode(lightMode.modeId, lightColor);
     variable.setValueForMode(darkMode.modeId, darkColor);
+    totalVars++;
   }
 
-  figma.notify(`Created/updated ${tokenNames.length} color variables`);
+  // Create NUMBER variables
+  const numberTokenNames = theme.tokens.light.numbers
+    ? Object.keys(theme.tokens.light.numbers)
+    : [];
+  for (const tokenName of numberTokenNames) {
+    const lightValue = theme.tokens.light.numbers[tokenName];
+    const darkValue = theme.tokens.dark.numbers[tokenName];
+
+    if (!lightValue || !darkValue) continue;
+
+    let variable = existingVars.find((v) => v && v.name === tokenName) as
+      | Variable
+      | undefined;
+
+    if (!variable) {
+      variable = figma.variables.createVariable(tokenName, collection, "FLOAT");
+    }
+
+    const lightNum = parseFloat(lightValue.replace(/px|rem|em/g, ""));
+    const darkNum = parseFloat(darkValue.replace(/px|rem|em/g, ""));
+
+    variable.setValueForMode(lightMode.modeId, lightNum);
+    variable.setValueForMode(darkMode.modeId, darkNum);
+    totalVars++;
+  }
+
+  figma.notify(`Created/updated ${totalVars} variables`);
 }
