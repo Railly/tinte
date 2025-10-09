@@ -1,0 +1,17 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "tinte-figma-plugin",
+      "devDependencies": {
+        "@figma/plugin-typings": "^1.101.0",
+        "typescript": "^5",
+      },
+    },
+  },
+  "packages": {
+    "@figma/plugin-typings": ["@figma/plugin-typings@1.117.1", "", {}, "sha512-YrPuZhXDH6naMxQrdrf4+E6aSstkkvv7pVHl9VTeoqkFTGptqw9BbhMSb7jPnT9+elLsRdZVKvWMwcBlyB3OhQ=="],
+
+    "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+  }
+}

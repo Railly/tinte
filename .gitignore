@@ -47,3 +47,8 @@ next-env.d.ts
 # Local Netlify folder
 .netlify
 .claude
+
+# Figma plugin
+/figma-plugin/node_modules
+/figma-plugin/dist
+/figma-plugin/*.log

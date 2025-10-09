@@ -1,0 +1,11 @@
+{
+  "name": "Tinte Theme Sync",
+  "id": "1234567890",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": ["www.tinte.dev", "tinte.dev", "localhost:3000"]
+  }
+}
