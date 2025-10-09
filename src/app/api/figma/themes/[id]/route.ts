@@ -35,8 +35,20 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     console.log("[Figma API] Found themes:", themeData.length);
 
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
+
     if (themeData.length === 0) {
-      return NextResponse.json({ error: "Theme not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Theme not found" },
+        {
+          status: 404,
+          headers: corsHeaders,
+        },
+      );
     }
 
     const themeRecord = themeData[0];
@@ -44,7 +56,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!themeRecord.is_public) {
       return NextResponse.json(
         { error: "Theme is not public" },
-        { status: 403 },
+        { status: 403, headers: corsHeaders },
       );
     }
 
@@ -104,17 +116,20 @@ export async function GET(request: NextRequest, context: RouteContext) {
     };
 
     return NextResponse.json(figmaTheme, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
+      headers: corsHeaders,
     });
   } catch (error) {
     console.error("Error fetching theme for Figma:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+      },
     );
   }
 }
