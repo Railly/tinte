@@ -3,9 +3,10 @@
 ## ✅ What's Ready
 
 - ✅ Figma plugin built (`figma-plugin/dist/`)
-- ✅ API endpoint deployed to production
-- ✅ Domain updated to `www.tinte.dev`
-- ✅ Code committed and pushed
+- ✅ API endpoints working: `/api/figma/themes/[id]` and `/api/figma/themes/slug/[slug]`
+- ✅ Middleware configured to allow public access
+- ✅ Deployed to production (`www.tinte.dev`)
+- ✅ Smart detection: nanoid vs slug
 
 ## 🚀 Testing Steps
 
@@ -73,28 +74,45 @@ curl https://www.tinte.dev/api/figma/themes/THEME_ID | jq
 }
 ```
 
-### Step 3: Load Plugin in Figma Desktop
+### Step 3: Setup Plugin in Figma
 
-1. **Open Figma Desktop** (NOT browser!)
-   - Download from: https://www.figma.com/downloads/
+1. **Download Figma Desktop** (required - browser won't work!)
+   - Get it: https://www.figma.com/downloads/
 
-2. **Import Plugin**
-   - Menu: `Plugins` → `Development` → `Import plugin from manifest...`
-   - Navigate to: `/Users/raillyhugo/Programming/crafter-station-projects/tinte/figma-plugin/manifest.json`
-   - Click "Open"
+2. **Open Figma Desktop**
+   - Create a new file or open existing one
 
-3. **Run Plugin**
-   - Open any Figma file (or create new one)
-   - Menu: `Plugins` → `Development` → `Tinte Theme Sync`
+3. **Import the plugin**
+   - Go to: `Plugins` → `Development` → `Import plugin from manifest...`
+   - Navigate to your repo: `figma-plugin/manifest.json`
+   - Full path: `/Users/raillyhugo/Programming/crafter-station-projects/tinte/figma-plugin/manifest.json`
+   - Click **"Open"**
 
-### Step 4: Sync Your Theme
+4. **Plugin is now installed!**
+   - You'll see "Tinte Theme Sync" in your Development plugins
 
-1. Plugin UI will open
-2. Enter theme slug or ID:
-   - **Slug**: `one-hunter` (easier!)
-   - **ID**: `cm5zp123abc...`
-3. Click **"Sync Theme"**
-4. Wait for: `✅ Successfully synced "[Theme Name]" theme!`
+### Step 4: Sync a Theme! 🎨
+
+1. **Run the plugin**
+   - `Plugins` → `Development` → `Tinte Theme Sync`
+   - Plugin UI opens (400x600 window)
+
+2. **Enter theme slug or ID**
+   - Type the slug: `one-hunter`
+   - Or nanoid: `02FUijjsnz`
+   - Plugin auto-detects which one you used!
+
+3. **Click "Sync Theme"**
+   - You'll see: `🔄 Syncing theme from Tinte...`
+   - Wait 2-3 seconds...
+   - Success: `✅ Successfully synced "One Hunter" theme!`
+
+**What happens:**
+
+- Plugin fetches theme from `www.tinte.dev/api/figma/...`
+- Creates a Variable Collection in Figma
+- Adds Light and Dark modes
+- Creates 37+ color variables with values for both modes
 
 ### Step 5: Verify in Figma
 
@@ -184,13 +202,63 @@ Variables Panel
 - [ ] Export Figma variables back to Tinte
 - [ ] Publish to Figma Community
 
-## 📝 Notes
+## 🎓 Tips & Best Practices
 
-- Plugin only works with **public** themes for now
-- Requires internet connection (fetches from API)
-- Each sync creates/updates a variable collection
-- Re-syncing same theme will update existing collection
+### Smart Input Detection
+
+The plugin automatically detects what you enter:
+
+- **Slug**: `one-hunter` → uses `/api/figma/themes/slug/one-hunter`
+- **Nanoid**: `02FUijjsnz` → uses `/api/figma/themes/02FUijjsnz`
+
+Detection rules:
+
+- Nanoid: 10+ alphanumeric chars, NO dashes
+- Slug: Has dashes (e.g., `my-theme-name`)
+
+### Variable Organization
+
+After syncing, your Figma file will have:
+
+```
+Local variables
+└── [Theme Name]
+    ├── Modes: Light, Dark
+    └── Variables (37+):
+        ├── background
+        ├── foreground
+        ├── primary
+        ├── secondary
+        └── ... (all shadcn tokens)
+```
+
+### Using Variables
+
+1. Select any element
+2. Click fill/stroke color
+3. Choose from synced variables
+4. Toggle Light/Dark mode to see it update!
+
+### Re-syncing
+
+- Syncing same theme again **updates** existing collection
+- Useful when you edit theme on Tinte and want to refresh in Figma
+
+### Current Limitations
+
+- ✅ Public themes only (no auth yet)
+- ✅ Requires internet (fetches live from API)
+- ✅ Desktop only (browser plugins can't make network requests)
 
 ---
 
-**Need help?** Check `figma-plugin/README.md` or open an issue on GitHub.
+## 📚 Resources
+
+- **Plugin code**: `figma-plugin/src/`
+- **API docs**: This file + `figma-plugin/README.md`
+- **Figma Plugin API**: https://www.figma.com/plugin-docs/
+- **Report issues**: Open on GitHub
+
+---
+
+**Made with ❤️ for the Tinte community** 🎨
