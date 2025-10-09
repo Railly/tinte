@@ -16,11 +16,15 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { slug } = await context.params;
 
+    console.log("[Figma API Slug] Fetching theme by slug:", slug);
+
     const themeData = await db
       .select()
       .from(theme)
       .where(eq(theme.slug, slug))
       .limit(1);
+
+    console.log("[Figma API Slug] Found themes:", themeData.length);
 
     if (themeData.length === 0) {
       return NextResponse.json({ error: "Theme not found" }, { status: 404 });
