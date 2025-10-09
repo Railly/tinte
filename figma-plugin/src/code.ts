@@ -31,13 +31,7 @@ figma.ui.onmessage = async (msg) => {
       figma.notify("🔄 Syncing theme from Tinte...");
 
       const themeInput = msg.themeId.trim();
-
-      // Detect if input is nanoid (alphanumeric, no dashes) or slug (lowercase-with-dashes)
-      const isNanoid =
-        /^[a-zA-Z0-9_]{10,}$/.test(themeInput) && !themeInput.includes("-");
-      const endpoint = isNanoid
-        ? `${API_BASE_URL}/api/figma/themes/${themeInput}`
-        : `${API_BASE_URL}/api/figma/themes/slug/${themeInput}`;
+      const endpoint = `${API_BASE_URL}/api/figma/themes/${themeInput}`;
 
       const response = await fetch(endpoint);
 
@@ -46,8 +40,6 @@ figma.ui.onmessage = async (msg) => {
       }
 
       const theme: FigmaTheme = await response.json();
-
-      console.log("Theme data:", JSON.stringify(theme, null, 2));
 
       await createVariableCollection(theme);
 

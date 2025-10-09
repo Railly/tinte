@@ -17,12 +17,20 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
 
-    console.log("[Figma API] Fetching theme by ID:", id);
+    // Smart detection: nanoid (alphanumeric, 10+ chars) vs slug (lowercase-with-dashes)
+    const isNanoid = /^[a-zA-Z0-9_]{10,}$/.test(id) && !id.includes("-");
+
+    console.log(
+      "[Figma API] Fetching theme by",
+      isNanoid ? "ID" : "slug",
+      ":",
+      id,
+    );
 
     const themeData = await db
       .select()
       .from(theme)
-      .where(eq(theme.id, id))
+      .where(isNanoid ? eq(theme.id, id) : eq(theme.slug, id))
       .limit(1);
 
     console.log("[Figma API] Found themes:", themeData.length);
