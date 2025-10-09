@@ -173,15 +173,15 @@
         <p>Import shadcn/ui themes from Tinte to Figma variables</p>
 
         <div class="input-group">
-            <label for="theme-id">Theme ID</label>
+            <label for="theme-id">Theme Slug</label>
             <input
                 type="text"
                 id="theme-id"
-                placeholder="e.g., one-hunter or cm5zp123abc..."
+                placeholder="e.g., one-hunter"
                 autocomplete="off"
             />
             <div class="help-text">
-                Enter theme slug (one-hunter) or ID (cm5zp123abc) from
+                Enter theme slug from
                 <a href="https://www.tinte.dev/themes" target="_blank"
                     >tinte.dev/themes</a
                 >
@@ -206,7 +206,7 @@
                 "
             >
                 <li>Find a theme on Tinte</li>
-                <li>Copy the theme ID</li>
+                <li>Copy the theme slug</li>
                 <li>Paste it above and click "Sync Theme"</li>
                 <li>
                     Theme will be created as a Variable Collection with
@@ -234,7 +234,7 @@
                 const themeId = themeIdInput.value.trim();
 
                 if (!themeId) {
-                    showStatus("Please enter a theme ID", "error");
+                    showStatus("Please enter a theme slug", "error");
                     return;
                 }
 
