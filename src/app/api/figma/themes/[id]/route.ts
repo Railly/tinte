@@ -17,20 +17,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
 
-    // Smart detection: nanoid (alphanumeric, 10+ chars) vs slug (lowercase-with-dashes)
-    const isNanoid = /^[a-zA-Z0-9_]{10,}$/.test(id) && !id.includes("-");
-
-    console.log(
-      "[Figma API] Fetching theme by",
-      isNanoid ? "ID" : "slug",
-      ":",
-      id,
-    );
+    console.log("[Figma API] Fetching theme by slug:", id);
 
     const themeData = await db
       .select()
       .from(theme)
-      .where(isNanoid ? eq(theme.id, id) : eq(theme.slug, id))
+      .where(eq(theme.slug, id))
       .limit(1);
 
     console.log("[Figma API] Found themes:", themeData.length);
@@ -42,6 +34,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     };
 
     if (themeData.length === 0) {
+      console.log("[Figma API] Theme not found:", id);
       return NextResponse.json(
         { error: "Theme not found" },
         {
@@ -52,8 +45,17 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     const themeRecord = themeData[0];
+    console.log(
+      "[Figma API] Theme found:",
+      themeRecord.name,
+      "| is_public:",
+      themeRecord.is_public,
+      "| slug:",
+      themeRecord.slug,
+    );
 
     if (!themeRecord.is_public) {
+      console.log("[Figma API] Theme is not public:", themeRecord.name);
       return NextResponse.json(
         { error: "Theme is not public" },
         { status: 403, headers: corsHeaders },
