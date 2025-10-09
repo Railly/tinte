@@ -24,10 +24,16 @@ figma.ui.onmessage = async (msg) => {
     try {
       figma.notify("🔄 Syncing theme from Tinte...");
 
-      const themeId = msg.themeId;
-      const response = await fetch(
-        `${API_BASE_URL}/api/figma/themes/${themeId}`,
-      );
+      const themeInput = msg.themeId.trim();
+
+      // Detect if input is nanoid (alphanumeric, no dashes) or slug (lowercase-with-dashes)
+      const isNanoid =
+        /^[a-zA-Z0-9_]{10,}$/.test(themeInput) && !themeInput.includes("-");
+      const endpoint = isNanoid
+        ? `${API_BASE_URL}/api/figma/themes/${themeInput}`
+        : `${API_BASE_URL}/api/figma/themes/slug/${themeInput}`;
+
+      const response = await fetch(endpoint);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch theme: ${response.statusText}`);

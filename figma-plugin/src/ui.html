@@ -1,270 +1,292 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
 
-      body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        padding: 16px;
-        background: #ffffff;
-        color: #000000;
-      }
+            body {
+                font-family:
+                    "Inter",
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    sans-serif;
+                padding: 16px;
+                background: #ffffff;
+                color: #000000;
+            }
 
-      h1 {
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 4px;
-        color: #000000;
-      }
+            h1 {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 4px;
+                color: #000000;
+            }
 
-      p {
-        font-size: 11px;
-        color: #999999;
-        margin-bottom: 16px;
-      }
+            p {
+                font-size: 11px;
+                color: #999999;
+                margin-bottom: 16px;
+            }
 
-      .input-group {
-        margin-bottom: 16px;
-      }
+            .input-group {
+                margin-bottom: 16px;
+            }
 
-      label {
-        display: block;
-        font-size: 11px;
-        font-weight: 500;
-        margin-bottom: 4px;
-        color: #333333;
-      }
+            label {
+                display: block;
+                font-size: 11px;
+                font-weight: 500;
+                margin-bottom: 4px;
+                color: #333333;
+            }
 
-      input {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        font-size: 11px;
-        font-family: inherit;
-      }
+            input {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #e5e5e5;
+                border-radius: 4px;
+                font-size: 11px;
+                font-family: inherit;
+            }
 
-      input:focus {
-        outline: none;
-        border-color: #18a0fb;
-      }
+            input:focus {
+                outline: none;
+                border-color: #18a0fb;
+            }
 
-      .button-group {
-        display: flex;
-        gap: 8px;
-      }
+            .button-group {
+                display: flex;
+                gap: 8px;
+            }
 
-      button {
-        flex: 1;
-        padding: 8px 12px;
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 500;
-        cursor: pointer;
-        font-family: inherit;
-        transition: all 0.15s ease;
-      }
+            button {
+                flex: 1;
+                padding: 8px 12px;
+                border: 1px solid #e5e5e5;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 500;
+                cursor: pointer;
+                font-family: inherit;
+                transition: all 0.15s ease;
+            }
 
-      button.primary {
-        background: #18a0fb;
-        color: white;
-        border-color: #18a0fb;
-      }
+            button.primary {
+                background: #18a0fb;
+                color: white;
+                border-color: #18a0fb;
+            }
 
-      button.primary:hover {
-        background: #0d8ce8;
-      }
+            button.primary:hover {
+                background: #0d8ce8;
+            }
 
-      button.primary:disabled {
-        background: #cccccc;
-        border-color: #cccccc;
-        cursor: not-allowed;
-      }
+            button.primary:disabled {
+                background: #cccccc;
+                border-color: #cccccc;
+                cursor: not-allowed;
+            }
 
-      button.secondary {
-        background: white;
-        color: #333333;
-      }
+            button.secondary {
+                background: white;
+                color: #333333;
+            }
 
-      button.secondary:hover {
-        background: #f5f5f5;
-      }
+            button.secondary:hover {
+                background: #f5f5f5;
+            }
 
-      .status {
-        margin-top: 16px;
-        padding: 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        display: none;
-      }
+            .status {
+                margin-top: 16px;
+                padding: 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                display: none;
+            }
 
-      .status.show {
-        display: block;
-      }
+            .status.show {
+                display: block;
+            }
 
-      .status.success {
-        background: #e6f7ed;
-        color: #0f7333;
-        border: 1px solid #b3e5c7;
-      }
+            .status.success {
+                background: #e6f7ed;
+                color: #0f7333;
+                border: 1px solid #b3e5c7;
+            }
 
-      .status.error {
-        background: #ffeaea;
-        color: #c92a2a;
-        border: 1px solid #ffc9c9;
-      }
+            .status.error {
+                background: #ffeaea;
+                color: #c92a2a;
+                border: 1px solid #ffc9c9;
+            }
 
-      .status.loading {
-        background: #e6f4ff;
-        color: #0d5fb3;
-        border: 1px solid #b3d9ff;
-      }
+            .status.loading {
+                background: #e6f4ff;
+                color: #0d5fb3;
+                border: 1px solid #b3d9ff;
+            }
 
-      .examples {
-        margin-top: 16px;
-        padding: 12px;
-        background: #f9f9f9;
-        border-radius: 4px;
-        border: 1px solid #e5e5e5;
-      }
+            .examples {
+                margin-top: 16px;
+                padding: 12px;
+                background: #f9f9f9;
+                border-radius: 4px;
+                border: 1px solid #e5e5e5;
+            }
 
-      .examples-title {
-        font-size: 11px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #333333;
-      }
+            .examples-title {
+                font-size: 11px;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #333333;
+            }
 
-      .example-link {
-        display: block;
-        font-size: 11px;
-        color: #18a0fb;
-        text-decoration: none;
-        margin-bottom: 4px;
-      }
+            .example-link {
+                display: block;
+                font-size: 11px;
+                color: #18a0fb;
+                text-decoration: none;
+                margin-bottom: 4px;
+            }
 
-      .example-link:hover {
-        text-decoration: underline;
-      }
+            .example-link:hover {
+                text-decoration: underline;
+            }
 
-      .help-text {
-        margin-top: 8px;
-        font-size: 10px;
-        color: #999999;
-        line-height: 1.4;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Tinte Theme Sync</h1>
-    <p>Import shadcn/ui themes from Tinte to Figma variables</p>
+            .help-text {
+                margin-top: 8px;
+                font-size: 10px;
+                color: #999999;
+                line-height: 1.4;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tinte Theme Sync</h1>
+        <p>Import shadcn/ui themes from Tinte to Figma variables</p>
 
-    <div class="input-group">
-      <label for="theme-id">Theme ID</label>
-      <input
-        type="text"
-        id="theme-id"
-        placeholder="e.g., cm5zp123abc..."
-        autocomplete="off"
-      />
-      <div class="help-text">
-        Find theme IDs on <a href="https://tinte.railly.dev/themes" target="_blank">tinte.railly.dev/themes</a>
-      </div>
-    </div>
+        <div class="input-group">
+            <label for="theme-id">Theme ID</label>
+            <input
+                type="text"
+                id="theme-id"
+                placeholder="e.g., one-hunter or cm5zp123abc..."
+                autocomplete="off"
+            />
+            <div class="help-text">
+                Enter theme slug (one-hunter) or ID (cm5zp123abc) from
+                <a href="https://www.tinte.dev/themes" target="_blank"
+                    >tinte.dev/themes</a
+                >
+            </div>
+        </div>
 
-    <div class="button-group">
-      <button id="sync-btn" class="primary">Sync Theme</button>
-      <button id="cancel-btn" class="secondary">Cancel</button>
-    </div>
+        <div class="button-group">
+            <button id="sync-btn" class="primary">Sync Theme</button>
+            <button id="cancel-btn" class="secondary">Cancel</button>
+        </div>
 
-    <div id="status" class="status"></div>
+        <div id="status" class="status"></div>
 
-    <div class="examples">
-      <div class="examples-title">How it works:</div>
-      <ol style="padding-left: 16px; font-size: 11px; color: #666; line-height: 1.6;">
-        <li>Find a theme on Tinte</li>
-        <li>Copy the theme ID</li>
-        <li>Paste it above and click "Sync Theme"</li>
-        <li>Theme will be created as a Variable Collection with Light/Dark modes</li>
-      </ol>
-    </div>
+        <div class="examples">
+            <div class="examples-title">How it works:</div>
+            <ol
+                style="
+                    padding-left: 16px;
+                    font-size: 11px;
+                    color: #666;
+                    line-height: 1.6;
+                "
+            >
+                <li>Find a theme on Tinte</li>
+                <li>Copy the theme ID</li>
+                <li>Paste it above and click "Sync Theme"</li>
+                <li>
+                    Theme will be created as a Variable Collection with
+                    Light/Dark modes
+                </li>
+            </ol>
+        </div>
 
-    <script>
-      const themeIdInput = document.getElementById("theme-id");
-      const syncBtn = document.getElementById("sync-btn");
-      const cancelBtn = document.getElementById("cancel-btn");
-      const statusDiv = document.getElementById("status");
+        <script>
+            const themeIdInput = document.getElementById("theme-id");
+            const syncBtn = document.getElementById("sync-btn");
+            const cancelBtn = document.getElementById("cancel-btn");
+            const statusDiv = document.getElementById("status");
 
-      function showStatus(message, type) {
-        statusDiv.textContent = message;
-        statusDiv.className = `status show ${type}`;
-      }
+            function showStatus(message, type) {
+                statusDiv.textContent = message;
+                statusDiv.className = `status show ${type}`;
+            }
 
-      function hideStatus() {
-        statusDiv.className = "status";
-      }
+            function hideStatus() {
+                statusDiv.className = "status";
+            }
 
-      syncBtn.addEventListener("click", () => {
-        const themeId = themeIdInput.value.trim();
+            syncBtn.addEventListener("click", () => {
+                const themeId = themeIdInput.value.trim();
 
-        if (!themeId) {
-          showStatus("Please enter a theme ID", "error");
-          return;
-        }
+                if (!themeId) {
+                    showStatus("Please enter a theme ID", "error");
+                    return;
+                }
 
-        syncBtn.disabled = true;
-        showStatus("Syncing theme from Tinte...", "loading");
+                syncBtn.disabled = true;
+                showStatus("Syncing theme from Tinte...", "loading");
 
-        parent.postMessage(
-          {
-            pluginMessage: {
-              type: "sync-theme",
-              themeId: themeId,
-            },
-          },
-          "*"
-        );
-      });
+                parent.postMessage(
+                    {
+                        pluginMessage: {
+                            type: "sync-theme",
+                            themeId: themeId,
+                        },
+                    },
+                    "*",
+                );
+            });
 
-      cancelBtn.addEventListener("click", () => {
-        parent.postMessage(
-          {
-            pluginMessage: {
-              type: "cancel",
-            },
-          },
-          "*"
-        );
-      });
+            cancelBtn.addEventListener("click", () => {
+                parent.postMessage(
+                    {
+                        pluginMessage: {
+                            type: "cancel",
+                        },
+                    },
+                    "*",
+                );
+            });
 
-      window.onmessage = (event) => {
-        const msg = event.data.pluginMessage;
+            window.onmessage = (event) => {
+                const msg = event.data.pluginMessage;
 
-        if (msg.type === "sync-complete") {
-          showStatus(`✅ Successfully synced "${msg.theme}" theme!`, "success");
-          syncBtn.disabled = false;
-          themeIdInput.value = "";
-        } else if (msg.type === "sync-error") {
-          showStatus(`❌ Error: ${msg.error}`, "error");
-          syncBtn.disabled = false;
-        }
-      };
+                if (msg.type === "sync-complete") {
+                    showStatus(
+                        `✅ Successfully synced "${msg.theme}" theme!`,
+                        "success",
+                    );
+                    syncBtn.disabled = false;
+                    themeIdInput.value = "";
+                } else if (msg.type === "sync-error") {
+                    showStatus(`❌ Error: ${msg.error}`, "error");
+                    syncBtn.disabled = false;
+                }
+            };
 
-      themeIdInput.addEventListener("input", hideStatus);
-      themeIdInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-          syncBtn.click();
-        }
-      });
+            themeIdInput.addEventListener("input", hideStatus);
+            themeIdInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    syncBtn.click();
+                }
+            });
 
-      themeIdInput.focus();
-    </script>
-  </body>
+            themeIdInput.focus();
+        </script>
+    </body>
 </html>
