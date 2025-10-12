@@ -1,4 +1,4 @@
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { user, userFavorites } from "@/db/schema/user";
@@ -142,8 +142,12 @@ export async function getPublicThemes(
       .leftJoin(user, eq(theme.user_id, user.id))
       .where(
         searchConditions
-          ? and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`, searchConditions)
-          : and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`)
+          ? and(
+              eq(theme.is_public, true),
+              sql`${theme.vendor} IS NULL`,
+              searchConditions,
+            )
+          : and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`),
       )
       .orderBy(desc(theme.created_at));
 
