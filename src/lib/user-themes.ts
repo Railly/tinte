@@ -115,8 +115,16 @@ export async function getPublicThemes(
   limit?: number,
   offset?: number,
   currentUserId?: string,
+  search?: string,
 ): Promise<ThemeWithMetadata[]> {
   try {
+    const searchConditions = search
+      ? or(
+          sql`LOWER(${theme.name}) LIKE ${`%${search.toLowerCase()}%`}`,
+          sql`LOWER(${theme.concept}) LIKE ${`%${search.toLowerCase()}%`}`,
+        )
+      : undefined;
+
     let baseQuery = db
       .select({
         theme: theme,
@@ -132,7 +140,11 @@ export async function getPublicThemes(
       })
       .from(theme)
       .leftJoin(user, eq(theme.user_id, user.id))
-      .where(and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`))
+      .where(
+        searchConditions
+          ? and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`, searchConditions)
+          : and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`)
+      )
       .orderBy(desc(theme.created_at));
 
     // Only add userFavorites join if currentUserId is provided
