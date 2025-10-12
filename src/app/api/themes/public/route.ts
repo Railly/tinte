@@ -11,20 +11,45 @@ export async function GET(request: NextRequest) {
     const publicThemes = await getPublicThemes(limit, offset);
     const totalCount = await getPublicThemesCount();
 
-    return NextResponse.json({
-      themes: publicThemes,
-      pagination: {
-        page,
-        limit,
-        total: totalCount,
-        hasMore: offset + publicThemes.length < totalCount,
+    return NextResponse.json(
+      {
+        themes: publicThemes,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          hasMore: offset + publicThemes.length < totalCount,
+        },
       },
-    });
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+      },
+    );
   } catch (error) {
     console.error("Error fetching public themes:", error);
     return NextResponse.json(
       { error: "Failed to fetch public themes" },
-      { status: 500 },
+      { 
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      },
     );
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
 }
