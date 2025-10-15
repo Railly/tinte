@@ -87,6 +87,8 @@
     "nuqs": "^2.4.3",
     "poline": "^0.10.0",
     "postgres": "^3.4.7",
+    "posthog-js": "^1.275.3",
+    "posthog-node": "^5.10.0",
     "radix-ui": "^1.4.3",
     "react": "19.1.0",
     "react-aria-components": "^1.12.1",
