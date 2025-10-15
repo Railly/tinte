@@ -18,6 +18,11 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         capture_pageleave: true,
         autocapture: true,
         capture_exceptions: true,
+        session_recording: {
+          recordCrossOriginIframes: true,
+          maskAllInputs: false,
+          maskTextSelector: ".sensitive",
+        },
         debug: process.env.NODE_ENV === "development",
         loaded: (posthog) => {
           if (process.env.NODE_ENV === "development") {

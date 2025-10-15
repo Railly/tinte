@@ -67,6 +67,27 @@ PostHog is configured to automatically capture:
 - **Page leaves**: When users navigate away
 - **Autocapture**: Clicks, form submissions, etc.
 - **Exceptions**: JavaScript errors and exceptions
+- **Session recordings**: Full replay of user sessions
+
+## Session Recordings
+
+Session recordings are enabled with the following configuration:
+- **Cross-origin iframes**: Records content from embedded iframes
+- **Input masking**: Inputs are NOT masked by default (only elements with `.sensitive` class)
+- **Text masking**: Only elements with `.sensitive` class are masked
+
+### Privacy Considerations
+To mask sensitive information, add the `sensitive` class to elements:
+```tsx
+<input type="password" className="sensitive" />
+<div className="sensitive">Sensitive data here</div>
+```
+
+### Adjusting Recording Settings
+Edit the `session_recording` config in `src/providers/posthog.tsx`:
+- `maskAllInputs: true` - Masks all form inputs
+- `maskTextSelector: '*'` - Masks all text content
+- `recordCrossOriginIframes: false` - Disable iframe recording
 
 ## Debug Mode
 
