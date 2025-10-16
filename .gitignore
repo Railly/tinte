@@ -53,3 +53,5 @@ next-env.d.ts
 /figma-plugin/dist
 /figma-plugin/*.log
 /figma-plugin/bun.lock
+
+.env.local

@@ -8,6 +8,7 @@ import { BetaBanner } from "@/components/beta-banner";
 import { TinteThemeScript } from "@/components/theme-script";
 import { Toaster } from "@/components/ui/sonner";
 import { META_THEME_COLORS, siteConfig } from "@/config/site";
+import { PostHogProvider } from "@/providers/posthog";
 import { QueryProvider } from "@/providers/query";
 import { ThemeProvider } from "@/providers/theme";
 
@@ -144,18 +145,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        <ClerkProvider>
-          <NuqsAdapter>
-            <QueryProvider>
-              <ThemeProvider>
-                {children}
-                <BetaBanner />
-                <Toaster position="bottom-right" />
-                <Analytics />
-              </ThemeProvider>
-            </QueryProvider>
-          </NuqsAdapter>
-        </ClerkProvider>
+        <PostHogProvider>
+          <ClerkProvider>
+            <NuqsAdapter>
+              <QueryProvider>
+                <ThemeProvider>
+                  {children}
+                  <BetaBanner />
+                  <Toaster position="bottom-right" />
+                  <Analytics />
+                </ThemeProvider>
+              </QueryProvider>
+            </NuqsAdapter>
+          </ClerkProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
