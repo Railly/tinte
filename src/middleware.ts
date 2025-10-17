@@ -11,6 +11,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/generate-vscode-theme(.*)",
   "/workbench(.*)",
   "/experiment(.*)",
+  "/themes",
   "/bingo(.*)",
   "/vscode(.*)",
 ]);
