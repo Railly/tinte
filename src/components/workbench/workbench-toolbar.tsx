@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   useShadcnOverrides,
+  useShikiOverrides,
   useVSCodeOverrides,
 } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
 import { useDockActions } from "@/hooks/use-dock-actions";
@@ -106,6 +107,7 @@ export function WorkbenchToolbar({
 
   const _shadcnOverrides = useShadcnOverrides();
   const vscodeOverrides = useVSCodeOverrides();
+  const shikiOverrides = useShikiOverrides();
 
   // Restore theme to a specific state
   const restoreTheme = React.useCallback(
@@ -148,6 +150,7 @@ export function WorkbenchToolbar({
     canSave,
     themeName: activeTheme?.name,
     vscodeOverrides: vscodeOverrides.allOverrides,
+    shikiOverrides: shikiOverrides.allOverrides,
   });
 
   const primaryActionConfig = getPrimaryActionConfig();
@@ -594,14 +597,9 @@ export function WorkbenchToolbar({
 
             await handlePrimaryAction();
 
-            if (currentProviderId === "shadcn") {
-              setShowCopiedFeedback(true);
-              setTimeout(() => setShowCopiedFeedback(false), 2000);
-            } else if (currentProviderId === "vscode") {
-              toast.success("VSIX downloaded!");
-            } else {
-              toast.success("Theme copied!");
-            }
+            // Show animation for all copy actions
+            setShowCopiedFeedback(true);
+            setTimeout(() => setShowCopiedFeedback(false), 2000);
           }}
           disabled={isExporting || (isTemporaryTheme() && !canSave)}
           className="h-8 relative overflow-hidden"
@@ -710,11 +708,98 @@ export function WorkbenchToolbar({
                 <DropdownMenuItem
                   onClick={async () => {
                     await handleCopyTheme();
-                    toast.success("CSS copied to clipboard!");
+                    setCopiedAction("theme");
+                    setTimeout(() => setCopiedAction(null), 2000);
                   }}
+                  className="relative overflow-hidden"
                 >
-                  <CSSIcon className="h-4 w-4 mr-2" />
-                  Copy CSS
+                  <div
+                    className={cn(
+                      "flex items-center transition-all duration-300",
+                      copiedAction === "theme"
+                        ? "opacity-0 scale-75 blur-sm"
+                        : "opacity-100 scale-100 blur-0",
+                    )}
+                  >
+                    <CSSIcon className="h-4 w-4 mr-2" />
+                    Copy CSS
+                  </div>
+                  <div
+                    className={cn(
+                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                      copiedAction === "theme"
+                        ? "opacity-100 scale-100 blur-0"
+                        : "opacity-0 scale-75 blur-sm pointer-events-none",
+                    )}
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Copied!
+                  </div>
+                </DropdownMenuItem>
+              </>
+            ) : currentProviderId === "shiki" ? (
+              <>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await handleExport();
+                    setCopiedAction("file");
+                    setTimeout(() => setCopiedAction(null), 2000);
+                  }}
+                  className="relative overflow-hidden"
+                >
+                  <div
+                    className={cn(
+                      "flex items-center transition-all duration-300",
+                      copiedAction === "file"
+                        ? "opacity-0 scale-75 blur-sm"
+                        : "opacity-100 scale-100 blur-0",
+                    )}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download CSS
+                  </div>
+                  <div
+                    className={cn(
+                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                      copiedAction === "file"
+                        ? "opacity-100 scale-100 blur-0"
+                        : "opacity-0 scale-75 blur-sm pointer-events-none",
+                    )}
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Downloaded!
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await handleCopyTheme();
+                    setCopiedAction("theme");
+                    setTimeout(() => setCopiedAction(null), 2000);
+                  }}
+                  className="relative overflow-hidden"
+                >
+                  <div
+                    className={cn(
+                      "flex items-center transition-all duration-300",
+                      copiedAction === "theme"
+                        ? "opacity-0 scale-75 blur-sm"
+                        : "opacity-100 scale-100 blur-0",
+                    )}
+                  >
+                    <CSSIcon className="h-4 w-4 mr-2" />
+                    Copy CSS
+                  </div>
+                  <div
+                    className={cn(
+                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                      copiedAction === "theme"
+                        ? "opacity-100 scale-100 blur-0"
+                        : "opacity-0 scale-75 blur-sm pointer-events-none",
+                    )}
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Copied!
+                  </div>
                 </DropdownMenuItem>
               </>
             ) : currentProviderId !== "vscode" ? (

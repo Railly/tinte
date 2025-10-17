@@ -48,12 +48,25 @@ export function convertTinteToShiki(tinte: TinteTheme): ShikiTheme {
   };
 }
 
-function generateShikiCss(theme: ShikiTheme): string {
-  const lightVars = Object.entries(theme.light.variables)
+function generateShikiCss(
+  theme: ShikiTheme,
+  overrides?: { light?: Record<string, string>; dark?: Record<string, string> },
+): string {
+  // Merge theme variables with overrides
+  const lightVariables = {
+    ...theme.light.variables,
+    ...(overrides?.light || {}),
+  };
+  const darkVariables = {
+    ...theme.dark.variables,
+    ...(overrides?.dark || {}),
+  };
+
+  const lightVars = Object.entries(lightVariables)
     .map(([key, value]) => `  ${key}: ${value};`)
     .join("\n");
 
-  const darkVars = Object.entries(theme.dark.variables)
+  const darkVars = Object.entries(darkVariables)
     .map(([key, value]) => `  ${key}: ${value};`)
     .join("\n");
 
@@ -99,7 +112,6 @@ export const shikiProvider: PreviewableProvider<ShikiTheme> = {
     website: "https://shiki.style/",
     documentation:
       "https://shiki.style/guide/theme-colors-manipulation#css-variables-theme",
-    experimental: true,
   },
 
   fileExtension: "css",

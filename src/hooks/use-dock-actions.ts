@@ -6,6 +6,7 @@ import InvertedLogo from "@/components/shared/inverted-logo";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
 import { downloadVSCodeTheme } from "@/lib/download-vscode-theme";
 import { exportTheme } from "@/lib/providers";
+import { convertTinteToShiki } from "@/lib/providers/shiki";
 import type { TinteTheme } from "@/types/tinte";
 
 interface UseDockActionsProps {
@@ -17,6 +18,7 @@ interface UseDockActionsProps {
   canSave?: boolean;
   themeName?: string;
   vscodeOverrides?: Record<string, Record<string, any>> | null;
+  shikiOverrides?: Record<string, Record<string, any>> | null;
 }
 
 export function useDockActions({
@@ -28,6 +30,7 @@ export function useDockActions({
   canSave,
   themeName,
   vscodeOverrides,
+  shikiOverrides,
 }: UseDockActionsProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
@@ -65,6 +68,64 @@ export function useDockActions({
           variant: "dark", // Default to dark, could be made configurable
           overrides: vscodeOverrides?.dark || undefined,
         });
+      } else if (providerId === "shiki") {
+        // Special handling for Shiki to include overrides
+        const shikiTheme = convertTinteToShiki(theme);
+        const lightVariables = {
+          ...shikiTheme.light.variables,
+          ...(shikiOverrides?.light || {}),
+        };
+        const darkVariables = {
+          ...shikiTheme.dark.variables,
+          ...(shikiOverrides?.dark || {}),
+        };
+
+        const lightVars = Object.entries(lightVariables)
+          .map(([key, value]) => `  ${key}: ${value};`)
+          .join("\n");
+
+        const darkVars = Object.entries(darkVariables)
+          .map(([key, value]) => `  ${key}: ${value};`)
+          .join("\n");
+
+        const content = `:root {
+${lightVars}
+}
+
+.dark {
+${darkVars}
+}
+
+/* Shiki CSS Variables Theme Styles */
+.shiki-css-container {
+  background: var(--shiki-background);
+  color: var(--shiki-foreground);
+  font-family: 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  line-height: 1.5;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+}
+
+.shiki-css-container pre {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+
+.shiki-css-container code {
+  font-family: inherit;
+}`;
+
+        const blob = new Blob([content], { type: "text/css" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "shiki-theme.css";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       } else {
         // Regular export for other providers
         const output = exportTheme(providerId, theme);
@@ -94,12 +155,67 @@ export function useDockActions({
 
   const handleCopyTheme = async () => {
     try {
-      const output = exportTheme(providerId, theme);
-      if (output) {
-        await navigator.clipboard.writeText(output.content);
-        // Track the install
-        await incrementInstalls();
+      let content: string;
+
+      // Special handling for Shiki to include overrides
+      if (providerId === "shiki") {
+        const shikiTheme = convertTinteToShiki(theme);
+        const lightVariables = {
+          ...shikiTheme.light.variables,
+          ...(shikiOverrides?.light || {}),
+        };
+        const darkVariables = {
+          ...shikiTheme.dark.variables,
+          ...(shikiOverrides?.dark || {}),
+        };
+
+        const lightVars = Object.entries(lightVariables)
+          .map(([key, value]) => `  ${key}: ${value};`)
+          .join("\n");
+
+        const darkVars = Object.entries(darkVariables)
+          .map(([key, value]) => `  ${key}: ${value};`)
+          .join("\n");
+
+        content = `:root {
+${lightVars}
+}
+
+.dark {
+${darkVars}
+}
+
+/* Shiki CSS Variables Theme Styles */
+.shiki-css-container {
+  background: var(--shiki-background);
+  color: var(--shiki-foreground);
+  font-family: 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  line-height: 1.5;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+}
+
+.shiki-css-container pre {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+
+.shiki-css-container code {
+  font-family: inherit;
+}`;
+      } else {
+        const output = exportTheme(providerId, theme);
+        if (!output) {
+          throw new Error("Failed to export theme");
+        }
+        content = output.content;
       }
+
+      await navigator.clipboard.writeText(content);
+      // Track the install
+      await incrementInstalls();
     } catch (error) {
       console.error("Copy failed:", error);
     }
@@ -157,6 +273,9 @@ export function useDockActions({
       // Copy bunx tinte command with --zed flag
       const command = `bunx tinte@latest ${themeId} --zed`;
       await handleCopyCommand(command);
+    } else if (providerId === "shiki") {
+      // For Shiki, copy the CSS theme
+      await handleCopyTheme();
     } else {
       await handleCopyTheme();
     }
@@ -200,6 +319,13 @@ export function useDockActions({
         label: "Copy Command",
         description: `bunx tinte@latest ${themeId} --zed`,
         icon: InvertedLogo,
+        variant: "default" as const,
+      };
+    } else if (providerId === "shiki") {
+      return {
+        label: "Copy CSS",
+        description: "Copy CSS variables to clipboard",
+        icon: Copy,
         variant: "default" as const,
       };
     } else {

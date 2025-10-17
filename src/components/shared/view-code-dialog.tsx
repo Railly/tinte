@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Code, Copy } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,22 +14,92 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib";
+import { convertTinteToShiki } from "@/lib/providers/shiki";
 import { getShadcnThemeCSS } from "@/lib/shadcn-theme-utils";
 import { useThemeContext } from "@/providers/theme";
 
 interface ViewCodeDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  providerId?: string;
 }
 
-export function ViewCodeDialog({ isOpen, onOpenChange }: ViewCodeDialogProps) {
+function generateShikiCss(
+  theme: any,
+  overrides?: { light?: Record<string, string>; dark?: Record<string, string> },
+): string {
+  const lightVariables = {
+    ...theme.light.variables,
+    ...(overrides?.light || {}),
+  };
+  const darkVariables = {
+    ...theme.dark.variables,
+    ...(overrides?.dark || {}),
+  };
+
+  const lightVars = Object.entries(lightVariables)
+    .map(([key, value]) => `  ${key}: ${value};`)
+    .join("\n");
+
+  const darkVars = Object.entries(darkVariables)
+    .map(([key, value]) => `  ${key}: ${value};`)
+    .join("\n");
+
+  return `:root {
+${lightVars}
+}
+
+.dark {
+${darkVars}
+}
+
+/* Shiki CSS Variables Theme Styles */
+.shiki-css-container {
+  background: var(--shiki-background);
+  color: var(--shiki-foreground);
+  font-family: 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  line-height: 1.5;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+}
+
+.shiki-css-container pre {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+
+.shiki-css-container code {
+  font-family: inherit;
+}`;
+}
+
+export function ViewCodeDialog({
+  isOpen,
+  onOpenChange,
+  providerId,
+}: ViewCodeDialogProps) {
   const [copied, setCopied] = useState(false);
   const { tinteTheme, activeTheme } = useThemeContext();
+  const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
+  const currentProviderId = providerId || provider;
 
-  const themeCSS = useMemo(
-    () => getShadcnThemeCSS(tinteTheme, activeTheme?.overrides?.shadcn),
-    [tinteTheme, activeTheme?.overrides?.shadcn],
-  );
+  const themeCSS = useMemo(() => {
+    if (currentProviderId === "shiki") {
+      const shikiTheme = convertTinteToShiki(tinteTheme);
+      const shikiOverrides = activeTheme?.overrides?.shiki as
+        | { light?: Record<string, string>; dark?: Record<string, string> }
+        | undefined;
+      return generateShikiCss(shikiTheme, shikiOverrides);
+    }
+    return getShadcnThemeCSS(tinteTheme, activeTheme?.overrides?.shadcn);
+  }, [
+    currentProviderId,
+    tinteTheme,
+    activeTheme?.overrides?.shadcn,
+    activeTheme?.overrides?.shiki,
+  ]);
 
   const handleCopy = async () => {
     try {
