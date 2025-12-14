@@ -1,4 +1,4 @@
-import { formatHex, formatHsl, oklch, parse, rgb } from "culori";
+import { formatHex, oklch, rgb } from "culori";
 import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import {
@@ -53,6 +53,15 @@ const tweakL = (hex: string, dL: number) => {
     h: c.h,
   });
 };
+
+function formatOklch(color: string): string {
+  const parsed = oklch(color);
+  if (!parsed) return color;
+  const l = parsed.l.toFixed(4);
+  const c = parsed.c.toFixed(4);
+  const h = (parsed.h ?? 0).toFixed(4);
+  return `oklch(${l} ${c} ${h})`;
+}
 
 function buildNeutralRamp(block: TinteBlock): string[] {
   const seed = block.ui || block.ui_2 || block.ui_3 || block.bg || "#808080";
@@ -161,26 +170,46 @@ function mapBlock(
     Object.assign(result, DEFAULT_FONTS);
   }
 
-  // Add border radius if available
   if (extendedTheme?.radius) {
-    result["radius-sm"] = extendedTheme.radius.sm;
-    result["radius-md"] = extendedTheme.radius.md;
-    result["radius-lg"] = extendedTheme.radius.lg;
-    result["radius-xl"] = extendedTheme.radius.xl;
-    result.radius = extendedTheme.radius.md; // Default radius
+    if (typeof extendedTheme.radius === "object") {
+      result["radius-sm"] = extendedTheme.radius.sm;
+      result["radius-md"] = extendedTheme.radius.md;
+      result["radius-lg"] = extendedTheme.radius.lg;
+      result["radius-xl"] = extendedTheme.radius.xl;
+      result.radius = extendedTheme.radius.md || "0.5rem";
+    } else {
+      const baseRadius = extendedTheme.radius;
+      const numMatch = baseRadius.match(/^([\d.]+)(.*)$/);
+      if (numMatch) {
+        const num = parseFloat(numMatch[1]);
+        const unit = numMatch[2] || "rem";
+        result["radius-sm"] = `${(num * 0.75).toFixed(3)}${unit}`;
+        result["radius-md"] = baseRadius;
+        result["radius-lg"] = `${(num * 1.5).toFixed(3)}${unit}`;
+        result["radius-xl"] = `${(num * 2).toFixed(3)}${unit}`;
+      }
+      result.radius = baseRadius;
+    }
   }
 
-  // Add shadow properties if available
   if (extendedTheme?.shadows) {
-    result["shadow-color"] = extendedTheme.shadows.color;
-    result["shadow-opacity"] = extendedTheme.shadows.opacity;
-    result["shadow-offset-x"] = extendedTheme.shadows.offsetX;
-    result["shadow-offset-y"] = extendedTheme.shadows.offsetY;
+    result["shadow-x"] = extendedTheme.shadows.offsetX;
+    result["shadow-y"] = extendedTheme.shadows.offsetY;
     result["shadow-blur"] = extendedTheme.shadows.blur;
     result["shadow-spread"] = extendedTheme.shadows.spread;
+    result["shadow-opacity"] = extendedTheme.shadows.opacity;
+    result["shadow-color"] = extendedTheme.shadows.color;
   } else {
-    Object.assign(result, DEFAULT_SHADOWS);
+    result["shadow-x"] = "0px";
+    result["shadow-y"] = "2px";
+    result["shadow-blur"] = "4px";
+    result["shadow-spread"] = "0px";
+    result["shadow-opacity"] = "0.1";
+    result["shadow-color"] = "hsl(0 0% 0%)";
   }
+
+  result["tracking-normal"] = "0em";
+  result["spacing"] = "0.25rem";
 
   return result;
 }
@@ -228,29 +257,18 @@ export function computeShadowVars(
 ): Record<string, string> {
   const shadowColor = tokens["shadow-color"] || "hsl(0 0% 0%)";
   const opacity = parseFloat(tokens["shadow-opacity"] || "0.1");
-  const offsetX = tokens["shadow-offset-x"] || "0px";
-  const offsetY = tokens["shadow-offset-y"] || "2px";
+  const offsetX = tokens["shadow-x"] || "0px";
+  const offsetY = tokens["shadow-y"] || "2px";
   const blur = tokens["shadow-blur"] || "4px";
   const spread = tokens["shadow-spread"] || "0px";
 
-  // Convert color to HSL format if needed
-  let hslColor = shadowColor;
-  if (shadowColor.startsWith("#")) {
-    // Convert hex to HSL using culori
-    const parsed = parse(shadowColor);
-    if (parsed) {
-      const hslString = formatHsl(parsed);
-      // Extract just the values from "hsl(240, 100%, 50%)" -> "240 100% 50%"
-      hslColor = hslString.replace(/hsl\(|\)|\s+/g, "").replace(/,/g, " ");
-    } else {
-      hslColor = "0 0% 0%";
-    }
-  } else if (shadowColor.startsWith("hsl(")) {
-    hslColor = shadowColor.replace(/hsl\(|\)/g, "").replace(/,/g, " ");
-  }
+  const parsed = oklch(shadowColor);
+  const l = parsed ? parsed.l.toFixed(4) : "0";
+  const c = parsed ? parsed.c.toFixed(4) : "0";
+  const h = parsed ? (parsed.h ?? 0).toFixed(4) : "0";
 
   const colorWithOpacity = (opacityMultiplier: number) =>
-    `hsl(${hslColor} / ${(opacity * opacityMultiplier).toFixed(2)})`;
+    `oklch(${l} ${c} ${h} / ${(opacity * opacityMultiplier).toFixed(2)})`;
 
   const secondLayer = (fixedOffsetY: string, fixedBlur: string): string => {
     const spread2 = `${(
@@ -289,25 +307,106 @@ export function computeShadowVars(
   };
 }
 
+const COLOR_TOKENS = new Set([
+  "background", "foreground", "card", "card-foreground",
+  "popover", "popover-foreground", "primary", "primary-foreground",
+  "secondary", "secondary-foreground", "muted", "muted-foreground",
+  "accent", "accent-foreground", "destructive", "destructive-foreground",
+  "border", "input", "ring",
+  "chart-1", "chart-2", "chart-3", "chart-4", "chart-5",
+  "sidebar", "sidebar-foreground", "sidebar-primary",
+  "sidebar-primary-foreground", "sidebar-accent",
+  "sidebar-accent-foreground", "sidebar-border", "sidebar-ring",
+  "shadow-color",
+]);
+
+const THEME_INLINE_BLOCK = `@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+}`;
+
 function generateCSSVariables(theme: ShadcnTheme): string {
-  // Shadow vars are now already included in theme.light/dark, no need to compute them again
+  const formatValue = (key: string, value: unknown): string | null => {
+    if (value === null || value === undefined) return null;
+    if (typeof value === "object") return null;
+
+    const strValue = String(value);
+    if (strValue === "undefined" || strValue === "[object Object]") return null;
+
+    if (COLOR_TOKENS.has(key)) {
+      if (strValue.startsWith("#") || strValue.startsWith("hsl") || strValue.startsWith("rgb")) {
+        return formatOklch(strValue);
+      }
+    }
+
+    return strValue;
+  };
+
   const lightVars = Object.entries(theme.light)
-    .map(([key, value]) => `    --${key}: ${value};`)
+    .map(([key, value]) => {
+      const formatted = formatValue(key, value);
+      return formatted !== null ? `  --${key}: ${formatted};` : null;
+    })
+    .filter(Boolean)
     .join("\n");
 
   const darkVars = Object.entries(theme.dark)
-    .map(([key, value]) => `    --${key}: ${value};`)
+    .map(([key, value]) => {
+      const formatted = formatValue(key, value);
+      return formatted !== null ? `  --${key}: ${formatted};` : null;
+    })
+    .filter(Boolean)
     .join("\n");
 
-  const css = `:root {
-${lightVars}
-}
-
-.dark {
-${darkVars}
-}`;
-
-  return css;
+  return `:root {\n${lightVars}\n}\n\n.dark {\n${darkVars}\n}\n\n${THEME_INLINE_BLOCK}`;
 }
 
 export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {

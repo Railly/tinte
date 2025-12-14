@@ -31,6 +31,15 @@ const getContrastColor = (hexColor: string): string => {
   return brightness > 128 ? "#000000" : "#ffffff";
 };
 
+const formatOklchDisplay = (color: string): string => {
+  if (!color || typeof color !== "string" || !/^#[0-9A-Fa-f]{6}$/.test(color)) {
+    return color;
+  }
+  const parsed = oklch(color);
+  if (!parsed) return color;
+  return `oklch(${parsed.l.toFixed(2)} ${parsed.c.toFixed(2)} ${(parsed.h ?? 0).toFixed(0)})`;
+};
+
 export function ColorPickerInput({
   color,
   onChange,
@@ -38,7 +47,7 @@ export function ColorPickerInput({
 }: ColorPickerInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(color);
-  const [activeTab, setActiveTab] = useState("hex");
+  const [activeTab, setActiveTab] = useState("oklch");
 
   useEffect(() => {
     setInputValue(color);
@@ -253,7 +262,7 @@ export function ColorPickerInput({
             color: contrastColor,
           }}
         >
-          <span className="truncate">{color}</span>
+          <span className="truncate">{formatOklchDisplay(color)}</span>
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-70" />
         </Button>
       </PopoverTrigger>

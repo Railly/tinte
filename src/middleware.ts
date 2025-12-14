@@ -14,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   "/themes",
   "/bingo(.*)",
   "/vscode(.*)",
+  "/r/(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

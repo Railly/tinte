@@ -316,8 +316,6 @@ export async function getTweakCNThemes(
 
     const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
 
-    console.log("UserThemeService - TweakCN themes count:", dbThemes.length);
-
     const transformedThemes = await Promise.all(
       dbThemes.map(async (themeData) => {
         const likeCount = await getThemeLikeCount(themeData.id);
@@ -339,11 +337,6 @@ export async function getTweakCNThemes(
       }),
     );
 
-    console.log(
-      "UserThemeService - Transformed TweakCN themes:",
-      transformedThemes.length,
-    );
-
     return transformedThemes;
   } catch (error) {
     console.error("Error fetching TweakCN themes:", error);
@@ -362,8 +355,6 @@ export async function getTinteThemes(
       .orderBy(desc(theme.created_at));
 
     const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
-
-    console.log("UserThemeService - Tinte themes count:", dbThemes.length);
 
     const transformedThemes = await Promise.all(
       dbThemes.map(async (themeData) => {
@@ -386,11 +377,6 @@ export async function getTinteThemes(
       }),
     );
 
-    console.log(
-      "UserThemeService - Transformed Tinte themes:",
-      transformedThemes.length,
-    );
-
     return transformedThemes;
   } catch (error) {
     console.error("Error fetching Tinte themes:", error);
@@ -409,8 +395,6 @@ export async function getRaysoThemes(
       .orderBy(desc(theme.created_at));
 
     const dbThemes = await (limit ? baseQuery.limit(limit) : baseQuery);
-
-    console.log("UserThemeService - Rayso themes count:", dbThemes.length);
 
     const transformedThemes = await Promise.all(
       dbThemes.map(async (themeData) => {
@@ -431,11 +415,6 @@ export async function getRaysoThemes(
           null,
         );
       }),
-    );
-
-    console.log(
-      "UserThemeService - Transformed Rayso themes:",
-      transformedThemes.length,
     );
 
     return transformedThemes;

@@ -1,9 +1,32 @@
+import { oklch } from "culori";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { convertTinteToShadcn } from "@/lib/providers/shadcn";
+import { computeShadowVars, convertTinteToShadcn } from "@/lib/providers/shadcn";
 import type { TinteTheme } from "@/types/tinte";
+
+function formatOklch(color: string): string {
+  const parsed = oklch(color);
+  if (!parsed) return color;
+  const l = parsed.l.toFixed(4);
+  const c = parsed.c.toFixed(4);
+  const h = (parsed.h ?? 0).toFixed(4);
+  return `oklch(${l} ${c} ${h})`;
+}
+
+const COLOR_TOKENS = new Set([
+  "background", "foreground", "card", "card-foreground",
+  "popover", "popover-foreground", "primary", "primary-foreground",
+  "secondary", "secondary-foreground", "muted", "muted-foreground",
+  "accent", "accent-foreground", "destructive", "destructive-foreground",
+  "border", "input", "ring",
+  "chart-1", "chart-2", "chart-3", "chart-4", "chart-5",
+  "sidebar", "sidebar-foreground", "sidebar-primary",
+  "sidebar-primary-foreground", "sidebar-accent",
+  "sidebar-accent-foreground", "sidebar-border", "sidebar-ring",
+  "shadow-color",
+]);
 
 interface RouteContext {
   params: Promise<{
@@ -14,12 +37,22 @@ interface RouteContext {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { slug } = await context.params;
-    // Get theme by slug - must be public for registry access
-    const themeData = await db
+
+    // Try to find theme by slug first, then by id
+    let themeData = await db
       .select()
       .from(theme)
       .where(eq(theme.slug, slug))
       .limit(1);
+
+    if (themeData.length === 0) {
+      // Fallback: try finding by id
+      themeData = await db
+        .select()
+        .from(theme)
+        .where(eq(theme.id, slug))
+        .limit(1);
+    }
 
     if (themeData.length === 0) {
       return NextResponse.json({ error: "Theme not found" }, { status: 404 });
@@ -70,18 +103,79 @@ export async function GET(request: NextRequest, context: RouteContext) {
     };
 
     // Convert to shadcn theme
-    const shadcnTheme = convertTinteToShadcn(tinteTheme);
+    const shadcnThemeBase = convertTinteToShadcn(tinteTheme);
+    const shadcnTheme: { light: Record<string, string>; dark: Record<string, string> } = {
+      light: { ...shadcnThemeBase.light },
+      dark: { ...shadcnThemeBase.dark },
+    };
 
     // Apply any shadcn overrides if they exist
-    if (themeRecord.shadcn_override) {
-      const overrides = themeRecord.shadcn_override as any;
-      if (overrides.light) {
-        Object.assign(shadcnTheme.light, overrides.light);
+    const overrides = (themeRecord.shadcn_override as any) || {};
+    const fontOverrides = overrides?.fonts || {};
+    const radiusOverrides = overrides?.radius;
+
+    // Apply overrides for each mode
+    (["light", "dark"] as const).forEach((mode) => {
+      const modePaletteOverrides = overrides?.palettes?.[mode] || {};
+      const modeShadowOverrides = modePaletteOverrides?.shadow;
+
+      // Apply color overrides
+      Object.entries(modePaletteOverrides).forEach(([key, value]) => {
+        if (key !== "shadow" && typeof value === "string") {
+          shadcnTheme[mode][key] = value;
+        }
+      });
+
+      // Apply font overrides
+      if (fontOverrides["font-sans"]) {
+        shadcnTheme[mode]["font-sans"] = fontOverrides["font-sans"];
       }
-      if (overrides.dark) {
-        Object.assign(shadcnTheme.dark, overrides.dark);
+      if (fontOverrides["font-serif"]) {
+        shadcnTheme[mode]["font-serif"] = fontOverrides["font-serif"];
       }
-    }
+      if (fontOverrides["font-mono"]) {
+        shadcnTheme[mode]["font-mono"] = fontOverrides["font-mono"];
+      }
+
+      // Apply shadow overrides
+      if (modeShadowOverrides) {
+        if (modeShadowOverrides.color) {
+          shadcnTheme[mode]["shadow-color"] = modeShadowOverrides.color;
+        }
+        if (modeShadowOverrides.opacity) {
+          shadcnTheme[mode]["shadow-opacity"] = modeShadowOverrides.opacity;
+        }
+        if (modeShadowOverrides.blur) {
+          shadcnTheme[mode]["shadow-blur"] = modeShadowOverrides.blur;
+        }
+        if (modeShadowOverrides.spread) {
+          shadcnTheme[mode]["shadow-spread"] = modeShadowOverrides.spread;
+        }
+        if (modeShadowOverrides.offset_x) {
+          shadcnTheme[mode]["shadow-x"] = modeShadowOverrides.offset_x;
+        }
+        if (modeShadowOverrides.offset_y) {
+          shadcnTheme[mode]["shadow-y"] = modeShadowOverrides.offset_y;
+        }
+      }
+
+      // Apply radius overrides
+      if (radiusOverrides) {
+        if (typeof radiusOverrides === "object") {
+          if (radiusOverrides.sm) shadcnTheme[mode]["radius-sm"] = radiusOverrides.sm;
+          if (radiusOverrides.md) shadcnTheme[mode]["radius-md"] = radiusOverrides.md;
+          if (radiusOverrides.lg) shadcnTheme[mode]["radius-lg"] = radiusOverrides.lg;
+          if (radiusOverrides.xl) shadcnTheme[mode]["radius-xl"] = radiusOverrides.xl;
+          shadcnTheme[mode].radius = radiusOverrides.md || radiusOverrides.lg || "0.5rem";
+        } else {
+          shadcnTheme[mode].radius = radiusOverrides;
+        }
+      }
+    });
+
+    // Compute shadow variables for both modes
+    const lightShadowVars = computeShadowVars(shadcnTheme.light);
+    const darkShadowVars = computeShadowVars(shadcnTheme.dark);
 
     // Create shadcn registry-compatible format
     type RegistryItem = {
@@ -115,28 +209,28 @@ export async function GET(request: NextRequest, context: RouteContext) {
       },
     };
 
-    // Convert theme colors to CSS variable format
-    Object.entries(shadcnTheme.light).forEach(([key, value]) => {
-      if (typeof value === "string") {
-        // Convert hex colors to oklch format if needed
-        let cssValue = value;
-        if (value.startsWith("#")) {
-          // For now, keep hex values as-is since shadcn supports them
-          cssValue = value;
+    // Convert theme colors to CSS variable format with OKLCH
+    const processTokens = (
+      tokens: Record<string, string>,
+      shadowVars: Record<string, string>,
+      target: Record<string, string>
+    ) => {
+      const allTokens = { ...tokens, ...shadowVars };
+      Object.entries(allTokens).forEach(([key, value]) => {
+        if (typeof value === "string") {
+          let cssValue = value;
+          if (COLOR_TOKENS.has(key)) {
+            if (value.startsWith("#") || value.startsWith("hsl") || value.startsWith("rgb")) {
+              cssValue = formatOklch(value);
+            }
+          }
+          target[key] = cssValue;
         }
-        registryItem.cssVars.light[key] = cssValue;
-      }
-    });
+      });
+    };
 
-    Object.entries(shadcnTheme.dark).forEach(([key, value]) => {
-      if (typeof value === "string") {
-        let cssValue = value;
-        if (value.startsWith("#")) {
-          cssValue = value;
-        }
-        registryItem.cssVars.dark[key] = cssValue;
-      }
-    });
+    processTokens(shadcnTheme.light, lightShadowVars, registryItem.cssVars.light);
+    processTokens(shadcnTheme.dark, darkShadowVars, registryItem.cssVars.dark);
 
     return NextResponse.json(registryItem, {
       headers: {

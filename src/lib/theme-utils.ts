@@ -26,13 +26,6 @@ export function computeThemeTokens(theme: ThemeData): {
   light: Record<string, string>;
   dark: Record<string, string>;
 } {
-  console.log("📊 [Theme Utils] computeThemeTokens called with theme:", theme);
-  console.log(
-    "📊 [Theme Utils] Theme has shadcn_override:",
-    !!(theme as any).shadcn_override,
-  );
-  console.log("📊 [Theme Utils] Theme has rawTheme:", !!theme.rawTheme);
-
   // Safety check for theme
   if (!theme) {
     return DEFAULT_THEME.computedTokens;
@@ -80,8 +73,6 @@ export function computeThemeTokens(theme: ThemeData): {
       (palettes.dark && Object.keys(palettes.dark).length > 0);
 
     if (hasValidPalettes) {
-      console.log("Applying shadcn_override.palettes with granular precedence");
-
       // Start with base tokens or empty objects
       const lightTokens = { ...(baseTokens?.light || {}) };
       const darkTokens = { ...(baseTokens?.dark || {}) };
@@ -94,22 +85,15 @@ export function computeThemeTokens(theme: ThemeData): {
       Object.assign(lightTokens, lightOverrides);
       Object.assign(darkTokens, darkOverrides);
 
-      const computedTokens = {
+      return {
         light: lightTokens,
         dark: darkTokens,
       };
-
-      console.log(
-        "Final computedTokens with overrides applied:",
-        computedTokens,
-      );
-      return computedTokens;
     }
   }
 
   // Step 3: If no rawTheme but we have individual database columns, convert them
   if (!baseTokens && (theme as any).light_bg) {
-    console.log("Converting database color columns to rawTheme format");
     try {
       const dbTheme = theme as any;
       const rawTheme = {
@@ -145,13 +129,8 @@ export function computeThemeTokens(theme: ThemeData): {
         },
       };
 
-      console.log("Converted database theme to rawTheme:", rawTheme);
       const shadcnTheme = convertTheme("shadcn", rawTheme) as ShadcnTheme;
       if (shadcnTheme?.light && shadcnTheme.dark) {
-        console.log(
-          "Successfully converted database theme to shadcn:",
-          shadcnTheme,
-        );
         baseTokens = {
           light: shadcnTheme.light,
           dark: shadcnTheme.dark,
@@ -167,7 +146,6 @@ export function computeThemeTokens(theme: ThemeData): {
     return baseTokens;
   }
 
-  console.log("No valid theme data found, using default");
   return DEFAULT_THEME.computedTokens;
 }
 
