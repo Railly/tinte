@@ -630,15 +630,26 @@ export function WorkbenchToolbar({
 
         <div className="w-px h-6 bg-border" />
 
-        {/* Export Dropdown */}
+        {/* View Code Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowViewCodeDialog(true)}
+          className="h-8"
+        >
+          <Code className="h-4 w-4 mr-2" />
+          View Code
+        </Button>
+
+        {/* More Actions */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8">
-              <Download className="h-4 w-4 mr-2" />
-              Export
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Settings className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[180px]">
+            {/* Export Options */}
             {currentProviderId === "vscode" && (
               <DropdownMenuItem
                 onClick={async () => {
@@ -650,29 +661,30 @@ export function WorkbenchToolbar({
               >
                 <div
                   className={cn(
-                    "flex items-center transition-all duration-300",
+                    "flex items-center gap-2 w-full transition-all duration-300",
                     copiedAction === "file"
                       ? "opacity-0 scale-75 blur-sm"
                       : "opacity-100 scale-100 blur-0",
                   )}
                 >
-                  <Download className="h-4 w-4 mr-2" />
+                  <Download className="h-4 w-4" />
                   Download VSIX
                 </div>
                 <div
                   className={cn(
-                    "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                    "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
                     copiedAction === "file"
                       ? "opacity-100 scale-100 blur-0"
                       : "opacity-0 scale-75 blur-sm pointer-events-none",
                   )}
                 >
-                  <Check className="h-4 w-4 mr-2" />
+                  <Check className="h-4 w-4" />
                   Downloaded!
                 </div>
               </DropdownMenuItem>
             )}
-            {currentProviderId === "shadcn" ? (
+            {(currentProviderId === "shadcn" ||
+              currentProviderId === "shiki") && (
               <>
                 <DropdownMenuItem
                   onClick={async () => {
@@ -684,7 +696,7 @@ export function WorkbenchToolbar({
                 >
                   <div
                     className={cn(
-                      "flex items-center transition-all duration-300",
+                      "flex items-center gap-2 w-full transition-all duration-300",
                       copiedAction === "file"
                         ? "opacity-0 scale-75 blur-sm"
                         : "opacity-100 scale-100 blur-0",
@@ -695,13 +707,13 @@ export function WorkbenchToolbar({
                   </div>
                   <div
                     className={cn(
-                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                      "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
                       copiedAction === "file"
                         ? "opacity-100 scale-100 blur-0"
                         : "opacity-0 scale-75 blur-sm pointer-events-none",
                     )}
                   >
-                    <Check className="h-4 w-4 mr-2" />
+                    <Check className="h-4 w-4" />
                     Downloaded!
                   </div>
                 </DropdownMenuItem>
@@ -715,7 +727,7 @@ export function WorkbenchToolbar({
                 >
                   <div
                     className={cn(
-                      "flex items-center transition-all duration-300",
+                      "flex items-center gap-2 w-full transition-all duration-300",
                       copiedAction === "theme"
                         ? "opacity-0 scale-75 blur-sm"
                         : "opacity-100 scale-100 blur-0",
@@ -726,163 +738,87 @@ export function WorkbenchToolbar({
                   </div>
                   <div
                     className={cn(
-                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
+                      "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
                       copiedAction === "theme"
                         ? "opacity-100 scale-100 blur-0"
                         : "opacity-0 scale-75 blur-sm pointer-events-none",
                     )}
                   >
-                    <Check className="h-4 w-4 mr-2" />
+                    <Check className="h-4 w-4" />
                     Copied!
                   </div>
                 </DropdownMenuItem>
               </>
-            ) : currentProviderId === "shiki" ? (
-              <>
-                <DropdownMenuItem
-                  onClick={async () => {
-                    await handleExport();
-                    setCopiedAction("file");
-                    setTimeout(() => setCopiedAction(null), 2000);
-                  }}
-                  className="relative overflow-hidden"
-                >
-                  <div
-                    className={cn(
-                      "flex items-center transition-all duration-300",
-                      copiedAction === "file"
-                        ? "opacity-0 scale-75 blur-sm"
-                        : "opacity-100 scale-100 blur-0",
-                    )}
+            )}
+            {currentProviderId !== "vscode" &&
+              currentProviderId !== "shadcn" &&
+              currentProviderId !== "shiki" && (
+                <>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      await handleExport();
+                      setCopiedAction("file");
+                      setTimeout(() => setCopiedAction(null), 2000);
+                    }}
+                    className="relative overflow-hidden"
                   >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download CSS
-                  </div>
-                  <div
-                    className={cn(
-                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
-                      copiedAction === "file"
-                        ? "opacity-100 scale-100 blur-0"
-                        : "opacity-0 scale-75 blur-sm pointer-events-none",
-                    )}
+                    <div
+                      className={cn(
+                        "flex items-center gap-2 w-full transition-all duration-300",
+                        copiedAction === "file"
+                          ? "opacity-0 scale-75 blur-sm"
+                          : "opacity-100 scale-100 blur-0",
+                      )}
+                    >
+                      <Download className="h-4 w-4" />
+                      Download File
+                    </div>
+                    <div
+                      className={cn(
+                        "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
+                        copiedAction === "file"
+                          ? "opacity-100 scale-100 blur-0"
+                          : "opacity-0 scale-75 blur-sm pointer-events-none",
+                      )}
+                    >
+                      <Check className="h-4 w-4" />
+                      Downloaded!
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      await handleCopyTheme();
+                      setCopiedAction("theme");
+                      setTimeout(() => setCopiedAction(null), 2000);
+                    }}
+                    className="relative overflow-hidden"
                   >
-                    <Check className="h-4 w-4 mr-2" />
-                    Downloaded!
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={async () => {
-                    await handleCopyTheme();
-                    setCopiedAction("theme");
-                    setTimeout(() => setCopiedAction(null), 2000);
-                  }}
-                  className="relative overflow-hidden"
-                >
-                  <div
-                    className={cn(
-                      "flex items-center transition-all duration-300",
-                      copiedAction === "theme"
-                        ? "opacity-0 scale-75 blur-sm"
-                        : "opacity-100 scale-100 blur-0",
-                    )}
-                  >
-                    <CSSIcon className="h-4 w-4 mr-2" />
-                    Copy CSS
-                  </div>
-                  <div
-                    className={cn(
-                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
-                      copiedAction === "theme"
-                        ? "opacity-100 scale-100 blur-0"
-                        : "opacity-0 scale-75 blur-sm pointer-events-none",
-                    )}
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    Copied!
-                  </div>
-                </DropdownMenuItem>
-              </>
-            ) : currentProviderId !== "vscode" ? (
-              <>
-                <DropdownMenuItem
-                  onClick={async () => {
-                    await handleExport();
-                    setCopiedAction("file");
-                    setTimeout(() => setCopiedAction(null), 2000);
-                  }}
-                  className="relative overflow-hidden"
-                >
-                  <div
-                    className={cn(
-                      "flex items-center transition-all duration-300",
-                      copiedAction === "file"
-                        ? "opacity-0 scale-75 blur-sm"
-                        : "opacity-100 scale-100 blur-0",
-                    )}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download File
-                  </div>
-                  <div
-                    className={cn(
-                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
-                      copiedAction === "file"
-                        ? "opacity-100 scale-100 blur-0"
-                        : "opacity-0 scale-75 blur-sm pointer-events-none",
-                    )}
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    Downloaded!
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={async () => {
-                    await handleCopyTheme();
-                    setCopiedAction("theme");
-                    setTimeout(() => setCopiedAction(null), 2000);
-                  }}
-                  className="relative overflow-hidden"
-                >
-                  <div
-                    className={cn(
-                      "flex items-center transition-all duration-300",
-                      copiedAction === "theme"
-                        ? "opacity-0 scale-75 blur-sm"
-                        : "opacity-100 scale-100 blur-0",
-                    )}
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy JSON
-                  </div>
-                  <div
-                    className={cn(
-                      "absolute inset-0 flex items-center px-2 transition-all duration-300",
-                      copiedAction === "theme"
-                        ? "opacity-100 scale-100 blur-0"
-                        : "opacity-0 scale-75 blur-sm pointer-events-none",
-                    )}
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    Copied!
-                  </div>
-                </DropdownMenuItem>
-              </>
-            ) : null}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* More Actions */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Settings className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setShowViewCodeDialog(true)}>
-              <Code className="h-4 w-4 mr-2" />
-              View Code
-            </DropdownMenuItem>
+                    <div
+                      className={cn(
+                        "flex items-center gap-2 w-full transition-all duration-300",
+                        copiedAction === "theme"
+                          ? "opacity-0 scale-75 blur-sm"
+                          : "opacity-100 scale-100 blur-0",
+                      )}
+                    >
+                      <Copy className="h-4 w-4" />
+                      Copy JSON
+                    </div>
+                    <div
+                      className={cn(
+                        "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
+                        copiedAction === "theme"
+                          ? "opacity-100 scale-100 blur-0"
+                          : "opacity-0 scale-75 blur-sm pointer-events-none",
+                      )}
+                    >
+                      <Check className="h-4 w-4" />
+                      Copied!
+                    </div>
+                  </DropdownMenuItem>
+                </>
+              )}
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setShowImportDialog(true)}>
               <FileText className="h-4 w-4 mr-2" />
               Import CSS
@@ -899,7 +835,6 @@ export function WorkbenchToolbar({
               <Edit3 className="h-4 w-4 mr-2" />
               Rename
             </DropdownMenuItem>
-            {/* Only show Duplicate in dropdown if it's already your theme (not shown as primary button) */}
             {isOwnTheme && (
               <DropdownMenuItem
                 onClick={() => {
