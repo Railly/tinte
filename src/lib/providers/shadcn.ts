@@ -1,4 +1,4 @@
-import { formatHex, oklch, rgb } from "culori";
+import { formatHex, oklch } from "culori";
 import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import {
@@ -9,6 +9,7 @@ import {
   type ShadcnTheme,
 } from "@/types/shadcn";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";
+import { getBestTextColor } from "../color-utils";
 import { generateTailwindPalette } from "../palette-generator";
 import type { PreviewableProvider, ProviderOutput } from "./types";
 
@@ -21,27 +22,7 @@ const ANCHORS = {
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
-const L = (hex: string) => {
-  const c = rgb(hex) as any;
-  if (!c) return 0;
-  const lin = (x: number) =>
-    x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
-  return 0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b);
-};
-
-const contrast = (a: string, b: string) => {
-  const la = L(a),
-    lb = L(b);
-  const lighter = Math.max(la, lb),
-    darker = Math.min(la, lb);
-  return (lighter + 0.05) / (darker + 0.05);
-};
-
-const bestTextFor = (bg: string) => {
-  const w = "#ffffff",
-    k = "#000000";
-  return contrast(w, bg) >= contrast(k, bg) ? w : k;
-};
+const bestTextFor = getBestTextColor;
 
 const tweakL = (hex: string, dL: number) => {
   const c = oklch(hex) as any;
@@ -209,7 +190,7 @@ function mapBlock(
   }
 
   result["tracking-normal"] = "0em";
-  result["spacing"] = "0.25rem";
+  result.spacing = "0.25rem";
 
   return result;
 }
@@ -308,15 +289,38 @@ export function computeShadowVars(
 }
 
 const COLOR_TOKENS = new Set([
-  "background", "foreground", "card", "card-foreground",
-  "popover", "popover-foreground", "primary", "primary-foreground",
-  "secondary", "secondary-foreground", "muted", "muted-foreground",
-  "accent", "accent-foreground", "destructive", "destructive-foreground",
-  "border", "input", "ring",
-  "chart-1", "chart-2", "chart-3", "chart-4", "chart-5",
-  "sidebar", "sidebar-foreground", "sidebar-primary",
-  "sidebar-primary-foreground", "sidebar-accent",
-  "sidebar-accent-foreground", "sidebar-border", "sidebar-ring",
+  "background",
+  "foreground",
+  "card",
+  "card-foreground",
+  "popover",
+  "popover-foreground",
+  "primary",
+  "primary-foreground",
+  "secondary",
+  "secondary-foreground",
+  "muted",
+  "muted-foreground",
+  "accent",
+  "accent-foreground",
+  "destructive",
+  "destructive-foreground",
+  "border",
+  "input",
+  "ring",
+  "chart-1",
+  "chart-2",
+  "chart-3",
+  "chart-4",
+  "chart-5",
+  "sidebar",
+  "sidebar-foreground",
+  "sidebar-primary",
+  "sidebar-primary-foreground",
+  "sidebar-accent",
+  "sidebar-accent-foreground",
+  "sidebar-border",
+  "sidebar-ring",
   "shadow-color",
 ]);
 
@@ -382,7 +386,11 @@ function generateCSSVariables(theme: ShadcnTheme): string {
     if (strValue === "undefined" || strValue === "[object Object]") return null;
 
     if (COLOR_TOKENS.has(key)) {
-      if (strValue.startsWith("#") || strValue.startsWith("hsl") || strValue.startsWith("rgb")) {
+      if (
+        strValue.startsWith("#") ||
+        strValue.startsWith("hsl") ||
+        strValue.startsWith("rgb")
+      ) {
         return formatOklch(strValue);
       }
     }

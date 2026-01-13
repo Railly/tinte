@@ -17,10 +17,6 @@ export function ZedPreview({ theme, className }: ZedPreviewProps) {
 
   const style = currentTheme.style;
 
-  // Debug: log when style changes
-  console.log("ZedPreview render - syntax.keyword:", style.syntax.keyword);
-  console.log("ZedPreview render - syntax.tag:", style.syntax.tag);
-
   const codeExample = `src/app/page.tsx > async function Home()
 
 import { Metadata } from "next";

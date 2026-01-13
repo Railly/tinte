@@ -1,17 +1,43 @@
 import { oklch } from "culori";
-import { computeShadowVars, convertTinteToShadcn } from "@/lib/providers/shadcn";
+import {
+  computeShadowVars,
+  convertTinteToShadcn,
+} from "@/lib/providers/shadcn";
 import type { TinteTheme } from "@/types/tinte";
 
 const COLOR_TOKENS = new Set([
-  "background", "foreground", "card", "card-foreground",
-  "popover", "popover-foreground", "primary", "primary-foreground",
-  "secondary", "secondary-foreground", "muted", "muted-foreground",
-  "accent", "accent-foreground", "destructive", "destructive-foreground",
-  "border", "input", "ring",
-  "chart-1", "chart-2", "chart-3", "chart-4", "chart-5",
-  "sidebar", "sidebar-foreground", "sidebar-primary",
-  "sidebar-primary-foreground", "sidebar-accent",
-  "sidebar-accent-foreground", "sidebar-border", "sidebar-ring",
+  "background",
+  "foreground",
+  "card",
+  "card-foreground",
+  "popover",
+  "popover-foreground",
+  "primary",
+  "primary-foreground",
+  "secondary",
+  "secondary-foreground",
+  "muted",
+  "muted-foreground",
+  "accent",
+  "accent-foreground",
+  "destructive",
+  "destructive-foreground",
+  "border",
+  "input",
+  "ring",
+  "chart-1",
+  "chart-2",
+  "chart-3",
+  "chart-4",
+  "chart-5",
+  "sidebar",
+  "sidebar-foreground",
+  "sidebar-primary",
+  "sidebar-primary-foreground",
+  "sidebar-accent",
+  "sidebar-accent-foreground",
+  "sidebar-border",
+  "sidebar-ring",
   "shadow-color",
 ]);
 
@@ -32,7 +58,11 @@ function formatValue(key: string, value: unknown): string | null {
   if (strValue === "undefined" || strValue === "[object Object]") return null;
 
   if (COLOR_TOKENS.has(key)) {
-    if (strValue.startsWith("#") || strValue.startsWith("hsl") || strValue.startsWith("rgb")) {
+    if (
+      strValue.startsWith("#") ||
+      strValue.startsWith("hsl") ||
+      strValue.startsWith("rgb")
+    ) {
       return formatOklch(strValue);
     }
   }
@@ -106,13 +136,28 @@ export function getShadcnPaletteWithOverrides(
   const fontOverrides = overrides?.fonts || {};
   const radiusOverrides = overrides?.radius;
 
-  const fontsForConversion = fontOverrides["font-sans"] || fontOverrides["font-serif"] || fontOverrides["font-mono"]
-    ? {
-        sans: fontOverrides["font-sans"]?.split(",")[0]?.replace(/['"]/g, "").trim() || undefined,
-        serif: fontOverrides["font-serif"]?.split(",")[0]?.replace(/['"]/g, "").trim() || undefined,
-        mono: fontOverrides["font-mono"]?.split(",")[0]?.replace(/['"]/g, "").trim() || undefined,
-      }
-    : undefined;
+  const fontsForConversion =
+    fontOverrides["font-sans"] ||
+    fontOverrides["font-serif"] ||
+    fontOverrides["font-mono"]
+      ? {
+          sans:
+            fontOverrides["font-sans"]
+              ?.split(",")[0]
+              ?.replace(/['"]/g, "")
+              .trim() || undefined,
+          serif:
+            fontOverrides["font-serif"]
+              ?.split(",")[0]
+              ?.replace(/['"]/g, "")
+              .trim() || undefined,
+          mono:
+            fontOverrides["font-mono"]
+              ?.split(",")[0]
+              ?.replace(/['"]/g, "")
+              .trim() || undefined,
+        }
+      : undefined;
 
   const themeWithOverrides = {
     ...tinteTheme,

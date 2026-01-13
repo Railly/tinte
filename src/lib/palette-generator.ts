@@ -1,4 +1,9 @@
 import { formatHex, oklch, rgb } from "culori";
+import {
+  getContrastRatio,
+  getSRGBLuminance,
+  type RGBColor,
+} from "./color-utils";
 
 export interface PaletteColor {
   name: string;
@@ -43,11 +48,7 @@ function toOklch(color: string): { l: number; c: number; h: number } {
   };
 }
 
-function oklchToRgb(
-  l: number,
-  c: number,
-  h: number,
-): { r: number; g: number; b: number } {
+function oklchToRgb(l: number, c: number, h: number): RGBColor {
   const rgbColor = rgb({ mode: "oklch", l, c, h });
   if (!rgbColor) throw new Error("Invalid OKLCH values");
 
@@ -58,33 +59,8 @@ function oklchToRgb(
   };
 }
 
-function rgbToHex(rgbColor: { r: number; g: number; b: number }): string {
+function rgbToHex(rgbColor: RGBColor): string {
   return formatHex({ mode: "rgb", ...rgbColor });
-}
-
-function getSRGBLuminance(rgbColor: {
-  r: number;
-  g: number;
-  b: number;
-}): number {
-  const { r, g, b } = rgbColor;
-
-  const linearize = (val: number) => {
-    if (val <= 0.03928) return val / 12.92;
-    return ((val + 0.055) / 1.055) ** 2.4;
-  };
-
-  const rLin = linearize(r);
-  const gLin = linearize(g);
-  const bLin = linearize(b);
-
-  return 0.2126 * rLin + 0.7152 * gLin + 0.0722 * bLin;
-}
-
-function getContrastRatio(lum1: number, lum2: number): number {
-  const lighter = Math.max(lum1, lum2);
-  const darker = Math.min(lum1, lum2);
-  return (lighter + 0.05) / (darker + 0.05);
 }
 
 function interpolate(start: number, end: number, factor: number): number {

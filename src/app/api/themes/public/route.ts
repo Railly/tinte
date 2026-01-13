@@ -9,7 +9,12 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || undefined;
     const offset = (page - 1) * limit;
 
-    const publicThemes = await getPublicThemes(limit, offset, undefined, search);
+    const publicThemes = await getPublicThemes(
+      limit,
+      offset,
+      undefined,
+      search,
+    );
     const totalCount = await getPublicThemesCount();
 
     return NextResponse.json(

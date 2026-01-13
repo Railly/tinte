@@ -10,8 +10,6 @@ export function BrandGuidelinesPreview({
   theme,
   className,
 }: BrandGuidelinesPreviewProps) {
-  // Use the canonical theme name from the theme object
-  console.log({ theme });
   const themeName = theme.brand.name;
   return (
     <div className={`h-full bg-background font-sans ${className}`}>

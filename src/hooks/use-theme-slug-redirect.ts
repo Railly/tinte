@@ -36,7 +36,6 @@ export function useThemeSlugRedirect({
           ) {
             const { slug } = part.output;
             if (slug && slug !== detectedSlug) {
-              console.log("🎨 AI generated theme with database slug:", slug);
               setDetectedSlug(slug);
               return;
             }
@@ -58,12 +57,8 @@ export function useThemeSlugRedirect({
 
     // Priority 1: Use detected slug from AI tool response
     if (detectedSlug && detectedSlug !== chatId) {
-      console.log("🔄 Redirecting to AI-generated theme slug:", detectedSlug);
-
       const searchParams = window.location.search;
       const newUrl = `/workbench/${detectedSlug}${searchParams}`;
-
-      console.log("🚀 Redirecting to AI theme:", newUrl);
       router.replace(newUrl);
       return;
     }
@@ -72,22 +67,11 @@ export function useThemeSlugRedirect({
     if (
       activeTheme?.slug &&
       activeTheme.slug !== lastThemeRef.current &&
-      activeTheme.slug !== chatId // Don't redirect if slug is the same as current chatId
+      activeTheme.slug !== chatId
     ) {
-      console.log("🔄 Theme store slug redirect detected:", {
-        oldSlug: lastThemeRef.current,
-        newSlug: activeTheme.slug,
-        chatId,
-        currentPath,
-      });
-
       lastThemeRef.current = activeTheme.slug;
-
-      // Preserve search params when redirecting
       const searchParams = window.location.search;
       const newUrl = `/workbench/${activeTheme.slug}${searchParams}`;
-
-      console.log("🚀 Redirecting to theme slug:", newUrl);
       router.replace(newUrl);
     } else if (activeTheme?.slug) {
       // Update the reference even if we don't redirect

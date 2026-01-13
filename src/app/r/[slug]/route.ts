@@ -3,7 +3,10 @@ import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { computeShadowVars, convertTinteToShadcn } from "@/lib/providers/shadcn";
+import {
+  computeShadowVars,
+  convertTinteToShadcn,
+} from "@/lib/providers/shadcn";
 import type { TinteTheme } from "@/types/tinte";
 
 function formatOklch(color: string): string {
@@ -16,15 +19,38 @@ function formatOklch(color: string): string {
 }
 
 const COLOR_TOKENS = new Set([
-  "background", "foreground", "card", "card-foreground",
-  "popover", "popover-foreground", "primary", "primary-foreground",
-  "secondary", "secondary-foreground", "muted", "muted-foreground",
-  "accent", "accent-foreground", "destructive", "destructive-foreground",
-  "border", "input", "ring",
-  "chart-1", "chart-2", "chart-3", "chart-4", "chart-5",
-  "sidebar", "sidebar-foreground", "sidebar-primary",
-  "sidebar-primary-foreground", "sidebar-accent",
-  "sidebar-accent-foreground", "sidebar-border", "sidebar-ring",
+  "background",
+  "foreground",
+  "card",
+  "card-foreground",
+  "popover",
+  "popover-foreground",
+  "primary",
+  "primary-foreground",
+  "secondary",
+  "secondary-foreground",
+  "muted",
+  "muted-foreground",
+  "accent",
+  "accent-foreground",
+  "destructive",
+  "destructive-foreground",
+  "border",
+  "input",
+  "ring",
+  "chart-1",
+  "chart-2",
+  "chart-3",
+  "chart-4",
+  "chart-5",
+  "sidebar",
+  "sidebar-foreground",
+  "sidebar-primary",
+  "sidebar-primary-foreground",
+  "sidebar-accent",
+  "sidebar-accent-foreground",
+  "sidebar-border",
+  "sidebar-ring",
   "shadow-color",
 ]);
 
@@ -104,7 +130,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     // Convert to shadcn theme
     const shadcnThemeBase = convertTinteToShadcn(tinteTheme);
-    const shadcnTheme: { light: Record<string, string>; dark: Record<string, string> } = {
+    const shadcnTheme: {
+      light: Record<string, string>;
+      dark: Record<string, string>;
+    } = {
       light: { ...shadcnThemeBase.light },
       dark: { ...shadcnThemeBase.dark },
     };
@@ -162,11 +191,16 @@ export async function GET(request: NextRequest, context: RouteContext) {
       // Apply radius overrides
       if (radiusOverrides) {
         if (typeof radiusOverrides === "object") {
-          if (radiusOverrides.sm) shadcnTheme[mode]["radius-sm"] = radiusOverrides.sm;
-          if (radiusOverrides.md) shadcnTheme[mode]["radius-md"] = radiusOverrides.md;
-          if (radiusOverrides.lg) shadcnTheme[mode]["radius-lg"] = radiusOverrides.lg;
-          if (radiusOverrides.xl) shadcnTheme[mode]["radius-xl"] = radiusOverrides.xl;
-          shadcnTheme[mode].radius = radiusOverrides.md || radiusOverrides.lg || "0.5rem";
+          if (radiusOverrides.sm)
+            shadcnTheme[mode]["radius-sm"] = radiusOverrides.sm;
+          if (radiusOverrides.md)
+            shadcnTheme[mode]["radius-md"] = radiusOverrides.md;
+          if (radiusOverrides.lg)
+            shadcnTheme[mode]["radius-lg"] = radiusOverrides.lg;
+          if (radiusOverrides.xl)
+            shadcnTheme[mode]["radius-xl"] = radiusOverrides.xl;
+          shadcnTheme[mode].radius =
+            radiusOverrides.md || radiusOverrides.lg || "0.5rem";
         } else {
           shadcnTheme[mode].radius = radiusOverrides;
         }
@@ -213,14 +247,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const processTokens = (
       tokens: Record<string, string>,
       shadowVars: Record<string, string>,
-      target: Record<string, string>
+      target: Record<string, string>,
     ) => {
       const allTokens = { ...tokens, ...shadowVars };
       Object.entries(allTokens).forEach(([key, value]) => {
         if (typeof value === "string") {
           let cssValue = value;
           if (COLOR_TOKENS.has(key)) {
-            if (value.startsWith("#") || value.startsWith("hsl") || value.startsWith("rgb")) {
+            if (
+              value.startsWith("#") ||
+              value.startsWith("hsl") ||
+              value.startsWith("rgb")
+            ) {
               cssValue = formatOklch(value);
             }
           }
@@ -229,7 +267,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
       });
     };
 
-    processTokens(shadcnTheme.light, lightShadowVars, registryItem.cssVars.light);
+    processTokens(
+      shadcnTheme.light,
+      lightShadowVars,
+      registryItem.cssVars.light,
+    );
     processTokens(shadcnTheme.dark, darkShadowVars, registryItem.cssVars.dark);
 
     return NextResponse.json(registryItem, {

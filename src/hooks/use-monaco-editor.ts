@@ -99,22 +99,12 @@ export function useMonacoEditor({
         highlighterRef.current &&
         currentThemeVersionRef.current === themeVersion
       ) {
-        console.log(
-          "Monaco: Themes already up to date, skipping initialization",
-        );
         return;
       }
 
       try {
-        console.log("Monaco: Initializing Shiki highlighter", {
-          currentVersion: currentThemeVersionRef.current,
-          newVersion: themeVersion,
-        });
-
         const lightTheme = createThemeData("light");
         const darkTheme = createThemeData("dark");
-
-        console.log("Monaco: Created theme data", { lightTheme, darkTheme });
 
         const highlighter = await createHighlighter({
           themes: [lightTheme, darkTheme],
@@ -133,7 +123,6 @@ export function useMonacoEditor({
 
         highlighterRef.current = highlighter;
         currentThemeVersionRef.current = themeVersion;
-        console.log("Monaco: Shiki integration completed successfully");
       } catch (error) {
         console.error("Monaco: Failed to initialize Shiki:", error);
       }
@@ -184,11 +173,7 @@ export function useMonacoEditor({
 
   useEffect(() => {
     if (editorRef.current && monacoRef.current && !isInitialLoad) {
-      console.log("Monaco: Theme/mode changed, updating themes");
-
       initializeMonaco(monacoRef.current).then(() => {
-        // Immediate theme application for subsequent changes to prevent flash
-        console.log("Monaco: Applying updated theme:", currentThemeName);
         applyTheme(editorRef.current, monacoRef.current);
       });
     }

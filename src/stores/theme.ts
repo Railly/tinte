@@ -130,7 +130,7 @@ const applyToDOMDebounced = (() => {
       await Promise.all(
         fontFamilies.map((family) =>
           document.fonts.load(`400 12px "${family}"`).catch(() => {
-            // Font failed to load, continue anyway
+            console.warn(`Font "${family}" failed to load, using fallback`);
           }),
         ),
       );
