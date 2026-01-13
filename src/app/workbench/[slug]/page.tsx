@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { WorkbenchMain } from "@/components/workbench/workbench-main";
 import { siteConfig } from "@/config/site";
 import { getThemeBySlug } from "@/lib/get-theme-by-slug";

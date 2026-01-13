@@ -4,7 +4,6 @@ import { ShadcnIcon } from "@/components/shared/icons/shadcn";
 import {
   DEFAULT_BASE,
   DEFAULT_FONTS,
-  DEFAULT_SHADOWS,
   type ShadcnBlock,
   type ShadcnTheme,
 } from "@/types/shadcn";

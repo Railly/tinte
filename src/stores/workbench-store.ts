@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { devtools, subscribeWithSelector } from "zustand/middleware";
-import { CHAT_CONFIG } from "@/lib/chat-constants";
 import { popSeed } from "@/utils/anon-seed";
 import type { SeedPayload } from "@/utils/seed-mapper";
 

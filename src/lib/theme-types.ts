@@ -4,8 +4,8 @@ import {
   shadcnOverrideSchema,
   type theme,
 } from "@/db/schema/theme";
-import type { ShikiCssTheme } from "@/types/shiki";
-import type { TinteBlock } from "@/types/tinte";
+import type { NormalizedOverrides } from "@/types/overrides";
+import type { TinteBlock, TinteTheme } from "@/types/tinte";
 
 // Base theme types from Drizzle schema (single source of truth)
 export type Theme = InferSelectModel<typeof theme>;
@@ -23,21 +23,6 @@ export interface VSCodeOverride {
       fontStyle?: string;
     };
   }>;
-}
-
-export interface ThemeOverrides {
-  shadcn?: {
-    light?: Partial<ShadcnOverrideSchema>;
-    dark?: Partial<ShadcnOverrideSchema>;
-  };
-  vscode?: {
-    light?: VSCodeOverride;
-    dark?: VSCodeOverride;
-  };
-  shiki?: {
-    light?: ShikiCssTheme;
-    dark?: ShikiCssTheme;
-  };
 }
 
 // Core color palette interface
@@ -78,8 +63,7 @@ export interface ThemeWithMetadata extends Theme {
   } | null;
   isFavorite?: boolean;
 
-  // Structured overrides
-  overrides?: ThemeOverrides;
+  overrides?: NormalizedOverrides;
 }
 
 // Theme transformation options for service layer
@@ -108,14 +92,14 @@ export interface ProviderThemeData {
   createdAt: string;
   colors: ThemeColors;
   tags: string[];
-  rawTheme?: any;
+  rawTheme?: TinteTheme;
   user?: {
     id: string;
     name?: string | null;
     email?: string | null;
     image?: string | null;
   } | null;
-  overrides?: ThemeOverrides;
+  overrides?: NormalizedOverrides;
   isFavorite?: boolean;
   is_public?: boolean;
 }

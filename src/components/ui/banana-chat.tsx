@@ -1,7 +1,6 @@
 "use client";
 
-import { Image, Palette, Wand2, Zap } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { BananaIcon } from "@/components/shared/icons/banana";
 
 // Wrapper to make BananaIcon compatible with AIChat's expected interface

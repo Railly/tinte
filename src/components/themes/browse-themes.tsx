@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Loader2, Search, User, Users } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { nanoid } from "nanoid";
 import { parseAsString, useQueryState } from "nuqs";
@@ -9,9 +9,6 @@ import useMeasure from "react-use-measure";
 import { toast } from "sonner";
 import { Header } from "@/components/home/header";
 import { Footer } from "@/components/shared/footer";
-import RaycastIcon from "@/components/shared/icons/raycast";
-import TweakCNIcon from "@/components/shared/icons/tweakcn";
-import Logo from "@/components/shared/logo";
 import {
   ThemeCard,
   ThemeCardListSkeleton,
@@ -19,15 +16,6 @@ import {
 } from "@/components/shared/theme-card";
 import { CompactFilterBar } from "@/components/themes/compact-filter-bar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROVIDER_ICONS } from "@/config/providers";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useLoop } from "@/hooks/use-loop";

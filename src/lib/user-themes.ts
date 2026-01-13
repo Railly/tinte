@@ -5,11 +5,11 @@ import { user, userFavorites } from "@/db/schema/user";
 import type {
   Theme,
   ThemeColors,
-  ThemeOverrides,
   ThemeTransformOptions,
   ThemeWithMetadata,
 } from "@/lib/theme-types";
 import { VENDORS } from "@/lib/vendors";
+import type { NormalizedOverrides } from "@/types/overrides";
 import type { TinteBlock } from "@/types/tinte";
 
 export async function getThemesWithUsers(
@@ -487,13 +487,11 @@ function transformThemeToMetadata(
   };
 }
 
-function transformOverridesFromDb(dbTheme: Theme): ThemeOverrides {
-  // Don't normalize here - the direct override properties are already in DB format
-  // and will be normalized when needed by the normalizeOverrides function
+function transformOverridesFromDb(dbTheme: Theme): NormalizedOverrides {
   return {
-    shadcn: (dbTheme.shadcn_override as any) || undefined,
-    vscode: (dbTheme.vscode_override as any) || undefined,
-    shiki: (dbTheme.shiki_override as any) || undefined,
+    shadcn: dbTheme.shadcn_override ?? undefined,
+    vscode: dbTheme.vscode_override as NormalizedOverrides["vscode"],
+    shiki: dbTheme.shiki_override as NormalizedOverrides["shiki"],
   };
 }
 

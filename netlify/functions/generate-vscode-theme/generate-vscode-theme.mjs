@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import archiver from "archiver";
 
 // Token to scope mapping from current VS Code provider

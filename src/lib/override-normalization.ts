@@ -1,49 +1,85 @@
 import type { NormalizedOverrides, ProviderOverride } from "@/types/overrides";
+import type { TinteTheme } from "@/types/tinte";
 import type { ThemeData } from "./theme-tokens";
 
-function normalizeProviderOverride(data: any, provider?: string): any {
+interface RawOverrideInput {
+  palettes?: {
+    light?: Record<string, unknown>;
+    dark?: Record<string, unknown>;
+  };
+  fonts?: {
+    sans?: string;
+    serif?: string;
+    mono?: string;
+  };
+  radius?: string | Record<string, string>;
+  letter_spacing?: string;
+  light?: Record<string, unknown>;
+  dark?: Record<string, unknown>;
+}
+
+interface ThemeDataWithOverrides extends ThemeData {
+  shadcn_override?: RawOverrideInput;
+  vscode_override?: RawOverrideInput;
+  shiki_override?: RawOverrideInput;
+  overrides?: Record<string, RawOverrideInput>;
+}
+
+function normalizeProviderOverride(
+  data: unknown,
+  provider?: string,
+): ProviderOverride | undefined {
   if (!data || typeof data !== "object") return undefined;
 
-  // VSCode/Shiki use direct mode structure: { light: {...}, dark: {...} }
-  // Just return as-is for these providers
+  const input = data as RawOverrideInput;
+
   if (provider === "vscode" || provider === "shiki") {
-    return data;
+    return input as ProviderOverride;
   }
 
-  // Shadcn uses structured format with palettes, fonts, radius, letter_spacing
   const normalized: ProviderOverride = {};
 
-  if (data.palettes) {
+  if (input.palettes) {
     normalized.palettes = {
-      light: data.palettes.light ? { ...data.palettes.light } : undefined,
-      dark: data.palettes.dark ? { ...data.palettes.dark } : undefined,
+      light: input.palettes.light
+        ? { ...(input.palettes.light as Record<string, string>) }
+        : undefined,
+      dark: input.palettes.dark
+        ? { ...(input.palettes.dark as Record<string, string>) }
+        : undefined,
     };
   }
 
-  if (data.fonts) normalized.fonts = { ...data.fonts };
-  if (data.radius) normalized.radius = data.radius;
-  if (data.letter_spacing) normalized.letter_spacing = data.letter_spacing;
+  if (input.fonts) normalized.fonts = { ...input.fonts };
+  if (input.radius) normalized.radius = input.radius;
+  if (input.letter_spacing) normalized.letter_spacing = input.letter_spacing;
 
   return Object.keys(normalized).length > 0 ? normalized : undefined;
 }
 
+interface RawThemeWithExtras extends TinteTheme {
+  fonts?: { sans?: string; serif?: string; mono?: string };
+  radius?: string;
+  shadows?: Record<string, unknown>;
+}
+
 export function normalizeOverrides(theme: ThemeData): NormalizedOverrides {
   const normalized: NormalizedOverrides = {};
+  const themeWithOverrides = theme as ThemeDataWithOverrides;
 
-  const rawTheme = theme.rawTheme as any;
+  const rawTheme = theme.rawTheme as RawThemeWithExtras | undefined;
   if (rawTheme?.fonts || rawTheme?.radius || rawTheme?.shadows) {
     normalized.shadcn = {
       ...(normalized.shadcn || {}),
       ...(rawTheme.fonts && { fonts: rawTheme.fonts }),
       ...(rawTheme.radius && { radius: rawTheme.radius }),
-      ...(rawTheme.shadows && { shadows: rawTheme.shadows }),
     };
   }
 
   const dbOverrides = {
-    shadcn: (theme as any).shadcn_override,
-    vscode: (theme as any).vscode_override,
-    shiki: (theme as any).shiki_override,
+    shadcn: themeWithOverrides.shadcn_override,
+    vscode: themeWithOverrides.vscode_override,
+    shiki: themeWithOverrides.shiki_override,
   };
 
   for (const [provider, data] of Object.entries(dbOverrides)) {
@@ -55,7 +91,7 @@ export function normalizeOverrides(theme: ThemeData): NormalizedOverrides {
     }
   }
 
-  const legacyOverrides = (theme as any).overrides;
+  const legacyOverrides = themeWithOverrides.overrides;
   if (legacyOverrides && typeof legacyOverrides === "object") {
     for (const [provider, data] of Object.entries(legacyOverrides)) {
       if (data) {
@@ -71,9 +107,14 @@ export function normalizeOverrides(theme: ThemeData): NormalizedOverrides {
   return normalized;
 }
 
-export function validateOverride(provider: string, override: any): any {
-  const validProviders = ["shadcn", "vscode", "shiki", "zed"];
-  if (!validProviders.includes(provider)) {
+type ValidProvider = "shadcn" | "vscode" | "shiki" | "zed";
+const VALID_PROVIDERS: ValidProvider[] = ["shadcn", "vscode", "shiki", "zed"];
+
+export function validateOverride(
+  provider: string,
+  override: unknown,
+): ProviderOverride {
+  if (!VALID_PROVIDERS.includes(provider as ValidProvider)) {
     throw new Error(`Invalid provider: ${provider}`);
   }
 
@@ -81,8 +122,7 @@ export function validateOverride(provider: string, override: any): any {
     throw new Error("Override must be an object");
   }
 
-  const normalized = normalizeProviderOverride(override, provider) || {};
-  return normalized;
+  return normalizeProviderOverride(override, provider) ?? {};
 }
 
 export function mergeOverrides(
@@ -107,9 +147,7 @@ export function mergeOverrides(
 
 export function denormalizeProviderOverride(
   normalized: ProviderOverride | undefined,
-): any {
+): ProviderOverride | undefined {
   if (!normalized) return undefined;
-
-  // Already in DB schema format, return as-is
   return normalized;
 }

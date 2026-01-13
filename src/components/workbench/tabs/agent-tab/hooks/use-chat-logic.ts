@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { PastedItem } from "@/lib/input-detection";
 import { useThemeContext } from "@/providers/theme";
 import { useWorkbenchStore } from "@/stores/workbench-store";

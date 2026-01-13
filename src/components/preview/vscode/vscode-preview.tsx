@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { codeTemplates, type VSCodeTheme } from "@/lib/providers/vscode";
 import { useThemeContext } from "@/providers/theme";
 import { MonacoLikeEditor } from "./monaco-like-editor";

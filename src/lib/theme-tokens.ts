@@ -3,7 +3,6 @@ export type {
   ProviderThemeData,
   Theme,
   ThemeColors,
-  ThemeOverrides,
   ThemeTransformOptions,
   ThemeWithMetadata,
 } from "@/lib/theme-types";

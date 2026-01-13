@@ -8,11 +8,7 @@ import type {
   ThemeData,
   TinteThemeData,
 } from "@/lib/theme-tokens";
-import {
-  buildFontFamily,
-  getDefaultWeights,
-  loadGoogleFont,
-} from "@/utils/fonts";
+import { buildFontFamily, loadGoogleFont } from "@/utils/fonts";
 
 export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {
   // Safety check for theme

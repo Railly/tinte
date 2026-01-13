@@ -4,7 +4,6 @@ import {
   useVSCodeOverrides,
   useZedOverrides,
 } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
-import { WorkbenchToolbar } from "@/components/workbench/workbench-toolbar";
 import { convertTheme, getPreviewableProvider } from "@/lib/providers";
 import { convertTinteToVSCode } from "@/lib/providers/vscode";
 import { tinteToZed } from "@/lib/providers/zed";

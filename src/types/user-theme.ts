@@ -2,7 +2,6 @@
 export type {
   Theme,
   ThemeColors,
-  ThemeOverrides,
   ThemeTransformOptions,
   ThemeWithMetadata,
   VSCodeOverride,

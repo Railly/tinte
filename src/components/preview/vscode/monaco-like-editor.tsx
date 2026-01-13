@@ -1,7 +1,6 @@
 "use client";
 
 import Editor from "@monaco-editor/react";
-import React from "react";
 import { Folder } from "@/components/shared/icons/folder";
 import { FolderOpened } from "@/components/shared/icons/folder-opened";
 import { BrandGolang } from "@/components/shared/icons/golang";

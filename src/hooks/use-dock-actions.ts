@@ -1,7 +1,6 @@
-import { Copy, Download, Palette, Save, Terminal } from "lucide-react";
+import { Copy, Download, Save } from "lucide-react";
 import { useState } from "react";
 import { ShadcnIcon } from "@/components/shared/icons/shadcn";
-import { VSCodeIcon } from "@/components/shared/icons/vscode";
 import InvertedLogo from "@/components/shared/inverted-logo";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
 import { downloadVSCodeTheme } from "@/lib/download-vscode-theme";

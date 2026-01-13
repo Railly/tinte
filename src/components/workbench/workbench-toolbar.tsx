@@ -55,9 +55,8 @@ import { useThemeHistory } from "@/hooks/use-theme-history";
 import { cn } from "@/lib";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
 import { importShadcnTheme } from "@/lib/import-theme";
-import { convertTheme, exportTheme, getProvider } from "@/lib/providers";
+import { getProvider } from "@/lib/providers";
 import { useThemeContext } from "@/providers/theme";
-import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteTheme } from "@/types/tinte";
 
 interface WorkbenchToolbarProps {

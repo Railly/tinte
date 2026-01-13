@@ -1,11 +1,10 @@
 "use client";
 
-import { ChevronsUpDown, Heart, Loader2, Users, UserX } from "lucide-react";
+import { ChevronsUpDown, Heart, Loader2, Users } from "lucide-react";
 import * as React from "react";
 import RaycastIcon from "@/components/shared/icons/raycast";
 import TweakCNIcon from "@/components/shared/icons/tweakcn";
 import InvertedLogo from "@/components/shared/inverted-logo";
-import Logo from "@/components/shared/logo";
 import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

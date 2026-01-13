@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Info } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import * as React from "react";
 import { TokenSearch } from "@/components/shared/token-search";
 import { VSCodeTokenInput } from "@/components/shared/vscode-token-input";

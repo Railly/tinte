@@ -1,4 +1,4 @@
-import { CheckCircle, Copy, ExternalLink, Terminal, X } from "lucide-react";
+import { CheckCircle, Copy, Terminal, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";

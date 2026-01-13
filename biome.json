@@ -21,16 +21,16 @@
       "suspicious": {
         "noUnknownAtRules": "off",
         "noArrayIndexKey": "off",
-        "noExplicitAny": "off",
+        "noExplicitAny": "warn",
         "noDocumentCookie": "off",
         "useIterableCallbackReturn": "off",
-        "noImplicitAnyLet": "off"
+        "noImplicitAnyLet": "warn"
       },
       "correctness": {
         "noUnknownTypeSelector": "off",
         "noUnknownPseudoElement": "off",
         "useExhaustiveDependencies": "off",
-        "noUnusedImports": "off",
+        "noUnusedImports": "warn",
         "useParseIntRadix": "off",
         "noUnusedFunctionParameters": "off",
         "noEmptyPattern": "off"

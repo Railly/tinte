@@ -1,9 +1,7 @@
 "use client";
 
 import { Info } from "lucide-react";
-import * as React from "react";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
-import Logo from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import {

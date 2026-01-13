@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Filter,
   Grid3X3,
   Heart,
   List,

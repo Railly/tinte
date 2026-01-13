@@ -1,13 +1,11 @@
 "use client";
 
-import { MoreHorizontal, Share, Share2 } from "lucide-react";
-import { toast } from "sonner";
+import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { siteConfig } from "@/config/site";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Info, Wand2 } from "lucide-react";
+import { ChevronDown, Wand2 } from "lucide-react";
 import * as React from "react";
 import { CanonicalColorInput } from "@/components/shared/canonical-color-input";
 import { TailwindIcon } from "@/components/shared/icons/tailwind";
@@ -20,11 +20,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   generateFullNeutralRamp,
   getAllNeutralKeys,

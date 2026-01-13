@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Info } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import * as React from "react";
 import { EnhancedTokenInput } from "@/components/shared/enhanced-token-input";
 import { TokenSearch } from "@/components/shared/token-search";
@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-clear-overrides";
 import { useShadcnOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
-import { convertTinteToShadcn } from "@/lib/providers/shadcn";
 import { getShadcnPaletteWithOverrides } from "@/lib/shadcn-theme-utils";
 import { createSkeletonGroups } from "@/lib/theme-editor-utils";
 import { useThemeContext } from "@/providers/theme";

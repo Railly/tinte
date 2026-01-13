@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BrandGolang } from "@/components/shared/icons/golang";
 import { Javascript } from "@/components/shared/icons/javascript";
 import { Python } from "@/components/shared/icons/python";
