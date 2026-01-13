@@ -50,7 +50,7 @@ interface ThemeComputed {
   tinteTheme: TinteTheme;
 }
 
-type ThemeStore = ThemeState & ThemeActions & ThemeComputed;
+export type ThemeStore = ThemeState & ThemeActions & ThemeComputed;
 
 const loadFromStorage = (): { theme: ThemeData; mode: ThemeMode } => {
   if (typeof window === "undefined") {

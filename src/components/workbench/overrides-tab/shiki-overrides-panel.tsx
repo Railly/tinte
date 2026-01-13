@@ -2,7 +2,7 @@
 
 import { ChevronDown, Info } from "lucide-react";
 import * as React from "react";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { TailwindIcon } from "@/components/shared/icons";
 import InvertedLogo from "@/components/shared/inverted-logo";
 import { TokenSearch } from "@/components/shared/token-search";
 import { Button } from "@/components/ui/button";
@@ -25,175 +25,110 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-clear-overrides";
-import { useZedOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/use-clear-overrides";
+import { useShikiOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
 import { generateTailwindPalette } from "@/lib/ice-theme";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
 
-interface ZedVariable {
+interface ShikiVariable {
   key: string;
   name: string;
   description: string;
 }
 
-interface ZedVariableGroup {
+interface ShikiVariableGroup {
   label: string;
   description: string;
-  variables: ZedVariable[];
+  variables: ShikiVariable[];
 }
 
-const ZED_VARIABLE_GROUPS: ZedVariableGroup[] = [
+// Organized Shiki CSS variables into logical groups
+const SHIKI_VARIABLE_GROUPS: ShikiVariableGroup[] = [
   {
-    label: "Syntax Highlighting",
-    description: "Code syntax token colors",
+    label: "Core Colors",
+    description: "Background, foreground, and primary text colors",
     variables: [
       {
-        key: "keyword",
-        name: "Keywords",
-        description: "Language keywords (import, export, const, async, etc.)",
+        key: "--shiki-background",
+        name: "Background",
+        description: "Editor background color",
       },
       {
-        key: "function",
+        key: "--shiki-foreground",
+        name: "Foreground",
+        description: "Default text color",
+      },
+    ],
+  },
+  {
+    label: "Syntax Elements",
+    description: "Keywords, operators, and language constructs",
+    variables: [
+      {
+        key: "--shiki-token-keyword",
+        name: "Keywords",
+        description: "Language keywords (if, for, class, function, etc.)",
+      },
+      {
+        key: "--shiki-token-constant",
+        name: "Constants",
+        description: "Constants and literals (true, false, null, etc.)",
+      },
+      {
+        key: "--shiki-token-function",
         name: "Functions",
         description: "Function names and declarations",
       },
       {
-        key: "type",
-        name: "Types",
-        description: "Type annotations and definitions",
+        key: "--shiki-token-parameter",
+        name: "Parameters",
+        description: "Function parameters and arguments",
+      },
+    ],
+  },
+  {
+    label: "Strings & Literals",
+    description: "String literals, template expressions, and text content",
+    variables: [
+      {
+        key: "--shiki-token-string",
+        name: "Strings",
+        description: "String literals and quoted text",
       },
       {
-        key: "property",
-        name: "Properties",
-        description: "Object properties and attributes",
+        key: "--shiki-token-string-expression",
+        name: "String Expressions",
+        description: "Template literals and string expressions",
       },
-      { key: "string", name: "Strings", description: "String literals" },
-      { key: "number", name: "Numbers", description: "Numeric literals" },
+    ],
+  },
+  {
+    label: "Comments & Documentation",
+    description: "Comments, documentation, and annotations",
+    variables: [
       {
-        key: "boolean",
-        name: "Booleans",
-        description: "Boolean values (true, false)",
+        key: "--shiki-token-comment",
+        name: "Comments",
+        description: "Single and multi-line comments",
       },
+    ],
+  },
+  {
+    label: "Punctuation & Structure",
+    description: "Brackets, operators, and structural elements",
+    variables: [
       {
-        key: "constant",
-        name: "Constants",
-        description: "Constants and literals",
-      },
-      { key: "comment", name: "Comments", description: "Code comments" },
-      {
-        key: "comment.doc",
-        name: "Doc Comments",
-        description: "Documentation comments",
-      },
-      {
-        key: "operator",
-        name: "Operators",
-        description: "Operators and symbols",
-      },
-      {
-        key: "punctuation",
+        key: "--shiki-token-punctuation",
         name: "Punctuation",
-        description: "Brackets, commas, semicolons",
-      },
-      { key: "tag", name: "Tags", description: "JSX/HTML tags" },
-      {
-        key: "attribute",
-        name: "Attributes",
-        description: "JSX/HTML attributes",
-      },
-      { key: "variable", name: "Variables", description: "Variable names" },
-    ],
-  },
-  {
-    label: "Editor Colors",
-    description: "Editor background, foreground, and UI elements",
-    variables: [
-      {
-        key: "editor.background",
-        name: "Editor Background",
-        description: "Main editor background color",
+        description: "Brackets, commas, semicolons, and operators",
       },
       {
-        key: "editor.foreground",
-        name: "Editor Foreground",
-        description: "Default text color in editor",
-      },
-      {
-        key: "editor.gutter.background",
-        name: "Gutter Background",
-        description: "Line numbers gutter background",
-      },
-      {
-        key: "editor.line_number",
-        name: "Line Numbers",
-        description: "Line number color",
-      },
-      {
-        key: "editor.active_line_number",
-        name: "Active Line Number",
-        description: "Current line number color",
-      },
-      {
-        key: "editor.active_line.background",
-        name: "Active Line Background",
-        description: "Current line background",
-      },
-    ],
-  },
-  {
-    label: "UI Elements",
-    description: "General UI colors and surfaces",
-    variables: [
-      {
-        key: "background",
-        name: "Background",
-        description: "Main application background",
-      },
-      { key: "text", name: "Text", description: "Primary text color" },
-      {
-        key: "text.muted",
-        name: "Muted Text",
-        description: "Secondary text color",
-      },
-      { key: "border", name: "Border", description: "Border color" },
-      {
-        key: "border.variant",
-        name: "Border Variant",
-        description: "Alternative border color",
-      },
-    ],
-  },
-  {
-    label: "Panels & Chrome",
-    description: "Tab bar, status bar, and panel colors",
-    variables: [
-      {
-        key: "tab_bar.background",
-        name: "Tab Bar Background",
-        description: "Tab bar background color",
-      },
-      {
-        key: "tab.active_background",
-        name: "Active Tab",
-        description: "Active tab background",
-      },
-      {
-        key: "tab.inactive_background",
-        name: "Inactive Tab",
-        description: "Inactive tab background",
-      },
-      {
-        key: "status_bar.background",
-        name: "Status Bar",
-        description: "Status bar background color",
-      },
-      {
-        key: "panel.background",
-        name: "Panel Background",
-        description: "Side panel background",
+        key: "--shiki-token-link",
+        name: "Links",
+        description: "URLs and hyperlinks in code",
       },
     ],
   },
@@ -231,16 +166,17 @@ const COLOR_LABELS: Record<keyof TinteBlock, string> = {
   ac_3: "AC3",
 };
 
-interface ZedTokenInputProps {
-  variable: ZedVariable;
+interface ShikiTokenInputProps {
+  variable: ShikiVariable;
   value: string;
   onChange: (key: string, value: string) => void;
 }
 
-function ZedTokenInput({ variable, value, onChange }: ZedTokenInputProps) {
+function ShikiTokenInput({ variable, value, onChange }: ShikiTokenInputProps) {
   const { tinteTheme, currentMode } = useThemeContext();
   const currentColors = tinteTheme?.[currentMode];
 
+  // Ensure we always have a string value for ColorPickerInput
   const [localValue, setLocalValue] = React.useState(value || "");
 
   React.useEffect(() => {
@@ -287,6 +223,7 @@ function ZedTokenInput({ variable, value, onChange }: ZedTokenInputProps) {
           <ColorPickerInput color={localValue || ""} onChange={handleChange} />
         </div>
 
+        {/* Quick Canonical Color Picker */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -330,6 +267,7 @@ function ZedTokenInput({ variable, value, onChange }: ZedTokenInputProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
+        {/* Tailwind Palette Generator */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -377,101 +315,178 @@ function ZedTokenInput({ variable, value, onChange }: ZedTokenInputProps) {
   );
 }
 
-interface ZedOverridesPanelProps {
+interface ShikiOverridesPanelProps {
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
   searchPlaceholder?: string;
 }
 
-export function ZedOverridesPanel({
+export function ShikiOverridesPanel({
   searchQuery = "",
   onSearchChange,
-  searchPlaceholder = "Search Zed theme properties...",
-}: ZedOverridesPanelProps) {
+  searchPlaceholder = "Search CSS variables...",
+}: ShikiOverridesPanelProps) {
   const { currentMode, mounted, tinteTheme } = useThemeContext();
-  const zedOverrides = useZedOverrides();
+  const shikiOverrides = useShikiOverrides();
   const clearOverrides = useClearOverrides({
-    provider: "zed",
-    providerHook: zedOverrides,
-    providerDisplayName: "Zed",
+    provider: "shiki",
+    providerHook: shikiOverrides,
+    providerDisplayName: "Shiki",
   });
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     () => {
       const groups: Record<string, boolean> = {};
-      for (const group of ZED_VARIABLE_GROUPS) {
+      for (const group of SHIKI_VARIABLE_GROUPS) {
         groups[group.label] = true;
       }
       return groups;
     },
   );
 
+  // Initialize default values from current theme - ensure hex colors
   const getDefaultValue = React.useCallback(
     (key: string): string => {
+      // Always return fallback colors if theme not ready
       if (!mounted || !tinteTheme) {
-        return currentMode === "dark" ? "#1e1e1e" : "#ffffff";
+        // Return VS Code default colors based on mode
+        switch (key) {
+          case "--shiki-background":
+            return currentMode === "dark" ? "#1e1e1e" : "#ffffff";
+          case "--shiki-foreground":
+            return currentMode === "dark" ? "#d4d4d4" : "#24292e";
+          case "--shiki-token-comment":
+            return currentMode === "dark" ? "#6a9955" : "#6a737d";
+          case "--shiki-token-keyword":
+            return currentMode === "dark" ? "#569cd6" : "#d73a49";
+          case "--shiki-token-string":
+            return currentMode === "dark" ? "#ce9178" : "#032f62";
+          case "--shiki-token-constant":
+            return currentMode === "dark" ? "#4fc1ff" : "#005cc5";
+          case "--shiki-token-function":
+            return currentMode === "dark" ? "#dcdcaa" : "#6f42c1";
+          case "--shiki-token-parameter":
+            return currentMode === "dark" ? "#9cdcfe" : "#24292e";
+          case "--shiki-token-punctuation":
+            return currentMode === "dark" ? "#d4d4d4" : "#24292e";
+          case "--shiki-token-string-expression":
+            return currentMode === "dark" ? "#b5cea8" : "#22863a";
+          case "--shiki-token-link":
+            return currentMode === "dark" ? "#4fc1ff" : "#0366d6";
+          default:
+            return currentMode === "dark" ? "#d4d4d4" : "#24292e";
+        }
       }
 
       const currentColors = tinteTheme[currentMode];
+
       if (!currentColors) {
-        return currentMode === "dark" ? "#1e1e1e" : "#ffffff";
+        // Fallback to VS Code defaults if currentColors is undefined
+        switch (key) {
+          case "--shiki-background":
+            return currentMode === "dark" ? "#1e1e1e" : "#ffffff";
+          case "--shiki-foreground":
+            return currentMode === "dark" ? "#d4d4d4" : "#24292e";
+          case "--shiki-token-comment":
+            return currentMode === "dark" ? "#6a9955" : "#6a737d";
+          case "--shiki-token-keyword":
+            return currentMode === "dark" ? "#569cd6" : "#d73a49";
+          case "--shiki-token-string":
+            return currentMode === "dark" ? "#ce9178" : "#032f62";
+          case "--shiki-token-constant":
+            return currentMode === "dark" ? "#4fc1ff" : "#005cc5";
+          case "--shiki-token-function":
+            return currentMode === "dark" ? "#dcdcaa" : "#6f42c1";
+          case "--shiki-token-parameter":
+            return currentMode === "dark" ? "#9cdcfe" : "#24292e";
+          case "--shiki-token-punctuation":
+            return currentMode === "dark" ? "#d4d4d4" : "#24292e";
+          case "--shiki-token-string-expression":
+            return currentMode === "dark" ? "#b5cea8" : "#22863a";
+          case "--shiki-token-link":
+            return currentMode === "dark" ? "#4fc1ff" : "#0366d6";
+          default:
+            return currentMode === "dark" ? "#d4d4d4" : "#24292e";
+        }
       }
 
-      const isDark = currentMode === "dark";
+      // Helper to ensure valid color format with fallbacks
+      const ensureValidColor = (
+        color: string | undefined,
+        fallback: string,
+      ): string => {
+        if (!color || color.trim() === "") return fallback;
+        return color;
+      };
 
-      // Syntax highlighting tokens
-      if (key === "keyword") return currentColors.ac_1 || "#d73a49";
-      if (key === "function") return currentColors.sc || "#6f42c1";
-      if (key === "type") return currentColors.ac_2 || "#005cc5";
-      if (key === "property") return currentColors.tx || "#24292e";
-      if (key === "string") return currentColors.sc || "#032f62";
-      if (key === "number") return currentColors.ac_3 || "#005cc5";
-      if (key === "boolean") return currentColors.ac_3 || "#005cc5";
-      if (key === "constant") return currentColors.ac_3 || "#005cc5";
-      if (key === "comment") return currentColors.tx_3 || "#6a737d";
-      if (key === "comment.doc") return currentColors.tx_2 || "#6a737d";
-      if (key === "operator") return currentColors.tx || "#24292e";
-      if (key === "punctuation") return currentColors.tx_2 || "#24292e";
-      if (key === "tag") return currentColors.ac_2 || "#22863a";
-      if (key === "attribute") return currentColors.pr || "#6f42c1";
-      if (key === "variable") return currentColors.tx || "#24292e";
-
-      // Editor colors
-      if (key === "editor.background")
-        return currentColors.bg_2 || currentColors.bg;
-      if (key === "editor.foreground") return currentColors.tx;
-      if (key === "editor.gutter.background")
-        return currentColors.bg_2 || currentColors.bg;
-      if (key === "editor.line_number") return currentColors.tx_3;
-      if (key === "editor.active_line_number") return currentColors.tx_2;
-      if (key === "editor.active_line.background") {
-        // Use a slightly lighter/darker version of the background for active line
-        // Zed doesn't support alpha, so we blend manually
-        return isDark ? "#2a2a2a" : "#f5f5f5";
+      // Map Shiki CSS variables to theme colors with fallbacks
+      switch (key) {
+        case "--shiki-background":
+          return ensureValidColor(
+            currentColors.bg,
+            currentMode === "dark" ? "#1e1e1e" : "#ffffff",
+          );
+        case "--shiki-foreground":
+          return ensureValidColor(
+            currentColors.tx,
+            currentMode === "dark" ? "#d4d4d4" : "#24292e",
+          );
+        case "--shiki-token-comment":
+          return ensureValidColor(
+            currentColors.tx_3,
+            currentMode === "dark" ? "#6a9955" : "#6a737d",
+          );
+        case "--shiki-token-keyword":
+          return ensureValidColor(
+            currentColors.pr || currentColors.sc,
+            currentMode === "dark" ? "#569cd6" : "#d73a49",
+          );
+        case "--shiki-token-string":
+          return ensureValidColor(
+            currentColors.ac_1 || currentColors.ac_2,
+            currentMode === "dark" ? "#ce9178" : "#032f62",
+          );
+        case "--shiki-token-constant":
+          return ensureValidColor(
+            currentColors.sc || currentColors.pr,
+            currentMode === "dark" ? "#4fc1ff" : "#005cc5",
+          );
+        case "--shiki-token-function":
+          return ensureValidColor(
+            currentColors.ac_2 || currentColors.pr,
+            currentMode === "dark" ? "#dcdcaa" : "#6f42c1",
+          );
+        case "--shiki-token-parameter":
+          return ensureValidColor(
+            currentColors.tx_2,
+            currentMode === "dark" ? "#9cdcfe" : "#24292e",
+          );
+        case "--shiki-token-punctuation":
+          return ensureValidColor(
+            currentColors.tx_2,
+            currentMode === "dark" ? "#d4d4d4" : "#24292e",
+          );
+        case "--shiki-token-string-expression":
+          return ensureValidColor(
+            currentColors.ac_3 || currentColors.ac_1,
+            currentMode === "dark" ? "#b5cea8" : "#22863a",
+          );
+        case "--shiki-token-link":
+          return ensureValidColor(
+            currentColors.pr || currentColors.sc,
+            currentMode === "dark" ? "#4fc1ff" : "#0366d6",
+          );
+        default:
+          return "";
       }
-
-      // UI elements
-      if (key === "background") return currentColors.bg;
-      if (key === "text") return currentColors.tx;
-      if (key === "text.muted") return currentColors.tx_2;
-      if (key === "border") return currentColors.ui;
-      if (key === "border.variant") return currentColors.ui_2;
-
-      // Panels
-      if (key === "tab_bar.background") return currentColors.bg;
-      if (key === "tab.active_background") return currentColors.bg_2;
-      if (key === "tab.inactive_background") return currentColors.bg;
-      if (key === "status_bar.background") return currentColors.bg;
-      if (key === "panel.background") return currentColors.bg;
-
-      return currentMode === "dark" ? "#1e1e1e" : "#ffffff";
     },
     [mounted, tinteTheme, currentMode],
   );
 
+  // Filter variable groups based on search query
   const filteredGroups = React.useMemo(() => {
-    if (!searchQuery.trim()) return ZED_VARIABLE_GROUPS;
+    if (!searchQuery.trim()) return SHIKI_VARIABLE_GROUPS;
 
-    return ZED_VARIABLE_GROUPS.map((group) => {
+    return SHIKI_VARIABLE_GROUPS.map((group) => {
       const filteredVariables = group.variables.filter((variable) => {
         const query = searchQuery.toLowerCase();
         return (
@@ -496,12 +511,55 @@ export function ZedOverridesPanel({
   };
 
   const handleVariableChange = (key: string, value: string) => {
-    zedOverrides.setOverride(key, value);
+    shikiOverrides.setOverride(key, value);
+
+    // Apply CSS variable to document root for live preview
+    if (value.trim()) {
+      document.documentElement.style.setProperty(key, value);
+    } else {
+      document.documentElement.style.removeProperty(key);
+    }
   };
+
+  // Force re-render when theme changes for real-time updates from canonical tab
+  const themeHash = React.useMemo(() => {
+    if (!mounted || !tinteTheme) return "";
+    const currentColors = tinteTheme[currentMode];
+    if (!currentColors) return "";
+    // Create a hash of all theme colors to detect changes
+    return JSON.stringify(currentColors);
+  }, [mounted, tinteTheme, currentMode]);
+
+  // Note: Overrides are now managed centrally by the theme store
+  // and will be automatically synced across mode changes
+
+  // Apply CSS variables (overrides or defaults) when theme changes
+  React.useEffect(() => {
+    if (!mounted || !tinteTheme) return;
+
+    // Apply all Shiki CSS variables (with overrides taking precedence)
+    SHIKI_VARIABLE_GROUPS.forEach((group) => {
+      group.variables.forEach((variable) => {
+        const value =
+          shikiOverrides.getValue(variable.key) ||
+          getDefaultValue(variable.key);
+        if (value) {
+          document.documentElement.style.setProperty(variable.key, value);
+        }
+      });
+    });
+  }, [
+    mounted,
+    tinteTheme,
+    currentMode,
+    getDefaultValue,
+    themeHash,
+    shikiOverrides.overrides,
+  ]);
 
   const getVariableValue = (key: string): string => {
     return (
-      zedOverrides.getValue(key, getDefaultValue(key)) || getDefaultValue(key)
+      shikiOverrides.getValue(key, getDefaultValue(key)) || getDefaultValue(key)
     );
   };
 
@@ -523,16 +581,19 @@ export function ZedOverridesPanel({
         indicatorType="shadow"
       >
         <div className="space-y-4 pb-2">
+          {/* Clear Shiki Overrides Alert */}
           {clearOverrides.hasOverrides && (
             <ClearOverridesAlert
-              providerDisplayName="Zed"
+              providerDisplayName="Shiki"
               isClearing={clearOverrides.isClearing}
               onClear={clearOverrides.handleClearOverrides}
             />
           )}
           {searchQuery.trim() && filteredGroups.length === 0 && (
             <div className="p-4 text-center text-muted-foreground bg-muted/20 rounded-md">
-              <p className="text-sm">No properties found for "{searchQuery}"</p>
+              <p className="text-sm">
+                No CSS variables found for "{searchQuery}"
+              </p>
             </div>
           )}
 
@@ -563,7 +624,7 @@ export function ZedOverridesPanel({
                     {group.description}
                   </p>
                   {group.variables.map((variable) => (
-                    <ZedTokenInput
+                    <ShikiTokenInput
                       key={variable.key}
                       variable={variable}
                       value={getVariableValue(variable.key)}

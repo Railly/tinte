@@ -1,5 +1,5 @@
 import { SlackPreview } from "@/components/preview/slack/slack-preview";
-import { SlackIcon } from "@/components/shared/icons/slack";
+import { SlackIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@/types/tinte";
 import { createPolineColorMapping, getThemeName } from "./poline-base";
 import type { PreviewableProvider, ProviderOutput } from "./types";

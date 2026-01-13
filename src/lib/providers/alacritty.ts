@@ -1,4 +1,4 @@
-import { AlacrittyIcon } from "@/components/shared/icons/alacritty";
+import { AlacrittyIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@/types/tinte";
 import {
   createPolineColorMapping,

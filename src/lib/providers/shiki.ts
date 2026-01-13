@@ -1,5 +1,5 @@
 import { ShikiPreview } from "@/components/preview/shiki/shiki-preview";
-import { ShikiIcon } from "@/components/shared/icons/shiki";
+import { ShikiIcon } from "@/components/shared/icons";
 import type { ShikiCssTheme, ShikiTheme } from "@/types/shiki";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";
 import type { PreviewableProvider, ProviderOutput } from "./types";

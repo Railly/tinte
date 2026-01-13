@@ -1,22 +1,22 @@
-// Import removed to fix circular dependency
-
-import { AlacrittyIcon } from "@/components/shared/icons/alacritty";
-import { BananaIcon } from "@/components/shared/icons/banana";
-import { CursorIcon } from "@/components/shared/icons/cursor";
-import { GhosttyIcon } from "@/components/shared/icons/ghostty";
-import { GIMPIcon } from "@/components/shared/icons/gimp";
-import { JetBrainsIcon } from "@/components/shared/icons/jetbrains";
-import { KittyIcon } from "@/components/shared/icons/kitty";
-import { NeovimIcon } from "@/components/shared/icons/neovim";
-import { ObsidianIcon } from "@/components/shared/icons/obsidian";
-import { ReplitIcon } from "@/components/shared/icons/replit";
-import { ShadcnIcon } from "@/components/shared/icons/shadcn";
-import { ShikiIcon } from "@/components/shared/icons/shiki";
-import { SlackIcon } from "@/components/shared/icons/slack";
-import { VSCodeIcon } from "@/components/shared/icons/vscode";
-import { WarpIcon } from "@/components/shared/icons/warp";
-import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
-import { ZedIcon } from "@/components/shared/icons/zed";
+import {
+  AlacrittyIcon,
+  BananaIcon,
+  CursorIcon,
+  GhosttyIcon,
+  GIMPIcon,
+  JetBrainsIcon,
+  KittyIcon,
+  NeovimIcon,
+  ObsidianIcon,
+  ReplitIcon,
+  ShadcnIcon,
+  ShikiIcon,
+  SlackIcon,
+  VSCodeIcon,
+  WarpIcon,
+  WindowsTerminalIcon,
+  ZedIcon,
+} from "@/components/shared/icons";
 
 export const ALL_PROVIDERS = [
   "shadcn/ui",

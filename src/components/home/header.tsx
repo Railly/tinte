@@ -3,8 +3,7 @@
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import GithubIcon from "@/components/shared/icons/github";
-import TwitterIcon from "@/components/shared/icons/twitter";
+import { GithubIcon, TwitterIcon } from "@/components/shared/icons";
 import Logo from "@/components/shared/logo";
 import { ThemeSwitcher } from "@/components/shared/theme-switcher";
 import { UserDropdown } from "@/components/shared/user-dropdown";

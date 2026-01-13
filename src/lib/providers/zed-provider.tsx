@@ -1,5 +1,5 @@
 import { ZedPreview } from "@/components/preview/zed/zed-preview";
-import { ZedIcon } from "@/components/shared/icons/zed";
+import { ZedIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@/types/tinte";
 import type { ZedThemeFamily } from "@/types/zed";
 import type { PreviewableProvider } from "./types";

@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useClearOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-clear-overrides";
-import { useShadcnOverrides } from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/use-clear-overrides";
+import { useShadcnOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
 import { getShadcnPaletteWithOverrides } from "@/lib/shadcn-theme-utils";
 import { createSkeletonGroups } from "@/lib/theme-editor-utils";
 import { useThemeContext } from "@/providers/theme";

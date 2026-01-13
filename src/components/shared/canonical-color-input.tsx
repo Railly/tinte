@@ -1,7 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { TailwindIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import {

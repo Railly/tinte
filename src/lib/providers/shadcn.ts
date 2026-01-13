@@ -1,6 +1,6 @@
 import { formatHex, oklch } from "culori";
 import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
-import { ShadcnIcon } from "@/components/shared/icons/shadcn";
+import { ShadcnIcon } from "@/components/shared/icons";
 import {
   DEFAULT_BASE,
   DEFAULT_FONTS,

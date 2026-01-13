@@ -3,7 +3,7 @@
 import { ChevronDown, Wand2 } from "lucide-react";
 import * as React from "react";
 import { CanonicalColorInput } from "@/components/shared/canonical-color-input";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { TailwindIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,

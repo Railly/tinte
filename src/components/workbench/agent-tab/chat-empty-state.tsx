@@ -2,7 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import Logo from "@/components/shared/logo";
-import { CHAT_SUGGESTIONS } from "../constants";
+import { CHAT_SUGGESTIONS } from "./constants";
 
 interface ChatEmptyStateProps {
   onSuggestionClick: (suggestion: string) => void;

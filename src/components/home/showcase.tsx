@@ -2,8 +2,7 @@
 
 import { ArrowRight, Heart, User, Users } from "lucide-react";
 import { useState } from "react";
-import RaycastIcon from "@/components/shared/icons/raycast";
-import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import { RaycastIcon, TweakCNIcon } from "@/components/shared/icons";
 import Logo from "@/components/shared/logo";
 import { ThemeCard, ThemeCardSkeleton } from "@/components/shared/theme-card";
 import { Button } from "@/components/ui/button";

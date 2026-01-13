@@ -1,5 +1,5 @@
 import { WindowsTerminalPreview } from "@/components/preview/windows-terminal/windows-terminal-preview";
-import { WindowsTerminalIcon } from "@/components/shared/icons/windows-terminal";
+import { WindowsTerminalIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@/types/tinte";
 import {
   createPolineColorMapping,

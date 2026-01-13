@@ -2,8 +2,7 @@
 
 import { Globe, Palette } from "lucide-react";
 import { useEffect, useState } from "react";
-import { CSSIcon } from "@/components/shared/icons/css";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { CSSIcon, TailwindIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

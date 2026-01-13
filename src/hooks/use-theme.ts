@@ -3,20 +3,26 @@
 import { useMemo } from "react";
 import { useAuthStore } from "@/stores/auth";
 import { useThemeStore } from "@/stores/theme";
+import {
+  createNavigateTheme,
+  createOverrideUpdaters,
+  createSaveCurrentTheme,
+} from "./theme-utils";
 
 export function useTheme() {
-  // Use direct selectors - Zustand will handle memoization
   const themeStore = useThemeStore();
   const authStore = useAuthStore();
 
-  // Memoize combined arrays to prevent infinite re-renders
   const allThemes = useMemo(
     () => [...authStore.userThemes, ...authStore.favoriteThemes],
     [authStore.userThemes, authStore.favoriteThemes],
   );
 
+  const overrideUpdaters = createOverrideUpdaters(themeStore);
+  const navigateTheme = createNavigateTheme(themeStore, authStore);
+  const saveCurrentTheme = createSaveCurrentTheme(themeStore, authStore);
+
   return {
-    // Core state - direct references (no new objects)
     mounted: themeStore.mounted && authStore.mounted,
     mode: themeStore.mode,
     currentMode: themeStore.mode,
@@ -36,7 +42,6 @@ export function useTheme() {
     isSaving: authStore.isSaving,
     lastSaved: authStore.lastSaved,
 
-    // Memoized computed values
     allThemes,
     canSave: authStore.isAuthenticated,
     favoritesLoaded: true,
@@ -45,7 +50,6 @@ export function useTheme() {
     shikiOverride: themeStore.overrides.shiki,
     zedOverride: themeStore.overrides.zed,
 
-    // Typography and styling properties
     fonts: {
       sans:
         themeStore.currentTokens["font-sans"] ||
@@ -67,10 +71,6 @@ export function useTheme() {
       offsetY: themeStore.currentTokens["shadow-offset-y"] || "2px",
     },
 
-    // Export functionality removed to prevent infinite re-renders
-    // Use useThemeExport directly in components that need it
-
-    // Store actions - direct references (Zustand handles stability)
     initialize: themeStore.initialize,
     setMode: themeStore.setMode,
     toggleMode: themeStore.toggleMode,
@@ -88,7 +88,6 @@ export function useTheme() {
     deleteTheme: authStore.deleteTheme,
     addThemes: authStore.addThemes,
 
-    // Legacy aliases
     theme: themeStore.mode,
     setTheme: themeStore.setMode,
     handleModeChange: themeStore.setMode,
@@ -96,176 +95,31 @@ export function useTheme() {
     handleThemeSelect: themeStore.selectTheme,
     handleTokenEdit: themeStore.editToken,
 
-    // Legacy functions - these should NOT cause re-renders
     getFavoriteStatus: (themeId: string) =>
       authStore.favorites[themeId] ?? false,
     addTheme: (theme: any) => themeStore.selectTheme(theme),
-    navigateTheme: (direction: "prev" | "next" | "random") => {
-      const currentAllThemes = [
-        ...authStore.userThemes,
-        ...authStore.favoriteThemes,
-      ];
-      if (!themeStore.activeTheme || currentAllThemes.length <= 1) return;
-      const currentIndex = currentAllThemes.findIndex(
-        (t) => t.id === themeStore.activeTheme.id,
-      );
-      let nextTheme;
-      switch (direction) {
-        case "prev":
-          nextTheme =
-            currentAllThemes[
-              currentIndex <= 0 ? currentAllThemes.length - 1 : currentIndex - 1
-            ];
-          break;
-        case "next":
-          nextTheme =
-            currentAllThemes[
-              currentIndex >= currentAllThemes.length - 1 ? 0 : currentIndex + 1
-            ];
-          break;
-        case "random": {
-          const available = currentAllThemes.filter(
-            (t) => t.id !== themeStore.activeTheme.id,
-          );
-          nextTheme = available[Math.floor(Math.random() * available.length)];
-          break;
-        }
-      }
-      if (nextTheme) themeStore.selectTheme(nextTheme);
-    },
-    updateShadcnOverride: (override: any) =>
-      themeStore.updateOverride("shadcn", override),
-    updateVscodeOverride: (override: any) =>
-      themeStore.updateOverride("vscode", override),
-    updateShikiOverride: (override: any) =>
-      themeStore.updateOverride("shiki", override),
-    updateZedOverride: (override: any) =>
-      themeStore.updateOverride("zed", override),
-    saveCurrentTheme: async (
-      name?: string,
-      makePublic?: boolean,
-      shadcnOverride?: any,
-      updateThemeId?: string,
-    ) => {
-      // Create theme with current overrides from store
-      // Import denormalization function
-      const { denormalizeProviderOverride } = await import(
-        "@/lib/override-normalization"
-      );
-
-      // Convert normalized overrides back to DB format
-      const convertOverrideForDB = (override: any) => {
-        if (!override) return undefined;
-        return denormalizeProviderOverride(override);
-      };
-
-      const themeWithOverrides = {
-        ...themeStore.activeTheme,
-        rawTheme: themeStore.activeTheme?.rawTheme, // Explicitly preserve rawTheme
-        concept: themeStore.activeTheme?.concept, // Explicitly preserve concept
-        overrides: {
-          ...themeStore.activeTheme.overrides,
-          shadcn: convertOverrideForDB(
-            shadcnOverride || themeStore.overrides.shadcn,
-          ),
-          vscode: convertOverrideForDB(themeStore.overrides.vscode),
-          shiki: convertOverrideForDB(themeStore.overrides.shiki),
-          zed: convertOverrideForDB(themeStore.overrides.zed),
-        },
-      };
-
-      return authStore.saveTheme(
-        themeWithOverrides,
-        name,
-        makePublic,
-        updateThemeId,
-      );
-    },
+    navigateTheme,
+    saveCurrentTheme,
+    ...overrideUpdaters,
   };
 }
 
-// Separate stable functions to prevent re-creation
 export const useThemeActions = () => {
   const themeStore = useThemeStore();
   const authStore = useAuthStore();
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    const overrideUpdaters = createOverrideUpdaters(themeStore);
+    const navigateTheme = createNavigateTheme(themeStore, authStore);
+    const saveCurrentTheme = createSaveCurrentTheme(themeStore, authStore);
+
+    return {
       getFavoriteStatus: (themeId: string) =>
         authStore.favorites[themeId] ?? false,
-      updateShadcnOverride: (override: any) =>
-        themeStore.updateOverride("shadcn", override),
-      updateVscodeOverride: (override: any) =>
-        themeStore.updateOverride("vscode", override),
-      updateShikiOverride: (override: any) =>
-        themeStore.updateOverride("shiki", override),
-      updateZedOverride: (override: any) =>
-        themeStore.updateOverride("zed", override),
-      saveCurrentTheme: async (
-        name?: string,
-        makePublic?: boolean,
-        shadcnOverride?: any,
-      ) => {
-        // Import denormalization function
-        const { denormalizeProviderOverride } = await import(
-          "@/lib/override-normalization"
-        );
-
-        // Convert normalized overrides back to DB format
-        const convertOverrideForDB = (override: any) => {
-          if (!override) return undefined;
-          return denormalizeProviderOverride(override);
-        };
-
-        const themeWithOverrides = {
-          ...themeStore.activeTheme,
-          overrides: {
-            ...themeStore.activeTheme.overrides,
-            shadcn: convertOverrideForDB(
-              shadcnOverride || themeStore.overrides.shadcn,
-            ),
-            vscode: convertOverrideForDB(themeStore.overrides.vscode),
-            shiki: convertOverrideForDB(themeStore.overrides.shiki),
-            zed: convertOverrideForDB(themeStore.overrides.zed),
-          },
-        };
-        return authStore.saveTheme(themeWithOverrides, name, makePublic);
-      },
       addTheme: (theme: any) => themeStore.selectTheme(theme),
-      navigateTheme: (direction: "prev" | "next" | "random") => {
-        const allThemes = [
-          ...authStore.userThemes,
-          ...authStore.favoriteThemes,
-        ];
-        if (!themeStore.activeTheme || allThemes.length <= 1) return;
-        const currentIndex = allThemes.findIndex(
-          (t) => t.id === themeStore.activeTheme.id,
-        );
-        let nextTheme;
-        switch (direction) {
-          case "prev":
-            nextTheme =
-              allThemes[
-                currentIndex <= 0 ? allThemes.length - 1 : currentIndex - 1
-              ];
-            break;
-          case "next":
-            nextTheme =
-              allThemes[
-                currentIndex >= allThemes.length - 1 ? 0 : currentIndex + 1
-              ];
-            break;
-          case "random": {
-            const available = allThemes.filter(
-              (t) => t.id !== themeStore.activeTheme.id,
-            );
-            nextTheme = available[Math.floor(Math.random() * available.length)];
-            break;
-          }
-        }
-        if (nextTheme) themeStore.selectTheme(nextTheme);
-      },
-    }),
-    [authStore, themeStore],
-  );
+      navigateTheme,
+      saveCurrentTheme,
+      ...overrideUpdaters,
+    };
+  }, [authStore, themeStore]);
 };

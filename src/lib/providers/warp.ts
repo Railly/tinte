@@ -1,5 +1,5 @@
 import { WarpPreview } from "@/components/preview/warp/warp-preview";
-import { WarpIcon } from "@/components/shared/icons/warp";
+import { WarpIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@/types/tinte";
 import {
   createPolineColorMapping,

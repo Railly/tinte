@@ -5,8 +5,7 @@ import { motion } from "motion/react";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { CSSIcon } from "@/components/shared/icons/css";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { CSSIcon, TailwindIcon } from "@/components/shared/icons";
 import { ThemeSelector } from "@/components/shared/theme-selector";
 import {
   Dialog,

@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import { motion, useAnimationControls } from "motion/react";
 import { useEffect, useMemo, useRef } from "react";
-import { CSSIcon } from "@/components/shared/icons/css";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { CSSIcon, TailwindIcon } from "@/components/shared/icons";
 import { generatePreview, type PastedItem } from "@/lib/input-detection";
 import { ColorBadge } from "./color-badge";
 

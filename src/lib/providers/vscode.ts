@@ -1,5 +1,5 @@
 import { VSCodePreview } from "@/components/preview/vscode/vscode-preview";
-import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import { VSCodeIcon } from "@/components/shared/icons";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";
 import { shadcnToTinte } from "../shadcn-to-tinte";
 import type { PreviewableProvider, ProviderOutput } from "./types";

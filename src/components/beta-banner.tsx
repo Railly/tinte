@@ -4,7 +4,7 @@ import { AlertTriangle, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import { VSCodeIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 
 const BETA_BANNER_KEY = "tinte-beta-banner-dismissed";

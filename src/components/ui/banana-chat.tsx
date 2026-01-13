@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { BananaIcon } from "@/components/shared/icons/banana";
+import { BananaIcon } from "@/components/shared/icons";
 
 // Wrapper to make BananaIcon compatible with AIChat's expected interface
 const BananaIconWrapper = ({ size }: { size: number }) => (

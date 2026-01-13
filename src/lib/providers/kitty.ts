@@ -1,5 +1,5 @@
 import { KittyPreview } from "@/components/preview/kitty/kitty-preview";
-import { KittyIcon } from "@/components/shared/icons/kitty";
+import { KittyIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@/types/tinte";
 import {
   createPolineColorMapping,

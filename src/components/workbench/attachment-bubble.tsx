@@ -1,6 +1,5 @@
 import { FileCode, Globe, Image, Palette } from "lucide-react";
-import { CSSIcon } from "@/components/shared/icons/css";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { CSSIcon, TailwindIcon } from "@/components/shared/icons";
 import type { Attachment } from "@/utils/seed-mapper";
 
 const kindIcons = {

@@ -1,5 +1,5 @@
 import { GimpPreview } from "@/components/preview/gimp/gimp-preview";
-import { GIMPIcon } from "@/components/shared/icons/gimp";
+import { GIMPIcon } from "@/components/shared/icons";
 import { makePolineFromTinte, polineRampHex } from "@/lib/ice-theme";
 import type { TinteTheme } from "@/types/tinte";
 import {

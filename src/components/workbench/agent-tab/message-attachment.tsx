@@ -1,8 +1,7 @@
 "use client";
 
 import { FileCode, Globe, Image as ImageIcon, Palette } from "lucide-react";
-import { CSSIcon } from "@/components/shared/icons/css";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { CSSIcon, TailwindIcon } from "@/components/shared/icons";
 
 interface MessageAttachmentProps {
   file: any;

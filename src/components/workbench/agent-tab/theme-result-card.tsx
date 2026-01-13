@@ -4,11 +4,11 @@ import { Palette, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
-import { DEFAULT_OPEN_SECTIONS } from "../constants";
-import { ColorsSection } from "./theme-sections/colors-section";
-import { RadiusSection } from "./theme-sections/radius-section";
-import { ShadowsSection } from "./theme-sections/shadows-section";
-import { TypographySection } from "./theme-sections/typography-section";
+import { DEFAULT_OPEN_SECTIONS } from "./constants";
+import { ColorsSection } from "./colors-section";
+import { RadiusSection } from "./radius-section";
+import { ShadowsSection } from "./shadows-section";
+import { TypographySection } from "./typography-section";
 
 interface ThemeResultCardProps {
   themeOutput: any;

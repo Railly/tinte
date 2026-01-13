@@ -1,15 +1,17 @@
-import { ChatGPTIcon } from "@/components/shared/icons/chatgpt";
-import { ClerkIcon } from "@/components/shared/icons/clerk";
-import { CrafterStationIcon } from "@/components/shared/icons/crafter-station";
-import { ElevenLabsIcon } from "@/components/shared/icons/elevenlabs";
-import { KeboIcon } from "@/components/shared/icons/kebo";
-import { LinearIcon } from "@/components/shared/icons/linear";
-import { PerplexityIcon } from "@/components/shared/icons/perplexity";
-import { SpotifyIcon } from "@/components/shared/icons/spotify";
-import { SupabaseIcon } from "@/components/shared/icons/supabase";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
-import { TriggerIcon } from "@/components/shared/icons/trigger";
-import { VercelIcon } from "@/components/shared/icons/vercel";
+import {
+  ChatGPTIcon,
+  ClerkIcon,
+  CrafterStationIcon,
+  ElevenLabsIcon,
+  KeboIcon,
+  LinearIcon,
+  PerplexityIcon,
+  SpotifyIcon,
+  SupabaseIcon,
+  TailwindIcon,
+  TriggerIcon,
+  VercelIcon,
+} from "@/components/shared/icons";
 
 export const VENDOR_ICONS: Record<
   string,

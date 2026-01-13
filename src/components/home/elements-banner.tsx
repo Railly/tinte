@@ -1,4 +1,4 @@
-import { ElementsIcon } from "@/components/shared/icons/elements";
+import { ElementsIcon } from "@/components/shared/icons";
 
 export function ElementsBanner() {
   return (

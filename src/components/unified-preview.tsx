@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import {
   useVSCodeOverrides,
   useZedOverrides,
-} from "@/components/workbench/tabs/overrides-tab/hooks/use-provider-overrides";
+} from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
 import { convertTheme, getPreviewableProvider } from "@/lib/providers";
 import { convertTinteToVSCode } from "@/lib/providers/vscode";
 import { tinteToZed } from "@/lib/providers/zed";

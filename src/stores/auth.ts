@@ -31,7 +31,7 @@ interface AuthActions {
   addThemes: (themes: ThemeData[]) => void;
 }
 
-type AuthStore = AuthState & AuthActions;
+export type AuthStore = AuthState & AuthActions;
 
 const sanitizeFavorites = (input: any): Record<string, boolean> => {
   try {

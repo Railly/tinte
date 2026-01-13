@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BrandGolang } from "@/components/shared/icons/golang";
-import { Javascript } from "@/components/shared/icons/javascript";
-import { Python } from "@/components/shared/icons/python";
-import { Typescript } from "@/components/shared/icons/typescript";
+import {
+  GolangIcon,
+  JavascriptIcon,
+  PythonIcon,
+  TypescriptIcon,
+} from "@/components/shared/icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -857,14 +859,14 @@ export function ShikiPreview({ theme, className }: ShikiPreviewProps) {
   const getLanguageIcon = (language: string, className: string) => {
     switch (language) {
       case "javascript":
-        return <Javascript className={className} />;
+        return <JavascriptIcon className={className} />;
       case "typescript":
       case "tsx":
-        return <Typescript className={className} />;
+        return <TypescriptIcon className={className} />;
       case "python":
-        return <Python className={className} />;
+        return <PythonIcon className={className} />;
       case "go":
-        return <BrandGolang className={className} />;
+        return <GolangIcon className={className} />;
       default:
         return (
           <svg className={className} viewBox="0 0 16 16" fill="currentColor">

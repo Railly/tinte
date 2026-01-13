@@ -2,10 +2,10 @@
 
 import { useQueryState } from "nuqs";
 import * as React from "react";
-import { ShadcnOverridesPanel } from "./components/shadcn-overrides-panel";
-import { ShikiOverridesPanel } from "./components/shiki-overrides-panel";
-import { VSCodeOverridesPanel } from "./components/vscode-overrides-panel";
-import { ZedOverridesPanel } from "./components/zed-overrides-panel";
+import { ShadcnOverridesPanel } from "./shadcn-overrides-panel";
+import { ShikiOverridesPanel } from "./shiki-overrides-panel";
+import { VSCodeOverridesPanel } from "./vscode-overrides-panel";
+import { ZedOverridesPanel } from "./zed-overrides-panel";
 
 export function OverridesTab() {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });

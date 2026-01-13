@@ -1,15 +1,17 @@
 "use client";
 
 import Editor from "@monaco-editor/react";
-import { Folder } from "@/components/shared/icons/folder";
-import { FolderOpened } from "@/components/shared/icons/folder-opened";
-import { BrandGolang } from "@/components/shared/icons/golang";
-import { Javascript } from "@/components/shared/icons/javascript";
-import { Json } from "@/components/shared/icons/json";
-import { Markdown } from "@/components/shared/icons/markdown";
-import { Python } from "@/components/shared/icons/python";
-import { Typescript } from "@/components/shared/icons/typescript";
-import { VSCodeIcon } from "@/components/shared/icons/vscode";
+import {
+  FolderIcon,
+  FolderOpenedIcon,
+  GolangIcon,
+  JavascriptIcon,
+  JsonIcon,
+  MarkdownIcon,
+  PythonIcon,
+  TypescriptIcon,
+  VSCodeIcon,
+} from "@/components/shared/icons";
 import {
   Select,
   SelectContent,
@@ -66,13 +68,13 @@ export function MonacoLikeEditor({
     const iconStyle = { color };
     switch (language) {
       case "javascript":
-        return <Javascript className={className} style={iconStyle} />;
+        return <JavascriptIcon className={className} style={iconStyle} />;
       case "typescript":
-        return <Typescript className={className} style={iconStyle} />;
+        return <TypescriptIcon className={className} style={iconStyle} />;
       case "python":
-        return <Python className={className} style={iconStyle} />;
+        return <PythonIcon className={className} style={iconStyle} />;
       case "go":
-        return <BrandGolang className={className} style={iconStyle} />;
+        return <GolangIcon className={className} style={iconStyle} />;
       default:
         return (
           <svg
@@ -92,18 +94,18 @@ export function MonacoLikeEditor({
     const iconStyle = { color };
     switch (extension) {
       case "js":
-        return <Javascript className={className} style={iconStyle} />;
+        return <JavascriptIcon className={className} style={iconStyle} />;
       case "ts":
       case "tsx":
-        return <Typescript className={className} style={iconStyle} />;
+        return <TypescriptIcon className={className} style={iconStyle} />;
       case "py":
-        return <Python className={className} style={iconStyle} />;
+        return <PythonIcon className={className} style={iconStyle} />;
       case "go":
-        return <BrandGolang className={className} style={iconStyle} />;
+        return <GolangIcon className={className} style={iconStyle} />;
       case "json":
-        return <Json className={className} style={iconStyle} />;
+        return <JsonIcon className={className} style={iconStyle} />;
       case "md":
-        return <Markdown className={className} style={iconStyle} />;
+        return <MarkdownIcon className={className} style={iconStyle} />;
       default:
         return (
           <svg
@@ -434,7 +436,7 @@ export function MonacoLikeEditor({
                       colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <FolderOpened
+                  <FolderOpenedIcon
                     className="w-4 h-4"
                     style={{ color: colors["list.foreground"] || "#cccccc" }}
                   />
@@ -462,7 +464,7 @@ export function MonacoLikeEditor({
                       colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <Folder
+                  <FolderIcon
                     className="w-4 h-4"
                     style={{ color: colors["list.foreground"] || "#cccccc" }}
                   />
@@ -509,7 +511,7 @@ export function MonacoLikeEditor({
                       colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <Folder
+                  <FolderIcon
                     className="w-4 h-4"
                     style={{ color: colors["list.foreground"] || "#cccccc" }}
                   />
@@ -536,7 +538,7 @@ export function MonacoLikeEditor({
                       colors["list.foreground"] || "#cccccc";
                   }}
                 >
-                  <Json
+                  <JsonIcon
                     className="w-4 h-4"
                     style={{ color: colors["list.foreground"] || "#cccccc" }}
                   />
@@ -556,7 +558,7 @@ export function MonacoLikeEditor({
                       "#cccccc",
                   }}
                 >
-                  <Markdown
+                  <MarkdownIcon
                     className="w-4 h-4"
                     style={{ color: colors["list.foreground"] || "#cccccc" }}
                   />
@@ -672,7 +674,7 @@ export function MonacoLikeEditor({
                       "rgba(150, 150, 150, 0.7)";
                   }}
                 >
-                  <Json
+                  <JsonIcon
                     className="w-4 h-4"
                     style={{ color: colors["list.foreground"] || "#cccccc" }}
                   />

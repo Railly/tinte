@@ -5,8 +5,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { PasteDialog } from "@/components/home/prompt-input/paste-dialog";
 import { PastedItemsList } from "@/components/home/prompt-input/pasted-items-list";
-import { CSSIcon } from "@/components/shared/icons/css";
-import { TailwindIcon } from "@/components/shared/icons/tailwind";
+import { CSSIcon, TailwindIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

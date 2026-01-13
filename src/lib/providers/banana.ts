@@ -1,5 +1,5 @@
 import { BananaPreview } from "@/components/preview/banana/banana-preview";
-import { BananaIcon } from "@/components/shared/icons/banana";
+import { BananaIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@/types/tinte";
 import { createPolineColorMapping, getThemeName } from "./poline-base";
 import type { PreviewableProvider, ProviderOutput } from "./types";

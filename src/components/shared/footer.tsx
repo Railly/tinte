@@ -1,8 +1,6 @@
 "use client";
 
-import DiscordIcon from "@/components/shared/icons/discord";
-import GithubIcon from "@/components/shared/icons/github";
-import TwitterIcon from "@/components/shared/icons/twitter";
+import { DiscordIcon, GithubIcon, TwitterIcon } from "@/components/shared/icons";
 import { siteConfig } from "@/config/site";
 
 export function Footer() {

@@ -13,8 +13,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
-import RaycastIcon from "@/components/shared/icons/raycast";
-import TweakCNIcon from "@/components/shared/icons/tweakcn";
+import { RaycastIcon, TweakCNIcon } from "@/components/shared/icons";
 import Logo from "@/components/shared/logo";
 import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

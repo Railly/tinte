@@ -6,7 +6,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { FontPreview } from "../font-preview";
+import { FontPreview } from "./font-preview";
 
 interface TypographySectionProps {
   themeOutput: any;

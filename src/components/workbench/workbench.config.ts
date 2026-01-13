@@ -1,7 +1,7 @@
 import type { WorkbenchTab } from "@/stores/workbench-store";
-import { AgentTab } from "./tabs/agent-tab";
-import { CanonicalTab } from "./tabs/canonical-tab";
-import { OverridesTab } from "./tabs/overrides-tab/overrides-tab";
+import { AgentTab } from "./agent-tab";
+import { CanonicalTab } from "./canonical-tab";
+import { OverridesTab } from "./overrides-tab/overrides-tab";
 
 // Simple, extensible tab configuration
 export const WORKBENCH_TABS = [
