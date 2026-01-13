@@ -14,6 +14,40 @@ import type { PreviewableProvider, ProviderOutput } from "./types";
 
 type ThemeMode = "light" | "dark";
 
+interface ExtendedThemeInput {
+  fonts?: {
+    sans?: string;
+    serif?: string;
+    mono?: string;
+  };
+  radius?:
+    | string
+    | {
+        sm?: string;
+        md?: string;
+        lg?: string;
+        xl?: string;
+      };
+  shadows?: {
+    offsetX?: string;
+    offsetY?: string;
+    blur?: string;
+    spread?: string;
+    opacity?: string;
+    color?: string;
+  };
+}
+
+interface ColorRamps {
+  neutral: string[];
+  primary: string[];
+  secondary: string[];
+  accent: string[];
+  destructive: string[];
+}
+
+type FullShadcnBlock = ShadcnBlock & Record<string, string>;
+
 const ANCHORS = {
   light: { primary: 600, border: 200, muted: 100, mutedFg: 600, accent: 300 },
   dark: { primary: 400, border: 800, muted: 900, mutedFg: 300, accent: 700 },
@@ -24,13 +58,13 @@ const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const bestTextFor = getBestTextColor;
 
 const tweakL = (hex: string, dL: number) => {
-  const c = oklch(hex) as any;
+  const c = oklch(hex);
   if (!c) return hex;
   return formatHex({
     mode: "oklch" as const,
     l: clamp01(c.l + dL),
     c: Math.max(0, c.c),
-    h: c.h,
+    h: c.h ?? 0,
   });
 };
 
@@ -63,122 +97,138 @@ const surface = (bg: string, mode: ThemeMode, delta = 0.02) => {
   return tweakL(bg, mode === "light" ? +delta : -delta);
 };
 
-function mapBlock(
+function buildColorRamps(block: TinteBlock): ColorRamps {
+  return {
+    neutral: buildNeutralRamp(block),
+    primary: buildRamp(block.pr),
+    secondary: buildRamp(block.sc),
+    accent: buildRamp(block.ac_1 || block.ac_2 || block.pr),
+    destructive: buildRamp(block.ac_3 || "#ef4444"),
+  };
+}
+
+function generateCoreColors(
   block: TinteBlock,
   mode: ThemeMode,
-  extendedTheme?: any,
-): ShadcnBlock {
+  ramps: ColorRamps,
+): Record<string, string> {
   const bg = block.bg || (mode === "light" ? "#ffffff" : "#0b0b0f");
   const fg = block.tx || bestTextFor(bg);
-
-  const neutralRamp = buildNeutralRamp(block);
-  const primaryRamp = buildRamp(block.pr);
-  const secondaryRamp = buildRamp(block.sc);
-  const accentRamp = buildRamp(block.ac_1 || block.ac_2 || block.pr);
-
   const A = ANCHORS[mode];
-  const primary = pick(primaryRamp, A.primary);
-  const secondary = pick(secondaryRamp, mode === "light" ? 500 : 400);
-  const accent = pick(accentRamp, A.accent);
-  const muted = pick(neutralRamp, A.muted);
-  const border = pick(neutralRamp, A.border);
 
-  const ensureFg = (on: string) => bestTextFor(on);
-  const ring = tweakL(primary, mode === "light" ? +0.1 : -0.1);
+  const primary = pick(ramps.primary, A.primary);
+  const secondary = pick(ramps.secondary, mode === "light" ? 500 : 400);
+  const accent = pick(ramps.accent, A.accent);
+  const muted = pick(ramps.neutral, A.muted);
+  const border = pick(ramps.neutral, A.border);
+  const destructive = pick(ramps.destructive, mode === "light" ? 500 : 400);
+
   const card = surface(bg, mode, 0.03);
   const popover = surface(bg, mode, 0.03);
-
-  const destructiveSeed = block.ac_3 || "#ef4444";
-  const destructiveRamp = buildRamp(destructiveSeed);
-  const destructive = pick(destructiveRamp, mode === "light" ? 500 : 400);
-
-  const chart1 = pick(primaryRamp, 500);
-  const chart2 = pick(accentRamp, 500);
-  const chart3 = pick(primaryRamp, 300);
-  const chart4 = pick(accentRamp, 700);
-  const chart5 = pick(primaryRamp, 700);
-
+  const ring = tweakL(primary, mode === "light" ? +0.1 : -0.1);
   const sidebar = bg;
   const sidebarAccent = surface(bg, mode, 0.04);
 
-  // Build the base result
-  const result: any = {
+  return {
     background: bg,
     foreground: fg,
     card,
-    "card-foreground": ensureFg(card),
+    "card-foreground": bestTextFor(card),
     popover,
-    "popover-foreground": ensureFg(popover),
+    "popover-foreground": bestTextFor(popover),
     primary,
-    "primary-foreground": ensureFg(primary),
+    "primary-foreground": bestTextFor(primary),
     secondary,
-    "secondary-foreground": ensureFg(secondary),
+    "secondary-foreground": bestTextFor(secondary),
     muted,
-    "muted-foreground": pick(neutralRamp, A.mutedFg),
+    "muted-foreground": pick(ramps.neutral, A.mutedFg),
     accent,
-    "accent-foreground": ensureFg(accent),
+    "accent-foreground": bestTextFor(accent),
     destructive,
-    "destructive-foreground": ensureFg(destructive),
+    "destructive-foreground": bestTextFor(destructive),
     border,
     input: tweakL(border, mode === "light" ? -0.1 : +0.1),
     ring,
-    "chart-1": chart1,
-    "chart-2": chart2,
-    "chart-3": chart3,
-    "chart-4": chart4,
-    "chart-5": chart5,
     sidebar,
-    "sidebar-foreground": ensureFg(sidebar),
+    "sidebar-foreground": bestTextFor(sidebar),
     "sidebar-primary": primary,
-    "sidebar-primary-foreground": ensureFg(primary),
+    "sidebar-primary-foreground": bestTextFor(primary),
     "sidebar-accent": sidebarAccent,
-    "sidebar-accent-foreground": ensureFg(sidebarAccent),
+    "sidebar-accent-foreground": bestTextFor(sidebarAccent),
     "sidebar-border": border,
     "sidebar-ring": ring,
-    ...DEFAULT_BASE,
   };
+}
 
-  // Add fonts if available
+function generateChartColors(ramps: ColorRamps): Record<string, string> {
+  return {
+    "chart-1": pick(ramps.primary, 500),
+    "chart-2": pick(ramps.accent, 500),
+    "chart-3": pick(ramps.primary, 300),
+    "chart-4": pick(ramps.accent, 700),
+    "chart-5": pick(ramps.primary, 700),
+  };
+}
+
+function applyFonts(
+  result: Record<string, string>,
+  extendedTheme?: ExtendedThemeInput,
+): void {
   if (extendedTheme?.fonts) {
-    result["font-sans"] =
-      `"${extendedTheme.fonts.sans}", ${DEFAULT_FONTS["font-sans"]}`;
-    result["font-serif"] =
-      `"${extendedTheme.fonts.serif}", ${DEFAULT_FONTS["font-serif"]}`;
-    result["font-mono"] =
-      `"${extendedTheme.fonts.mono}", ${DEFAULT_FONTS["font-mono"]}`;
+    result["font-sans"] = extendedTheme.fonts.sans
+      ? `"${extendedTheme.fonts.sans}", ${DEFAULT_FONTS["font-sans"]}`
+      : DEFAULT_FONTS["font-sans"];
+    result["font-serif"] = extendedTheme.fonts.serif
+      ? `"${extendedTheme.fonts.serif}", ${DEFAULT_FONTS["font-serif"]}`
+      : DEFAULT_FONTS["font-serif"];
+    result["font-mono"] = extendedTheme.fonts.mono
+      ? `"${extendedTheme.fonts.mono}", ${DEFAULT_FONTS["font-mono"]}`
+      : DEFAULT_FONTS["font-mono"];
   } else {
     Object.assign(result, DEFAULT_FONTS);
   }
+}
 
-  if (extendedTheme?.radius) {
-    if (typeof extendedTheme.radius === "object") {
-      result["radius-sm"] = extendedTheme.radius.sm;
-      result["radius-md"] = extendedTheme.radius.md;
-      result["radius-lg"] = extendedTheme.radius.lg;
-      result["radius-xl"] = extendedTheme.radius.xl;
-      result.radius = extendedTheme.radius.md || "0.5rem";
-    } else {
-      const baseRadius = extendedTheme.radius;
-      const numMatch = baseRadius.match(/^([\d.]+)(.*)$/);
-      if (numMatch) {
-        const num = parseFloat(numMatch[1]);
-        const unit = numMatch[2] || "rem";
-        result["radius-sm"] = `${(num * 0.75).toFixed(3)}${unit}`;
-        result["radius-md"] = baseRadius;
-        result["radius-lg"] = `${(num * 1.5).toFixed(3)}${unit}`;
-        result["radius-xl"] = `${(num * 2).toFixed(3)}${unit}`;
-      }
-      result.radius = baseRadius;
+function applyRadius(
+  result: Record<string, string>,
+  extendedTheme?: ExtendedThemeInput,
+): void {
+  if (!extendedTheme?.radius) return;
+
+  if (typeof extendedTheme.radius === "object") {
+    const r = extendedTheme.radius;
+    if (r.sm) result["radius-sm"] = r.sm;
+    if (r.md) result["radius-md"] = r.md;
+    if (r.lg) result["radius-lg"] = r.lg;
+    if (r.xl) result["radius-xl"] = r.xl;
+    result.radius = r.md || "0.5rem";
+  } else {
+    const baseRadius = extendedTheme.radius;
+    const numMatch = baseRadius.match(/^([\d.]+)(.*)$/);
+    if (numMatch) {
+      const num = Number.parseFloat(numMatch[1]);
+      const unit = numMatch[2] || "rem";
+      result["radius-sm"] = `${(num * 0.75).toFixed(3)}${unit}`;
+      result["radius-md"] = baseRadius;
+      result["radius-lg"] = `${(num * 1.5).toFixed(3)}${unit}`;
+      result["radius-xl"] = `${(num * 2).toFixed(3)}${unit}`;
     }
+    result.radius = baseRadius;
   }
+}
 
+function applyShadows(
+  result: Record<string, string>,
+  extendedTheme?: ExtendedThemeInput,
+): void {
   if (extendedTheme?.shadows) {
-    result["shadow-x"] = extendedTheme.shadows.offsetX;
-    result["shadow-y"] = extendedTheme.shadows.offsetY;
-    result["shadow-blur"] = extendedTheme.shadows.blur;
-    result["shadow-spread"] = extendedTheme.shadows.spread;
-    result["shadow-opacity"] = extendedTheme.shadows.opacity;
-    result["shadow-color"] = extendedTheme.shadows.color;
+    const s = extendedTheme.shadows;
+    result["shadow-x"] = s.offsetX || "0px";
+    result["shadow-y"] = s.offsetY || "2px";
+    result["shadow-blur"] = s.blur || "4px";
+    result["shadow-spread"] = s.spread || "0px";
+    result["shadow-opacity"] = s.opacity || "0.1";
+    result["shadow-color"] = s.color || "hsl(0 0% 0%)";
   } else {
     result["shadow-x"] = "0px";
     result["shadow-y"] = "2px";
@@ -187,19 +237,48 @@ function mapBlock(
     result["shadow-opacity"] = "0.1";
     result["shadow-color"] = "hsl(0 0% 0%)";
   }
+}
+
+function mapBlock(
+  block: TinteBlock,
+  mode: ThemeMode,
+  extendedTheme?: ExtendedThemeInput,
+): FullShadcnBlock {
+  const ramps = buildColorRamps(block);
+
+  const result: Record<string, string> = {
+    ...generateCoreColors(block, mode, ramps),
+    ...generateChartColors(ramps),
+    ...DEFAULT_BASE,
+  };
+
+  applyFonts(result, extendedTheme);
+  applyRadius(result, extendedTheme);
+  applyShadows(result, extendedTheme);
 
   result["tracking-normal"] = "0em";
   result.spacing = "0.25rem";
 
-  return result;
+  return result as FullShadcnBlock;
 }
 
-export function convertTinteToShadcn(tinte: TinteTheme | any): ShadcnTheme {
-  // Check if we have extended theme data (fonts, radius, shadows)
-  const extendedTheme =
-    (tinte as any).fonts || (tinte as any).radius || (tinte as any).shadows
-      ? (tinte as any)
-      : null;
+type TinteThemeWithExtras = TinteTheme & Partial<ExtendedThemeInput>;
+
+function extractExtendedTheme(
+  tinte: TinteThemeWithExtras,
+): ExtendedThemeInput | undefined {
+  if (tinte.fonts || tinte.radius || tinte.shadows) {
+    return {
+      fonts: tinte.fonts,
+      radius: tinte.radius,
+      shadows: tinte.shadows,
+    };
+  }
+  return undefined;
+}
+
+export function convertTinteToShadcn(tinte: TinteThemeWithExtras): ShadcnTheme {
+  const extendedTheme = extractExtendedTheme(tinte);
 
   const lightBlock = mapBlock(tinte.light, "light", extendedTheme);
   const darkBlock = mapBlock(tinte.dark, "dark", extendedTheme);
@@ -211,13 +290,9 @@ export function convertTinteToShadcn(tinte: TinteTheme | any): ShadcnTheme {
 }
 
 export function convertTinteToShadcnWithShadows(
-  tinte: TinteTheme | any,
+  tinte: TinteThemeWithExtras,
 ): ShadcnTheme {
-  // Check if we have extended theme data (fonts, radius, shadows)
-  const extendedTheme =
-    (tinte as any).fonts || (tinte as any).radius || (tinte as any).shadows
-      ? (tinte as any)
-      : null;
+  const extendedTheme = extractExtendedTheme(tinte);
 
   const lightBlock = mapBlock(tinte.light, "light", extendedTheme);
   const darkBlock = mapBlock(tinte.dark, "dark", extendedTheme);
