@@ -1,13 +1,13 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
+import { ThemeColorPreview } from "@/components/shared/theme";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { extractThemeColors } from "@/lib/theme-utils";
+import { extractThemeColors } from "@/lib/theme/utils";
 
 interface ColorsSectionProps {
   themeOutput: any;

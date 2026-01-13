@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 import type { TinteTheme } from "@/types/tinte";
 
 interface HistoryEntry {

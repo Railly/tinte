@@ -2,8 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
-import { EnhancedTokenInput } from "@/components/shared/enhanced-token-input";
-import { TokenSearch } from "@/components/shared/token-search";
+import { EnhancedTokenInput, TokenSearch } from "@/components/shared/inputs";
 import {
   Collapsible,
   CollapsibleContent,
@@ -13,8 +12,8 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/use-clear-overrides";
 import { useShadcnOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { getShadcnPaletteWithOverrides } from "@/lib/shadcn-theme-utils";
-import { createSkeletonGroups } from "@/lib/theme-editor-utils";
+import { getShadcnPaletteWithOverrides } from "@/lib/provider-utils";
+import { createSkeletonGroups } from "@/lib/theme";
 import { useThemeContext } from "@/providers/theme";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";

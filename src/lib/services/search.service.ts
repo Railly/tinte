@@ -2,7 +2,7 @@ import { Search } from "@upstash/search";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { theme, user } from "@/db/schema";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 
 class SearchService {
   private client: Search;

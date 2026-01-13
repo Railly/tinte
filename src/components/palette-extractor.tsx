@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ThemeSwitcher } from "@/components/shared/theme-switcher";
+import { ThemeSwitcher } from "@/components/shared/theme";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import {
   generateTailwindPalette,
   type PaletteColor,
-} from "@/lib/palette-generator";
+} from "@/lib/colors";
 
 export function PaletteExtractor() {
   const [baseColor, setBaseColor] = useState("#3b82f6");

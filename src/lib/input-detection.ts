@@ -1,4 +1,4 @@
-import { generateTailwindPalette } from "./palette-generator";
+import { generateTailwindPalette } from "./colors";
 
 export type Kind =
   | "url"

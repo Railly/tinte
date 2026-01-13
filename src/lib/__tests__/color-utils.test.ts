@@ -5,7 +5,7 @@ import {
   getContrastRatio,
   getLuminanceFromHex,
   getSRGBLuminance,
-} from "../color-utils";
+} from "../colors";
 
 describe("getSRGBLuminance", () => {
   it("returns 0 for black", () => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
-import Logo from "@/components/shared/logo";
+import { Logo } from "@/components/shared/layout";
 import { CHAT_SUGGESTIONS } from "./constants";
 
 interface ChatEmptyStateProps {

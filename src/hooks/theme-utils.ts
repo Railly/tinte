@@ -46,7 +46,7 @@ export function createSaveCurrentTheme(
     updateThemeId?: string,
   ) => {
     const { denormalizeProviderOverride } = await import(
-      "@/lib/override-normalization"
+      "@/lib/provider-utils"
     );
 
     const convertOverrideForDB = (override: any) => {

@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
-import { getUserFavoriteThemes } from "@/lib/user-themes";
+import { getUserFavoriteThemes } from "@/lib/theme-operations";
 
 export async function GET(request: NextRequest) {
   try {

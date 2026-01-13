@@ -2,8 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
-import { TokenSearch } from "@/components/shared/token-search";
-import { VSCodeTokenInput } from "@/components/shared/vscode-token-input";
+import { TokenSearch, VSCodeTokenInput } from "@/components/shared/inputs";
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,7 +19,7 @@ import {
   createInitialVSCodeTokenGroups,
   createVSCodeTokenSkeletons,
   VSCODE_TOKEN_GROUPS,
-} from "@/lib/vscode-token-utils";
+} from "@/lib/provider-utils";
 import { useThemeContext } from "@/providers/theme";
 import { useClearOverrides } from "../hooks/use-clear-overrides";
 import { useVSCodeOverrides } from "../hooks/use-provider-overrides";

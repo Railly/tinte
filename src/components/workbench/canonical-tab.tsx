@@ -2,7 +2,7 @@
 
 import { ChevronDown, Wand2 } from "lucide-react";
 import * as React from "react";
-import { CanonicalColorInput } from "@/components/shared/canonical-color-input";
+import { CanonicalColorInput } from "@/components/shared/inputs";
 import { TailwindIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,17 +21,15 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import {
-  generateFullNeutralRamp,
-  getAllNeutralKeys,
-  isNeutralGroup,
-} from "@/lib/canonical-ramp-utils";
-import {
   COLOR_GROUPS,
   createCanonicalSkeletons,
   createInitialCanonicalGroups,
+  generateFullNeutralRamp,
+  generateTailwindPalette,
+  getAllNeutralKeys,
   hasValidTinteColors,
-} from "@/lib/canonical-utils";
-import { generateTailwindPalette } from "@/lib/ice-theme";
+  isNeutralGroup,
+} from "@/lib/colors";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
 

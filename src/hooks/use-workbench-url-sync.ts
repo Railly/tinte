@@ -1,6 +1,6 @@
 import { useQueryState, useQueryStates } from "nuqs";
 import { workbenchParsers } from "@/app/workbench/client-search-params";
-import { useThemeAdapters } from "@/lib/theme-utils";
+import { useThemeAdapters } from "@/lib/theme/utils";
 import type { WorkbenchTab } from "@/stores/workbench-store";
 
 export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = "agent") {

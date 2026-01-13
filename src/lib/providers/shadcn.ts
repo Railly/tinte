@@ -8,8 +8,7 @@ import {
   type ShadcnTheme,
 } from "@/types/shadcn";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";
-import { getBestTextColor } from "../color-utils";
-import { generateTailwindPalette } from "../palette-generator";
+import { getBestTextColor, generateTailwindPalette } from "../colors";
 import type { PreviewableProvider, ProviderOutput } from "./types";
 
 type ThemeMode = "light" | "dark";

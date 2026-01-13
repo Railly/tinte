@@ -1,6 +1,6 @@
 "use client";
 
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 import { useThemeStore } from "@/stores/theme";
 
 export function useActiveTheme() {

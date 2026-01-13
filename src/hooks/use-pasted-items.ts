@@ -7,7 +7,7 @@ import {
   type Kind,
   type PastedItem,
 } from "@/lib/input-detection";
-import { fetchUrlMetadata } from "@/lib/url-metadata";
+import { fetchUrlMetadata } from "@/lib/seo";
 
 export function usePastedItems() {
   const [pastedItems, setPastedItems] = useState<PastedItem[]>([]);

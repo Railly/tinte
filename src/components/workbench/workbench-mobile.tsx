@@ -1,7 +1,6 @@
 "use client";
 
-import { MobileThemeControls } from "@/components/shared/mobile-theme-controls";
-import { MobileThemeEditor } from "@/components/shared/mobile-theme-editor";
+import { MobileThemeControls, MobileThemeEditor } from "@/components/shared/mobile";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,

@@ -1,14 +1,16 @@
 "use client";
 
 import { SignInButton } from "@clerk/nextjs";
-import { DeleteThemeDialog } from "@/components/shared/delete-theme-dialog";
-import { DuplicateThemeDialog } from "@/components/shared/duplicate-theme-dialog";
+import {
+  DeleteThemeDialog,
+  DuplicateThemeDialog,
+  ImportThemeDialog,
+  RenameThemeDialog,
+  SaveThemeDialog,
+  ShareThemeDialog,
+  ViewCodeDialog,
+} from "@/components/shared/dialogs";
 import { GithubIcon } from "@/components/shared/icons";
-import { ImportThemeDialog } from "@/components/shared/import-theme-dialog";
-import { RenameThemeDialog } from "@/components/shared/rename-theme-dialog";
-import { SaveThemeDialog } from "@/components/shared/save-theme-dialog";
-import { ShareThemeDialog } from "@/components/shared/share-theme-dialog";
-import { ViewCodeDialog } from "@/components/shared/view-code-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 
 interface AuthState {
   mounted: boolean;

@@ -6,7 +6,7 @@ import { Header } from "@/components/home/header";
 import { Hero } from "@/components/home/hero";
 import { Roadmap } from "@/components/home/roadmap";
 import { Showcase } from "@/components/home/showcase";
-import { Footer } from "@/components/shared/footer";
+import { Footer } from "@/components/shared/layout";
 import { siteConfig } from "@/config/site";
 import { generateOrganizationSchema, generatePageSchema } from "@/lib/seo";
 import {
@@ -16,7 +16,7 @@ import {
   getTweakCNThemes,
   getUserFavoriteThemes,
   getUserThemes,
-} from "@/lib/user-themes";
+} from "@/lib/theme-operations";
 
 export const metadata: Metadata = {
   title: "Multi-Platform Theme Generator & Converter",

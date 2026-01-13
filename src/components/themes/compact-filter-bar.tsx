@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { RaycastIcon, TweakCNIcon } from "@/components/shared/icons";
-import Logo from "@/components/shared/logo";
+import { Logo } from "@/components/shared/layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

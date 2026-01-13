@@ -14,8 +14,8 @@ import {
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { RaycastIcon, TweakCNIcon } from "@/components/shared/icons";
-import Logo from "@/components/shared/logo";
-import { ThemeColorPreview } from "@/components/shared/theme-color-preview";
+import { Logo } from "@/components/shared/layout";
+import { ThemeColorPreview } from "@/components/shared/theme";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +31,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ALL_FORMATTED_PROVIDERS } from "@/config/providers";
 import { useThemeSearch } from "@/hooks/use-theme-search";
-import { extractThemeColors } from "@/lib/theme-utils";
+import { extractThemeColors } from "@/lib/theme/utils";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 

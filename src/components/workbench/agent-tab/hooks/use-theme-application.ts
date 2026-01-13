@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 import { useThemeContext } from "@/providers/theme";
 import { loadGoogleFont } from "@/utils/fonts";
 import { FONT_WEIGHTS } from "../constants";

@@ -6,13 +6,13 @@ import {
   mergeOverrides,
   normalizeOverrides,
   validateOverride,
-} from "@/lib/override-normalization";
+} from "@/lib/provider-utils";
 import {
   computeFinalTokens,
   convertColorToHex,
   extractTinteTheme,
-} from "@/lib/theme-computation";
-import type { ThemeData } from "@/lib/theme-tokens";
+} from "@/lib/theme/computation";
+import type { ThemeData } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth";
 import type { NormalizedOverrides } from "@/types/overrides";
 import type { TinteBlock, TinteTheme } from "@/types/tinte";

@@ -2,13 +2,7 @@ import { shikiToMonaco } from "@shikijs/monaco";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createHighlighter } from "shiki";
 import type { VSCodeTheme } from "@/lib/providers/vscode";
-
-interface CodeTemplate {
-  name: string;
-  filename: string;
-  language: string;
-  code: string;
-}
+import type { CodeTemplate } from "@/types/code-template";
 
 interface UseMonacoEditorProps {
   themeSet: { light: VSCodeTheme; dark: VSCodeTheme };

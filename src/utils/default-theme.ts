@@ -1,4 +1,4 @@
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 import type { TinteTheme } from "@/types/tinte";
 
 export const DEFAULT_THEME_ID = "default-theme";

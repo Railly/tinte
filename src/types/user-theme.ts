@@ -5,9 +5,9 @@ export type {
   ThemeTransformOptions,
   ThemeWithMetadata,
   VSCodeOverride,
-} from "@/lib/theme-types";
+} from "@/lib/theme";
 
-import type { Theme, ThemeWithMetadata } from "@/lib/theme-types";
+import type { Theme, ThemeWithMetadata } from "@/lib/theme";
 
 // Legacy compatibility (deprecated - use Theme instead)
 export type DbTheme = Theme;

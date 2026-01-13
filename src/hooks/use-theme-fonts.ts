@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 import { loadGoogleFont } from "@/utils/fonts";
 
 export function useThemeFonts(theme: ThemeData | null) {

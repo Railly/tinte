@@ -3,8 +3,8 @@
 import { ChevronDown, Info } from "lucide-react";
 import * as React from "react";
 import { TailwindIcon } from "@/components/shared/icons";
-import InvertedLogo from "@/components/shared/inverted-logo";
-import { TokenSearch } from "@/components/shared/token-search";
+import { InvertedLogo } from "@/components/shared/layout";
+import { TokenSearch } from "@/components/shared/inputs";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -27,25 +27,14 @@ import {
 } from "@/components/ui/tooltip";
 import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/use-clear-overrides";
 import { useZedOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { generateTailwindPalette } from "@/lib/ice-theme";
+import { generateTailwindPalette } from "@/lib/colors";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
+import type { OverrideVariable, OverrideVariableGroup } from "./types";
 
-interface ZedVariable {
-  key: string;
-  name: string;
-  description: string;
-}
-
-interface ZedVariableGroup {
-  label: string;
-  description: string;
-  variables: ZedVariable[];
-}
-
-const ZED_VARIABLE_GROUPS: ZedVariableGroup[] = [
+const ZED_VARIABLE_GROUPS: OverrideVariableGroup[] = [
   {
     label: "Syntax Highlighting",
     description: "Code syntax token colors",
@@ -232,7 +221,7 @@ const COLOR_LABELS: Record<keyof TinteBlock, string> = {
 };
 
 interface ZedTokenInputProps {
-  variable: ZedVariable;
+  variable: OverrideVariable;
   value: string;
   onChange: (key: string, value: string) => void;
 }

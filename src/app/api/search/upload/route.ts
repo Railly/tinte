@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { searchService } from "@/lib/services/search.service";
-import { getAllPublicThemes } from "@/lib/user-themes";
+import { getAllPublicThemes } from "@/lib/theme-operations";
 
 export async function POST() {
   try {

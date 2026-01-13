@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CSSIcon, TailwindIcon } from "@/components/shared/icons";
-import { ThemeSelector } from "@/components/shared/theme-selector";
+import { ThemeSelector } from "@/components/shared/theme";
 import {
   Dialog,
   DialogContent,
@@ -25,8 +25,8 @@ import { usePalette } from "@/hooks/use-palette";
 import { usePastedItems } from "@/hooks/use-pasted-items";
 import { cn } from "@/lib";
 import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
-import { generateTailwindPalette } from "@/lib/palette-generator";
-import type { ThemeData } from "@/lib/theme-tokens";
+import { generateTailwindPalette } from "@/lib/colors";
+import type { ThemeData } from "@/lib/theme";
 import { useThemeContext } from "@/providers/theme";
 import { writeSeed } from "@/utils/anon-seed";
 import { mapPastedToAttachments } from "@/utils/seed-mapper";

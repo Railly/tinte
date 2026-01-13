@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getPublicThemes, getPublicThemesCount } from "@/lib/user-themes";
+import { getPublicThemes, getPublicThemesCount } from "@/lib/theme-operations";
 
 export async function GET(request: NextRequest) {
   try {

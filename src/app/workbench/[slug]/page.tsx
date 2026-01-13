@@ -2,13 +2,13 @@ import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { WorkbenchMain } from "@/components/workbench/workbench-main";
 import { siteConfig } from "@/config/site";
-import { getThemeBySlug } from "@/lib/get-theme-by-slug";
 import {
   getRaysoThemes,
+  getThemeBySlug,
   getThemesWithUsers,
   getTinteThemes,
   getTweakCNThemes,
-} from "@/lib/user-themes";
+} from "@/lib/theme-operations";
 
 export async function generateMetadata({
   params,

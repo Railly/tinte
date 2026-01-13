@@ -3,8 +3,8 @@
 import { ArrowRight, Heart, User, Users } from "lucide-react";
 import { useState } from "react";
 import { RaycastIcon, TweakCNIcon } from "@/components/shared/icons";
-import Logo from "@/components/shared/logo";
-import { ThemeCard, ThemeCardSkeleton } from "@/components/shared/theme-card";
+import { Logo } from "@/components/shared/layout";
+import { ThemeCard, ThemeCardSkeleton } from "@/components/shared/theme";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useThemeContext } from "@/providers/theme";

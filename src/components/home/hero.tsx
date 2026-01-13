@@ -5,7 +5,7 @@ import useMeasure from "react-use-measure";
 import { PromptInput } from "@/components/home/prompt-input";
 import { PROVIDER_ICONS } from "@/config/providers";
 import { useLoop } from "@/hooks/use-loop";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 import { useThemeContext } from "@/providers/theme";
 import { mergeRefs } from "@/utils/merge-refs";
 

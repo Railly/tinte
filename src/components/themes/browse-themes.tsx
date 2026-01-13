@@ -8,12 +8,12 @@ import { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";
 import { toast } from "sonner";
 import { Header } from "@/components/home/header";
-import { Footer } from "@/components/shared/footer";
+import { Footer } from "@/components/shared/layout";
 import {
   ThemeCard,
   ThemeCardListSkeleton,
   ThemeCardSkeleton,
-} from "@/components/shared/theme-card";
+} from "@/components/shared/theme";
 import { CompactFilterBar } from "@/components/themes/compact-filter-bar";
 import { Button } from "@/components/ui/button";
 import { PROVIDER_ICONS } from "@/config/providers";

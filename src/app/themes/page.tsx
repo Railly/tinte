@@ -10,7 +10,7 @@ import {
   getTweakCNThemes,
   getUserFavoriteThemes,
   getUserThemes,
-} from "@/lib/user-themes";
+} from "@/lib/theme-operations";
 
 export const metadata: Metadata = {
   title: "Browse Community Themes",

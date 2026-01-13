@@ -3,8 +3,8 @@
 import { ChevronDown, Info } from "lucide-react";
 import * as React from "react";
 import { TailwindIcon } from "@/components/shared/icons";
-import InvertedLogo from "@/components/shared/inverted-logo";
-import { TokenSearch } from "@/components/shared/token-search";
+import { InvertedLogo } from "@/components/shared/layout";
+import { TokenSearch } from "@/components/shared/inputs";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -27,26 +27,14 @@ import {
 } from "@/components/ui/tooltip";
 import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/use-clear-overrides";
 import { useShikiOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { generateTailwindPalette } from "@/lib/ice-theme";
+import { generateTailwindPalette } from "@/lib/colors";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
+import type { OverrideVariable, OverrideVariableGroup } from "./types";
 
-interface ShikiVariable {
-  key: string;
-  name: string;
-  description: string;
-}
-
-interface ShikiVariableGroup {
-  label: string;
-  description: string;
-  variables: ShikiVariable[];
-}
-
-// Organized Shiki CSS variables into logical groups
-const SHIKI_VARIABLE_GROUPS: ShikiVariableGroup[] = [
+const SHIKI_VARIABLE_GROUPS: OverrideVariableGroup[] = [
   {
     label: "Core Colors",
     description: "Background, foreground, and primary text colors",
@@ -167,7 +155,7 @@ const COLOR_LABELS: Record<keyof TinteBlock, string> = {
 };
 
 interface ShikiTokenInputProps {
-  variable: ShikiVariable;
+  variable: OverrideVariable;
   value: string;
   onChange: (key: string, value: string) => void;
 }

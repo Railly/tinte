@@ -8,13 +8,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { codeToHtml } from "shiki";
 import { createCssVariablesTheme } from "shiki/core";
-
-interface CodeTemplate {
-  name: string;
-  filename: string;
-  language: string;
-  code: string;
-}
+import type { CodeTemplate } from "@/types/code-template";
 
 interface ShikiCssTheme {
   name: string;

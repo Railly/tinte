@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 import { useDebounce } from "./use-debounce";
 
 interface UseThemeSearchResult {

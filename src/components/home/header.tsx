@@ -4,9 +4,8 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { GithubIcon, TwitterIcon } from "@/components/shared/icons";
-import Logo from "@/components/shared/logo";
-import { ThemeSwitcher } from "@/components/shared/theme-switcher";
-import { UserDropdown } from "@/components/shared/user-dropdown";
+import { Logo, UserDropdown } from "@/components/shared/layout";
+import { ThemeSwitcher } from "@/components/shared/theme";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,

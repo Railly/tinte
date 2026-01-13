@@ -2,12 +2,12 @@ import {
   computeShadowVars,
   convertTinteToShadcn,
 } from "@/lib/providers/shadcn";
-import { getShadcnPaletteWithOverrides } from "@/lib/shadcn-theme-utils";
+import { getShadcnPaletteWithOverrides } from "@/lib/provider-utils";
 import type {
   ThemeColors,
   ThemeData,
   TinteThemeData,
-} from "@/lib/theme-tokens";
+} from "@/lib/theme";
 import { buildFontFamily, loadGoogleFont } from "@/utils/fonts";
 
 export function extractThemeColors(theme: ThemeData): Partial<ThemeColors> {

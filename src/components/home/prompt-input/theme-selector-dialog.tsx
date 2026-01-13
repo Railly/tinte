@@ -2,7 +2,7 @@
 
 import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ThemeSelector } from "@/components/shared/theme-selector";
+import { ThemeSelector } from "@/components/shared/theme";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { PastedItem } from "@/lib/input-detection";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 
 interface ThemeSelectorDialogProps {
   open: boolean;

@@ -1,9 +1,9 @@
 import { Copy, Download, Save } from "lucide-react";
 import { useState } from "react";
 import { ShadcnIcon } from "@/components/shared/icons";
-import InvertedLogo from "@/components/shared/inverted-logo";
+import { InvertedLogo } from "@/components/shared/layout";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
-import { downloadVSCodeTheme } from "@/lib/download-vscode-theme";
+import { downloadVSCodeTheme } from "@/lib/provider-utils";
 import { exportTheme } from "@/lib/providers";
 import { convertTinteToShiki } from "@/lib/providers/shiki";
 import type { TinteTheme } from "@/types/tinte";

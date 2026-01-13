@@ -5,7 +5,7 @@ import { db } from "@/db";
 import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 import { theme } from "@/db/schema/theme";
 import { searchService } from "@/lib/services/search.service";
-import type { ThemeData } from "@/lib/theme-tokens";
+import type { ThemeData } from "@/lib/theme";
 import type { TinteTheme } from "@/types/tinte";
 
 // Helper function to generate unique slug (excluding current theme)

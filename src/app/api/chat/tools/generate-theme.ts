@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { tool } from "ai";
 import { z } from "zod";
-import { saveThemeToDatabase } from "@/lib/save-theme-to-db";
+import { saveThemeToDatabase } from "@/lib/theme-operations";
 import description from "./generate-theme.md";
 
 const TinteBlockSchema = z.object({

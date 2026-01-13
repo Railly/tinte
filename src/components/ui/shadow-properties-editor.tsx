@@ -3,7 +3,7 @@
 import { formatHex, parse } from "culori";
 import * as React from "react";
 import { TailwindIcon } from "@/components/shared/icons";
-import InvertedLogo from "@/components/shared/inverted-logo";
+import { InvertedLogo } from "@/components/shared/layout";
 import { Button } from "@/components/ui/button";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { NumberSlider } from "@/components/ui/number-slider";
-import { generateTailwindPalette } from "@/lib/ice-theme";
+import { generateTailwindPalette } from "@/lib/colors";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteBlock } from "@/types/tinte";

@@ -1,7 +1,7 @@
 // Base utilities for Poline-powered provider generators
 
 import { rgb } from "culori";
-import { makePolineFromTinte, polineRampHex } from "@/lib/ice-theme";
+import { makePolineFromTinte, polineRampHex } from "@/lib/theme/ice-theme";
 import type { TinteBlock } from "@/types/tinte";
 
 export interface PolineColorMapping {

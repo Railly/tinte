@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { saveThemeToDatabase } from "@/lib/save-theme-to-db";
+import { saveThemeToDatabase } from "@/lib/theme-operations";
 import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteTheme } from "@/types/tinte";
 
