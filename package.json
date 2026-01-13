@@ -11,6 +11,9 @@
     "format": "biome format --write",
     "fix": "biome check . --write --unsafe --max-diagnostics=10000",
     "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "migrate:shadows": "bun --bun scripts/migrate-shadows.ts",
     "figma:install": "cd figma-plugin && bun install",
     "figma:build": "cd figma-plugin && bun run build",
@@ -117,12 +120,14 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.0.17",
     "dotenv": "^17.2.2",
     "drizzle-kit": "^0.31.4",
     "netlify-cli": "^23.6.0",
     "raw-loader": "^4.0.2",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.17"
   }
 }
