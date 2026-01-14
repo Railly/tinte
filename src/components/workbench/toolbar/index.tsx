@@ -16,7 +16,7 @@ import { useDockActions } from "@/components/workbench/hooks/dock/use-actions";
 import { useThemeHistory } from "@/stores/hooks/use-theme-history";
 import { cn } from "@/lib";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
-import { importShadcnTheme } from "@/lib/theme-operations";
+import { importShadcnTheme } from "@/lib/theme-operations/import";
 import { getProvider } from "@/lib/providers";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteTheme } from "@/types/tinte";

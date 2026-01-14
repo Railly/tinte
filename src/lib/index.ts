@@ -1,5 +1,4 @@
 export * from "./theme";
-export * from "./theme-operations";
 export * from "./colors";
 export * from "./provider-utils";
 export * from "./vendors";
