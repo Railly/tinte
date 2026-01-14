@@ -6,9 +6,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useWorkbenchUrlSync } from "@/hooks/use-workbench-url-sync";
+import { useWorkbenchUrlSync } from "@/components/workbench/hooks/use-url-sync";
 import type { WorkbenchTab } from "@/stores/workbench-store";
-import { WORKBENCH_CONFIG, WORKBENCH_TABS } from "./workbench.config";
+import { WORKBENCH_CONFIG, WORKBENCH_TABS } from "./config";
 
 interface WorkbenchSidebarProps {
   defaultTab?: WorkbenchTab;

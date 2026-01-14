@@ -2,16 +2,16 @@
 
 import { useEffect } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useThemeSlugRedirect } from "@/hooks/use-theme-slug-redirect";
+import { useIsMobile } from "@/lib/hooks/use-mobile";
+import { useThemeSlugRedirect } from "@/stores/hooks/use-theme-slug-redirect";
 import { useThemeContext } from "@/providers/theme";
 import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
 import type { UserThemeData } from "@/types/user-theme";
 
-import { WorkbenchHeader } from "./workbench-header";
-import { WorkbenchMobile } from "./workbench-mobile";
-import { WorkbenchPreviewPane } from "./workbench-preview-pane";
-import { WorkbenchSidebar } from "./workbench-sidebar";
+import { WorkbenchHeader } from "./header";
+import { WorkbenchMobile } from "./mobile";
+import { WorkbenchPreviewPane } from "./preview-pane";
+import { WorkbenchSidebar } from "./sidebar";
 
 interface WorkbenchMainProps {
   themeSlug: string;

@@ -1,23 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Exclude CLI directory from Next.js compilation
-  webpack(config, { isServer }) {
-    // Exclude CLI directory from compilation
-    config.watchOptions = {
-      ...config.watchOptions,
-      ignored: ["**/cli/**", "**/node_modules/**"],
-    };
-
-    // Add raw-loader for markdown files
-    config.module.rules.push({
-      test: /\.md$/,
-      use: "raw-loader",
-    });
-
-    return config;
-  },
-
   async rewrites() {
     return [
       {

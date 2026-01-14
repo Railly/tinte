@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
-import { usePastedItems } from "@/hooks/use-pasted-items";
+import { usePastedItems } from "@/components/workbench/hooks/editor/use-pasted-items";
 import { cn } from "@/lib";
 import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
 

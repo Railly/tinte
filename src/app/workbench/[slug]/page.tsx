@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
-import { WorkbenchMain } from "@/components/workbench/workbench-main";
+import { WorkbenchMain } from "@/components/workbench";
 import { siteConfig } from "@/config/site";
 import {
   getRaysoThemes,
@@ -147,8 +147,6 @@ export default async function WorkbenchSlugPage({
     ...raysoThemes,
   ];
   const initialTheme = await getThemeBySlug(slug, allThemes);
-
-  // No more redirects - workbench can handle any slug, with or without theme
 
   return (
     <WorkbenchMain

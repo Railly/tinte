@@ -1,1 +1,0 @@
-export { WorkbenchToolbar } from "./toolbar";

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { ClerkSync } from "@/components/clerk-sync";
-import { useTheme } from "@/hooks/use-theme";
-import { useThemeFonts } from "@/hooks/use-theme-fonts";
+import { ClerkSync } from "@/components/shared/clerk-sync";
+import { useTheme } from "@/stores/hooks/use-theme";
+import { useThemeFonts } from "@/stores/hooks/use-theme-fonts";
 import { useAuthStore } from "@/stores/auth";
 import { useThemeStore } from "@/stores/theme";
 

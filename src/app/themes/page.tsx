@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
-import { BrowseThemes } from "@/components/themes/browse-themes";
+import { BrowseThemes } from "@/components/shared/theme/browse-themes";
 import { siteConfig } from "@/config/site";
 import {
   getPublicThemes,

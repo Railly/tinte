@@ -1,8 +1,8 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UnifiedPreview } from "@/components/unified-preview";
+import { UnifiedPreview } from "@/components/preview/unified-preview";
 import { useThemeContext } from "@/providers/theme";
 import type { TinteTheme } from "@/types/tinte";
-import { WorkbenchToolbar } from "./workbench-toolbar";
+import { WorkbenchToolbar } from "../toolbar";
 
 type WorkbenchPreviewPaneProps = {};
 

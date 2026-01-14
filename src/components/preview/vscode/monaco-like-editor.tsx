@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMonacoEditor } from "@/hooks/use-monaco-editor";
+import { useMonacoEditor } from "@/components/workbench/hooks/editor/use-monaco";
 import {
   type CodeTemplate,
   codeTemplates,

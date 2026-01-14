@@ -8,9 +8,9 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useWorkbenchUrlSync } from "@/hooks/use-workbench-url-sync";
+import { useWorkbenchUrlSync } from "@/components/workbench/hooks/use-url-sync";
 import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
-import { WorkbenchPreviewPane } from "./workbench-preview-pane";
+import { WorkbenchPreviewPane } from "./preview-pane";
 
 interface WorkbenchMobileProps {
   themeSlug: string;

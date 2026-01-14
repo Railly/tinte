@@ -12,8 +12,8 @@ import {
   useShikiOverrides,
   useVSCodeOverrides,
 } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { useDockActions } from "@/hooks/use-dock-actions";
-import { useThemeHistory } from "@/hooks/use-theme-history";
+import { useDockActions } from "@/components/workbench/hooks/dock/use-actions";
+import { useThemeHistory } from "@/stores/hooks/use-theme-history";
 import { cn } from "@/lib";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
 import { importShadcnTheme } from "@/lib/theme-operations";

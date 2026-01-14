@@ -25,11 +25,11 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { TooltipWrapper } from "@/components/ui/tooltip-wrapper";
-import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import {
   type FilterFontCategory,
   useFontSearch,
-} from "@/hooks/use-font-search";
+} from "@/components/workbench/hooks/fonts/use-font-search";
 import { cn } from "@/lib/utils";
 import type { FontInfo } from "@/types/fonts";
 import {

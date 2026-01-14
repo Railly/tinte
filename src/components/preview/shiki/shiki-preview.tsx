@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useShikiCssHighlighter } from "@/hooks/use-shiki-css-highlighter";
+import { useShikiCssHighlighter } from "@/components/workbench/hooks/editor/use-shiki-css";
 import { useThemeContext } from "@/providers/theme";
 import type { ShikiTheme } from "@/types/shiki";
 import { codeTemplates } from "./shiki-code-templates";

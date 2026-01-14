@@ -15,3 +15,5 @@ export {
   isTemporaryTheme,
   getDisplayName,
 } from "./theme-selector";
+export { BrowseThemes } from "./browse-themes";
+export { CompactFilterBar } from "./compact-filter-bar";

@@ -1,14 +1,20 @@
-import { useQueryState, useQueryStates } from "nuqs";
-import { workbenchParsers } from "@/app/workbench/client-search-params";
+"use client";
+
+import { parseAsStringLiteral, useQueryState, useQueryStates } from "nuqs";
 import { useThemeAdapters } from "@/lib/theme/utils";
 import type { WorkbenchTab } from "@/stores/workbench-store";
+
+const tabParser = parseAsStringLiteral([
+  "agent",
+  "canonical",
+  "overrides",
+] as const);
 
 export function useWorkbenchUrlSync(defaultTab: WorkbenchTab = "agent") {
   const { previewableProviders } = useThemeAdapters();
 
-  // Use client parsers for consistency with server-side
   const [{ tab: activeTab }, setWorkbenchParams] = useQueryStates({
-    tab: workbenchParsers.tab.withDefault(defaultTab),
+    tab: tabParser.withDefault(defaultTab),
   });
 
   const [currentProvider, setCurrentProvider] = useQueryState("provider", {

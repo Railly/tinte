@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/command";
 import { Separator } from "@/components/ui/separator";
 import { ALL_FORMATTED_PROVIDERS } from "@/config/providers";
-import { useThemeSearch } from "@/hooks/use-theme-search";
+import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import { extractThemeColors } from "@/lib/theme/utils";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";

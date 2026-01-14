@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { searchService } from "@/lib/services/search.service";
+import { searchService } from "@/lib/search.service";
 import { getAllPublicThemes } from "@/lib/theme-operations";
 
 export async function GET() {

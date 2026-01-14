@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/chat-container";
 import { Message, MessageContent } from "@/components/ui/message";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ChatInput } from "@/components/workbench/chat-input";
-import { useTheme } from "@/hooks/use-theme";
+import { ChatInput } from "./chat-input";
+import { useTheme } from "@/stores/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";
 import { AssistantAvatar } from "./assistant-avatar";

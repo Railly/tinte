@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import type { ShadcnOverrideSchema } from "@/db/schema/theme";
 import { theme } from "@/db/schema/theme";
-import { searchService } from "@/lib/services/search.service";
+import { searchService } from "@/lib/search.service";
 import type { ThemeData } from "@/lib/theme";
 import type { TinteTheme } from "@/types/tinte";
 

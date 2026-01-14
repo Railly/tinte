@@ -14,12 +14,12 @@ import {
   ThemeCardListSkeleton,
   ThemeCardSkeleton,
 } from "@/components/shared/theme";
-import { CompactFilterBar } from "@/components/themes/compact-filter-bar";
+import { CompactFilterBar } from "./compact-filter-bar";
 import { Button } from "@/components/ui/button";
 import { PROVIDER_ICONS } from "@/config/providers";
-import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { useLoop } from "@/hooks/use-loop";
-import { useThemeSearch } from "@/hooks/use-theme-search";
+import { useInfiniteScroll } from "@/lib/hooks/use-infinite-scroll";
+import { useLoop } from "@/lib/hooks/use-loop";
+import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import { useThemeContext } from "@/providers/theme";
 import type { SessionData } from "@/types/auth";
 import type { UserThemeData } from "@/types/user-theme";

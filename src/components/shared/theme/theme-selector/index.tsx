@@ -14,7 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useThemeSearch } from "@/hooks/use-theme-search";
+import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import type { ThemeData } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/providers/theme";

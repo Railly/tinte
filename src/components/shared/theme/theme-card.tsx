@@ -9,7 +9,7 @@ import { Logo } from "@/components/shared/layout";
 import { ThemeCardPreview } from "./theme-card-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useThemeFonts } from "@/hooks/use-theme-fonts";
+import { useThemeFonts } from "@/stores/hooks/use-theme-fonts";
 import type { ThemeData } from "@/lib/theme";
 import { getVendorIcon, getVendorImage } from "@/lib/vendors";
 import { useThemeContext } from "@/providers/theme";

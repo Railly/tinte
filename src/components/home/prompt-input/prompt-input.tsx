@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { usePalette } from "@/hooks/use-palette";
-import { usePastedItems } from "@/hooks/use-pasted-items";
+import { usePalette } from "@/lib/hooks/use-palette";
+import { usePastedItems } from "@/components/workbench/hooks/editor/use-pasted-items";
 import { cn } from "@/lib";
 import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
 import { generateTailwindPalette } from "@/lib/colors";

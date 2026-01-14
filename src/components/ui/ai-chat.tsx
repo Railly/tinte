@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/chat-container";
 import { Message, MessageContent } from "@/components/ui/message";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ChatInput } from "@/components/workbench/chat-input";
+import { ChatInput } from "@/components/workbench/agent-tab/chat-input";
 import type { PastedItem } from "@/lib/input-detection";
 import { cn } from "@/lib/utils";
 

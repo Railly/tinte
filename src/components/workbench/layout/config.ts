@@ -1,9 +1,16 @@
+import dynamic from "next/dynamic";
 import type { WorkbenchTab } from "@/stores/workbench-store";
-import { AgentTab } from "./agent-tab";
-import { CanonicalTab } from "./canonical-tab";
-import { OverridesTab } from "./overrides-tab/overrides-tab";
 
-// Simple, extensible tab configuration
+const AgentTab = dynamic(() =>
+  import("../agent-tab").then((mod) => mod.AgentTab)
+);
+const CanonicalTab = dynamic(() =>
+  import("../canonical-tab").then((mod) => mod.CanonicalTab)
+);
+const OverridesTab = dynamic(() =>
+  import("../overrides-tab/overrides-tab").then((mod) => mod.OverridesTab)
+);
+
 export const WORKBENCH_TABS = [
   {
     id: "agent" as const,
@@ -22,16 +29,12 @@ export const WORKBENCH_TABS = [
   },
 ] as const;
 
-// Easy to add new tabs:
-// { id: 'mapping', label: 'Mapping', component: MappingPanel, requiresLoading: false }
-
 export type TabConfig = (typeof WORKBENCH_TABS)[number];
 
 export function getTabConfig(tabId: WorkbenchTab): TabConfig | undefined {
   return WORKBENCH_TABS.find((tab) => tab.id === tabId);
 }
 
-// App configuration
 export const WORKBENCH_CONFIG = {
   DEFAULT_TAB: "agent" as WorkbenchTab,
   STATIC_TAB: "canonical" as WorkbenchTab,

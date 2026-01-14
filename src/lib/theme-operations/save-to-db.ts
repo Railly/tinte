@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { type ThemeInsert, theme } from "@/db/schema";
 import { generateThemeId } from "@/lib/generate-slug";
-import { searchService } from "@/lib/services/search.service";
+import { searchService } from "@/lib/search.service";
 import type { ThemeData as SearchThemeData } from "@/lib/theme";
 
 interface ThemeData {

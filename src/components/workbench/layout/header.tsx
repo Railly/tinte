@@ -12,9 +12,9 @@ import { useThemeContext } from "@/providers/theme";
 import type { UserThemeData } from "@/types/user-theme";
 import { SocialsDropdown } from "@/components/shared/layout";
 import { ThemeSwitcher } from "@/components/shared/theme";
-import { TinteCommandMenu } from "../tinte-command-menu";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
+import { TinteCommandMenu } from "@/components/shared/tinte-command-menu";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 interface WorkbenchHeaderProps {
   themeSlug: string;
