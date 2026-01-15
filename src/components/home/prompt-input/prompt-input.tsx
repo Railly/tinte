@@ -27,7 +27,7 @@ import { cn } from "@/lib";
 import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
 import { generateTailwindPalette } from "@/lib/colors";
 import type { ThemeData } from "@/lib/theme";
-import { useThemeContext } from "@/providers/theme";
+import { useUserThemes } from "@/stores/hooks";
 import { writeSeed } from "@/utils/anon-seed";
 import { mapPastedToAttachments } from "@/utils/seed-mapper";
 import { Button } from "../../ui/button";
@@ -68,7 +68,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
     clearPastedItems,
   } = usePastedItems();
   const { setBase } = usePalette();
-  const { allThemes } = useThemeContext();
+  const { allThemes } = useUserThemes();
 
   useEffect(() => {
     if (paletteDialogOpen) {

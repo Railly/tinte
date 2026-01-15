@@ -5,7 +5,7 @@ import * as React from "react";
 import { ColorPickerInput } from "@/components/ui/color-picker-input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useShadcnOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeTokens } from "@/stores/hooks";
 
 declare global {
   interface Window {
@@ -19,7 +19,8 @@ declare global {
 
 export function MobileThemeEditor() {
   const [scope, animate] = useAnimate();
-  const { currentTokens, mounted } = useThemeContext();
+  const { mounted } = useActiveTheme();
+  const { currentTokens } = useThemeTokens();
   const shadcnOverrides = useShadcnOverrides();
 
   const handleTokenEdit = React.useCallback(

@@ -7,7 +7,7 @@ import { Logo } from "@/components/shared/layout";
 import { ThemeCard, ThemeCardSkeleton } from "@/components/shared/theme";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme } from "@/stores/hooks";
 import type { SessionData } from "@/types/auth";
 import type { UserThemeData } from "@/types/user-theme";
 
@@ -31,7 +31,7 @@ export function Showcase({
   raysoThemes,
 }: ShowcaseProps) {
   const [activeTab, setActiveTab] = useState("tinte");
-  const { handleThemeSelect, mounted } = useThemeContext();
+  const { selectTheme, mounted } = useActiveTheme();
   const shouldShowSkeletons = !mounted;
 
   return (
@@ -122,6 +122,8 @@ export function Showcase({
                       <img
                         src={session.user.image}
                         alt="Profile"
+                        width={12}
+                        height={12}
                         className="w-3 h-3 rounded-full"
                       />
                     ) : (
@@ -176,7 +178,7 @@ export function Showcase({
                     key={theme.id}
                     theme={theme}
                     index={index}
-                    onThemeSelect={handleThemeSelect}
+                    onThemeSelect={selectTheme}
                     showUserInfo={true}
                   />
                 ))}
@@ -215,7 +217,7 @@ export function Showcase({
                     key={theme.id}
                     theme={theme}
                     index={index}
-                    onThemeSelect={handleThemeSelect}
+                    onThemeSelect={selectTheme}
                     showUserInfo={true}
                   />
                 ))}
@@ -252,7 +254,7 @@ export function Showcase({
                     key={theme.id}
                     theme={theme}
                     index={index}
-                    onThemeSelect={handleThemeSelect}
+                    onThemeSelect={selectTheme}
                     showUserInfo={true}
                   />
                 ))}
@@ -287,7 +289,7 @@ export function Showcase({
                       key={theme.id}
                       theme={theme}
                       index={index}
-                      onThemeSelect={handleThemeSelect}
+                      onThemeSelect={selectTheme}
                       showUserInfo={false}
                     />
                   ))}
@@ -307,7 +309,7 @@ export function Showcase({
                       key={theme.id}
                       theme={theme}
                       index={index}
-                      onThemeSelect={handleThemeSelect}
+                      onThemeSelect={selectTheme}
                       showUserInfo={false}
                     />
                   ))}
@@ -327,7 +329,7 @@ export function Showcase({
                       key={theme.id}
                       theme={theme}
                       index={index}
-                      onThemeSelect={handleThemeSelect}
+                      onThemeSelect={selectTheme}
                       showUserInfo={false}
                     />
                   ))}

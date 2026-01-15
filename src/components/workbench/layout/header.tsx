@@ -8,7 +8,7 @@ import { Logo, UserDropdown } from "@/components/shared/layout";
 import { ProviderSwitcher } from "@/components/shared/providers";
 import { ThemeSelector } from "@/components/shared/theme";
 import type { ThemeData } from "@/lib/theme";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useUserThemes, useThemeActions } from "@/stores/hooks";
 import type { UserThemeData } from "@/types/user-theme";
 import { SocialsDropdown } from "@/components/shared/layout";
 import { ThemeSwitcher } from "@/components/shared/theme";
@@ -31,18 +31,16 @@ export function WorkbenchHeader({
   tinteThemes = [],
   raysoThemes = [],
 }: WorkbenchHeaderProps) {
+  const { activeTheme, mounted, selectTheme } = useActiveTheme();
   const {
     allThemes,
-    activeTheme,
-    handleThemeSelect,
-    navigateTheme,
     addThemes,
     isAuthenticated,
-    mounted,
     favoritesLoaded,
     toggleFavorite,
     getFavoriteStatus,
-  } = useThemeContext();
+  } = useUserThemes();
+  const { navigateTheme } = useThemeActions();
   const activeId = activeTheme?.id || null;
   // Add themes to store once on mount
   useEffect(() => {
@@ -112,7 +110,7 @@ export function WorkbenchHeader({
             themes={allThemes}
             activeId={activeId}
             activeTheme={activeTheme}
-            onSelect={handleThemeSelect}
+            onSelect={selectTheme}
             triggerClassName="w-[15rem]"
             label="Select theme…"
           />
@@ -121,7 +119,7 @@ export function WorkbenchHeader({
             size="icon"
             onClick={handleToggleFavorite}
             className="h-8 w-8 p-0"
-            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
             disabled={!isAuthenticated || !mounted || !favoritesLoaded}
           >
             <Heart
@@ -133,7 +131,7 @@ export function WorkbenchHeader({
             size="icon"
             onClick={() => navigateTheme("random")}
             className="h-8 w-8 p-0"
-            title="Random theme"
+            aria-label="Random theme"
           >
             <Shuffle className="h-4 w-4" />
           </Button>

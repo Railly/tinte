@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { PastedItem } from "@/lib/input-detection";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode, useThemeTokens } from "@/stores/hooks";
 import { useWorkbenchStore } from "@/stores/workbench-store";
 import { clearSeed } from "@/utils/anon-seed";
 
@@ -13,7 +13,10 @@ interface UseChatLogicProps {
 }
 
 export function useChatLogic({ initialPrompt }: UseChatLogicProps = {}) {
-  const { tinteTheme, currentMode, fonts, radius, shadows } = useThemeContext();
+  const { tinteTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentMode = mode;
+  const { fonts, radius, shadows } = useThemeTokens();
 
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({

@@ -29,6 +29,7 @@ export function HistoryControls({
           onClick={onUndo}
           disabled={!canUndo}
           className="h-8 w-8"
+          aria-label="Undo"
         >
           <Undo className="h-4 w-4" />
         </Button>
@@ -38,6 +39,7 @@ export function HistoryControls({
           onClick={onRedo}
           disabled={!canRedo}
           className="h-8 w-8"
+          aria-label="Redo"
         >
           <Redo className="h-4 w-4" />
         </Button>

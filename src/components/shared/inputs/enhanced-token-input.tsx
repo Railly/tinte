@@ -17,7 +17,7 @@ import { ShadowPropertiesEditor } from "@/components/ui/shadow-properties-editor
 import { generateTailwindPalette } from "@/lib/colors";
 import type { TokenGroup } from "@/lib/theme";
 import { cn } from "@/lib/utils";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode } from "@/stores/hooks";
 import type { FontInfo } from "@/types/fonts";
 import type { TinteBlock } from "@/types/tinte";
 import { extractFontFamily, loadGoogleFont } from "@/utils/fonts";
@@ -72,8 +72,9 @@ export const EnhancedTokenInput: React.FC<EnhancedTokenInputProps> = ({
   onEdit,
   onFontSelect,
 }) => {
-  const { tinteTheme, currentMode } = useThemeContext();
-  const currentColors = tinteTheme?.[currentMode];
+  const { tinteTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentColors = tinteTheme?.[mode];
 
   const handleCanonicalColorSelect = (colorKey: keyof TinteBlock) => {
     const colorValue = currentColors?.[colorKey];

@@ -1,5 +1,5 @@
 import { useQueryState } from "nuqs";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import {
   useVSCodeOverrides,
   useZedOverrides,
@@ -15,7 +15,7 @@ interface UnifiedPreviewProps {
   className?: string;
 }
 
-export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
+export const UnifiedPreview = memo(function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const vscodeOverrides = useVSCodeOverrides();
   const zedOverrides = useZedOverrides();
@@ -112,13 +112,17 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
 
   const PreviewComponent = currentProvider.preview.component;
 
-  // Create a unique key based on overrides to force re-render
-  const previewKey =
-    currentProvider.metadata.id === "zed"
-      ? `zed-${JSON.stringify(zedOverrides.allOverrides)}`
-      : currentProvider.metadata.id === "vscode"
-        ? `vscode-${JSON.stringify(vscodeOverrides.overrides)}`
-        : currentProvider.metadata.id;
+  const previewKey = useMemo(() => {
+    if (currentProvider.metadata.id === "zed") {
+      const values = Object.values(zedOverrides.allOverrides || {});
+      return `zed-${values.map((v) => (typeof v === "object" ? Object.values(v).join(",") : v)).join("-")}`;
+    }
+    if (currentProvider.metadata.id === "vscode") {
+      const values = Object.values(vscodeOverrides.overrides || {});
+      return `vscode-${values.map((v) => (typeof v === "object" ? Object.values(v).join(",") : v)).join("-")}`;
+    }
+    return currentProvider.metadata.id;
+  }, [currentProvider.metadata.id, zedOverrides.allOverrides, vscodeOverrides.overrides]);
 
   return (
     <div
@@ -127,4 +131,4 @@ export function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
       <PreviewComponent key={previewKey} theme={converted} />
     </div>
   );
-}
+});

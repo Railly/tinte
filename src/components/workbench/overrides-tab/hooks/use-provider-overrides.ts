@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { convertThemeToVSCode } from "@/lib/providers/vscode";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode, useThemeOverrides } from "@/stores/hooks";
 
 export type ProviderType = "shadcn" | "vscode" | "shiki" | "zed";
 
@@ -46,10 +46,10 @@ export interface ProviderOverrideHook<T extends object = Record<string, any>> {
 export function useProviderOverrides<T extends object = Record<string, any>>(
   provider: ProviderType,
 ): ProviderOverrideHook<T> {
-  const context = useThemeContext();
+  const { tinteTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentMode = mode;
   const {
-    currentMode,
-    tinteTheme,
     shadcnOverride,
     vscodeOverride,
     shikiOverride,
@@ -59,7 +59,7 @@ export function useProviderOverrides<T extends object = Record<string, any>>(
     updateShikiOverride,
     updateZedOverride,
     resetOverrides,
-  } = context;
+  } = useThemeOverrides();
 
   // Get the appropriate override data based on provider
   const allOverrides = useMemo(() => {

@@ -14,7 +14,7 @@ import { AIChat } from "@/components/ui/ai-chat";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib";
 import type { BananaTheme } from "@/lib/providers/banana";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 
 interface BananaChatProps {
   theme: { light: BananaTheme; dark: BananaTheme };
@@ -22,8 +22,8 @@ interface BananaChatProps {
 }
 
 export function BananaChat({ theme, className }: BananaChatProps) {
-  const { currentMode } = useThemeContext();
-  const currentTheme = currentMode === "dark" ? theme.dark : theme.light;
+  const { mode } = useThemeMode();
+  const currentTheme = mode === "dark" ? theme.dark : theme.light;
   const _previousThemeRef = useRef<BananaTheme | null>(null);
 
   // Create theme context message for AI
@@ -71,7 +71,7 @@ Use these exact colors when generating any visual assets or brand materials.`;
   ];
 
   // System prompt with initial theme context
-  const systemPrompt = createThemeContext(currentTheme, currentMode);
+  const systemPrompt = createThemeContext(currentTheme, mode);
 
   // Custom content renderer for Banana chat
   const renderBananaContent = (message: any) => {
@@ -100,6 +100,7 @@ Use these exact colors when generating any visual assets or brand materials.`;
                   <img
                     src={part.url}
                     alt="Generated design asset"
+                    loading="lazy"
                     className="w-full h-auto"
                   />
                 </div>
@@ -150,7 +151,7 @@ Use these exact colors when generating any visual assets or brand materials.`;
           </div>
         </div>
         <div className="text-xs px-2 py-1 rounded-full opacity-60">
-          {currentMode} mode
+          {mode} mode
         </div>
       </div>
 

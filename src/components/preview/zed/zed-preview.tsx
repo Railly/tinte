@@ -1,6 +1,6 @@
 import { FileCode2, FolderOpen } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 import type { ZedThemeFamily } from "@/types/zed";
 
 interface ZedPreviewProps {
@@ -9,9 +9,9 @@ interface ZedPreviewProps {
 }
 
 export function ZedPreview({ theme, className }: ZedPreviewProps) {
-  const { currentMode } = useThemeContext();
+  const { mode } = useThemeMode();
   const currentTheme =
-    currentMode === "dark"
+    mode === "dark"
       ? theme.themes.find((t) => t.appearance === "dark") || theme.themes[0]
       : theme.themes.find((t) => t.appearance === "light") || theme.themes[0];
 

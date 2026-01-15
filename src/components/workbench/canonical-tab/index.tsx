@@ -30,12 +30,13 @@ import {
   hasValidTinteColors,
   isNeutralGroup,
 } from "@/lib/colors";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode } from "@/stores/hooks";
 import type { TinteBlock } from "@/types/tinte";
 
 export function CanonicalTab() {
-  const { tinteTheme, updateTinteTheme, currentMode, mounted, activeTheme } =
-    useThemeContext();
+  const { tinteTheme, updateTinteTheme, mounted, activeTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentMode = mode;
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
     createInitialCanonicalGroups,
   );

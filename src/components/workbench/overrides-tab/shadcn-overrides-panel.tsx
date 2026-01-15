@@ -14,7 +14,7 @@ import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/us
 import { useShadcnOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
 import { getShadcnPaletteWithOverrides } from "@/lib/provider-utils";
 import { createSkeletonGroups } from "@/lib/theme";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode, useThemeOverrides, useThemeTokens } from "@/stores/hooks";
 import type { FontInfo } from "@/types/fonts";
 import { buildFontFamily } from "@/utils/fonts";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
@@ -40,15 +40,11 @@ export function ShadcnOverridesPanel({
   onSearchChange,
   searchPlaceholder = "Search tokens...",
 }: ShadcnOverridesPanelProps) {
-  const {
-    currentTokens,
-    mounted,
-    currentMode,
-    updateShadcnOverride,
-    tinteTheme,
-    shadcnOverride,
-    activeTheme,
-  } = useThemeContext();
+  const { mounted, tinteTheme, activeTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentMode = mode;
+  const { currentTokens } = useThemeTokens();
+  const { shadcnOverride, updateShadcnOverride } = useThemeOverrides();
   const shadcnOverrides = useShadcnOverrides();
   const clearOverrides = useClearOverrides({
     provider: "shadcn",

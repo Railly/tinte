@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { NumberSlider } from "@/components/ui/number-slider";
 import { generateTailwindPalette } from "@/lib/colors";
 import { cn } from "@/lib/utils";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode } from "@/stores/hooks";
 import type { TinteBlock } from "@/types/tinte";
 
 interface ShadowPropertiesEditorProps {
@@ -89,8 +89,9 @@ export function ShadowPropertiesEditor({
   onChange,
   className,
 }: ShadowPropertiesEditorProps) {
-  const { tinteTheme, currentMode } = useThemeContext();
-  const currentColors = tinteTheme?.[currentMode];
+  const { tinteTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentColors = tinteTheme?.[mode];
 
   // Local state for immediate updates
   const [localColor, setLocalColor] = React.useState(() =>

@@ -29,7 +29,7 @@ import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/us
 import { useZedOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
 import { generateTailwindPalette } from "@/lib/colors";
 import { cn } from "@/lib/utils";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode } from "@/stores/hooks";
 import type { TinteBlock } from "@/types/tinte";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
 import type { OverrideVariable, OverrideVariableGroup } from "./types";
@@ -227,8 +227,9 @@ interface ZedTokenInputProps {
 }
 
 function ZedTokenInput({ variable, value, onChange }: ZedTokenInputProps) {
-  const { tinteTheme, currentMode } = useThemeContext();
-  const currentColors = tinteTheme?.[currentMode];
+  const { tinteTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentColors = tinteTheme?.[mode];
 
   const [localValue, setLocalValue] = React.useState(value || "");
 
@@ -377,7 +378,9 @@ export function ZedOverridesPanel({
   onSearchChange,
   searchPlaceholder = "Search Zed theme properties...",
 }: ZedOverridesPanelProps) {
-  const { currentMode, mounted, tinteTheme } = useThemeContext();
+  const { mounted, tinteTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentMode = mode;
   const zedOverrides = useZedOverrides();
   const clearOverrides = useClearOverrides({
     provider: "zed",

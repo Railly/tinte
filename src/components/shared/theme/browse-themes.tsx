@@ -20,7 +20,7 @@ import { PROVIDER_ICONS } from "@/config/providers";
 import { useInfiniteScroll } from "@/lib/hooks/use-infinite-scroll";
 import { useLoop } from "@/lib/hooks/use-loop";
 import { useThemeSearch } from "@/stores/hooks/use-theme-search";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme } from "@/stores/hooks";
 import type { SessionData } from "@/types/auth";
 import type { UserThemeData } from "@/types/user-theme";
 import { mergeRefs } from "@/utils/merge-refs";
@@ -54,7 +54,7 @@ export function BrowseThemes({
   initialSearch = "",
   fromWorkbench = false,
 }: BrowseThemesProps) {
-  const { handleThemeSelect, mounted } = useThemeContext();
+  const { selectTheme, mounted } = useActiveTheme();
 
   // Animation hooks for provider cycling
   const [ref, bounds] = useMeasure();
@@ -360,7 +360,7 @@ export function BrowseThemes({
                     theme={theme}
                     index={index}
                     variant={viewMode}
-                    onThemeSelect={handleThemeSelect}
+                    onThemeSelect={selectTheme}
                     showUserInfo={
                       activeCategory === "community" ||
                       activeCategory === "user" ||

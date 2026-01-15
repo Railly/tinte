@@ -3,7 +3,7 @@
 import { Palette, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/stores/hooks/use-theme";
+import { useUserThemes } from "@/stores/hooks";
 import { DEFAULT_OPEN_SECTIONS } from "./constants";
 import { ColorsSection } from "./colors-section";
 import { RadiusSection } from "./radius-section";
@@ -27,7 +27,7 @@ export function ThemeResultCard({
 }: ThemeResultCardProps) {
   const [openSections, setOpenSections] = useState(DEFAULT_OPEN_SECTIONS);
 
-  const { isAuthenticated } = useTheme();
+  const { isAuthenticated } = useUserThemes();
 
   const toggleSection = (section: keyof typeof DEFAULT_OPEN_SECTIONS) => {
     setOpenSections((prev) => ({

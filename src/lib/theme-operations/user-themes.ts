@@ -1,4 +1,5 @@
 import { and, count, desc, eq, or, sql } from "drizzle-orm";
+import { cache } from "react";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
 import { user, userFavorites } from "@/db/schema/user";
@@ -111,7 +112,7 @@ export async function getUserThemes(
   }
 }
 
-export async function getPublicThemes(
+export const getPublicThemes = cache(async function getPublicThemes(
   limit?: number,
   offset?: number,
   currentUserId?: string,
@@ -196,9 +197,9 @@ export async function getPublicThemes(
     console.error("Error fetching public themes:", error);
     return [];
   }
-}
+});
 
-export async function getPublicThemesCount(): Promise<number> {
+export const getPublicThemesCount = cache(async function getPublicThemesCount(): Promise<number> {
   try {
     const result = await db
       .select({ count: count() })
@@ -210,9 +211,9 @@ export async function getPublicThemesCount(): Promise<number> {
     console.error("Error counting public themes:", error);
     return 0;
   }
-}
+});
 
-export async function getAllPublicThemes(): Promise<ThemeWithMetadata[]> {
+export const getAllPublicThemes = cache(async function getAllPublicThemes(): Promise<ThemeWithMetadata[]> {
   try {
     const results = await db
       .select({
@@ -254,9 +255,9 @@ export async function getAllPublicThemes(): Promise<ThemeWithMetadata[]> {
     console.error("Error fetching all public themes:", error);
     return [];
   }
-}
+});
 
-export async function getUserFavoriteThemes(
+export const getUserFavoriteThemes = cache(async function getUserFavoriteThemes(
   userId: string,
 ): Promise<ThemeWithMetadata[]> {
   try {
@@ -302,9 +303,9 @@ export async function getUserFavoriteThemes(
     console.error("Error fetching user favorite themes:", error);
     return [];
   }
-}
+});
 
-export async function getTweakCNThemes(
+export const getTweakCNThemes = cache(async function getTweakCNThemes(
   limit?: number,
 ): Promise<ThemeWithMetadata[]> {
   try {
@@ -342,9 +343,9 @@ export async function getTweakCNThemes(
     console.error("Error fetching TweakCN themes:", error);
     return [];
   }
-}
+});
 
-export async function getTinteThemes(
+export const getTinteThemes = cache(async function getTinteThemes(
   limit?: number,
 ): Promise<ThemeWithMetadata[]> {
   try {
@@ -382,9 +383,9 @@ export async function getTinteThemes(
     console.error("Error fetching Tinte themes:", error);
     return [];
   }
-}
+});
 
-export async function getRaysoThemes(
+export const getRaysoThemes = cache(async function getRaysoThemes(
   limit?: number,
 ): Promise<ThemeWithMetadata[]> {
   try {
@@ -422,9 +423,9 @@ export async function getRaysoThemes(
     console.error("Error fetching Rayso themes:", error);
     return [];
   }
-}
+});
 
-async function getThemeLikeCount(themeId: string): Promise<number> {
+const getThemeLikeCount = cache(async function getThemeLikeCount(themeId: string): Promise<number> {
   try {
     const result = await db
       .select({ count: count() })
@@ -436,7 +437,7 @@ async function getThemeLikeCount(themeId: string): Promise<number> {
     console.error("Error fetching theme like count:", error);
     return 0;
   }
-}
+});
 
 function transformThemeToMetadata(
   dbTheme: Theme,

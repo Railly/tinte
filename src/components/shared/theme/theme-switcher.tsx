@@ -1,9 +1,10 @@
 "use client";
 
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode } from "@/stores/hooks";
 
 export function ThemeSwitcher() {
-  const { mounted, isDark, toggleTheme } = useThemeContext();
+  const { mounted } = useActiveTheme();
+  const { isDark, toggleMode } = useThemeMode();
 
   if (!mounted) {
     return (
@@ -89,7 +90,7 @@ export function ThemeSwitcher() {
       y: rect.top + rect.height / 2,
     };
 
-    toggleTheme(coords);
+    toggleMode(coords);
   };
 
   return (

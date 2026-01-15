@@ -1,5 +1,5 @@
 import type { WarpTheme } from "@/lib/providers/warp";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 
 interface WarpPreviewProps {
   theme: { light: WarpTheme; dark: WarpTheme };
@@ -7,8 +7,8 @@ interface WarpPreviewProps {
 }
 
 export function WarpPreview({ theme, className }: WarpPreviewProps) {
-  const { currentMode } = useThemeContext();
-  const currentTheme = currentMode === "dark" ? theme.dark : theme.light;
+  const { mode } = useThemeMode();
+  const currentTheme = mode === "dark" ? theme.dark : theme.light;
   const terminalContent = `$ warp --version
 warp 0.2023.11.21.08.02.stable_02
 $ git status

@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeActions } from "@/stores/hooks";
 import type {
   ProviderOverrideHook,
   ProviderType,
@@ -29,7 +29,8 @@ export function useClearOverrides({
   providerHook,
   providerDisplayName,
 }: ClearOverridesConfig): ClearOverridesResult {
-  const { activeTheme, saveCurrentTheme, selectTheme } = useThemeContext();
+  const { activeTheme, selectTheme } = useActiveTheme();
+  const { saveCurrentTheme } = useThemeActions();
   const [isClearing, setIsClearing] = useState(false);
 
   // Check if there are any overrides for this provider

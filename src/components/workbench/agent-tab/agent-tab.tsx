@@ -11,9 +11,8 @@ import {
 import { Message, MessageContent } from "@/components/ui/message";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ChatInput } from "./chat-input";
-import { useTheme } from "@/stores/hooks/use-theme";
+import { useActiveTheme, useThemeMode, useUserThemes } from "@/stores/hooks";
 import { cn } from "@/lib/utils";
-import { useThemeContext } from "@/providers/theme";
 import { AssistantAvatar } from "./assistant-avatar";
 import { ChatEmptyState } from "./chat-empty-state";
 import { MessageAttachment } from "./message-attachment";
@@ -28,9 +27,11 @@ interface AgentTabProps {
 }
 
 export function AgentTab({ initialPrompt }: AgentTabProps) {
-  const { currentMode } = useThemeContext();
+  const { mode } = useThemeMode();
+  const currentMode = mode;
   const { handleApplyTheme } = useThemeApplication();
-  const { isAuthenticated, loadUserThemes, selectTheme } = useTheme();
+  const { selectTheme } = useActiveTheme();
+  const { isAuthenticated, loadUserThemes } = useUserThemes();
   const lastProcessedThemeIdRef = useRef<string | null>(null);
   const isSavingRef = useRef(false);
 

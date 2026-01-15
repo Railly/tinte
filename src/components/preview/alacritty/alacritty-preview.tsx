@@ -1,5 +1,5 @@
 import type { AlacrittyTheme } from "@/lib/providers/alacritty";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 
 interface AlacrittyPreviewProps {
   theme: { light: AlacrittyTheme; dark: AlacrittyTheme };
@@ -7,8 +7,8 @@ interface AlacrittyPreviewProps {
 }
 
 export function AlacrittyPreview({ theme, className }: AlacrittyPreviewProps) {
-  const { currentMode } = useThemeContext();
-  const currentTheme = currentMode === "dark" ? theme.dark : theme.light;
+  const { mode } = useThemeMode();
+  const currentTheme = mode === "dark" ? theme.dark : theme.light;
 
   const terminalContent = `$ alacritty --version
 alacritty 0.13.2
@@ -260,7 +260,7 @@ $ █`;
             currentTheme.colors.primary.dim_foreground,
         }}
       >
-        Alacritty Terminal • {currentMode} mode
+        Alacritty Terminal • {mode} mode
       </div>
     </div>
   );

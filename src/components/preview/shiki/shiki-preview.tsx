@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useShikiCssHighlighter } from "@/components/workbench/hooks/editor/use-shiki-css";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 import type { ShikiTheme } from "@/types/shiki";
 import { codeTemplates } from "./shiki-code-templates";
 
@@ -46,7 +46,7 @@ export function ShikiPreview({ theme, className }: ShikiPreviewProps) {
     }
   };
 
-  const { currentMode } = useThemeContext();
+  const { mode } = useThemeMode();
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [themeVersion, setThemeVersion] = useState(0);
   const [currentThemeSet, setCurrentThemeSet] = useState(theme);
@@ -60,7 +60,7 @@ export function ShikiPreview({ theme, className }: ShikiPreviewProps) {
 
   const { html, loading, cssVariables } = useShikiCssHighlighter({
     themeSet: { light: currentThemeSet.light, dark: currentThemeSet.dark },
-    currentMode,
+    currentMode: mode,
     template,
     themeVersion,
   });

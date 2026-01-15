@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UnifiedPreview } from "@/components/preview/unified-preview";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme } from "@/stores/hooks";
 import type { TinteTheme } from "@/types/tinte";
 import { WorkbenchToolbar } from "../toolbar";
 
@@ -21,7 +21,7 @@ function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
 }
 
 export function WorkbenchPreviewPane({}: WorkbenchPreviewPaneProps) {
-  const { tinteTheme } = useThemeContext();
+  const { tinteTheme } = useActiveTheme();
 
   return (
     <main className="flex flex-col overflow-hidden w-full">

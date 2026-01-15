@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/lib/hooks/use-mobile";
 import { useThemeSlugRedirect } from "@/stores/hooks/use-theme-slug-redirect";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme } from "@/stores/hooks";
 import { useWorkbenchStore, type WorkbenchTab } from "@/stores/workbench-store";
 import type { UserThemeData } from "@/types/user-theme";
 
@@ -37,7 +37,7 @@ export function WorkbenchMain({
   const initializeWorkbench = useWorkbenchStore(
     (state) => state.initializeWorkbench,
   );
-  const { selectTheme } = useThemeContext();
+  const { selectTheme } = useActiveTheme();
   const isMobile = useIsMobile();
 
   // Check if themeSlug looks like a generated ID (36 chars with dashes) to enable auto-redirect

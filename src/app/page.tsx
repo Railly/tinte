@@ -46,16 +46,21 @@ export const metadata: Metadata = {
 export default async function Home() {
   const { userId } = await auth();
 
-  const userThemes = userId
-    ? await getUserThemes(userId, 8, { id: userId })
-    : [];
-
-  const favoriteThemes = userId ? await getUserFavoriteThemes(userId) : [];
-
-  const publicThemes = await getPublicThemes(8);
-  const tweakCNThemes = await getTweakCNThemes(8);
-  const tinteThemes = await getTinteThemes(8);
-  const raysoThemes = await getRaysoThemes(8);
+  const [
+    userThemes,
+    favoriteThemes,
+    publicThemes,
+    tweakCNThemes,
+    tinteThemes,
+    raysoThemes,
+  ] = await Promise.all([
+    userId ? getUserThemes(userId, 8, { id: userId }) : Promise.resolve([]),
+    userId ? getUserFavoriteThemes(userId) : Promise.resolve([]),
+    getPublicThemes(8),
+    getTweakCNThemes(8),
+    getTinteThemes(8),
+    getRaysoThemes(8),
+  ]);
 
   const pageSchema = generatePageSchema({
     title: "Multi-Platform Theme Generator & Converter",

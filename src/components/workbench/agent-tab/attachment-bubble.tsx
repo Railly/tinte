@@ -27,6 +27,7 @@ export function AttachmentBubble({ att }: AttachmentBubbleProps) {
             <img
               src={att.imageData}
               alt="Uploaded image"
+              loading="lazy"
               className="w-full max-h-48 sm:max-h-64 object-cover"
             />
           ) : (

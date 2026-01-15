@@ -29,6 +29,8 @@ export function MessageAttachment({ file }: MessageAttachmentProps) {
         <img
           src={imageUrl}
           alt={filename}
+          width={32}
+          height={32}
           className="w-8 h-8 rounded object-cover border border-border/20"
         />
         <div className="flex items-center gap-1">

@@ -1,5 +1,5 @@
 import type { KittyTheme } from "@/lib/providers/kitty";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 
 interface KittyPreviewProps {
   theme: { light: KittyTheme; dark: KittyTheme };
@@ -7,8 +7,8 @@ interface KittyPreviewProps {
 }
 
 export function KittyPreview({ theme, className }: KittyPreviewProps) {
-  const { currentMode } = useThemeContext();
-  const currentTheme = currentMode === "dark" ? theme.dark : theme.light;
+  const { mode } = useThemeMode();
+  const currentTheme = mode === "dark" ? theme.dark : theme.light;
 
   const terminalContent = `$ kitty --version
 kitty 0.30.1 created by Kovid Goyal
@@ -238,7 +238,7 @@ $ █`;
           color: currentTheme.inactive_tab_foreground,
         }}
       >
-        <span>Kitty Terminal • {currentMode} mode</span>
+        <span>Kitty Terminal • {mode} mode</span>
         <span>⌘T New Tab • ⌘W Close</span>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { PromptInput } from "@/components/home/prompt-input";
 import { PROVIDER_ICONS } from "@/config/providers";
 import { useLoop } from "@/lib/hooks/use-loop";
 import type { ThemeData } from "@/lib/theme";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useUserThemes } from "@/stores/hooks";
 import { mergeRefs } from "@/utils/merge-refs";
 
 interface HeroProps {
@@ -24,7 +24,8 @@ export function Hero({
 }: HeroProps) {
   const [ref, bounds] = useMeasure();
   const [active, ref2] = useLoop();
-  const { addThemes, mounted } = useThemeContext();
+  const { mounted } = useActiveTheme();
+  const { addThemes } = useUserThemes();
 
   // Add themes to store once on mount
   useEffect(() => {

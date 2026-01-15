@@ -20,7 +20,7 @@ import {
   createVSCodeTokenSkeletons,
   VSCODE_TOKEN_GROUPS,
 } from "@/lib/provider-utils";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode } from "@/stores/hooks";
 import { useClearOverrides } from "../hooks/use-clear-overrides";
 import { useVSCodeOverrides } from "../hooks/use-provider-overrides";
 import { ClearOverridesAlert } from "../clear-overrides-alert";
@@ -38,7 +38,9 @@ export function VSCodeOverridesPanel({
   onSearchChange,
   searchPlaceholder = "Search tokens...",
 }: VSCodeOverridesPanelProps) {
-  const { tinteTheme, currentMode, mounted } = useThemeContext();
+  const { tinteTheme, mounted } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentMode = mode;
   const vscodeOverrides = useVSCodeOverrides();
   const clearOverrides = useClearOverrides({
     provider: "vscode",

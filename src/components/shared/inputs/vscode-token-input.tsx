@@ -19,7 +19,7 @@ import {
 import { generateTailwindPalette } from "@/lib/colors";
 import type { SemanticToken } from "@/lib/providers/vscode";
 import { cn } from "@/lib/utils";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode } from "@/stores/hooks";
 import type { TinteBlock } from "@/types/tinte";
 import { InvertedLogo } from "../layout";
 
@@ -72,8 +72,9 @@ export function VSCodeTokenInput({
   description,
   skeleton = false,
 }: VSCodeTokenInputProps) {
-  const { tinteTheme, currentMode } = useThemeContext();
-  const currentColors = tinteTheme?.[currentMode];
+  const { tinteTheme } = useActiveTheme();
+  const { mode } = useThemeMode();
+  const currentColors = tinteTheme?.[mode];
 
   if (skeleton || !value) {
     return (

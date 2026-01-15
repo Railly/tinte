@@ -150,6 +150,7 @@ export function PastedItemCard({
               <img
                 src={item.imageData}
                 alt="Pasted screenshot"
+                loading="lazy"
                 className="w-full h-full object-cover rounded-lg"
               />
             </div>
@@ -158,6 +159,7 @@ export function PastedItemCard({
               <img
                 src={item.imageData}
                 alt="Webpage screenshot"
+                loading="lazy"
                 className="w-full h-full object-cover rounded-lg"
               />
             </div>
@@ -170,6 +172,8 @@ export function PastedItemCard({
               <img
                 src={favicon}
                 alt="favicon"
+                width={16}
+                height={16}
                 className="w-4 h-4 flex-shrink-0 mt-0.5"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";

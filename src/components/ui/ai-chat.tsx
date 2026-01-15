@@ -310,6 +310,7 @@ export function AIChat({
                                   <img
                                     src={(part as any).url}
                                     alt="Generated content"
+                                    loading="lazy"
                                     className="max-w-full h-auto rounded-lg border border-border"
                                   />
                                 </div>

@@ -1,6 +1,6 @@
 import { rgbToHex } from "@uiw/color-convert";
 import type { GIMPPalette } from "@/lib/providers/gimp";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 
 interface GimpPreviewProps {
   theme: { light: GIMPPalette; dark: GIMPPalette };
@@ -8,8 +8,8 @@ interface GimpPreviewProps {
 }
 
 export function GimpPreview({ theme, className }: GimpPreviewProps) {
-  const { currentMode } = useThemeContext();
-  const currentPalette = currentMode === "dark" ? theme.dark : theme.light;
+  const { mode } = useThemeMode();
+  const currentPalette = mode === "dark" ? theme.dark : theme.light;
 
   // GIMP palette preview showing color swatches
   return (
@@ -24,7 +24,7 @@ export function GimpPreview({ theme, className }: GimpPreviewProps) {
           </div>
         </div>
         <div className="text-xs text-muted-foreground">
-          {currentPalette.colors.length} colors • {currentMode} mode
+          {currentPalette.colors.length} colors • {mode} mode
         </div>
       </div>
 

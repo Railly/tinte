@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Settings, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeActions, useUserThemes } from "@/stores/hooks";
 import { ThemeSelector } from "../theme";
 
 interface MobileThemeControlsProps {
@@ -12,8 +12,9 @@ interface MobileThemeControlsProps {
 export function MobileThemeControls({
   onThemeEditorOpen,
 }: MobileThemeControlsProps) {
-  const { allThemes, activeTheme, handleThemeSelect, navigateTheme } =
-    useThemeContext();
+  const { activeTheme, selectTheme } = useActiveTheme();
+  const { navigateTheme } = useThemeActions();
+  const { allThemes } = useUserThemes();
   const activeId = activeTheme?.id || null;
 
   return (
@@ -22,7 +23,7 @@ export function MobileThemeControls({
         <ThemeSelector
           themes={allThemes}
           activeId={activeId}
-          onSelect={handleThemeSelect}
+          onSelect={selectTheme}
           triggerClassName="flex-1 max-w-[140px]"
           label="Browse themes…"
         />

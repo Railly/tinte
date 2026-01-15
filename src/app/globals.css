@@ -208,3 +208,19 @@ body {
 @theme {
   --animate-shimmer: shimmer 2s ease-in-out infinite;
 }
+
+.theme-card-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 200px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

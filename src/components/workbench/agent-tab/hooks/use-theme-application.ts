@@ -2,12 +2,12 @@
 
 import { useCallback } from "react";
 import type { ThemeData } from "@/lib/theme";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme } from "@/stores/hooks";
 import { loadGoogleFont } from "@/utils/fonts";
 import { FONT_WEIGHTS } from "../constants";
 
 export function useThemeApplication() {
-  const { handleThemeSelect } = useThemeContext();
+  const { selectTheme } = useActiveTheme();
 
   const handleApplyTheme = useCallback(
     async (toolResult: any) => {
@@ -75,7 +75,7 @@ export function useThemeApplication() {
       };
 
       // Apply theme to UI
-      handleThemeSelect(themeData);
+      selectTheme(themeData);
 
       setTimeout(() => {
         if (document.documentElement) {
@@ -89,7 +89,7 @@ export function useThemeApplication() {
         }
       }, 100);
     },
-    [handleThemeSelect],
+    [selectTheme],
   );
 
   return { handleApplyTheme };

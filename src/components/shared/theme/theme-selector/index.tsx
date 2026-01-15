@@ -17,7 +17,7 @@ import {
 import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import type { ThemeData } from "@/lib/theme";
 import { cn } from "@/lib/utils";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode, useUserThemes } from "@/stores/hooks";
 import { ThemeListItem } from "./theme-list-item";
 import { ThemeTrigger } from "./theme-trigger";
 
@@ -44,8 +44,10 @@ export function ThemeSelector({
   popoverWidth?: string;
 }) {
   const [open, setOpen] = React.useState(false);
-  const { currentMode, user, mounted, favoriteThemes, isAuthenticated } =
-    useThemeContext();
+  const { mode } = useThemeMode();
+  const { mounted } = useActiveTheme();
+  const { user, favoriteThemes, isAuthenticated } = useUserThemes();
+  const currentMode = mode;
 
   const {
     searchResults,

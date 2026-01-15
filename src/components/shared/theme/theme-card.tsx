@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useThemeFonts } from "@/stores/hooks/use-theme-fonts";
 import type { ThemeData } from "@/lib/theme";
 import { getVendorIcon, getVendorImage } from "@/lib/vendors";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 import {
   extractShadcnColors,
   extractShadcnFonts,
@@ -120,7 +120,7 @@ export function ThemeCard({
   variant = "grid",
   showUserInfo = false,
 }: ThemeCardProps) {
-  const { isDark } = useThemeContext();
+  const { isDark } = useThemeMode();
   const router = useRouter();
 
   // Ensure fonts are loaded for this theme card
@@ -175,7 +175,7 @@ export function ThemeCard({
       <motion.div
         whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="group relative bg-background/50 backdrop-blur-sm rounded-lg border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
+        className="theme-card-item group relative bg-background/50 backdrop-blur-sm rounded-lg border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
         onClick={handleThemeClick}
         style={
           {
@@ -342,7 +342,7 @@ export function ThemeCard({
     <motion.div
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="group relative bg-background/50 backdrop-blur-sm rounded-xl border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
+      className="theme-card-item group relative bg-background/50 backdrop-blur-sm rounded-xl border border-border/60 hover:border-border/80 hover:shadow-sm cursor-pointer overflow-hidden transition-colors"
       onClick={handleThemeClick}
       style={
         {

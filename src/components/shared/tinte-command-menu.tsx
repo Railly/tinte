@@ -33,7 +33,7 @@ import { ALL_FORMATTED_PROVIDERS } from "@/config/providers";
 import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import { extractThemeColors } from "@/lib/theme/utils";
 import { cn } from "@/lib/utils";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useThemeMode, useUserThemes } from "@/stores/hooks";
 
 const NAVIGATION_ITEMS = [
   {
@@ -74,8 +74,10 @@ export function TinteCommandMenu({
   const [open, setOpen] = React.useState(false);
   const [selectedType, setSelectedType] = React.useState<string | null>(null);
   const router = useRouter();
-  const { theme, setTheme, handleThemeSelect, isDark, allThemes, currentMode } =
-    useThemeContext();
+  const { selectTheme } = useActiveTheme();
+  const { mode, isDark, setMode } = useThemeMode();
+  const { allThemes } = useUserThemes();
+  const currentMode = mode;
 
   const {
     searchResults,
@@ -111,7 +113,7 @@ export function TinteCommandMenu({
         case "m":
           if (e.shiftKey) {
             e.preventDefault();
-            setTheme(theme === "dark" ? "light" : "dark");
+            setMode(isDark ? "light" : "dark");
           }
           break;
       }
@@ -119,7 +121,7 @@ export function TinteCommandMenu({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [router, setTheme, theme]);
+  }, [router, setMode, isDark]);
 
   const getThemeIcon = () => {
     return isDark ? Moon : Sun;
@@ -207,7 +209,7 @@ export function TinteCommandMenu({
                 value="toggle theme mode light dark"
                 onSelect={() => {
                   runCommand(() =>
-                    setTheme(theme === "dark" ? "light" : "dark"),
+                    setMode(isDark ? "light" : "dark"),
                   );
                   setSelectedType("theme");
                 }}
@@ -234,7 +236,7 @@ export function TinteCommandMenu({
                     key={themeData.id}
                     value={`${themeData.name} ${themeData.author || ""} ${(themeData.tags || []).join(" ")}`}
                     onSelect={() => {
-                      runCommand(() => handleThemeSelect(themeData));
+                      runCommand(() => selectTheme(themeData));
                       setSelectedType("theme-search");
                     }}
                     onMouseEnter={() => setSelectedType("theme-search")}
@@ -315,7 +317,7 @@ export function TinteCommandMenu({
                     key={themeData.id}
                     value={`${themeData.name} theme ${themeData.author}`}
                     onSelect={() => {
-                      runCommand(() => handleThemeSelect(themeData));
+                      runCommand(() => selectTheme(themeData));
                       setSelectedType("theme-select");
                     }}
                     onMouseEnter={() => setSelectedType("theme-select")}

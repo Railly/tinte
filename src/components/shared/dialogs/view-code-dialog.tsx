@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib";
 import { convertTinteToShiki } from "@/lib/providers/shiki";
 import { getShadcnThemeCSS } from "@/lib/provider-utils";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme } from "@/stores/hooks";
 
 interface ViewCodeDialogProps {
   isOpen: boolean;
@@ -81,7 +81,7 @@ export function ViewCodeDialog({
   providerId,
 }: ViewCodeDialogProps) {
   const [copied, setCopied] = useState(false);
-  const { tinteTheme, activeTheme } = useThemeContext();
+  const { tinteTheme, activeTheme } = useActiveTheme();
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const currentProviderId = providerId || provider;
 

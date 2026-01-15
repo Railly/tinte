@@ -1,4 +1,3 @@
-export * from "./use-theme";
 export * from "./use-active-theme";
 export * from "./use-theme-mode";
 export * from "./use-theme-overrides";
@@ -7,4 +6,5 @@ export * from "./use-theme-fonts";
 export * from "./use-theme-history";
 export * from "./use-theme-search";
 export * from "./use-theme-slug-redirect";
-export * from "./theme-utils";
+export * from "./use-user-themes";
+export * from "./use-theme-actions";

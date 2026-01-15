@@ -1,6 +1,6 @@
 "use client";
 
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
 import {
   FolderIcon,
   FolderOpenedIcon,
@@ -25,7 +25,16 @@ import {
   codeTemplates,
   type VSCodeTheme,
 } from "@/lib/providers/vscode";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeTokens } from "@/stores/hooks";
+
+const Editor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.default), {
+  ssr: false,
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center bg-[#1e1e1e]">
+      <div className="animate-pulse text-sm text-[#6c6c6c]">Loading editor...</div>
+    </div>
+  ),
+});
 
 interface MonacoLikeEditorProps {
   themeSet: { light: VSCodeTheme; dark: VSCodeTheme };
@@ -122,7 +131,7 @@ export function MonacoLikeEditor({
 
   const currentTheme = themeSet[currentMode];
   const colors = currentTheme.colors;
-  const { currentTokens } = useThemeContext();
+  const { currentTokens } = useThemeTokens();
 
   const {
     isReady,

@@ -18,7 +18,7 @@ import { cn } from "@/lib";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
 import { importShadcnTheme } from "@/lib/theme-operations/import";
 import { getProvider } from "@/lib/providers";
-import { useThemeContext } from "@/providers/theme";
+import { useActiveTheme, useUserThemes, useThemeActions } from "@/stores/hooks";
 import type { TinteTheme } from "@/types/tinte";
 import { HistoryControls } from "./history-controls";
 import { ToolbarDialogs } from "./toolbar-dialogs";
@@ -44,21 +44,23 @@ export function WorkbenchToolbar({
   const [showCopiedFeedback, setShowCopiedFeedback] = useState(false);
 
   const {
-    updateTinteTheme,
     activeTheme,
+    tinteTheme: theme,
+    unsavedChanges,
+    markAsSaved,
+    selectTheme,
+    updateTinteTheme,
+  } = useActiveTheme();
+  const {
     user,
     isAuthenticated,
     canSave,
-    saveCurrentTheme,
     deleteTheme,
-    unsavedChanges,
-    markAsSaved,
     isSaving,
     loadUserThemes,
-    selectTheme,
-    tinteTheme: theme,
     userThemes,
-  } = useThemeContext();
+  } = useUserThemes();
+  const { saveCurrentTheme } = useThemeActions();
 
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const currentProviderId = provider || providerId;

@@ -1,5 +1,5 @@
 import type { SlackTheme } from "@/lib/providers/slack";
-import { useThemeContext } from "@/providers/theme";
+import { useThemeMode } from "@/stores/hooks";
 
 interface SlackPreviewProps {
   theme: { light: SlackTheme; dark: SlackTheme };
@@ -7,8 +7,8 @@ interface SlackPreviewProps {
 }
 
 export function SlackPreview({ theme, className }: SlackPreviewProps) {
-  const { currentMode } = useThemeContext();
-  const currentTheme = currentMode === "dark" ? theme.dark : theme.light;
+  const { mode } = useThemeMode();
+  const currentTheme = mode === "dark" ? theme.dark : theme.light;
 
   // Use actual Slack theme colors
   const slackColors = {
@@ -46,7 +46,7 @@ export function SlackPreview({ theme, className }: SlackPreviewProps) {
           </div>
           <div className="text-sm font-medium">Tinte Workspace</div>
         </div>
-        <div className="text-xs opacity-75">{currentMode} theme preview</div>
+        <div className="text-xs opacity-75">{mode} theme preview</div>
       </div>
 
       <div className="flex h-80">

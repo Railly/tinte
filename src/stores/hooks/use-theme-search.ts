@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import type { ThemeData } from "@/lib/theme";
 import { useDebounce } from "@/lib/hooks/use-debounce";

@@ -1,33 +1,17 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { ClerkSync } from "@/components/shared/clerk-sync";
-import { useTheme } from "@/stores/hooks/use-theme";
 import { useThemeFonts } from "@/stores/hooks/use-theme-fonts";
 import { useAuthStore } from "@/stores/auth";
 import { useThemeStore } from "@/stores/theme";
 
-type ThemeContextValue = ReturnType<typeof useTheme>;
-
-const ThemeContext = React.createContext<ThemeContextValue | null>(null);
-
-export function useThemeContext(): ThemeContextValue {
-  const context = React.useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useThemeContext must be used within a ThemeProvider");
-  }
-  return context;
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const themeStore = useThemeStore();
   const authStore = useAuthStore();
-  const themeValue = useTheme();
 
-  // Preload fonts whenever the current theme changes
-  useThemeFonts(themeValue.activeTheme);
+  useThemeFonts(themeStore.activeTheme);
 
-  // Handle initialization at provider level to prevent infinite loops
   useEffect(() => {
     if (!themeStore.mounted) {
       themeStore.initialize();
@@ -41,9 +25,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [authStore.mounted]);
 
   return (
-    <ThemeContext.Provider value={themeValue}>
+    <>
       <ClerkSync />
       {children}
-    </ThemeContext.Provider>
+    </>
   );
 }
