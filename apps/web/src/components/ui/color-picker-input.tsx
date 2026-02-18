@@ -3,7 +3,7 @@ import { Colorful } from "@uiw/react-color";
 import { hsl as culoriHsl, formatHex, lch, oklch, rgb } from "culori";
 import { ChevronDown } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,11 +47,13 @@ export function ColorPickerInput({
 }: ColorPickerInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(color);
+  const [prevColor, setPrevColor] = useState(color);
   const [activeTab, setActiveTab] = useState("oklch");
 
-  useEffect(() => {
+  if (color !== prevColor) {
+    setPrevColor(color);
     setInputValue(color);
-  }, [color]);
+  }
 
   const contrastColor = useMemo(() => {
     if (

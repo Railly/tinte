@@ -30,6 +30,7 @@ export function ThemeTrigger({
       variant="outline"
       role="combobox"
       aria-expanded={open}
+      aria-controls="theme-selector-listbox"
       size="sm"
       className={cn(
         "justify-between gap-2 md:h-auto md:py-1.5 hover:text-muted-foreground",

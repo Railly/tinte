@@ -40,6 +40,59 @@ import { PasteDialog } from "./paste-dialog";
 import { PastedItemsList } from "./pasted-items-list";
 import { ThemeSelectorDialog } from "./theme-selector-dialog";
 
+function isValidColor(color: string): boolean {
+  return /^#[0-9a-f]{3,8}$/i.test(color);
+}
+
+function CustomColorPreview({ color }: { color: string }) {
+  if (!color || !isValidColor(color)) {
+    return (
+      <div className="grid grid-cols-5 gap-0.5 w-10 h-10">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <div
+            key={index}
+            className="w-full h-full rounded-sm bg-muted/30 border border-dashed border-muted-foreground/30"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  const palette = generateTailwindPalette(color);
+  const first10Colors = palette.slice(0, 10);
+
+  return (
+    <div className="grid grid-cols-5 gap-0.5 w-10 h-10">
+      {first10Colors.map((paletteColor, index) => (
+        <div
+          key={index}
+          className="w-full h-full rounded-sm"
+          style={{ backgroundColor: paletteColor.value }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function MiniPalettePreview({ preset }: { preset: PalettePreset }) {
+  const palette = generateTailwindPalette(preset.baseColor);
+  const first10Colors = palette.slice(0, 10);
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="grid grid-cols-5 gap-0.5 w-10 h-10">
+        {first10Colors.map((color, index) => (
+          <div
+            key={index}
+            className="w-full h-full rounded-sm"
+            style={{ backgroundColor: color.value }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface PromptInputProps {
   onSubmit?: (kind: Kind, raw: string) => void;
 }
@@ -280,10 +333,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
     setPaletteDialogOpen(false);
   }
 
-  function isValidColor(color: string): boolean {
-    return /^#[0-9a-f]{3,8}$/i.test(color);
-  }
-
   function handlePresetClick(preset: (typeof PROMPT_INPUT_PRESETS)[0]) {
     setPrompt(preset.prompt);
     // Clear existing palette items and replace with new ones
@@ -314,55 +363,6 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
       `${backgroundColors.map((c) => c.value).join(" ")}`,
       "palette",
       backgroundColors.map((c) => c.value),
-    );
-  }
-
-  function CustomColorPreview({ color }: { color: string }) {
-    if (!color || !isValidColor(color)) {
-      return (
-        <div className="grid grid-cols-5 gap-0.5 w-10 h-10">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <div
-              key={index}
-              className="w-full h-full rounded-sm bg-muted/30 border border-dashed border-muted-foreground/30"
-            />
-          ))}
-        </div>
-      );
-    }
-
-    const palette = generateTailwindPalette(color);
-    const first10Colors = palette.slice(0, 10);
-
-    return (
-      <div className="grid grid-cols-5 gap-0.5 w-10 h-10">
-        {first10Colors.map((paletteColor, index) => (
-          <div
-            key={index}
-            className="w-full h-full rounded-sm"
-            style={{ backgroundColor: paletteColor.value }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  function MiniPalettePreview({ preset }: { preset: PalettePreset }) {
-    const palette = generateTailwindPalette(preset.baseColor);
-    const first10Colors = palette.slice(0, 10); // Take first 10 colors (omit last one)
-
-    return (
-      <div className="flex flex-col gap-1">
-        <div className="grid grid-cols-5 gap-0.5 w-10 h-10">
-          {first10Colors.map((color, index) => (
-            <div
-              key={index}
-              className="w-full h-full rounded-sm"
-              style={{ backgroundColor: color.value }}
-            />
-          ))}
-        </div>
-      </div>
     );
   }
 

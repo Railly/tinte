@@ -100,6 +100,19 @@ export const UnifiedPreview = memo(function UnifiedPreview({ theme, className }:
     zedOverrides.allOverrides,
   ]);
 
+  const previewKey = useMemo(() => {
+    if (!currentProvider) return "";
+    if (currentProvider.metadata.id === "zed") {
+      const values = Object.values(zedOverrides.allOverrides || {});
+      return `zed-${values.map((v) => (typeof v === "object" ? Object.values(v).join(",") : v)).join("-")}`;
+    }
+    if (currentProvider.metadata.id === "vscode") {
+      const values = Object.values(vscodeOverrides.overrides || {});
+      return `vscode-${values.map((v) => (typeof v === "object" ? Object.values(v).join(",") : v)).join("-")}`;
+    }
+    return currentProvider.metadata.id;
+  }, [currentProvider, zedOverrides.allOverrides, vscodeOverrides.overrides]);
+
   if (!currentProvider || !converted) {
     return (
       <div className="flex items-center justify-center h-64 text-muted-foreground">
@@ -111,18 +124,6 @@ export const UnifiedPreview = memo(function UnifiedPreview({ theme, className }:
   }
 
   const PreviewComponent = currentProvider.preview.component;
-
-  const previewKey = useMemo(() => {
-    if (currentProvider.metadata.id === "zed") {
-      const values = Object.values(zedOverrides.allOverrides || {});
-      return `zed-${values.map((v) => (typeof v === "object" ? Object.values(v).join(",") : v)).join("-")}`;
-    }
-    if (currentProvider.metadata.id === "vscode") {
-      const values = Object.values(vscodeOverrides.overrides || {});
-      return `vscode-${values.map((v) => (typeof v === "object" ? Object.values(v).join(",") : v)).join("-")}`;
-    }
-    return currentProvider.metadata.id;
-  }, [currentProvider.metadata.id, zedOverrides.allOverrides, vscodeOverrides.overrides]);
 
   return (
     <div

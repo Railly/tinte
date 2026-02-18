@@ -28,6 +28,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
   const [provider, setProvider] = useQueryState("provider", {
     defaultValue: "shadcn",
   });
+  const listboxId = React.useId();
   const [open, setOpen] = React.useState(false);
 
   const availableProviders = React.useMemo(() => {
@@ -78,6 +79,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls={listboxId}
           size="sm"
           className={`justify-between ${className} hover:text-muted-foreground w-fit transition-all duration-150`}
         >
@@ -110,7 +112,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
       <PopoverContent align="start" className="w-48 p-0">
         <Command>
           <CommandInput placeholder="Search providers..." className="h-9" />
-          <CommandList className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-thumb]:bg-border">
+          <CommandList id={listboxId} className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-thumb]:bg-border">
             <CommandEmpty>No provider found.</CommandEmpty>
 
             {availableProviders.length > 0 && (

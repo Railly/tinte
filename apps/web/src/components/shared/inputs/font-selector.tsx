@@ -57,6 +57,7 @@ export function FontSelector({
   className,
   style,
 }: FontSelectorProps) {
+  const listboxId = React.useId();
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -205,6 +206,7 @@ export function FontSelector({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls={listboxId}
           size="sm"
           className={cn(
             "bg-input/25 w-full justify-between gap-2 md:h-auto md:py-2",
@@ -296,6 +298,7 @@ export function FontSelector({
               <CommandEmpty>No fonts found.</CommandEmpty>
             ) : (
               <CommandList
+                id={listboxId}
                 className="scrollbar-thin size-full p-1"
                 ref={scrollRef}
               >
