@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "paths": {
+      "@tinte/core": ["../core/src/index.ts"],
+      "@tinte/core/*": ["../core/src/*"],
+      "@tinte/providers": ["../providers/src/providers/index.ts"],
+      "@tinte/providers/*": ["../providers/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}
