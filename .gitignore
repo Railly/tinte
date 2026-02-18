@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -11,14 +11,15 @@
 !.yarn/versions
 
 # testing
-/coverage
+coverage
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build
+dist
 
 # misc
 .DS_Store
@@ -49,9 +50,7 @@ next-env.d.ts
 .claude
 
 # Figma plugin
-/figma-plugin/node_modules
-/figma-plugin/dist
-/figma-plugin/*.log
-/figma-plugin/bun.lock
+apps/figma/dist
+*.log
 
 .env.local
