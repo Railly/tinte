@@ -1,0 +1,49 @@
+{
+  "name": "@tinte/providers",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/providers/index.ts",
+  "types": "./src/providers/index.ts",
+  "exports": {
+    ".": {
+      "bun": "./src/providers/index.ts",
+      "types": "./src/providers/index.ts",
+      "import": "./src/providers/index.ts"
+    },
+    "./provider-utils/override-normalization": {
+      "bun": "./src/provider-utils/override-normalization.ts",
+      "types": "./src/provider-utils/override-normalization.ts",
+      "import": "./src/provider-utils/override-normalization.ts"
+    },
+    "./provider-utils/shadcn-utils": {
+      "bun": "./src/provider-utils/shadcn-utils.ts",
+      "types": "./src/provider-utils/shadcn-utils.ts",
+      "import": "./src/provider-utils/shadcn-utils.ts"
+    },
+    "./provider-utils/shadcn-converter": {
+      "bun": "./src/provider-utils/shadcn-converter.ts",
+      "types": "./src/provider-utils/shadcn-converter.ts",
+      "import": "./src/provider-utils/shadcn-converter.ts"
+    },
+    "./provider-utils/vscode-tokens": {
+      "bun": "./src/provider-utils/vscode-tokens.ts",
+      "types": "./src/provider-utils/vscode-tokens.ts",
+      "import": "./src/provider-utils/vscode-tokens.ts"
+    },
+    "./provider-utils/vscode-download": {
+      "bun": "./src/provider-utils/vscode-download.ts",
+      "types": "./src/provider-utils/vscode-download.ts",
+      "import": "./src/provider-utils/vscode-download.ts"
+    }
+  },
+  "dependencies": {
+    "@tinte/core": "workspace:*",
+    "culori": "^4.0.2",
+    "poline": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/culori": "^4.0.0",
+    "typescript": "^5",
+    "vitest": "^4.0.17"
+  }
+}
