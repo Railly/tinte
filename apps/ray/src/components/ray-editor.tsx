@@ -2,6 +2,7 @@
 
 import type { TinteBlock } from "@tinte/core";
 import { useQueryState } from "nuqs";
+import { Check, Copy } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { DEFAULT_THEME } from "@/data/bundled-themes";
 import { useCodeHighlight } from "@/hooks/use-code-highlight";
@@ -16,6 +17,8 @@ import { ColorEditor } from "./controls/color-editor";
 import { ImageThemeUpload } from "./controls/image-theme-upload";
 import { SettingsBar } from "./controls/settings-bar";
 import { ThemePicker } from "./controls/theme-picker";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { ExportActions } from "./export-actions";
 import { PreviewFrame } from "./preview-frame";
 
@@ -172,14 +175,46 @@ export function RayEditor() {
             onLanguageChange={handleLanguageChange}
           />
         </div>
-        <ExportActions
-          onCopy={copyToClipboard}
-          onExportPng={exportPng}
-          onExportSvg={exportSvg}
-          canCopy={canCopy}
-          exporting={exporting}
-        />
+        <div className="flex items-center gap-3">
+          <ExportActions
+            onCopy={copyToClipboard}
+            onExportPng={exportPng}
+            onExportSvg={exportSvg}
+            canCopy={canCopy}
+            exporting={exporting}
+          />
+          <SkillInstallButton />
+        </div>
       </div>
     </div>
+  );
+}
+
+function SkillInstallButton() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText("npx skills add Railly/tinte");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, []);
+
+  return (
+    <ButtonGroup>
+      <Button
+        variant="outline"
+        size="xs"
+        className="gap-1.5 font-mono text-[11px]"
+        onClick={handleCopy}
+        title="Copy install command"
+      >
+        {copied ? (
+          <Check className="size-3 text-emerald-500" />
+        ) : (
+          <Copy className="size-3 text-muted-foreground" />
+        )}
+        npx skills add
+      </Button>
+    </ButtonGroup>
   );
 }
