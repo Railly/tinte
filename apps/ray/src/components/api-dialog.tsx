@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Check, Copy, Terminal, Sparkles } from "lucide-react";
+import { Check, Copy, Terminal, Sparkles, Info } from "lucide-react";
 import { codeToHtml } from "shiki";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Dialog,
   DialogContent,
@@ -102,34 +103,45 @@ const PARAMS = [
 export function ApiDialog({ defaultTab = "api" }: { defaultTab?: "api" | "skill" }) {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState(defaultTab);
+  const [copied, setCopied] = useState(false);
 
   const openWith = useCallback((t: "api" | "skill") => {
     setTab(t);
     setOpen(true);
   }, []);
 
+  const handleCopyInstall = useCallback(() => {
+    navigator.clipboard.writeText("npx skills add Railly/tinte");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <div className="flex items-center gap-1">
+      <ButtonGroup>
         <Button
-          variant="ghost"
+          variant="outline"
           size="xs"
-          className="gap-1.5 text-muted-foreground hover:text-foreground"
+          className="gap-1.5 font-mono text-[11px] pr-2"
+          onClick={handleCopyInstall}
+          title="Copy install command"
+        >
+          {copied ? (
+            <Check className="size-3 text-emerald-500" />
+          ) : (
+            <Copy className="size-3 text-muted-foreground" />
+          )}
+          npx skills add Railly/tinte
+        </Button>
+        <Button
+          variant="outline"
+          size="icon-xs"
           onClick={() => openWith("skill")}
+          title="API & Skill docs"
         >
-          <Sparkles className="size-3" />
-          Skill
+          <Info className="size-3" />
         </Button>
-        <Button
-          variant="ghost"
-          size="xs"
-          className="gap-1.5 text-muted-foreground hover:text-foreground"
-          onClick={() => openWith("api")}
-        >
-          <Terminal className="size-3" />
-          API
-        </Button>
-      </div>
+      </ButtonGroup>
 
       <DialogContent className="sm:max-w-2xl max-h-[85dvh] overflow-y-auto">
         <DialogHeader>
