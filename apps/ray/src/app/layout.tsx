@@ -16,6 +16,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Ray by Tinte",
   description: "Beautiful code screenshots powered by 500+ themes",
+  metadataBase: new URL("https://ray.tinte.dev"),
+  openGraph: {
+    title: "Ray by Tinte",
+    description: "Beautiful code screenshots powered by 500+ themes",
+    siteName: "Ray",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ray by Tinte",
+    description: "Beautiful code screenshots powered by 500+ themes",
+  },
 };
 
 export default function RootLayout({
