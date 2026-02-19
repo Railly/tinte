@@ -1,4 +1,5 @@
-import { generateObject, gateway } from "ai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { generateObject } from "ai";
 import { type NextRequest, NextResponse } from "next/server";
 import { Vibrant } from "node-vibrant/node";
 import { z } from "zod";
@@ -11,6 +12,12 @@ import {
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+
+const aiGateway = createOpenAICompatible({
+  name: "ai-gateway",
+  apiKey: process.env.AI_GATEWAY_API_KEY ?? "",
+  baseURL: "https://ai-gateway.vercel.sh/v1",
+});
 
 const TinteBlockSchema = z.object({
   bg: z.string(),
@@ -45,7 +52,7 @@ async function extractWithAI(
     .join(", ");
 
   const { object } = await generateObject({
-    model: gateway("anthropic/claude-haiku-4-5-20251001"),
+    model: aiGateway("anthropic/claude-haiku-4-5-20251001"),
     schema: ThemeResponseSchema,
     messages: [
       {

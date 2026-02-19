@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.30",
+    "@ai-sdk/openai-compatible": "^2.0.30",
     "@base-ui/react": "^1.2.0",
     "@hookform/resolvers": "^5.2.2",
     "@shikijs/transformers": "^3.12.2",
