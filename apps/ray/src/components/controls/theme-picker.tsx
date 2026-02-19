@@ -225,7 +225,7 @@ export function ThemePicker({
           variant="outline"
           size="sm"
           onClick={() => setOpen((o) => !o)}
-          className="gap-2 text-xs"
+          className="gap-2 text-xs w-[180px] justify-start"
           aria-expanded={open}
           aria-haspopup="listbox"
         >
@@ -244,8 +244,8 @@ export function ThemePicker({
               ))}
             </div>
           ) : null}
-          <span className="max-w-[100px] truncate">{currentName}</span>
-          <ChevronDown className="size-3 text-muted-foreground" />
+          <span className="flex-1 truncate text-left">{currentName}</span>
+          <ChevronDown className="size-3 text-muted-foreground shrink-0" />
         </Button>
         <Button
           variant="ghost"
