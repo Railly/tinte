@@ -21,7 +21,21 @@ export default function Home() {
             ray.tinte.dev
           </span>
         </div>
-        <GithubStars />
+        <div className="flex items-center gap-3">
+          <GithubStars />
+          <a
+            href="https://vercel.com/oss"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="https://vercel.com/oss/program-badge.svg"
+              alt="Vercel OSS Program"
+              className="h-5"
+            />
+          </a>
+        </div>
       </header>
       <main className="flex-1 min-h-0">
         <Suspense>
