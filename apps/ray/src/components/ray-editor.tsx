@@ -2,16 +2,17 @@
 
 import type { TinteBlock } from "@tinte/core";
 import { useQueryState } from "nuqs";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { DEFAULT_THEME } from "@/data/bundled-themes";
 import { useCodeHighlight } from "@/hooks/use-code-highlight";
 import { useExport } from "@/hooks/use-export";
-import { DEFAULT_CODE } from "@/lib/code-samples";
-import type { GradientId } from "@/lib/gradients";
-import { GRADIENTS } from "@/lib/gradients";
+import { CODE_SAMPLES, DEFAULT_CODE } from "@/lib/code-samples";
+import type { Language } from "@/lib/code-samples";
+import { resolveBackground } from "@/lib/gradients";
 import { mapTinteBlockToShiki } from "@/lib/shiki";
 import { rayParsers } from "@/lib/url-state";
 import { BackgroundPicker } from "./controls/background-picker";
+import { ImageThemeUpload } from "./controls/image-theme-upload";
 import { SettingsBar } from "./controls/settings-bar";
 import { ThemePicker } from "./controls/theme-picker";
 import { ExportActions } from "./export-actions";
@@ -56,13 +57,36 @@ export function RayEditor() {
   const { exportPng, exportSvg, copyToClipboard, canCopy, exporting } =
     useExport(frameRef);
 
-  const gradient = GRADIENTS.find((g) => g.id === bg) ?? GRADIENTS[0];
+  const gradientCss = resolveBackground(bg);
+
+  const defaultSamples = useMemo(() => new Set(Object.values(CODE_SAMPLES)), []);
+
+  const handleLanguageChange = useCallback(
+    (newLang: string) => {
+      setLang(newLang);
+      if (defaultSamples.has(code)) {
+        const sample = CODE_SAMPLES[newLang as Language];
+        if (sample) setCode(sample);
+      }
+    },
+    [code, defaultSamples, setLang],
+  );
 
   const handleThemeData = useCallback(
     (data: { light: TinteBlock; dark: TinteBlock }) => {
       setThemeData(data);
     },
     [],
+  );
+
+  const handleImageTheme = useCallback(
+    (data: { dark: TinteBlock; light: TinteBlock; gradient: string; name: string }) => {
+      setThemeData({ dark: data.dark, light: data.light });
+      setThemeSlug(`custom:${data.name.toLowerCase().replace(/\s+/g, "-")}`);
+      const bgColor = mode === "dark" ? data.dark.bg : data.light.bg;
+      setBg(bgColor);
+    },
+    [setThemeSlug, setBg, mode],
   );
 
   return (
@@ -77,7 +101,7 @@ export function RayEditor() {
         <PreviewFrame
           ref={frameRef}
           padding={padding}
-          gradientCss={gradient.css}
+          gradientCss={gradientCss}
           themeBg={block.bg}
           themeBg2={block.bg_2}
           title={title}
@@ -99,8 +123,9 @@ export function RayEditor() {
             onThemeData={handleThemeData}
             mode={mode}
           />
+          <ImageThemeUpload onThemeExtracted={handleImageTheme} />
           <div className="w-px h-4 bg-border" />
-          <BackgroundPicker value={bg as GradientId} onChange={setBg} />
+          <BackgroundPicker value={bg} onChange={setBg} />
           <div className="w-px h-4 bg-border" />
           <SettingsBar
             padding={padding}
@@ -114,7 +139,7 @@ export function RayEditor() {
             title={title}
             onTitleChange={setTitle}
             language={lang}
-            onLanguageChange={setLang}
+            onLanguageChange={handleLanguageChange}
           />
         </div>
         <ExportActions
