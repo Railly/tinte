@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentLayout } from "@/components/content-layout";
+import { CopyMarkdownButton } from "@/components/copy-markdown";
 
 export const metadata: Metadata = {
   title: "Code Screenshot API - Free REST API | Ray by Tinte",
@@ -59,6 +60,95 @@ const languages = [
   "Kotlin",
 ];
 
+const docsMarkdown = `# Code Screenshot API
+
+**POST** \`/api/v1/screenshot\`
+
+Generate beautiful code screenshots programmatically. Free, no authentication required.
+
+## Quick Start
+
+\`\`\`bash
+curl -X POST https://ray.tinte.dev/api/v1/screenshot \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "code": "console.log(\\"Hello, World!\\")",
+    "language": "javascript",
+    "theme": "one-hunter"
+  }' -o screenshot.png
+\`\`\`
+
+Returns a PNG image.
+
+## Parameters
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| code | string | Yes | - | The source code to render |
+| language | string | No | "tsx" | Syntax highlighting language |
+| theme | string | No | "one-hunter" | Theme slug or inline TinteBlock |
+| mode | "dark" \\| "light" | No | "dark" | Color scheme |
+| padding | number | No | 32 | Outer padding in px (0-256) |
+| fontSize | number | No | 14 | Font size in px (8-32) |
+| lineNumbers | boolean | No | true | Show line numbers |
+| title | string | No | "" | Window title bar text |
+| background | string | No | "midnight" | Gradient preset or hex color |
+| scale | number | No | 2 | Resolution multiplier (1-4) |
+
+Background presets: \`midnight\` \`sunset\` \`ocean\` \`forest\` \`ember\` \`steel\` \`aurora\` \`none\`
+
+## Supported Languages
+
+TSX, TypeScript, JavaScript, Python, Rust, Go, HTML, CSS, JSON, Bash, SQL, Java, C++, Ruby, Swift, Kotlin
+
+## Themes
+
+Choose from 500+ themes at [tinte.dev/themes](https://tinte.dev/themes).
+
+## Code Examples
+
+### JavaScript / Node.js
+
+\`\`\`javascript
+const res = await fetch("https://ray.tinte.dev/api/v1/screenshot", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    code: 'console.log("Hello")',
+    language: "javascript",
+    theme: "one-hunter",
+  }),
+});
+const blob = await res.blob();
+\`\`\`
+
+### Python
+
+\`\`\`python
+import requests
+
+res = requests.post("https://ray.tinte.dev/api/v1/screenshot", json={
+    "code": "print('Hello')",
+    "language": "python",
+    "theme": "one-hunter",
+})
+with open("screenshot.png", "wb") as f:
+    f.write(res.content)
+\`\`\`
+
+## AI Agent Integration
+
+\`\`\`bash
+npx skills add Railly/tinte
+\`\`\`
+
+Works with Claude Code, Cursor, and 40+ AI agents.
+
+## Rate Limits
+
+60 requests per minute per IP address. No authentication required.
+`;
+
 const params = [
   { name: "code", type: "string", required: true, default: "-", desc: "The source code to render" },
   { name: "language", type: "string", required: false, default: '"tsx"', desc: "Syntax highlighting language" },
@@ -107,14 +197,17 @@ export default function DocsPage() {
         </p>
       </div>
 
-      <div className="flex items-center gap-3 mb-12">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
-          <span className="size-1.5 rounded-full bg-emerald-400" />
-          POST
-        </span>
-        <code className="text-sm text-muted-foreground font-mono">
-          /api/v1/screenshot
-        </code>
+      <div className="flex items-center justify-between mb-12">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
+            <span className="size-1.5 rounded-full bg-emerald-400" />
+            POST
+          </span>
+          <code className="text-sm text-muted-foreground font-mono">
+            /api/v1/screenshot
+          </code>
+        </div>
+        <CopyMarkdownButton markdown={docsMarkdown} />
       </div>
 
       <section id="quick-start" className="mb-16 scroll-mt-20">
