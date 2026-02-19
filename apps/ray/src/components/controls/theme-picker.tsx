@@ -41,7 +41,7 @@ export function ThemePicker({
 }: ThemePickerProps) {
   const [open, setOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
-  const [currentName, setCurrentName] = useState("One Hunter");
+  const [currentName, setCurrentName] = useState("Crafter Station");
   const [currentColors, setCurrentColors] = useState<string[]>(() => {
     const d = DEFAULT_THEME.dark;
     return [d.bg, d.pr, d.sc, d.ac_1, d.ac_2];

@@ -1,7 +1,7 @@
 import { parseAsInteger, parseAsString, parseAsStringLiteral } from "nuqs";
 
 export const rayParsers = {
-  theme: parseAsString.withDefault("one-hunter"),
+  theme: parseAsString.withDefault("crafter-station"),
   mode: parseAsStringLiteral(["light", "dark"] as const).withDefault("dark"),
   lang: parseAsString.withDefault("tsx"),
   padding: parseAsInteger.withDefault(32),
