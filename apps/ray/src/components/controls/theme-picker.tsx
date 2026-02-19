@@ -1,11 +1,12 @@
 "use client";
 
 import type { TinteBlock } from "@tinte/core";
-import { ChevronDown } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Check, ChevronDown, Shuffle } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCommunityThemes } from "@/hooks/use-community-themes";
 import { useVendorThemes } from "@/hooks/use-vendor-themes";
 import { DEFAULT_THEME } from "@/data/bundled-themes";
+import { THEME_LOGOS } from "@/lib/theme-logos";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +15,16 @@ interface ThemePickerProps {
   onChange: (slug: string) => void;
   onThemeData?: (theme: { light: TinteBlock; dark: TinteBlock }) => void;
   mode: "light" | "dark";
+}
+
+interface ThemeItem {
+  id: string;
+  slug: string;
+  name: string;
+  author: string;
+  light: TinteBlock;
+  dark: TinteBlock;
+  section: string;
 }
 
 const VENDOR_SECTIONS = [
@@ -35,8 +46,10 @@ export function ThemePicker({
     const d = DEFAULT_THEME.dark;
     return [d.bg, d.pr, d.sc, d.ac_1, d.ac_2];
   });
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const community = useCommunityThemes();
   const tinteVendor = useVendorThemes("tinte");
@@ -66,6 +79,7 @@ export function ThemePicker({
     (val: string) => {
       setLocalSearch(val);
       community.setSearch(val);
+      setFocusedIndex(-1);
     },
     [community.setSearch],
   );
@@ -126,52 +140,156 @@ export function ThemePicker({
     );
   };
 
+  const flatThemes = useMemo(() => {
+    const items: ThemeItem[] = [];
+    for (const { vendor, label } of VENDOR_SECTIONS) {
+      const data = vendorData[vendor];
+      if (data.loading) continue;
+      for (const t of filterThemes(data.themes)) {
+        items.push({ ...t, section: label });
+      }
+    }
+    for (const t of community.themes) {
+      items.push({ ...t, section: "Community" });
+    }
+    return items;
+  }, [
+    tinteVendor.themes,
+    tinteVendor.loading,
+    raysoVendor.themes,
+    raysoVendor.loading,
+    tweakcnVendor.themes,
+    tweakcnVendor.loading,
+    community.themes,
+    localSearch,
+  ]);
+
+  const handleRandomTheme = useCallback(() => {
+    if (flatThemes.length === 0) return;
+    const randomIdx = Math.floor(Math.random() * flatThemes.length);
+    const theme = flatThemes[randomIdx];
+    handleSelectTheme(theme.slug, theme.name, theme.light, theme.dark);
+  }, [flatThemes, handleSelectTheme]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!open) return;
+
+      switch (e.key) {
+        case "ArrowDown": {
+          e.preventDefault();
+          setFocusedIndex((i) => Math.min(i + 1, flatThemes.length - 1));
+          break;
+        }
+        case "ArrowUp": {
+          e.preventDefault();
+          setFocusedIndex((i) => Math.max(i - 1, 0));
+          break;
+        }
+        case "Enter": {
+          e.preventDefault();
+          if (focusedIndex >= 0 && focusedIndex < flatThemes.length) {
+            const theme = flatThemes[focusedIndex];
+            handleSelectTheme(theme.slug, theme.name, theme.light, theme.dark);
+          }
+          break;
+        }
+        case "Escape": {
+          e.preventDefault();
+          setOpen(false);
+          break;
+        }
+      }
+    },
+    [open, flatThemes, focusedIndex, handleSelectTheme],
+  );
+
+  useEffect(() => {
+    if (focusedIndex < 0) return;
+    const el = listRef.current?.querySelector(`[data-index="${focusedIndex}"]`);
+    el?.scrollIntoView({ block: "nearest" });
+  }, [focusedIndex]);
+
   const isSearching = localSearch.trim().length > 0;
   const anyVendorLoading =
     tinteVendor.loading || raysoVendor.loading || tweakcnVendor.loading;
-  const anyVendorHasThemes =
-    tinteVendor.themes.length > 0 ||
-    raysoVendor.themes.length > 0 ||
-    tweakcnVendor.themes.length > 0;
+
+  let globalIndex = -1;
+
+  const currentLogo = THEME_LOGOS[value];
 
   return (
-    <div ref={containerRef} className="relative">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setOpen((o) => !o)}
-        className="gap-2 text-xs"
-      >
-        {currentColors.length > 0 && (
-          <div className="flex items-center gap-1">
-            {currentColors.map((color, i) => (
-              <div
-                key={i}
-                className="size-2.5 rounded-full border border-white/10"
-                style={{ background: color }}
-              />
-            ))}
-          </div>
-        )}
-        <span>{currentName}</span>
-        <ChevronDown className="size-3 text-muted-foreground" />
-      </Button>
+    <div ref={containerRef} className="relative" onKeyDown={handleKeyDown}>
+      <div className="flex items-center gap-1">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setOpen((o) => !o)}
+          className="gap-2 text-xs"
+          aria-expanded={open}
+          aria-haspopup="listbox"
+        >
+          {currentLogo ? (
+            <span className="size-3.5 flex items-center justify-center">
+              {currentLogo({ className: "size-3.5" })}
+            </span>
+          ) : currentColors.length > 0 ? (
+            <div className="flex items-center gap-0.5">
+              {currentColors.map((color, i) => (
+                <div
+                  key={`${color}-${i}`}
+                  className="size-2.5 rounded-full ring-1 ring-white/10"
+                  style={{ background: color }}
+                />
+              ))}
+            </div>
+          ) : null}
+          <span className="max-w-[100px] truncate">{currentName}</span>
+          <ChevronDown className="size-3 text-muted-foreground" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={handleRandomTheme}
+          title="Random theme"
+          className="text-muted-foreground hover:text-foreground"
+        >
+          <Shuffle className="size-3" />
+        </Button>
+      </div>
 
       {open && (
-        <div className="absolute bottom-full mb-2 left-0 z-50 w-72 rounded-lg border bg-popover shadow-lg overflow-hidden">
-          <div className="p-2 border-b">
+        <div
+          className="absolute bottom-full mb-2 left-0 z-50 w-80 rounded-xl border bg-popover shadow-xl overflow-hidden"
+          role="listbox"
+          aria-label="Theme picker"
+        >
+          <div className="p-2 border-b flex items-center gap-2">
             <input
+              ref={searchRef}
               type="text"
               placeholder="Search 13,000+ themes..."
               value={localSearch}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full rounded-md border bg-muted px-2 py-1 text-xs text-foreground placeholder:text-muted-foreground outline-none"
-              ref={(el) => el?.focus()}
+              onFocus={() => setFocusedIndex(-1)}
+              className="flex-1 rounded-md border bg-muted px-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-ring transition-colors"
+              aria-label="Search themes"
+              // biome-ignore lint/a11y/noAutofocus: popover needs focus
+              autoFocus
             />
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={handleRandomTheme}
+              title="Random theme"
+              className="shrink-0 text-muted-foreground hover:text-foreground"
+            >
+              <Shuffle className="size-3.5" />
+            </Button>
           </div>
           <div
             ref={listRef}
-            className="max-h-64 overflow-y-auto"
+            className="max-h-72 overflow-y-auto"
             onScroll={handleScroll}
           >
             {VENDOR_SECTIONS.map(({ vendor, label }, sectionIdx) => {
@@ -181,7 +299,7 @@ export function ThemePicker({
                 return (
                   <div key={vendor}>
                     <SectionHeader label={label} first={sectionIdx === 0} />
-                    <div className="px-3 py-2 text-[10px] text-muted-foreground">
+                    <div className="px-3 py-3 text-[10px] text-muted-foreground animate-pulse">
                       Loading...
                     </div>
                   </div>
@@ -191,18 +309,24 @@ export function ThemePicker({
               return (
                 <div key={vendor}>
                   <SectionHeader
-                    label={`${label} (${filtered.length})`}
+                    label={label}
+                    count={filtered.length}
                     first={sectionIdx === 0}
                   />
                   {filtered.map((theme) => {
+                    globalIndex++;
                     const block = mode === "dark" ? theme.dark : theme.light;
+                    const Logo = THEME_LOGOS[theme.slug];
                     return (
                       <ThemeRow
                         key={theme.id}
+                        index={globalIndex}
                         name={theme.name}
                         author={theme.author}
                         colors={colorDots(block)}
                         active={theme.slug === value}
+                        focused={globalIndex === focusedIndex}
+                        Logo={Logo}
                         onClick={() =>
                           handleSelectTheme(
                             theme.slug,
@@ -221,18 +345,22 @@ export function ThemePicker({
             {community.themes.length > 0 && (
               <>
                 <SectionHeader
-                  label={`Community (${community.total.toLocaleString()})`}
-                  first={!anyVendorHasThemes && !anyVendorLoading}
+                  label="Community"
+                  count={community.total}
+                  first={!anyVendorLoading && flatThemes.length === community.themes.length}
                 />
                 {community.themes.map((theme) => {
+                  globalIndex++;
                   const block = mode === "dark" ? theme.dark : theme.light;
                   return (
                     <ThemeRow
                       key={theme.id}
+                      index={globalIndex}
                       name={theme.name}
                       author={theme.author}
                       colors={colorDots(block)}
                       active={theme.slug === value}
+                      focused={globalIndex === focusedIndex}
                       onClick={() =>
                         handleSelectTheme(
                           theme.slug,
@@ -248,16 +376,16 @@ export function ThemePicker({
             )}
 
             {community.loading && (
-              <div className="px-3 py-3 text-xs text-muted-foreground text-center">
-                Loading...
+              <div className="px-3 py-4 text-xs text-muted-foreground text-center animate-pulse">
+                Loading more...
               </div>
             )}
 
             {!community.loading &&
               community.themes.length === 0 &&
               !anyVendorLoading &&
-              !anyVendorHasThemes && (
-                <div className="px-3 py-4 text-xs text-muted-foreground text-center">
+              flatThemes.length === 0 && (
+                <div className="px-3 py-6 text-xs text-muted-foreground text-center">
                   No themes found
                 </div>
               )}
@@ -270,16 +398,20 @@ export function ThemePicker({
 
 function SectionHeader({
   label,
+  count,
   first = false,
-}: { label: string; first?: boolean }) {
+}: { label: string; count?: number; first?: boolean }) {
   return (
     <div
       className={cn(
-        "px-3 py-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-widest",
-        !first && "border-t mt-1",
+        "px-3 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center justify-between sticky top-0 bg-popover/95 backdrop-blur-sm z-10",
+        !first && "border-t mt-0.5",
       )}
     >
-      {label}
+      <span>{label}</span>
+      {count !== undefined && (
+        <span className="tabular-nums font-normal">{count.toLocaleString()}</span>
+      )}
     </div>
   );
 }
@@ -289,37 +421,69 @@ function ThemeRow({
   author,
   colors,
   active,
+  focused,
+  Logo,
+  index,
   onClick,
 }: {
   name: string;
   author: string;
   colors: string[];
   active: boolean;
+  focused: boolean;
+  Logo?: (props: { className?: string }) => React.JSX.Element;
+  index: number;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
+      role="option"
+      aria-selected={active}
+      data-index={index}
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-accent transition-colors text-left",
-        active && "bg-accent",
+        "w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors text-left group",
+        "hover:bg-accent/50 focus-visible:bg-accent/50 outline-none",
+        active && "bg-accent/80",
+        focused && "bg-accent/50",
       )}
     >
-      <div className="flex items-center gap-1">
-        {colors.map((color, i) => (
-          <div
-            key={i}
-            className="size-2.5 rounded-full border border-white/10"
-            style={{ background: color }}
-          />
-        ))}
-      </div>
-      <div className="flex flex-col min-w-0">
-        <span className="text-foreground font-medium truncate">{name}</span>
-        <span className="text-muted-foreground text-[10px] truncate">
+      {Logo ? (
+        <span className="size-5 flex items-center justify-center shrink-0 rounded bg-muted/50 p-0.5">
+          <Logo className="size-3.5" />
+        </span>
+      ) : (
+        <div className="flex items-center gap-[3px] shrink-0">
+          {colors.map((color, i) => (
+            <div
+              key={`${color}-${i}`}
+              className="size-2 rounded-full ring-1 ring-foreground/10"
+              style={{ background: color }}
+            />
+          ))}
+        </div>
+      )}
+      <div className="flex flex-col min-w-0 flex-1">
+        <span className="text-foreground font-medium truncate leading-tight">{name}</span>
+        <span className="text-muted-foreground text-[10px] truncate leading-tight">
           {author}
         </span>
+      </div>
+      <div className="flex items-center gap-1.5 shrink-0">
+        <div
+          className="h-4 w-16 rounded-sm overflow-hidden flex opacity-60 group-hover:opacity-100 transition-opacity"
+          title={`${name} palette`}
+        >
+          {colors.map((color, i) => (
+            <div
+              key={`${color}-${i}`}
+              className="flex-1 h-full"
+              style={{ background: color }}
+            />
+          ))}
+        </div>
+        {active && <Check className="size-3 text-foreground shrink-0" />}
       </div>
     </button>
   );
