@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { RayEditor } from "@/components/ray-editor";
 import { GithubStars } from "@/components/github-stars";
@@ -57,6 +58,14 @@ export default function Home() {
           <h1 className="text-sm font-mono font-semibold tracking-tight text-foreground">
             ray.tinte.dev
           </h1>
+          <nav className="hidden sm:flex items-center gap-3 ml-3">
+            <Link href="/docs" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Docs
+            </Link>
+            <Link href="/alternatives/carbon" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Alternatives
+            </Link>
+          </nav>
         </div>
         <div className="flex items-center gap-3">
           <GithubStars />

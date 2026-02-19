@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ContentLayout } from "@/components/content-layout";
 
 export const metadata: Metadata = {
   title: "Best Carbon.now.sh Alternatives for Code Screenshots (2026) | Ray",
@@ -16,8 +17,7 @@ export const metadata: Metadata = {
     canonical: "/alternatives/carbon",
   },
   openGraph: {
-    title:
-      "Best Carbon.now.sh Alternatives for Code Screenshots (2026) | Ray",
+    title: "Best Carbon.now.sh Alternatives for Code Screenshots (2026) | Ray",
     description:
       "Carbon.now.sh has been dormant since December 2024. Compare the best alternatives: Ray by Tinte (500+ themes, free API), ray.so, Snappify, and more.",
     url: "https://ray.tinte.dev/alternatives/carbon",
@@ -25,10 +25,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title:
-      "Best Carbon.now.sh Alternatives for Code Screenshots (2026) | Ray",
+    title: "Best Carbon.now.sh Alternatives for Code Screenshots (2026) | Ray",
     description:
-      "Carbon.now.sh has been dormant since December 2024. Compare the best alternatives: Ray by Tinte (500+ themes, free API), ray.so, Snappify, and more.",
+      "Carbon.now.sh has been dormant since December 2024. Compare the best alternatives.",
   },
 };
 
@@ -71,268 +70,171 @@ const jsonLd = {
   ],
 };
 
+const toc = [
+  { id: "comparison", label: "Comparison" },
+  { id: "ray-by-tinte", label: "Ray by Tinte" },
+  { id: "snappify", label: "Snappify" },
+  { id: "ray-so", label: "ray.so" },
+  { id: "chalk-ist", label: "chalk.ist" },
+  { id: "faq", label: "FAQ" },
+];
+
+const tools = [
+  { feature: "Themes", ray: "500+", carbon: "~29", rayso: "17", snappify: "~50" },
+  { feature: "Languages", ray: "16", carbon: "~75", rayso: "50+", snappify: "90+" },
+  { feature: "Export", ray: "PNG, SVG, Clipboard", carbon: "PNG, SVG", rayso: "PNG", snappify: "PNG, SVG, PDF, GIF" },
+  { feature: "API", ray: "Free (60 req/min)", carbon: "No", rayso: "No", snappify: "Paid only" },
+  { feature: "AI skill", ray: "Claude, Cursor", carbon: "No", rayso: "No", snappify: "No" },
+  { feature: "Price", ray: "Free", carbon: "Free", rayso: "Free", snappify: "$0-32/mo" },
+  { feature: "Open source", ray: "Yes", carbon: "Yes", rayso: "No", snappify: "No" },
+  { feature: "Status", ray: "Active", carbon: "Dormant", rayso: "Active", snappify: "Active" },
+];
+
 export default function CarbonAlternativesPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground py-16 px-6">
+    <ContentLayout toc={toc}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-3xl mx-auto">
-        <Link
-          href="/"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-block mb-8"
-        >
-          ← Back to Ray
-        </Link>
 
-        <h1 className="text-3xl font-bold mb-6">
-          Best Carbon.now.sh Alternatives for Code Screenshots (2026)
-        </h1>
-
-        <div className="space-y-4 mb-10 text-muted-foreground leading-relaxed">
-          <p>
-            Carbon.now.sh pioneered beautiful code screenshots and earned
-            35,900+ GitHub stars. However, the project has been dormant since
-            December 2024 with no updates, open bugs, and no API.
-          </p>
-          <p>
-            Whether you need more themes, an API for automation, or AI
-            assistant integration, these alternatives have you covered.
-          </p>
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-2">
+          <Link
+            href="/alternatives/rayso"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Also: ray.so alternatives →
+          </Link>
         </div>
+        <h1 className="text-4xl font-bold tracking-tight mb-3">
+          Best Carbon.now.sh Alternatives (2026)
+        </h1>
+        <p className="text-lg text-muted-foreground leading-relaxed">
+          Carbon pioneered beautiful code screenshots and earned 35,900+ GitHub stars.
+          But the project has been dormant since December 2024 — no updates, no bug fixes, no API.
+        </p>
+      </div>
 
-        <div className="overflow-x-auto mb-12">
-          <table className="w-full border border-border text-sm">
+      <section id="comparison" className="mb-16 scroll-mt-20">
+        <h2 className="text-xl font-semibold tracking-tight mb-4">Comparison</h2>
+        <div className="rounded-lg border border-border overflow-x-auto">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Feature</th>
-                <th className="px-4 py-3 text-left font-semibold bg-muted/80">
-                  Ray by Tinte
-                </th>
-                <th className="px-4 py-3 text-left font-semibold">Carbon</th>
-                <th className="px-4 py-3 text-left font-semibold">ray.so</th>
-                <th className="px-4 py-3 text-left font-semibold">Snappify</th>
+              <tr className="border-b border-border bg-muted/30">
+                <th className="text-left py-2.5 px-4 font-medium text-muted-foreground">Feature</th>
+                <th className="text-left py-2.5 px-4 font-medium">Ray by Tinte</th>
+                <th className="text-left py-2.5 px-4 font-medium text-muted-foreground">Carbon</th>
+                <th className="text-left py-2.5 px-4 font-medium text-muted-foreground">ray.so</th>
+                <th className="text-left py-2.5 px-4 font-medium text-muted-foreground">Snappify</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-t border-border">
-                <td className="px-4 py-3">Themes</td>
-                <td className="px-4 py-3 bg-muted/30">500+</td>
-                <td className="px-4 py-3">~29</td>
-                <td className="px-4 py-3">17</td>
-                <td className="px-4 py-3">~50</td>
-              </tr>
-              <tr className="border-t border-border bg-muted/20">
-                <td className="px-4 py-3">Languages</td>
-                <td className="px-4 py-3 bg-muted/30">16</td>
-                <td className="px-4 py-3">~75</td>
-                <td className="px-4 py-3">50+</td>
-                <td className="px-4 py-3">90+</td>
-              </tr>
-              <tr className="border-t border-border">
-                <td className="px-4 py-3">Export formats</td>
-                <td className="px-4 py-3 bg-muted/30">
-                  PNG, SVG, Clipboard
-                </td>
-                <td className="px-4 py-3">PNG, SVG</td>
-                <td className="px-4 py-3">PNG</td>
-                <td className="px-4 py-3">PNG, SVG, PDF, GIF</td>
-              </tr>
-              <tr className="border-t border-border bg-muted/20">
-                <td className="px-4 py-3">API</td>
-                <td className="px-4 py-3 bg-muted/30">Free (60 req/min)</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">Paid only</td>
-              </tr>
-              <tr className="border-t border-border">
-                <td className="px-4 py-3">AI skill</td>
-                <td className="px-4 py-3 bg-muted/30">Claude, Cursor</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">No</td>
-              </tr>
-              <tr className="border-t border-border bg-muted/20">
-                <td className="px-4 py-3">Price</td>
-                <td className="px-4 py-3 bg-muted/30">Free</td>
-                <td className="px-4 py-3">Free</td>
-                <td className="px-4 py-3">Free</td>
-                <td className="px-4 py-3">$0-32/mo</td>
-              </tr>
-              <tr className="border-t border-border">
-                <td className="px-4 py-3">Open source</td>
-                <td className="px-4 py-3 bg-muted/30">Yes</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">No</td>
-              </tr>
-              <tr className="border-t border-border bg-muted/20">
-                <td className="px-4 py-3">Status</td>
-                <td className="px-4 py-3 bg-muted/30">Active</td>
-                <td className="px-4 py-3">Dormant</td>
-                <td className="px-4 py-3">Active</td>
-                <td className="px-4 py-3">Active</td>
-              </tr>
+              {tools.map((row) => (
+                <tr key={row.feature} className="border-b border-border last:border-0">
+                  <td className="py-2.5 px-4 text-muted-foreground">{row.feature}</td>
+                  <td className="py-2.5 px-4 font-medium">{row.ray}</td>
+                  <td className="py-2.5 px-4 text-muted-foreground">{row.carbon}</td>
+                  <td className="py-2.5 px-4 text-muted-foreground">{row.rayso}</td>
+                  <td className="py-2.5 px-4 text-muted-foreground">{row.snappify}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
+      </section>
 
-        <section className="space-y-10">
+      <section id="ray-by-tinte" className="mb-12 scroll-mt-20">
+        <h2 className="text-xl font-semibold tracking-tight mb-3">1. Ray by Tinte</h2>
+        <p className="text-muted-foreground leading-relaxed mb-2">
+          500+ syntax highlighting themes, free REST API (60 req/min), native Claude Code and Cursor skills,
+          PNG/SVG/clipboard export. Open source and actively maintained.
+        </p>
+        <p className="text-sm text-muted-foreground/70 mb-3">
+          Honest weakness: 16 languages vs Carbon's ~75. Covers all major languages.
+        </p>
+        <Link href="/" className="text-sm text-foreground underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors">
+          Try Ray by Tinte →
+        </Link>
+      </section>
+
+      <section id="snappify" className="mb-12 scroll-mt-20">
+        <h2 className="text-xl font-semibold tracking-tight mb-3">2. Snappify</h2>
+        <p className="text-muted-foreground leading-relaxed mb-3">
+          Feature-rich commercial tool with animated snippets, 90+ languages, PNG/SVG/PDF/GIF export.
+          API on paid plans only ($10+/mo). Not open source.
+        </p>
+        <a href="https://snappify.com" target="_blank" rel="noopener noreferrer" className="text-sm text-foreground underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors">
+          Visit Snappify →
+        </a>
+      </section>
+
+      <section id="ray-so" className="mb-12 scroll-mt-20">
+        <h2 className="text-xl font-semibold tracking-tight mb-3">3. ray.so</h2>
+        <p className="text-muted-foreground leading-relaxed mb-3">
+          Raycast's code screenshot tool. Clean interface, 17 themes, 50+ languages. PNG-only, no API,
+          no AI integration. Free but closed source.
+        </p>
+        <a href="https://ray.so" target="_blank" rel="noopener noreferrer" className="text-sm text-foreground underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors">
+          Visit ray.so →
+        </a>
+      </section>
+
+      <section id="chalk-ist" className="mb-16 scroll-mt-20">
+        <h2 className="text-xl font-semibold tracking-tight mb-3">4. chalk.ist</h2>
+        <p className="text-muted-foreground leading-relaxed mb-3">
+          Markdown-based approach to code screenshots. Free and minimal. No API, limited themes.
+        </p>
+        <a href="https://chalk.ist" target="_blank" rel="noopener noreferrer" className="text-sm text-foreground underline underline-offset-4 decoration-border hover:decoration-foreground transition-colors">
+          Visit chalk.ist →
+        </a>
+      </section>
+
+      <section id="faq" className="mb-16 scroll-mt-20">
+        <h2 className="text-xl font-semibold tracking-tight mb-6">FAQ</h2>
+        <div className="space-y-6">
           <div>
-            <h2 className="text-xl font-semibold mb-3">1. Ray by Tinte</h2>
-            <p className="text-muted-foreground leading-relaxed mb-2">
-              Ray by Tinte offers 500+ syntax highlighting themes powered by the
-              Tinte theme generator, making it the most theme-rich code
-              screenshot tool available. It includes a free REST API with 60
-              requests per minute, native Claude Code and Cursor skills for AI
-              assistant integration, and exports to PNG, SVG, or clipboard. Ray
-              is fully open source and actively maintained. Honest weakness:
-              fewer programming languages (16 compared to Carbon's 75), but
-              covers all major languages like JavaScript, TypeScript, Python,
-              Rust, Go, and more.
+            <h3 className="text-sm font-medium mb-1.5">Is Carbon.now.sh still maintained?</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              No updates since December 2024. The tool works but receives no new features or fixes.
             </p>
-            <a
-              href="https://ray.tinte.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 underline"
-            >
-              Try Ray by Tinte
-            </a>
           </div>
-
           <div>
-            <h2 className="text-xl font-semibold mb-3">2. Snappify</h2>
-            <p className="text-muted-foreground leading-relaxed mb-2">
-              Snappify is a feature-rich commercial tool that goes beyond static
-              screenshots with animated code snippets, infographics, and
-              presentation features. It supports 90+ languages, exports to PNG,
-              SVG, PDF, and GIF, and offers a professional API. However, the API
-              is only available on paid plans starting at $10/month, and the
-              tool is not open source. Great for content creators and educators
-              who need animation capabilities.
+            <h3 className="text-sm font-medium mb-1.5">What is the best free alternative?</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Ray by Tinte — 500+ themes, free API, clipboard copy, open source.
             </p>
-            <a
-              href="https://snappify.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 underline"
-            >
-              Visit Snappify
-            </a>
           </div>
-
           <div>
-            <h2 className="text-xl font-semibold mb-3">3. ray.so</h2>
-            <p className="text-muted-foreground leading-relaxed mb-2">
-              ray.so is Raycast's official code screenshot tool with a clean,
-              minimal interface and 17 curated themes. It supports 50+
-              languages and integrates seamlessly with the Raycast launcher on
-              macOS. The tool is free and actively maintained, but lacks an API
-              and offers fewer theme options compared to Ray by Tinte. ray.so is
-              not open source.
+            <h3 className="text-sm font-medium mb-1.5">Which tools have an API?</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Ray by Tinte (free, 60 req/min) and Snappify (paid plans only).
             </p>
-            <a
-              href="https://ray.so"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 underline"
-            >
-              Visit ray.so
-            </a>
           </div>
-
           <div>
-            <h2 className="text-xl font-semibold mb-3">4. chalk.ist</h2>
-            <p className="text-muted-foreground leading-relaxed mb-2">
-              chalk.ist is a markdown-based code screenshot tool that lets you
-              create beautiful code images with simple markdown syntax. It's
-              free, minimal, and great for quick screenshots. However, it lacks
-              advanced features like an API, theme variety, or AI integration.
+            <h3 className="text-sm font-medium mb-1.5">Can I use these with AI coding assistants?</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Only Ray by Tinte has native AI integration. Install with{" "}
+              <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">npx skills add Railly/tinte</code>.
             </p>
-            <a
-              href="https://chalk.ist"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 underline"
-            >
-              Visit chalk.ist
-            </a>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="mt-16">
-          <h2 className="text-xl font-semibold mb-6">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium mb-2">
-                Is Carbon.now.sh still maintained?
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Carbon.now.sh has not received updates since December 2024.
-                While the tool still works, there are no new features, bug
-                fixes, or security updates being released.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-medium mb-2">
-                What is the best free alternative to Carbon.now.sh?
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Ray by Tinte offers 500+ themes, PNG/SVG export, clipboard
-                copy, and a free REST API. It's open source and actively
-                maintained.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-medium mb-2">
-                Which code screenshot tools have an API?
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Ray by Tinte offers a free REST API at
-                ray.tinte.dev/api/v1/screenshot with 60 requests per minute.
-                Snappify also has an API but only on paid plans.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-medium mb-2">
-                Can I use code screenshot tools with AI coding assistants?
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Ray by Tinte has a Claude Code and Cursor skill. Install with
-                npx skills add Railly/tinte. No other code screenshot tool
-                offers native AI assistant integration.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-16 pt-10 border-t border-border">
-          <h2 className="text-xl font-semibold mb-4">Try Ray by Tinte</h2>
-          <p className="text-muted-foreground leading-relaxed mb-6">
-            Ready to create beautiful code screenshots with 500+ themes and a
-            free API? Ray by Tinte is open source, actively maintained, and
-            built for developers.
-          </p>
-          <div className="flex gap-4">
-            <Link
-              href="/"
-              className="inline-block px-6 py-2.5 bg-foreground text-background font-medium rounded-md hover:opacity-90 transition-opacity"
-            >
-              Get Started
-            </Link>
-            <Link
-              href="/docs"
-              className="inline-block px-6 py-2.5 border border-border text-foreground font-medium rounded-md hover:bg-muted/30 transition-colors"
-            >
-              Explore the API
-            </Link>
-          </div>
-        </section>
+      <div className="flex gap-3 pt-8 border-t border-border">
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center h-9 px-4 rounded-md bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          Get Started
+        </Link>
+        <Link
+          href="/docs"
+          className="inline-flex items-center justify-center h-9 px-4 rounded-md border border-border text-sm font-medium hover:bg-muted/30 transition-colors"
+        >
+          Explore the API
+        </Link>
       </div>
-    </div>
+    </ContentLayout>
   );
 }
