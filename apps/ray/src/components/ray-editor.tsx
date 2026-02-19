@@ -2,7 +2,7 @@
 
 import type { TinteBlock } from "@tinte/core";
 import { useQueryState } from "nuqs";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Terminal } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { DEFAULT_THEME } from "@/data/bundled-themes";
 import { useCodeHighlight } from "@/hooks/use-code-highlight";
@@ -19,6 +19,7 @@ import { SettingsBar } from "./controls/settings-bar";
 import { ThemePicker } from "./controls/theme-picker";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { ApiDialog } from "./api-dialog";
 import { ExportActions } from "./export-actions";
 import { PreviewFrame } from "./preview-frame";
 
@@ -192,6 +193,7 @@ export function RayEditor() {
 
 function SkillInstallButton() {
   const [copied, setCopied] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText("npx skills add Railly/tinte");
@@ -200,21 +202,32 @@ function SkillInstallButton() {
   }, []);
 
   return (
-    <ButtonGroup>
-      <Button
-        variant="outline"
-        size="xs"
-        className="gap-1.5 font-mono text-[11px]"
-        onClick={handleCopy}
-        title="Copy install command"
-      >
-        {copied ? (
-          <Check className="size-3 text-emerald-500" />
-        ) : (
-          <Copy className="size-3 text-muted-foreground" />
-        )}
-        npx skills add
-      </Button>
-    </ButtonGroup>
+    <>
+      <ButtonGroup>
+        <Button
+          variant="outline"
+          size="xs"
+          className="gap-1.5 font-mono text-[11px]"
+          onClick={handleCopy}
+          title="Copy install command"
+        >
+          {copied ? (
+            <Check className="size-3 text-emerald-500" />
+          ) : (
+            <Copy className="size-3 text-muted-foreground" />
+          )}
+          npx skills add
+        </Button>
+        <Button
+          variant="outline"
+          size="icon-xs"
+          onClick={() => setDocsOpen(true)}
+          title="API & Skill docs"
+        >
+          <Terminal className="size-3" />
+        </Button>
+      </ButtonGroup>
+      <ApiDialog open={docsOpen} onOpenChange={setDocsOpen} />
+    </>
   );
 }

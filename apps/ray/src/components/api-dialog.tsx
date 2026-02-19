@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { Check, Copy, Terminal, Sparkles, Info } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, Copy, Terminal, Sparkles } from "lucide-react";
 import { codeToHtml } from "shiki";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Dialog,
   DialogContent,
@@ -100,49 +99,11 @@ const PARAMS = [
   { name: "scale", type: "number", required: false, default: "2", desc: "Resolution (1-4x)" },
 ];
 
-export function ApiDialog({ defaultTab = "api" }: { defaultTab?: "api" | "skill" }) {
-  const [open, setOpen] = useState(false);
+export function ApiDialog({ open, onOpenChange, defaultTab = "skill" }: { open: boolean; onOpenChange: (open: boolean) => void; defaultTab?: "api" | "skill" }) {
   const [tab, setTab] = useState(defaultTab);
-  const [copied, setCopied] = useState(false);
-
-  const openWith = useCallback((t: "api" | "skill") => {
-    setTab(t);
-    setOpen(true);
-  }, []);
-
-  const handleCopyInstall = useCallback(() => {
-    navigator.clipboard.writeText("npx skills add Railly/tinte");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, []);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <ButtonGroup>
-        <Button
-          variant="outline"
-          size="xs"
-          className="gap-1.5 font-mono text-[11px] pr-2"
-          onClick={handleCopyInstall}
-          title="Copy install command"
-        >
-          {copied ? (
-            <Check className="size-3 text-emerald-500" />
-          ) : (
-            <Copy className="size-3 text-muted-foreground" />
-          )}
-          npx skills add Railly/tinte
-        </Button>
-        <Button
-          variant="outline"
-          size="icon-xs"
-          onClick={() => openWith("skill")}
-          title="API & Skill docs"
-        >
-          <Info className="size-3" />
-        </Button>
-      </ButtonGroup>
-
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[85dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-mono text-base">ray.tinte.dev</DialogTitle>

@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { RayEditor } from "@/components/ray-editor";
-import { ApiDialog } from "@/components/api-dialog";
 import { GithubStars } from "@/components/github-stars";
 import { TinteLogo } from "@/components/logos/tinte";
 
@@ -22,22 +21,7 @@ export default function Home() {
             ray.tinte.dev
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <ApiDialog defaultTab="skill" />
-          <GithubStars />
-          <a
-            href="https://vercel.com/oss"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:opacity-80 transition-opacity"
-          >
-            <img
-              src="https://vercel.com/oss/program-badge.svg"
-              alt="Vercel OSS Program"
-              className="h-5"
-            />
-          </a>
-        </div>
+        <GithubStars />
       </header>
       <main className="flex-1 min-h-0">
         <Suspense>
