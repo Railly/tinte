@@ -1,121 +1,38 @@
 import type React from "react";
-import type { SVGProps } from "react";
 import { TypescriptLogo } from "@/components/logos/typescript";
 import { JavascriptLogo } from "@/components/logos/javascript";
 import { PythonLogo } from "@/components/logos/python";
 import { RustLogo } from "@/components/logos/rust";
 import { GoLogo } from "@/components/logos/go";
-
-type IconProps = SVGProps<SVGSVGElement> | { className?: string };
-
-function HtmlIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="#E34F26" d="M1.5 0h21l-1.91 21.56L11.99 24l-8.59-2.44L1.5 0zm7.09 9.54l-.2-2.27h8.22l.2-2.26H4.92l.6 6.78h8.35l-.27 2.84-1.6.43-1.6-.43-.1-1.17H8.04l.2 2.3L12 17l3.76-1.02.52-5.82H8.59v-.62z" />
-    </svg>
-  );
-}
-
-function CssIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="#1572B6" d="M1.5 0h21l-1.91 21.56L11.99 24l-8.59-2.44L1.5 0zm16.93 7.27l.13-1.62.03-.31H5.4l.6 6.78h8.36l-.27 2.84-2.09.56-2.09-.57-.13-1.49H7.52l.26 2.96 4.22 1.17 4.22-1.17.58-6.38H8.59l-.2-2.27h9.54z" />
-    </svg>
-  );
-}
-
-function JsonIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="currentColor" d="M5.76 2.04c-.7 0-1.28.04-1.72.12-.44.08-.78.22-1.02.42-.24.2-.4.48-.5.84-.08.36-.14.82-.14 1.38v2.88c0 .46-.04.86-.12 1.2-.08.34-.22.62-.42.84-.2.22-.46.38-.78.48-.32.1-.72.16-1.18.16v1.28c.46 0 .86.06 1.18.16.32.1.58.26.78.48.2.22.34.5.42.84.08.34.12.74.12 1.2v2.88c0 .56.06 1.02.14 1.38.1.36.26.64.5.84.24.2.58.34 1.02.42.44.08 1.02.12 1.72.12h.48v-1.44h-.24c-.42 0-.74-.04-.96-.14-.22-.1-.38-.24-.48-.44s-.16-.44-.18-.74c-.02-.3-.04-.66-.04-1.08v-2.7c0-.5-.06-.92-.18-1.28-.12-.36-.3-.66-.54-.88-.24-.24-.52-.42-.86-.54-.34-.14-.72-.22-1.14-.26v-.12c.42-.04.8-.12 1.14-.26.34-.12.62-.3.86-.54.24-.22.42-.52.54-.88.12-.36.18-.78.18-1.28V5.4c0-.42.02-.78.04-1.08.02-.3.08-.54.18-.74.1-.2.26-.34.48-.44.22-.1.54-.14.96-.14h.24V2.04h-.48zm12 0h-.48V3h.24c.42 0 .74.04.96.14.22.1.38.24.48.44.1.2.16.44.18.74.02.3.04.66.04 1.08v2.7c0 .5.06.92.18 1.28.12.36.3.66.54.88.24.24.52.42.86.54.34.14.72.22 1.14.26v.12c-.42.04-.8.12-1.14.26-.34.14-.62.32-.86.54-.24.24-.42.52-.54.88-.12.36-.18.78-.18 1.28v2.7c0 .42-.02.78-.04 1.08-.02.3-.08.54-.18.74-.1.2-.26.34-.48.44-.22.1-.54.14-.96.14h-.24v1.44h.48c.7 0 1.28-.04 1.72-.12.44-.08.78-.22 1.02-.42.24-.2.4-.48.5-.84.1-.36.14-.82.14-1.38v-2.88c0-.46.04-.86.12-1.2.08-.34.22-.62.42-.84.2-.22.46-.38.78-.48.32-.1.72-.16 1.18-.16v-1.28c-.46 0-.86-.06-1.18-.16-.32-.1-.58-.26-.78-.48-.2-.22-.34-.5-.42-.84-.08-.34-.12-.74-.12-1.2V5.4c0-.56-.04-1.02-.14-1.38-.1-.36-.26-.64-.5-.84-.24-.2-.58-.34-1.02-.42-.44-.08-1.02-.12-1.72-.12z" />
-    </svg>
-  );
-}
-
-function BashIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="currentColor" d="M4.81 3.3L2.23 12.76l2.08.92L7.1 4.5 4.81 3.3zm6.74 1.73L7.12 14.57l2.08.92 4.43-9.54-2.08-.92zM21 7l-8.5 9.86L15 18l6-7v-4zm-6.35 8.65L8 18.42V21l6.65-2.68v-2.67z" />
-    </svg>
-  );
-}
-
-function SqlIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="currentColor" d="M12 3C7.58 3 4 4.79 4 7v10c0 2.21 3.58 4 8 4s8-1.79 8-4V7c0-2.21-3.58-4-8-4zm0 2c3.87 0 6 1.5 6 2s-2.13 2-6 2-6-1.5-6-2 2.13-2 6-2zM6 9.26C7.53 10.04 9.66 10.5 12 10.5s4.47-.46 6-1.24V12c0 .5-2.13 2-6 2s-6-1.5-6-2V9.26zm0 5C7.53 15.04 9.66 15.5 12 15.5s4.47-.46 6-1.24V17c0 .5-2.13 2-6 2s-6-1.5-6-2v-2.74z" />
-    </svg>
-  );
-}
-
-function JavaIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="#E76F00" d="M8.85 18.16s-.94.55.67.73c1.95.22 2.94.19 5.09-.21 0 0 .56.36 1.35.67-4.81 2.06-10.89-.12-7.11-1.19zm-.59-2.73s-1.05.78.56.95c2.08.21 3.72.23 6.56-.31 0 0 .4.4 1.02.62-5.82 1.7-12.3.13-8.14-.66z" />
-      <path fill="#E76F00" d="M13.16 11.16c1.2 1.38-.31 2.62-.31 2.62s3.05-1.57 1.65-3.54c-1.31-1.84-2.31-2.75 3.12-5.9 0 0-8.53 2.13-4.46 6.82z" />
-      <path fill="#E76F00" d="M19.56 19.93s.69.57-.76 1.01c-2.77.84-11.53 1.1-13.96.03-.88-.38.77-.91 1.28-1.02.54-.12.85-.1.85-.1-.98-.69-6.31 1.35-2.71 1.93 9.81 1.58 17.88-.71 15.3-1.85zM9.28 13.06s-4.47 1.06-1.58 1.45c1.22.16 3.66.13 5.93-.06 1.86-.16 3.73-.5 3.73-.5s-.66.28-1.13.6c-4.56 1.2-13.38.64-10.84-.58 2.14-1.03 3.89-.91 3.89-.91zm8.06 4.51c4.64-2.41 2.49-4.73.99-4.42-.37.08-.53.14-.53.14s.14-.21.4-.3c2.95-1.04 5.22 3.06-.95 4.68 0 0 .07-.06.09-.1z" />
-      <path fill="#E76F00" d="M14.59 0s2.57 2.57-2.44 6.51c-4.01 3.16-.91 4.97 0 7.03-2.34-2.11-4.05-3.97-2.9-5.7C10.93 5.34 15.76 4.1 14.59 0z" />
-      <path fill="#E76F00" d="M9.52 23.78c4.45.28 11.28-.16 11.44-2.27 0 0-.31.8-3.68 1.43-3.8.72-8.49.63-11.27.17 0 0 .57.47 3.51.67z" />
-    </svg>
-  );
-}
-
-function CppIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="#00599C" d="M22.39 6a.5.5 0 0 0-.2-.2L12.2.2a.5.5 0 0 0-.4 0L1.81 5.8a.5.5 0 0 0-.2.2.49.49 0 0 0-.11.3v11.4c0 .11.04.22.1.3a.5.5 0 0 0 .21.2l9.99 5.6a.5.5 0 0 0 .4 0l9.99-5.6a.5.5 0 0 0 .21-.2c.07-.08.1-.19.1-.3V6.3a.49.49 0 0 0-.11-.3zM12 19.5a7.5 7.5 0 1 1 0-15 7.45 7.45 0 0 1 6.49 3.75l-3.24 1.88A3.72 3.72 0 0 0 12 8.25a3.75 3.75 0 1 0 3.25 5.62l3.24 1.88A7.45 7.45 0 0 1 12 19.5zm7.5-6h-1v1h-1v-1h-1v-1h1v-1h1v1h1v1zm3 0h-1v1h-1v-1h-1v-1h1v-1h1v1h1v1z" />
-    </svg>
-  );
-}
-
-function RubyIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="#CC342D" d="M18.53 18.86L23.58 5.3l-5.39 1.56L14 .97l-2.2 5.34L5.12 2.2.69 8.07l5.74 1.44L2.5 16.15l6.66-.68-1.5 5.7 6.04-4.1 3.53 5.4.56-3.95 4.96.82-4.22-6.48z" />
-    </svg>
-  );
-}
-
-function SwiftIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <path fill="#F05138" d="M21.86 18.06c.07-.18.14-.37.2-.56.94-2.98.56-6.37-1.55-9.24a12.43 12.43 0 0 0-.65-.87c.19.31.37.63.53.97 1.61 3.37 1.04 7.09-.94 9.74-.06.08-.12.16-.19.24.11-.09.22-.17.32-.26 1.13-1.02 2.01-2.28 2.28-3.02v1zm-3.41 2.72c-1.63 1.4-3.8 2.17-5.55 2.37-.12.02-4.34.7-8.27-2.66.2.13.42.25.63.37C8.19 22.38 11.67 22.44 14.5 21c.29-.15.57-.32.83-.5-2.38 1.08-5.24 1.2-7.97-.12-2.48-1.2-4.36-3.33-5.45-5.49.34.49.75.98 1.22 1.47 1.89 1.97 4.49 3.48 4.49 3.48-.54-.57-2.13-2.45-3.04-4.53C3.7 13.3 3.48 11 4.28 8.97c.43 1.3 1.25 2.78 2.56 4.19 2.02 2.18 4.83 3.71 4.86 3.73l-.05-.03a17.67 17.67 0 0 1-4.48-4.3A14.56 14.56 0 0 1 5.2 8.4l-.01-.05C6.72 10.62 9.14 13 11.66 14.3c1.53.78 2.67 1 3.49 1.08l.06.01c-.94-.84-1.68-1.85-1.68-1.85 1.24.67 2.95 1.1 4.86 1.27l.35.02c-2.1-1.36-3.77-3.11-4.98-4.67a20.58 20.58 0 0 1-2.87-4.86c3.33 3.84 7.08 6.16 7.08 6.16-.71-1.04-1.24-2.17-1.24-2.17 3.23 2.8 5.72 3.2 5.72 3.2A10.5 10.5 0 0 0 23.58 8C23.07 12.18 21.41 15.53 18.45 20.78z" />
-    </svg>
-  );
-}
-
-function KotlinIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className}>
-      <defs>
-        <linearGradient id="kotlin-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#E44857" />
-          <stop offset="50%" stopColor="#C711E1" />
-          <stop offset="100%" stopColor="#7F52FF" />
-        </linearGradient>
-      </defs>
-      <path fill="url(#kotlin-grad)" d="M0 0h24L12 12 24 24H0z" />
-    </svg>
-  );
-}
+import { HtmlLogo } from "@/components/logos/html";
+import { CssLogo } from "@/components/logos/css";
+import { JsonLogo } from "@/components/logos/json";
+import { BashLogo } from "@/components/logos/bash";
+import { SqlLogo } from "@/components/logos/sql";
+import { JavaLogo } from "@/components/logos/java";
+import { CplusplusLogo } from "@/components/logos/cplusplus";
+import { RubyLogo } from "@/components/logos/ruby";
+import { SwiftLogo } from "@/components/logos/swift";
+import { KotlinLogo } from "@/components/logos/kotlin";
 
 export const LANGUAGE_ICONS: Record<
   string,
   (props: { className?: string }) => React.ReactElement
 > = {
+  tsx: TypescriptLogo,
   typescript: TypescriptLogo,
   javascript: JavascriptLogo,
   python: PythonLogo,
   rust: RustLogo,
   go: GoLogo,
-  html: HtmlIcon,
-  css: CssIcon,
-  json: JsonIcon,
-  bash: BashIcon,
-  sql: SqlIcon,
-  java: JavaIcon,
-  cpp: CppIcon,
-  ruby: RubyIcon,
-  swift: SwiftIcon,
-  kotlin: KotlinIcon,
+  html: HtmlLogo,
+  css: CssLogo,
+  json: JsonLogo,
+  bash: BashLogo,
+  sql: SqlLogo,
+  java: JavaLogo,
+  cpp: CplusplusLogo,
+  ruby: RubyLogo,
+  swift: SwiftLogo,
+  kotlin: KotlinLogo,
 };
