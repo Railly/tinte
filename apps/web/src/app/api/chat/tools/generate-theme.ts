@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { tool } from "ai";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { saveThemeToDatabase } from "@/lib/theme-operations";
 import description from "./generate-theme.md";
 
@@ -28,86 +28,88 @@ const TinteBlockSchema = z.object({
   ac_3: z.string().describe("Accent color 3 in hex format"),
 });
 
+const inputSchema = z.object({
+  title: z
+    .string()
+    .max(20)
+    .describe(
+      "Short theme title, maximum 2 words (e.g., 'Ocean Sunset', 'Dark Forest')",
+    ),
+  concept: z.string().describe("Brief theme description and mood"),
+  light: TinteBlockSchema.describe(
+    "Light mode palette with perceptual luminance progression from bg (lightest) to tx (darkest)",
+  ),
+  dark: TinteBlockSchema.describe(
+    "Dark mode palette with perceptual luminance progression from bg (darkest) to tx (lightest)",
+  ),
+  fonts: z
+    .object({
+      sans: z
+        .string()
+        .describe(
+          "Primary sans-serif font family from Google Fonts (e.g., 'Inter', 'Poppins')",
+        ),
+      serif: z
+        .string()
+        .describe(
+          "Serif font family from Google Fonts (e.g., 'Playfair Display', 'Merriweather')",
+        ),
+      mono: z
+        .string()
+        .describe(
+          "Monospace font family from Google Fonts (e.g., 'JetBrains Mono', 'Fira Code')",
+        ),
+    })
+    .describe("Google Fonts selection for theme typography"),
+  radius: z
+    .object({
+      sm: z
+        .string()
+        .describe("Small border radius (e.g., '0.125rem', '2px')"),
+      md: z
+        .string()
+        .describe("Medium border radius (e.g., '0.375rem', '6px')"),
+      lg: z.string().describe("Large border radius (e.g., '0.5rem', '8px')"),
+      xl: z
+        .string()
+        .describe("Extra large border radius (e.g., '0.75rem', '12px')"),
+    })
+    .describe("Border radius scale for rounded corners"),
+  shadows: z
+    .object({
+      color: z
+        .string()
+        .describe("Shadow color in hex format (e.g., '#000000')"),
+      opacity: z
+        .string()
+        .describe("Shadow opacity as decimal string (e.g., '0.1', '0.25')"),
+      offsetX: z
+        .string()
+        .describe("Shadow horizontal offset (e.g., '0px', '2px')"),
+      offsetY: z
+        .string()
+        .describe("Shadow vertical offset (e.g., '2px', '4px')"),
+      blur: z.string().describe("Shadow blur radius (e.g., '4px', '8px')"),
+      spread: z
+        .string()
+        .describe("Shadow spread radius (e.g., '0px', '1px')"),
+    })
+    .describe("Shadow system configuration"),
+});
+
+type ThemeInput = z.infer<typeof inputSchema>;
+
 export const generateThemeTool = tool({
   description: description,
-  inputSchema: z.object({
-    title: z
-      .string()
-      .max(20)
-      .describe(
-        "Short theme title, maximum 2 words (e.g., 'Ocean Sunset', 'Dark Forest')",
-      ),
-    concept: z.string().describe("Brief theme description and mood"),
-    light: TinteBlockSchema.describe(
-      "Light mode palette with perceptual luminance progression from bg (lightest) to tx (darkest)",
-    ),
-    dark: TinteBlockSchema.describe(
-      "Dark mode palette with perceptual luminance progression from bg (darkest) to tx (lightest)",
-    ),
-    fonts: z
-      .object({
-        sans: z
-          .string()
-          .describe(
-            "Primary sans-serif font family from Google Fonts (e.g., 'Inter', 'Poppins')",
-          ),
-        serif: z
-          .string()
-          .describe(
-            "Serif font family from Google Fonts (e.g., 'Playfair Display', 'Merriweather')",
-          ),
-        mono: z
-          .string()
-          .describe(
-            "Monospace font family from Google Fonts (e.g., 'JetBrains Mono', 'Fira Code')",
-          ),
-      })
-      .describe("Google Fonts selection for theme typography"),
-    radius: z
-      .object({
-        sm: z
-          .string()
-          .describe("Small border radius (e.g., '0.125rem', '2px')"),
-        md: z
-          .string()
-          .describe("Medium border radius (e.g., '0.375rem', '6px')"),
-        lg: z.string().describe("Large border radius (e.g., '0.5rem', '8px')"),
-        xl: z
-          .string()
-          .describe("Extra large border radius (e.g., '0.75rem', '12px')"),
-      })
-      .describe("Border radius scale for rounded corners"),
-    shadows: z
-      .object({
-        color: z
-          .string()
-          .describe("Shadow color in hex format (e.g., '#000000')"),
-        opacity: z
-          .string()
-          .describe("Shadow opacity as decimal string (e.g., '0.1', '0.25')"),
-        offsetX: z
-          .string()
-          .describe("Shadow horizontal offset (e.g., '0px', '2px')"),
-        offsetY: z
-          .string()
-          .describe("Shadow vertical offset (e.g., '2px', '4px')"),
-        blur: z.string().describe("Shadow blur radius (e.g., '4px', '8px')"),
-        spread: z
-          .string()
-          .describe("Shadow spread radius (e.g., '0px', '1px')"),
-      })
-      .describe("Shadow system configuration"),
-  }),
-  execute: async ({ title, concept, light, dark, fonts, radius, shadows }) => {
+  inputSchema: inputSchema as any,
+  execute: async ({ title, concept, light, dark, fonts, radius, shadows }: ThemeInput) => {
     try {
-      // Get current session
       const { userId } = await auth();
 
       if (userId) {
         console.log(`🔐 Authenticated user generating theme: ${userId}`);
       }
 
-      // Save theme to database
       const { theme: savedTheme, slug } = await saveThemeToDatabase(
         {
           title,
@@ -130,9 +132,9 @@ export const generateThemeTool = tool({
         shadows,
         title,
         concept,
-        slug, // Return the slug for redirect
+        slug,
         databaseId: savedTheme.id,
-        databaseTheme: savedTheme, // Return full theme object with user info
+        databaseTheme: savedTheme,
         success: true,
         timestamp: new Date().toISOString(),
         preloadFonts: {
@@ -144,7 +146,6 @@ export const generateThemeTool = tool({
     } catch (error) {
       console.error("Error in generateTheme tool:", error);
 
-      // Fallback to in-memory theme without database save
       return {
         theme: { light, dark },
         fonts,
