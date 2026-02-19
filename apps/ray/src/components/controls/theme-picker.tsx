@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useCommunityThemes } from "@/hooks/use-community-themes";
 import { useVendorThemes } from "@/hooks/use-vendor-themes";
+import { DEFAULT_THEME } from "@/data/bundled-themes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -30,7 +31,10 @@ export function ThemePicker({
   const [open, setOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const [currentName, setCurrentName] = useState("One Hunter");
-  const [currentColors, setCurrentColors] = useState<string[]>([]);
+  const [currentColors, setCurrentColors] = useState<string[]>(() => {
+    const d = DEFAULT_THEME.dark;
+    return [d.bg, d.pr, d.sc, d.ac_1, d.ac_2];
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -90,6 +94,25 @@ export function ThemePicker({
     },
     [onChange, onThemeData, handleSearch, mode],
   );
+
+  const didSyncInitial = useRef(false);
+
+  useEffect(() => {
+    if (didSyncInitial.current || !value || tinteVendor.loading || tinteVendor.themes.length === 0) return;
+    const allThemes = [
+      ...tinteVendor.themes,
+      ...raysoVendor.themes,
+      ...tweakcnVendor.themes,
+    ];
+    const match = allThemes.find((t) => t.slug === value);
+    if (match) {
+      didSyncInitial.current = true;
+      const block = mode === "dark" ? match.dark : match.light;
+      setCurrentName(match.name);
+      setCurrentColors(colorDots(block));
+      onThemeData?.({ light: match.light, dark: match.dark });
+    }
+  }, [value, tinteVendor.loading, tinteVendor.themes, raysoVendor.themes, tweakcnVendor.themes, mode, onThemeData]);
 
   const filterThemes = <T extends { name: string; author: string }>(
     themes: T[],
