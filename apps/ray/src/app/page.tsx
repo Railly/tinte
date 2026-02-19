@@ -3,9 +3,46 @@ import { RayEditor } from "@/components/ray-editor";
 import { GithubStars } from "@/components/github-stars";
 import { TinteLogo } from "@/components/logos/tinte";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Ray by Tinte",
+  url: "https://ray.tinte.dev",
+  description:
+    "Create and share beautiful code screenshots with 500+ themes. Free API, Claude Code skill, and 16 languages.",
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Any",
+  browserRequirements: "Requires JavaScript",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  creator: {
+    "@type": "Person",
+    name: "Railly Hugo",
+    url: "https://raillyhugo.com",
+  },
+  featureList: [
+    "500+ syntax highlighting themes",
+    "16 programming languages",
+    "Export to PNG and SVG",
+    "Copy to clipboard",
+    "REST API for programmatic screenshots",
+    "Claude Code skill integration",
+    "Custom gradient backgrounds",
+    "Line numbers toggle",
+    "Theme extraction from images",
+  ],
+};
+
 export default function Home() {
   return (
     <div className="flex flex-col h-dvh">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="flex items-center justify-between px-5 h-12 shrink-0 border-b">
         <div className="flex items-center gap-2.5">
           <a
@@ -17,9 +54,9 @@ export default function Home() {
           >
             <TinteLogo className="size-5" />
           </a>
-          <span className="text-sm font-mono font-semibold tracking-tight text-foreground">
+          <h1 className="text-sm font-mono font-semibold tracking-tight text-foreground">
             ray.tinte.dev
-          </span>
+          </h1>
         </div>
         <div className="flex items-center gap-3">
           <GithubStars />

@@ -1,4 +1,8 @@
+User-agent: Twitterbot
+Allow: /
+
 User-agent: *
+Disallow: /*?*
 Allow: /
 
 Sitemap: https://ray.tinte.dev/sitemap.xml
