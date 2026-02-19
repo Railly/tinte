@@ -34,7 +34,7 @@ export function CodeInput({
       <div className="flex items-center gap-2">
         <label
           htmlFor="language-select"
-          className="text-xs text-[var(--muted-foreground)]"
+          className="text-xs text-muted-foreground"
         >
           Language
         </label>
@@ -42,7 +42,7 @@ export function CodeInput({
           id="language-select"
           value={language}
           onChange={(e) => onLanguageChange(e.target.value as Language)}
-          className="text-xs bg-[var(--accent)] border border-[var(--border)] text-[var(--foreground)] rounded px-2 py-1 outline-none cursor-pointer hover:border-[var(--muted-foreground)] transition-colors"
+          className="text-xs bg-accent border rounded px-2 py-1 text-foreground outline-none cursor-pointer hover:border-ring transition-colors"
         >
           {LANGUAGES.map((lang) => (
             <option key={lang} value={lang}>
@@ -56,7 +56,7 @@ export function CodeInput({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         spellCheck={false}
-        className="flex-1 w-full bg-[var(--accent)] border border-[var(--border)] text-[var(--foreground)] rounded-lg p-4 font-mono text-xs leading-relaxed outline-none resize-none hover:border-[var(--muted-foreground)] focus:border-[var(--muted-foreground)] transition-colors"
+        className="flex-1 w-full bg-accent border rounded-lg p-4 font-mono text-xs leading-relaxed text-foreground outline-none resize-none hover:border-ring focus:border-ring transition-colors"
         style={{
           fontFamily: "var(--font-geist-mono), 'Fira Code', Menlo, monospace",
         }}

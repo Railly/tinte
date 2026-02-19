@@ -1,5 +1,7 @@
 import { ClipboardCopy, Download, FileImage } from "lucide-react";
 import { useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 interface ExportActionsProps {
   onCopy: () => Promise<boolean | undefined>;
@@ -8,9 +10,6 @@ interface ExportActionsProps {
   canCopy: boolean;
   exporting: boolean;
 }
-
-const btnClass =
-  "flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium transition-colors bg-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] disabled:opacity-40 disabled:cursor-not-allowed";
 
 export function ExportActions({
   onCopy,
@@ -30,36 +29,36 @@ export function ExportActions({
   }, [onCopy]);
 
   return (
-    <div className="flex items-center gap-0.5">
+    <ButtonGroup>
       {canCopy && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="xs"
           onClick={handleCopy}
           disabled={exporting}
-          className={btnClass}
         >
-          <ClipboardCopy className="w-3 h-3" />
+          <ClipboardCopy />
           {copied ? "Copied" : "Copy"}
-        </button>
+        </Button>
       )}
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="xs"
         onClick={onExportPng}
         disabled={exporting}
-        className={btnClass}
       >
-        <Download className="w-3 h-3" />
+        <Download />
         PNG
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
+        variant="ghost"
+        size="xs"
         onClick={onExportSvg}
         disabled={exporting}
-        className={btnClass}
       >
-        <FileImage className="w-3 h-3" />
+        <FileImage />
         SVG
-      </button>
-    </div>
+      </Button>
+    </ButtonGroup>
   );
 }

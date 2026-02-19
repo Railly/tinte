@@ -9,7 +9,7 @@ interface BackgroundPickerProps {
 export function BackgroundPicker({ value, onChange }: BackgroundPickerProps) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-xs text-[var(--muted-foreground)] mr-1">BG</span>
+      <span className="text-xs text-muted-foreground mr-1">BG</span>
       {GRADIENTS.map((gradient) => (
         <button
           type="button"
@@ -17,9 +17,9 @@ export function BackgroundPicker({ value, onChange }: BackgroundPickerProps) {
           title={gradient.name}
           onClick={() => onChange(gradient.id as GradientId)}
           className={cn(
-            "w-7 h-7 rounded transition-all",
+            "size-7 rounded-md transition-all",
             value === gradient.id
-              ? "ring-2 ring-[var(--foreground)] ring-offset-1 ring-offset-[var(--background)] scale-110"
+              ? "ring-2 ring-foreground ring-offset-1 ring-offset-background scale-110"
               : "hover:scale-105 opacity-80 hover:opacity-100",
           )}
           style={{
@@ -29,7 +29,7 @@ export function BackgroundPicker({ value, onChange }: BackgroundPickerProps) {
                 : gradient.css,
             border:
               gradient.css === "transparent"
-                ? "1px solid var(--border)"
+                ? "1px solid hsl(var(--border))"
                 : "none",
           }}
         />

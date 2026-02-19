@@ -91,7 +91,7 @@ export function RayEditor() {
         />
       </div>
 
-      <div className="shrink-0 flex items-center justify-between px-4 h-12 border-t border-[var(--border)] bg-[var(--background)]">
+      <div className="shrink-0 flex items-center justify-between px-4 h-12 border-t bg-background">
         <div className="flex items-center gap-3">
           <ThemePicker
             value={themeSlug}
@@ -99,9 +99,9 @@ export function RayEditor() {
             onThemeData={handleThemeData}
             mode={mode}
           />
-          <div className="w-px h-4 bg-[var(--border)]" />
+          <div className="w-px h-4 bg-border" />
           <BackgroundPicker value={bg as GradientId} onChange={setBg} />
-          <div className="w-px h-4 bg-[var(--border)]" />
+          <div className="w-px h-4 bg-border" />
           <SettingsBar
             padding={padding}
             onPaddingChange={setPadding}

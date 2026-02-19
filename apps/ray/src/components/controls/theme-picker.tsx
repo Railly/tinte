@@ -1,9 +1,12 @@
 "use client";
 
 import type { TinteBlock } from "@tinte/core";
+import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useCommunityThemes } from "@/hooks/use-community-themes";
 import { useVendorThemes } from "@/hooks/use-vendor-themes";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ThemePickerProps {
   value: string;
@@ -110,39 +113,36 @@ export function ThemePicker({
 
   return (
     <div ref={containerRef} className="relative">
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium bg-[var(--accent)] border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)] hover:border-[var(--muted-foreground)] transition-colors"
+        className="gap-2 text-xs"
       >
         {currentColors.length > 0 && (
           <div className="flex items-center gap-1">
             {currentColors.map((color, i) => (
               <div
                 key={i}
-                style={{
-                  background: color,
-                  width: 10,
-                  height: 10,
-                  borderRadius: "50%",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}
+                className="size-2.5 rounded-full border border-white/10"
+                style={{ background: color }}
               />
             ))}
           </div>
         )}
         <span>{currentName}</span>
-      </button>
+        <ChevronDown className="size-3 text-muted-foreground" />
+      </Button>
 
       {open && (
-        <div className="absolute bottom-full mb-2 left-0 z-50 w-72 bg-[var(--accent)] border border-[var(--border)] rounded-lg shadow-2xl overflow-hidden">
-          <div className="p-2 border-b border-[var(--border)]">
+        <div className="absolute bottom-full mb-2 left-0 z-50 w-72 rounded-lg border bg-popover shadow-lg overflow-hidden">
+          <div className="p-2 border-b">
             <input
               type="text"
               placeholder="Search 13,000+ themes..."
               value={localSearch}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full bg-[var(--muted)] border border-[var(--border)] rounded px-2 py-1 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] outline-none"
+              className="w-full rounded-md border bg-muted px-2 py-1 text-xs text-foreground placeholder:text-muted-foreground outline-none"
               ref={(el) => el?.focus()}
             />
           </div>
@@ -158,7 +158,7 @@ export function ThemePicker({
                 return (
                   <div key={vendor}>
                     <SectionHeader label={label} first={sectionIdx === 0} />
-                    <div className="px-3 py-2 text-[10px] text-[var(--muted-foreground)]">
+                    <div className="px-3 py-2 text-[10px] text-muted-foreground">
                       Loading...
                     </div>
                   </div>
@@ -225,7 +225,7 @@ export function ThemePicker({
             )}
 
             {community.loading && (
-              <div className="px-3 py-3 text-xs text-[var(--muted-foreground)] text-center">
+              <div className="px-3 py-3 text-xs text-muted-foreground text-center">
                 Loading...
               </div>
             )}
@@ -234,7 +234,7 @@ export function ThemePicker({
               community.themes.length === 0 &&
               !anyVendorLoading &&
               !anyVendorHasThemes && (
-                <div className="px-3 py-4 text-xs text-[var(--muted-foreground)] text-center">
+                <div className="px-3 py-4 text-xs text-muted-foreground text-center">
                   No themes found
                 </div>
               )}
@@ -251,9 +251,10 @@ function SectionHeader({
 }: { label: string; first?: boolean }) {
   return (
     <div
-      className={`px-3 py-1.5 text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-widest ${
-        first ? "" : "border-t border-[var(--border)] mt-1"
-      }`}
+      className={cn(
+        "px-3 py-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-widest",
+        !first && "border-t mt-1",
+      )}
     >
       {label}
     </div>
@@ -277,29 +278,23 @@ function ThemeRow({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--muted)] transition-colors text-left ${
-        active ? "bg-[var(--muted)]" : ""
-      }`}
+      className={cn(
+        "w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-accent transition-colors text-left",
+        active && "bg-accent",
+      )}
     >
       <div className="flex items-center gap-1">
         {colors.map((color, i) => (
           <div
             key={i}
-            style={{
-              background: color,
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
+            className="size-2.5 rounded-full border border-white/10"
+            style={{ background: color }}
           />
         ))}
       </div>
       <div className="flex flex-col min-w-0">
-        <span className="text-[var(--foreground)] font-medium truncate">
-          {name}
-        </span>
-        <span className="text-[var(--muted-foreground)] text-[10px] truncate">
+        <span className="text-foreground font-medium truncate">{name}</span>
+        <span className="text-muted-foreground text-[10px] truncate">
           {author}
         </span>
       </div>
