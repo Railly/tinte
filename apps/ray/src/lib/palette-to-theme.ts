@@ -6,7 +6,7 @@ interface Swatch {
   population: number;
 }
 
-interface Palette {
+export interface Palette {
   vibrant?: Swatch;
   darkVibrant?: Swatch;
   lightVibrant?: Swatch;
