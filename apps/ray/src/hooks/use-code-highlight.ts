@@ -17,6 +17,45 @@ const shikiTheme = createCssVariablesTheme({
   fontStyle: true,
 });
 
+const CACHE_KEY = "ray:highlight-cache";
+const CACHE_VERSION = 1;
+
+interface CacheEntry {
+  html: string;
+  v: number;
+}
+
+function getCachedHtml(code: string, language: string): string | null {
+  try {
+    const raw = localStorage.getItem(`${CACHE_KEY}:${language}`);
+    if (!raw) return null;
+    const entry: CacheEntry = JSON.parse(raw);
+    if (entry.v !== CACHE_VERSION) return null;
+    const hash = simpleHash(code);
+    const stored = localStorage.getItem(`${CACHE_KEY}:${language}:hash`);
+    if (stored !== hash) return null;
+    return entry.html;
+  } catch {
+    return null;
+  }
+}
+
+function setCachedHtml(code: string, language: string, html: string): void {
+  try {
+    const entry: CacheEntry = { html, v: CACHE_VERSION };
+    localStorage.setItem(`${CACHE_KEY}:${language}`, JSON.stringify(entry));
+    localStorage.setItem(`${CACHE_KEY}:${language}:hash`, simpleHash(code));
+  } catch {}
+}
+
+function simpleHash(str: string): string {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  }
+  return h.toString(36);
+}
+
 interface UseCodeHighlightProps {
   code: string;
   language: string;
@@ -28,8 +67,8 @@ export function useCodeHighlight({
   language,
   theme,
 }: UseCodeHighlightProps) {
-  const [html, setHtml] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [html, setHtml] = useState(() => getCachedHtml(code, language) ?? "");
+  const [loading, setLoading] = useState(() => !getCachedHtml(code, language));
   const prevThemeRef = useRef(theme);
 
   const cssVariables = useMemo(() => {
@@ -47,8 +86,10 @@ export function useCodeHighlight({
     let cancelled = false;
 
     const highlight = async () => {
+      const cached = getCachedHtml(code, language);
+      if (!cached) setLoading(true);
+
       try {
-        setLoading(true);
         const result = await codeToHtml(code, {
           lang: language as Parameters<typeof codeToHtml>[1]["lang"],
           theme: shikiTheme,
@@ -61,13 +102,13 @@ export function useCodeHighlight({
           ],
         });
         if (!cancelled) {
-          setHtml(
-            result.replace(
-              /<pre([^>]*)>/g,
-              '<pre$1 style="background: transparent; margin: 0; overflow-x: auto;">',
-            ),
+          const processed = result.replace(
+            /<pre([^>]*)>/g,
+            '<pre$1 style="background: transparent; margin: 0; overflow-x: auto;">',
           );
+          setHtml(processed);
           setLoading(false);
+          setCachedHtml(code, language, processed);
         }
       } catch {
         if (!cancelled) {
