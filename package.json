@@ -4,7 +4,8 @@
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "dev": "bun run --filter @tinte/web dev",
-    "build": "bun run --filter '*' build",
+    "dev:ray": "bun run --filter @tinte/ray dev",
+    "build": "bun run --filter @tinte/web build",
     "lint": "biome check",
     "format": "biome format --write"
   },
