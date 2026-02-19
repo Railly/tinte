@@ -19,6 +19,25 @@ export const LANGUAGES = [
 
 export type Language = (typeof LANGUAGES)[number];
 
+export const LANGUAGE_LABELS: Record<Language, string> = {
+  tsx: "TSX",
+  typescript: "TypeScript",
+  javascript: "JavaScript",
+  python: "Python",
+  rust: "Rust",
+  go: "Go",
+  html: "HTML",
+  css: "CSS",
+  json: "JSON",
+  bash: "Bash",
+  sql: "SQL",
+  java: "Java",
+  cpp: "C++",
+  ruby: "Ruby",
+  swift: "Swift",
+  kotlin: "Kotlin",
+};
+
 export const CODE_SAMPLES: Record<Language, string> = {
   tsx: `import { cache } from "react"
 import { db } from "@/lib/db"

@@ -2,7 +2,8 @@
 
 import { Check, ChevronDown, Hash, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { LANGUAGES } from "@/lib/code-samples";
+import { LANGUAGES, LANGUAGE_LABELS } from "@/lib/code-samples";
+import type { Language } from "@/lib/code-samples";
 import { LANGUAGE_ICONS } from "@/lib/language-icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -56,7 +57,7 @@ function LanguagePicker({
         className="gap-1.5 text-xs"
       >
         {Icon && <Icon className="size-4" />}
-        <span className="capitalize">{value}</span>
+        <span>{LANGUAGE_LABELS[value as Language] ?? value}</span>
         <ChevronDown className="size-3 text-muted-foreground" />
       </Button>
 
@@ -80,8 +81,8 @@ function LanguagePicker({
                   )}
                 >
                   {LangIcon && <LangIcon className="size-4 shrink-0" />}
-                  <span className="text-foreground capitalize flex-1">
-                    {lang}
+                  <span className="text-foreground flex-1">
+                    {LANGUAGE_LABELS[lang] ?? lang}
                   </span>
                   {active && <Check className="size-3 text-foreground" />}
                 </button>
