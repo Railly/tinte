@@ -7,14 +7,18 @@ description: Generate code screenshots via ray.tinte.dev API. Use when user asks
 
 Generate code screenshots by calling the ray.tinte.dev API.
 
-## API
+## Screenshot API
 
 \`\`\`
 POST https://ray.tinte.dev/api/v1/screenshot
 Content-Type: application/json
 \`\`\`
 
-## Parameters
+For local dev: \`POST http://localhost:3002/api/v1/screenshot\`
+
+Rate limit: 60 requests / 60s per IP.
+
+### Parameters
 
 | Param | Type | Default | Notes |
 |-------|------|---------|-------|
@@ -30,14 +34,7 @@ Content-Type: application/json
 | \`format\` | \`"png"\` \\| \`"svg"\` | \`"png"\` | |
 | \`scale\` | number | \`2\` | 1-4 (retina) |
 
-## Workflow
-
-1. Identify the code to screenshot (from file, clipboard, or user input)
-2. Detect language from file extension or content
-3. Call the API via curl
-4. Save the PNG and open it
-
-## Example
+### Example
 
 \`\`\`bash
 curl -s -X POST https://ray.tinte.dev/api/v1/screenshot \\
@@ -48,6 +45,65 @@ curl -s -X POST https://ray.tinte.dev/api/v1/screenshot \\
     "theme": "one-hunter",
     "title": "hello.ts"
   }' -o screenshot.png && open screenshot.png
+\`\`\`
+
+## Extract Theme API
+
+\`\`\`
+POST https://ray.tinte.dev/api/v1/extract-theme
+Content-Type: multipart/form-data
+\`\`\`
+
+Upload an image to extract a code editor color theme. Two modes:
+
+| Mode | Query param | Rate limit | Description |
+|------|-------------|------------|-------------|
+| Fast | \`?mode=fast\` (default) | None | Color extraction via Vibrant.js, no AI |
+| AI | \`?mode=ai&model=MODEL\` | 20 req / 60s per IP | LLM-powered palette mapping |
+
+### AI Models
+
+| Model | Description |
+|-------|-------------|
+| \`google/gemini-2.5-flash-lite\` | Fast, enhanced palette mapping |
+| \`anthropic/claude-haiku-4.5\` | Balanced quality/speed (default) |
+| \`anthropic/claude-sonnet-4.5\` | Highest fidelity |
+
+### Example
+
+\`\`\`bash
+# Fast mode (free, no limit)
+curl -s -X POST https://ray.tinte.dev/api/v1/extract-theme \\
+  -F "image=@photo.jpg" | jq
+
+# AI mode
+curl -s -X POST "https://ray.tinte.dev/api/v1/extract-theme?mode=ai&model=anthropic/claude-haiku-4.5" \\
+  -F "image=@photo.jpg" | jq
+\`\`\`
+
+### Response
+
+\`\`\`json
+{
+  "dark": { "bg": "#0a0a12", "bg_2": "#0f0f18", ... },
+  "light": { "bg": "#fafafa", "bg_2": "#f0f0f0", ... },
+  "gradient": "linear-gradient(...)",
+  "name": "Sunset Harbour",
+  "swatches": { "vibrant": { "hex": "#e84393", "population": 1234 }, ... },
+  "mode": "ai"
+}
+\`\`\`
+
+## Rate Limit Status API
+
+\`\`\`
+GET https://ray.tinte.dev/api/v1/ratelimit-status
+\`\`\`
+
+Check remaining AI extraction quota without consuming tokens.
+
+\`\`\`json
+{ "remaining": 18, "limit": 20, "reset": 1771478280000 }
 \`\`\`
 
 ## Language Detection
@@ -74,7 +130,14 @@ curl -s -X POST https://ray.tinte.dev/api/v1/screenshot \\
 
 - Default: \`"one-hunter"\` (Vercel-inspired dark theme)
 - Any slug from tinte.dev: \`"github-dark"\`, \`"dracula"\`, \`"catppuccin"\`, etc.
-- Inline TinteBlock object with 13 semantic colors (bg, tx, tx_2, tx_3, ui, ui_2, ui_3, ac_1, ac_2, ac_3, pr, sc, nt)
+- Inline TinteBlock object with 13 semantic colors (bg, bg_2, tx, tx_2, tx_3, ui, ui_2, ui_3, ac_1, ac_2, ac_3, pr, sc)
+
+## Workflow
+
+1. Identify the code to screenshot (from file, clipboard, or user input)
+2. Detect language from file extension or content
+3. Call the API via curl
+4. Save the PNG and open it
 `;
 
 export async function GET() {
