@@ -34,10 +34,17 @@ const ThemeResponseSchema = z.object({
   light: TinteBlockSchema,
 });
 
+const ALLOWED_MODELS = new Set([
+  "google/gemini-2.5-flash-lite",
+  "anthropic/claude-haiku-4.5",
+  "anthropic/claude-sonnet-4.5",
+]);
+
 async function extractWithAI(
   imageBase64: string,
   mimeType: string,
   vibrantPalette: Palette,
+  model: string,
 ) {
   const swatchSummary = Object.entries(vibrantPalette)
     .filter(([, v]) => v)
@@ -45,7 +52,7 @@ async function extractWithAI(
     .join(", ");
 
   const { object } = await generateObject({
-    model: "anthropic/claude-haiku-4-5-20251001",
+    model,
     schema: ThemeResponseSchema,
     messages: [
       {
@@ -90,6 +97,7 @@ export async function POST(req: NextRequest) {
   try {
     const contentType = req.headers.get("content-type") ?? "";
     const mode = req.nextUrl.searchParams.get("mode") ?? "fast";
+    const modelParam = req.nextUrl.searchParams.get("model") ?? "anthropic/claude-haiku-4.5";
 
     let imageBuffer: Buffer;
     let fileType = "image/png";
@@ -185,11 +193,13 @@ export async function POST(req: NextRequest) {
     let name: string;
 
     if (mode === "ai") {
+      const model = ALLOWED_MODELS.has(modelParam) ? modelParam : "anthropic/claude-haiku-4.5";
       try {
         const aiResult = await extractWithAI(
           imageBuffer.toString("base64"),
           fileType,
           palette,
+          model,
         );
         dark = aiResult.dark;
         light = aiResult.light;
