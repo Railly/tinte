@@ -12,6 +12,7 @@ import { resolveBackground } from "@/lib/gradients";
 import { mapTinteBlockToShiki } from "@/lib/shiki";
 import { rayParsers } from "@/lib/url-state";
 import { BackgroundPicker } from "./controls/background-picker";
+import { ColorEditor } from "./controls/color-editor";
 import { ImageThemeUpload } from "./controls/image-theme-upload";
 import { SettingsBar } from "./controls/settings-bar";
 import { ThemePicker } from "./controls/theme-picker";
@@ -21,6 +22,10 @@ import { PreviewFrame } from "./preview-frame";
 export function RayEditor() {
   const [code, setCode] = useState(DEFAULT_CODE);
   const [themeData, setThemeData] = useState<{
+    light: TinteBlock;
+    dark: TinteBlock;
+  } | null>(null);
+  const [originalThemeData, setOriginalThemeData] = useState<{
     light: TinteBlock;
     dark: TinteBlock;
   } | null>(null);
@@ -75,13 +80,34 @@ export function RayEditor() {
   const handleThemeData = useCallback(
     (data: { light: TinteBlock; dark: TinteBlock }) => {
       setThemeData(data);
+      setOriginalThemeData(data);
     },
     [],
   );
 
+  const originalBlock: TinteBlock | undefined = originalThemeData
+    ? mode === "dark"
+      ? originalThemeData.dark
+      : originalThemeData.light
+    : undefined;
+
+  const handleColorEdit = useCallback(
+    (editedBlock: TinteBlock) => {
+      const base = themeData ?? DEFAULT_THEME;
+      if (mode === "dark") {
+        setThemeData({ light: base.light, dark: editedBlock });
+      } else {
+        setThemeData({ light: editedBlock, dark: base.dark });
+      }
+    },
+    [themeData, mode],
+  );
+
   const handleImageTheme = useCallback(
     (data: { dark: TinteBlock; light: TinteBlock; gradient: string; name: string }) => {
-      setThemeData({ dark: data.dark, light: data.light });
+      const theme = { dark: data.dark, light: data.light };
+      setThemeData(theme);
+      setOriginalThemeData(theme);
       setThemeSlug(`custom:${data.name.toLowerCase().replace(/\s+/g, "-")}`);
       const bgColor = mode === "dark" ? data.dark.bg : data.light.bg;
       setBg(bgColor);
@@ -105,6 +131,7 @@ export function RayEditor() {
           themeBg={block.bg}
           themeBg2={block.bg_2}
           title={title}
+          onTitleChange={setTitle}
           fontSize={fontSize}
           cssVariables={cssVariables}
           highlightedHtml={html}
@@ -123,6 +150,11 @@ export function RayEditor() {
             onThemeData={handleThemeData}
             mode={mode}
           />
+          <ColorEditor
+            block={block}
+            onChange={handleColorEdit}
+            originalBlock={originalBlock}
+          />
           <ImageThemeUpload onThemeExtracted={handleImageTheme} />
           <div className="w-px h-4 bg-border" />
           <BackgroundPicker value={bg} onChange={setBg} />
@@ -136,8 +168,6 @@ export function RayEditor() {
             onLineNumbersChange={setLineNumbers}
             mode={mode}
             onModeChange={setMode}
-            title={title}
-            onTitleChange={setTitle}
             language={lang}
             onLanguageChange={handleLanguageChange}
           />
