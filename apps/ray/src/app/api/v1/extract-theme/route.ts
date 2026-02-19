@@ -8,6 +8,11 @@ import {
   deriveGradientFromPalette,
   nameFromPalette,
 } from "@/lib/palette-to-theme";
+import {
+  aiRatelimit,
+  getIdentifier,
+  rateLimitHeaders,
+} from "@/lib/ratelimit";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
@@ -191,8 +196,25 @@ export async function POST(req: NextRequest) {
     let dark: ReturnType<typeof paletteToTheme>["dark"];
     let light: ReturnType<typeof paletteToTheme>["light"];
     let name: string;
+    let rlHeaders: Record<string, string> = {};
 
     if (mode === "ai") {
+      const identifier = getIdentifier(req);
+      const rl = await aiRatelimit.limit(identifier);
+      rlHeaders = rateLimitHeaders(rl);
+      if (!rl.success) {
+        return NextResponse.json(
+          { error: "Too many AI requests. Try again shortly." },
+          {
+            status: 429,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              ...rlHeaders,
+            },
+          },
+        );
+      }
+
       const model = ALLOWED_MODELS.has(modelParam) ? modelParam : "anthropic/claude-haiku-4.5";
       try {
         const aiResult = await extractWithAI(
@@ -226,6 +248,7 @@ export async function POST(req: NextRequest) {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Cache-Control": "no-store",
+          ...rlHeaders,
         },
       },
     );

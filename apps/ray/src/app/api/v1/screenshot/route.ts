@@ -8,6 +8,11 @@ import {
   highlightCode,
   buildScreenshotJsx,
 } from "@/lib/screenshot";
+import {
+  screenshotRatelimit,
+  getIdentifier,
+  rateLimitHeaders,
+} from "@/lib/ratelimit";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -86,6 +91,15 @@ function estimateDimensions(
 
 export async function POST(request: Request) {
   try {
+    const identifier = getIdentifier(request);
+    const rl = await screenshotRatelimit.limit(identifier);
+    if (!rl.success) {
+      return Response.json(
+        { error: "Too many requests. Try again shortly." },
+        { status: 429, headers: { ...CORS_HEADERS, ...rateLimitHeaders(rl) } },
+      );
+    }
+
     const body = await request.json();
     const parsed = ScreenshotRequestSchema.safeParse(body);
 
