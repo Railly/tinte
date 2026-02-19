@@ -10,17 +10,39 @@ import { CrafterStationLogo } from "@/components/logos/crafter-station";
 import { KeboLogo } from "@/components/logos/kebo";
 import { TailwindcssLogo } from "@/components/logos/tailwindcss";
 
-type LogoComponent = (props: { className?: string }) => JSX.Element;
+export type LogoComponent = (props: {
+  className?: string;
+  mode?: "light" | "dark";
+}) => JSX.Element;
 
 export const THEME_LOGOS: Record<string, LogoComponent> = {
-  linear: ({ className }) => <LinearLogo className={className} variant="logo" />,
+  linear: ({ className, mode = "dark" }) => (
+    <LinearLogo className={className} variant="logo" mode={mode} />
+  ),
   perplexity: ({ className }) => <PerplexityLogo className={className} />,
-  "trigger-dev": ({ className }) => <TriggerLogo className={className} />,
-  clerk: ({ className }) => <ClerkLogo className={className} />,
+  triggerdev: ({ className, mode = "dark" }) => (
+    <TriggerLogo className={className} colorScheme="colorful" mode={mode} />
+  ),
+  clerk: ({ className, mode = "dark" }) => (
+    <ClerkLogo className={className} mode={mode} />
+  ),
   chatgpt: ({ className }) => <OpenAILogo className={className} />,
   supabase: ({ className }) => <SupabaseLogo className={className} />,
   vercel: ({ className }) => <VercelLogo className={className} />,
-  "crafter-station": ({ className }) => <CrafterStationLogo className={className} />,
+  "crafter-station": ({ className }) => (
+    <CrafterStationLogo className={className} />
+  ),
   kebo: ({ className }) => <KeboLogo className={className} />,
   tailwind: ({ className }) => <TailwindcssLogo className={className} />,
+  elevenlabs: ({ className }) => (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title>ElevenLabs</title>
+      <path d="M7 4h3v16H7V4zm7 0h3v16h-3V4z" />
+    </svg>
+  ),
 };

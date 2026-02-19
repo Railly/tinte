@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCommunityThemes } from "@/hooks/use-community-themes";
 import { useVendorThemes } from "@/hooks/use-vendor-themes";
 import { DEFAULT_THEME } from "@/data/bundled-themes";
-import { THEME_LOGOS } from "@/lib/theme-logos";
+import { THEME_LOGOS, type LogoComponent } from "@/lib/theme-logos";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -231,7 +231,7 @@ export function ThemePicker({
         >
           {currentLogo ? (
             <span className="size-3.5 flex items-center justify-center">
-              {currentLogo({ className: "size-3.5" })}
+              {currentLogo({ className: "size-3.5", mode })}
             </span>
           ) : currentColors.length > 0 ? (
             <div className="flex items-center gap-0.5">
@@ -327,6 +327,7 @@ export function ThemePicker({
                         active={theme.slug === value}
                         focused={globalIndex === focusedIndex}
                         Logo={Logo}
+                        mode={mode}
                         onClick={() =>
                           handleSelectTheme(
                             theme.slug,
@@ -361,6 +362,7 @@ export function ThemePicker({
                       colors={colorDots(block)}
                       active={theme.slug === value}
                       focused={globalIndex === focusedIndex}
+                      mode={mode}
                       onClick={() =>
                         handleSelectTheme(
                           theme.slug,
@@ -423,6 +425,7 @@ function ThemeRow({
   active,
   focused,
   Logo,
+  mode,
   index,
   onClick,
 }: {
@@ -431,7 +434,8 @@ function ThemeRow({
   colors: string[];
   active: boolean;
   focused: boolean;
-  Logo?: (props: { className?: string }) => React.JSX.Element;
+  Logo?: LogoComponent;
+  mode: "light" | "dark";
   index: number;
   onClick: () => void;
 }) {
@@ -451,7 +455,7 @@ function ThemeRow({
     >
       {Logo ? (
         <span className="size-5 flex items-center justify-center shrink-0 rounded bg-muted/50 p-0.5">
-          <Logo className="size-3.5" />
+          <Logo className="size-3.5" mode={mode} />
         </span>
       ) : (
         <div className="flex items-center gap-[3px] shrink-0">
