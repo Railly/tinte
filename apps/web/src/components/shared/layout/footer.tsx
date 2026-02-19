@@ -32,6 +32,18 @@ export function Footer() {
           >
             GitHub <GithubIcon className="w-3 h-3" />
           </a>
+          <a
+            href="https://vercel.com/oss"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="https://vercel.com/oss/program-badge.svg"
+              alt="Vercel OSS Program"
+              className="h-6"
+            />
+          </a>
         </div>
       </div>
     </footer>
