@@ -24,7 +24,6 @@ import { ExportActions } from "./export-actions";
 import { PreviewFrame } from "./preview-frame";
 
 export function RayEditor() {
-  const [code, setCode] = useState(DEFAULT_CODE);
   const [themeData, setThemeData] = useState<{
     light: TinteBlock;
     dark: TinteBlock;
@@ -37,6 +36,7 @@ export function RayEditor() {
   const [themeSlug, setThemeSlug] = useQueryState("theme", rayParsers.theme);
   const [mode, setMode] = useQueryState("mode", rayParsers.mode);
   const [lang, setLang] = useQueryState("lang", rayParsers.lang);
+  const [code, setCode] = useState(() => CODE_SAMPLES[lang as Language] ?? DEFAULT_CODE);
   const [padding, setPadding] = useQueryState("padding", rayParsers.padding);
   const [fontSize, setFontSize] = useQueryState(
     "fontSize",
