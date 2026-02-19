@@ -8,6 +8,7 @@ interface PreviewFrameProps {
   themeBg: string;
   themeBg2: string;
   title: string;
+  onTitleChange: (title: string) => void;
   fontSize: number;
   cssVariables: string;
   highlightedHtml: string;
@@ -25,6 +26,7 @@ export const PreviewFrame = forwardRef<HTMLDivElement, PreviewFrameProps>(
       themeBg,
       themeBg2,
       title,
+      onTitleChange,
       fontSize,
       cssVariables,
       highlightedHtml,
@@ -85,7 +87,7 @@ export const PreviewFrame = forwardRef<HTMLDivElement, PreviewFrameProps>(
             background: themeBg,
           }}
         >
-          <WindowChrome title={title} bg={themeBg2} />
+          <WindowChrome title={title} onTitleChange={onTitleChange} bg={themeBg2} />
           <div
             style={{
               display: "flex",

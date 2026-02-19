@@ -18,8 +18,6 @@ interface SettingsBarProps {
   onLineNumbersChange: (v: "on" | "off") => void;
   mode: "light" | "dark";
   onModeChange: (v: "light" | "dark") => void;
-  title: string;
-  onTitleChange: (v: string) => void;
   language: string;
   onLanguageChange: (v: string) => void;
 }
@@ -104,8 +102,6 @@ export function SettingsBar({
   onLineNumbersChange,
   mode,
   onModeChange,
-  title,
-  onTitleChange,
   language,
   onLanguageChange,
 }: SettingsBarProps) {
@@ -157,13 +153,6 @@ export function SettingsBar({
         {mode === "dark" ? <Moon /> : <Sun />}
       </Button>
 
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => onTitleChange(e.target.value)}
-        placeholder="untitled"
-        className="h-6 rounded-md border bg-background px-2 text-xs text-foreground placeholder:text-muted-foreground outline-none w-24 hover:border-ring focus:border-ring transition-colors"
-      />
     </div>
   );
 }

@@ -1,9 +1,10 @@
 interface WindowChromeProps {
   title: string;
+  onTitleChange?: (title: string) => void;
   bg: string;
 }
 
-export function WindowChrome({ title, bg }: WindowChromeProps) {
+export function WindowChrome({ title, onTitleChange, bg }: WindowChromeProps) {
   return (
     <div
       style={{
@@ -42,8 +43,13 @@ export function WindowChrome({ title, bg }: WindowChromeProps) {
           }}
         />
       </div>
-      {title && (
-        <div
+      {onTitleChange ? (
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => onTitleChange(e.target.value)}
+          placeholder="untitled"
+          spellCheck={false}
           style={{
             position: "absolute",
             left: "50%",
@@ -52,13 +58,34 @@ export function WindowChrome({ title, bg }: WindowChromeProps) {
             color: "rgba(255,255,255,0.4)",
             fontFamily: "inherit",
             whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            textAlign: "center",
             maxWidth: 200,
+            width: title ? `${Math.max(title.length + 2, 8)}ch` : "8ch",
+            padding: 0,
           }}
-        >
-          {title}
-        </div>
+        />
+      ) : (
+        title && (
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+              fontSize: 12,
+              color: "rgba(255,255,255,0.4)",
+              fontFamily: "inherit",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: 200,
+            }}
+          >
+            {title}
+          </div>
+        )
       )}
     </div>
   );
