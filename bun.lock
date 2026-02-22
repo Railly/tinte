@@ -26,6 +26,7 @@
         "@tinte/core": "workspace:*",
         "@upstash/ratelimit": "^2.0.8",
         "@upstash/redis": "^1.36.2",
+        "@vercel/analytics": "^1.5.0",
         "ai": "^6.0.91",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
