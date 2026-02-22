@@ -1,6 +1,7 @@
 "use client";
 
 import type { TinteBlock } from "@tinte/core";
+import { track } from "@vercel/analytics";
 import { Check, ChevronDown, Shuffle } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCommunityThemes } from "@/hooks/use-community-themes";
@@ -103,6 +104,7 @@ export function ThemePicker({
       setCurrentName(name);
       setCurrentColors(colorDots(mode === "dark" ? dark : light));
       setOpen(false);
+      track("theme_selected", { theme: slug });
       setLocalSearch("");
       handleSearch("");
     },

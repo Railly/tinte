@@ -1,3 +1,4 @@
+import { track } from "@vercel/analytics";
 import { type RefObject, useCallback, useState } from "react";
 import {
   copyToClipboard,
@@ -19,6 +20,7 @@ export function useExport(frameRef: RefObject<HTMLElement | null>) {
       link.download = "ray-tinte.png";
       link.href = dataUrl;
       link.click();
+      track("export", { format: "png" });
     } finally {
       setExporting(false);
     }
@@ -34,6 +36,7 @@ export function useExport(frameRef: RefObject<HTMLElement | null>) {
       link.download = "ray-tinte.svg";
       link.href = dataUrl;
       link.click();
+      track("export", { format: "svg" });
     } finally {
       setExporting(false);
     }
@@ -44,7 +47,9 @@ export function useExport(frameRef: RefObject<HTMLElement | null>) {
     setExporting(true);
     try {
       await document.fonts.ready;
-      return await copyToClipboard(frameRef.current);
+      const success = await copyToClipboard(frameRef.current);
+      if (success) track("export", { format: "clipboard" });
+      return success;
     } finally {
       setExporting(false);
     }
