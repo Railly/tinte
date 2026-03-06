@@ -33,7 +33,7 @@ export async function generateMetadata({
     ...tinteThemes,
     ...raysoThemes,
   ];
-  const theme = await getThemeBySlug(slug, allThemes);
+  const theme = await getThemeBySlug(slug, allThemes, currentUserId);
 
   if (theme) {
     const themeName = theme.name;
@@ -146,7 +146,7 @@ export default async function WorkbenchSlugPage({
     ...tinteThemes,
     ...raysoThemes,
   ];
-  const initialTheme = await getThemeBySlug(slug, allThemes);
+  const initialTheme = await getThemeBySlug(slug, allThemes, currentUserId);
 
   return (
     <WorkbenchMain

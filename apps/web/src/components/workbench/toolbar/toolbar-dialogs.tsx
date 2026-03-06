@@ -49,7 +49,9 @@ interface ToolbarDialogsProps {
   handleDeleteTheme: () => Promise<void>;
   getDefaultThemeName: () => string;
   getShareLink: () => string;
+  getRawThemeLink: () => string;
   isThemePublic: boolean;
+  canTogglePublic: boolean;
   isSaving: boolean;
   themeName?: string;
 }
@@ -79,7 +81,9 @@ export function ToolbarDialogs({
   handleDeleteTheme,
   getDefaultThemeName,
   getShareLink,
+  getRawThemeLink,
   isThemePublic,
+  canTogglePublic,
   isSaving,
   themeName,
 }: ToolbarDialogsProps) {
@@ -98,7 +102,9 @@ export function ToolbarDialogs({
         onOpenChange={setShowShareDialog}
         onTogglePublic={handleTogglePublic}
         shareLink={getShareLink()}
+        rawThemeLink={getRawThemeLink()}
         isPublic={isThemePublic}
+        canTogglePublic={canTogglePublic}
       />
 
       <ImportThemeDialog
