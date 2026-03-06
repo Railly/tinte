@@ -169,7 +169,6 @@ export async function saveThemeToDatabase(
     installs: 0,
 
     // Extended properties
-    // @ts-expect-error
     shadcn_override: shadcnOverride,
   };
 
