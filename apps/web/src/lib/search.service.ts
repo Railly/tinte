@@ -8,11 +8,8 @@ class SearchService {
   private client: Search;
   private index: ReturnType<Search["index"]>;
 
-  constructor() {
-    this.client = new Search({
-      url: process.env.UPSTASH_SEARCH_REST_URL!,
-      token: process.env.UPSTASH_SEARCH_REST_TOKEN!,
-    });
+  constructor(url: string, token: string) {
+    this.client = new Search({ url, token });
     this.index = this.client.index("themes");
   }
 
@@ -233,4 +230,22 @@ class SearchService {
   }
 }
 
-export const searchService = new SearchService();
+let _searchService: SearchService | null = null;
+
+function getSearchService(): SearchService {
+  if (!_searchService) {
+    const url = process.env.UPSTASH_SEARCH_REST_URL;
+    const token = process.env.UPSTASH_SEARCH_REST_TOKEN;
+    if (!url || !token) {
+      throw new Error("UPSTASH_SEARCH_REST_URL and UPSTASH_SEARCH_REST_TOKEN are required");
+    }
+    _searchService = new SearchService(url, token);
+  }
+  return _searchService;
+}
+
+export const searchService = new Proxy({} as SearchService, {
+  get(_, prop) {
+    return (getSearchService() as unknown as Record<string, unknown>)[prop as string];
+  },
+});

@@ -153,7 +153,7 @@ export const generateThemeTool = tool({
         shadows,
         title,
         concept,
-        success: true,
+        success: false,
         error: "Theme generated but not saved to database",
         timestamp: new Date().toISOString(),
         preloadFonts: {

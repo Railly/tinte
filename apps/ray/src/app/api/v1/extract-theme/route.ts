@@ -10,6 +10,7 @@ import {
 } from "@/lib/palette-to-theme";
 import {
   aiRatelimit,
+  extractThemeRatelimit,
   getIdentifier,
   rateLimitHeaders,
 } from "@/lib/ratelimit";
@@ -133,6 +134,11 @@ export async function POST(req: NextRequest) {
       imageBuffer = Buffer.from(await file.arrayBuffer());
       fileType = file.type;
     } else {
+      const mimeMatch = ALLOWED_TYPES.find((t) => contentType.startsWith(t));
+      if (mimeMatch) {
+        fileType = mimeMatch;
+      }
+
       const body = await req.arrayBuffer();
       if (body.byteLength === 0) {
         return NextResponse.json(
@@ -198,8 +204,9 @@ export async function POST(req: NextRequest) {
     let name: string;
     let rlHeaders: Record<string, string> = {};
 
+    const identifier = getIdentifier(req);
+
     if (mode === "ai") {
-      const identifier = getIdentifier(req);
       const rl = await aiRatelimit.limit(identifier);
       rlHeaders = rateLimitHeaders(rl);
       if (!rl.success) {
@@ -234,6 +241,21 @@ export async function POST(req: NextRequest) {
         name = nameFromPalette(palette);
       }
     } else {
+      const rl = await extractThemeRatelimit.limit(identifier);
+      rlHeaders = rateLimitHeaders(rl);
+      if (!rl.success) {
+        return NextResponse.json(
+          { error: "Too many requests. Try again shortly." },
+          {
+            status: 429,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              ...rlHeaders,
+            },
+          },
+        );
+      }
+
       const theme = paletteToTheme(palette);
       dark = theme.dark;
       light = theme.light;

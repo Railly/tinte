@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:netlify": "netlify dev",
-    "build": "next build",
+    "build": "node scripts/build-with-env.mjs",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
@@ -114,6 +114,7 @@
     "zustand": "^5.0.7"
   },
   "devDependencies": {
+    "dotenv": "^17.2.2",
     "@netlify/plugin-nextjs": "5.7.0",
     "@tailwindcss/postcss": "^4",
     "@types/culori": "^4.0.0",
@@ -121,7 +122,6 @@
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "@vitest/coverage-v8": "^4.0.17",
-    "dotenv": "^17.2.2",
     "drizzle-kit": "^0.31.4",
     "netlify-cli": "^23.6.0",
     "raw-loader": "^4.0.2",

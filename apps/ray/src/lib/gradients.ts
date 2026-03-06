@@ -46,11 +46,20 @@ export function resolveBackground(value: string): string {
   return GRADIENTS[0].css;
 }
 
+function normalizeHex(hex: string): string {
+  const clean = hex.replace(/^#/, "");
+  if (clean.length === 3) {
+    return `#${clean[0]}${clean[0]}${clean[1]}${clean[1]}${clean[2]}${clean[2]}`;
+  }
+  return hex.startsWith("#") ? hex : `#${clean}`;
+}
+
 export function deriveGradientFromColor(hex: string): string {
-  const r = Number.parseInt(hex.slice(1, 3), 16);
-  const g = Number.parseInt(hex.slice(3, 5), 16);
-  const b = Number.parseInt(hex.slice(5, 7), 16);
+  const normalized = normalizeHex(hex);
+  const r = Number.parseInt(normalized.slice(1, 3), 16);
+  const g = Number.parseInt(normalized.slice(3, 5), 16);
+  const b = Number.parseInt(normalized.slice(5, 7), 16);
   const darker = `#${Math.max(0, r - 30).toString(16).padStart(2, "0")}${Math.max(0, g - 30).toString(16).padStart(2, "0")}${Math.max(0, b - 30).toString(16).padStart(2, "0")}`;
   const lighter = `#${Math.min(255, r + 20).toString(16).padStart(2, "0")}${Math.min(255, g + 20).toString(16).padStart(2, "0")}${Math.min(255, b + 20).toString(16).padStart(2, "0")}`;
-  return `linear-gradient(145deg, ${darker} 0%, ${hex} 50%, ${lighter} 100%)`;
+  return `linear-gradient(145deg, ${darker} 0%, ${normalized} 50%, ${lighter} 100%)`;
 }

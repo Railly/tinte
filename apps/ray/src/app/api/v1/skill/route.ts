@@ -31,7 +31,7 @@ Rate limit: 60 requests / 60s per IP.
 | \`lineNumbers\` | boolean | \`true\` | |
 | \`title\` | string | \`""\` | Window chrome title (max 100) |
 | \`background\` | string | \`"midnight"\` | midnight, sunset, ocean, forest, ember, steel, aurora, none |
-| \`format\` | \`"png"\` \\| \`"svg"\` | \`"png"\` | |
+| \`format\` | \`"png"\` | \`"png"\` | PNG only |
 | \`scale\` | number | \`2\` | 1-4 (retina) |
 
 ### Example
