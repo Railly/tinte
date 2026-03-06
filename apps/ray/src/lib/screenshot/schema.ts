@@ -23,7 +23,7 @@ export const ScreenshotRequestSchema = z.object({
   lineNumbers: z.boolean().default(true),
   title: z.string().max(100).default(""),
   background: GradientIdSchema.default("midnight"),
-  format: z.enum(["png", "svg"]).default("png"),
+  format: z.enum(["png"]).default("png"),
   scale: z.number().int().min(1).max(4).default(2),
 });
 

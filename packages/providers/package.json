@@ -39,7 +39,8 @@
   "dependencies": {
     "@tinte/core": "workspace:*",
     "culori": "^4.0.2",
-    "poline": "^0.10.0"
+    "poline": "^0.10.0",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@types/culori": "^4.0.0",

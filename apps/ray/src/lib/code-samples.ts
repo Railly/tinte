@@ -15,6 +15,8 @@ export const LANGUAGES = [
   "ruby",
   "swift",
   "kotlin",
+  "markdown",
+  "toml",
 ] as const;
 
 export type Language = (typeof LANGUAGES)[number];
@@ -36,6 +38,8 @@ export const LANGUAGE_LABELS: Record<Language, string> = {
   ruby: "Ruby",
   swift: "Swift",
   kotlin: "Kotlin",
+  markdown: "Markdown",
+  toml: "TOML",
 };
 
 export const CODE_SAMPLES: Record<Language, string> = {
@@ -514,6 +518,34 @@ fun main() {
     val dark = themes.filter { it.isDark }
     println("Dark themes: \${dark.map { it.name }}")
 }`,
+
+  markdown: `# Theme Engine
+
+A flexible color theme system for code editors.
+
+## Features
+
+- **Dark & Light** modes
+- Perceptual luminance
+- WCAG contrast
+
+## Usage
+
+\`\`\`ts
+const theme = loadTheme("one-hunter");
+\`\`\``,
+
+  toml: `[package]
+name = "theme-engine"
+version = "2.0.0"
+
+[dependencies]
+culori = "4.0"
+zod = "3.24"
+
+[build]
+target = "es2022"
+format = "esm"`,
 };
 
 export const DEFAULT_CODE = CODE_SAMPLES.tsx;

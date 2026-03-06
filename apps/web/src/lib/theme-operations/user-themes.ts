@@ -199,12 +199,29 @@ export const getPublicThemes = cache(async function getPublicThemes(
   }
 });
 
-export const getPublicThemesCount = cache(async function getPublicThemesCount(): Promise<number> {
+export const getPublicThemesCount = cache(async function getPublicThemesCount(
+  search?: string,
+): Promise<number> {
   try {
+    const searchConditions = search
+      ? or(
+          sql`LOWER(${theme.name}) LIKE ${`%${search.toLowerCase()}%`}`,
+          sql`LOWER(${theme.concept}) LIKE ${`%${search.toLowerCase()}%`}`,
+        )
+      : undefined;
+
     const result = await db
       .select({ count: count() })
       .from(theme)
-      .where(and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`));
+      .where(
+        searchConditions
+          ? and(
+              eq(theme.is_public, true),
+              sql`${theme.vendor} IS NULL`,
+              searchConditions,
+            )
+          : and(eq(theme.is_public, true), sql`${theme.vendor} IS NULL`),
+      );
 
     return result[0]?.count || 0;
   } catch (error) {

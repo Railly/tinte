@@ -119,7 +119,10 @@ export async function saveThemeToDatabase(
       },
     },
     fonts: themeData.fonts,
-    radius: themeData.radius?.md || themeData.radius,
+    radius:
+      typeof themeData.radius === "string"
+        ? themeData.radius
+        : themeData.radius?.md ?? themeData.radius?.lg ?? themeData.radius?.sm ?? "0.375rem",
     letter_spacing: "0em",
   };
 
