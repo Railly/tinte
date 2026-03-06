@@ -1,5 +1,7 @@
 "use client";
 
+import { convertTinteToShiki } from "@tinte/providers";
+import { getShadcnThemeCSS } from "@tinte/providers/provider-utils/shadcn-utils";
 import { Check, Code, Copy } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
@@ -14,8 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib";
-import { convertTinteToShiki } from "@tinte/providers";
-import { getShadcnThemeCSS } from "@tinte/providers/provider-utils/shadcn-utils";
 import { useActiveTheme } from "@/stores/hooks";
 
 interface ViewCodeDialogProps {
@@ -126,7 +126,9 @@ export function ViewCodeDialog({
             <Code className="h-5 w-5" />
             View Code
           </DialogTitle>
-          <DialogDescription>CSS variables for your theme</DialogDescription>
+          <DialogDescription>
+            Tailwind v4-ready CSS variables for your current theme
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">

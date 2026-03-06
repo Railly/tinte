@@ -69,8 +69,29 @@ The original Tinte project generates themes for VS Code, shadcn/ui, and other to
 ### Features
 
 - 500+ themes for VS Code and shadcn/ui
+- Tailwind v4-ready shadcn/ui exports with CSS variables and `@theme inline`
 - Theme extraction from images
 - Open source and community-driven
+
+### Workbench / Customizer
+
+The main customizer lives in the Tinte workbench:
+
+- `https://tinte.dev/workbench` to start editing a theme
+- `https://tinte.dev/workbench/[slug]` to open and tweak a saved public theme
+- `https://tinte.dev/themes/[slug].json` to fetch a public theme as raw JSON
+
+Inside the workbench, use **View Code** to copy the generated shadcn/Tailwind output.
+
+### Reusing Tinte In Your Own App
+
+Today, the easiest reusable pieces are:
+
+- `@tinte/core` for theme primitives and conversions
+- `@tinte/providers` for output formats such as shadcn/ui and VS Code
+- the web workbench as the reference implementation for the full customizer UX
+
+A standalone embeddable customizer package is not extracted yet, but the current workbench and provider packages cover most of the logic you would reuse.
 
 ### Links
 
