@@ -1,5 +1,7 @@
 "use client";
 
+import type { TinteTheme } from "@tinte/core";
+import { getProvider } from "@tinte/providers";
 import { Check, Code, Copy, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
@@ -7,19 +9,17 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useDockActions } from "@/components/workbench/hooks/dock/use-actions";
 import {
   useShadcnOverrides,
   useShikiOverrides,
   useVSCodeOverrides,
 } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { useDockActions } from "@/components/workbench/hooks/dock/use-actions";
-import { useThemeHistory } from "@/stores/hooks/use-theme-history";
 import { cn } from "@/lib";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
 import { importShadcnTheme } from "@/lib/theme-operations/import";
-import { getProvider } from "@tinte/providers";
-import { useActiveTheme, useUserThemes, useThemeActions } from "@/stores/hooks";
-import type { TinteTheme } from "@tinte/core";
+import { useActiveTheme, useThemeActions, useUserThemes } from "@/stores/hooks";
+import { useThemeHistory } from "@/stores/hooks/use-theme-history";
 import { HistoryControls } from "./history-controls";
 import { ToolbarDialogs } from "./toolbar-dialogs";
 import { ToolbarDropdownMenu } from "./toolbar-dropdown-menu";
@@ -123,6 +123,7 @@ export function WorkbenchToolbar({
     (!isAuthenticated && unsavedChanges);
   const shouldShowDuplicateButton =
     !shouldShowUpdateButton && !shouldShowSaveButton;
+  const canTogglePublic = Boolean(isOwnTheme);
 
   useEffect(() => {
     if (activeTheme) {
@@ -224,9 +225,15 @@ export function WorkbenchToolbar({
   };
 
   const getShareLink = () => {
-    if (!activeTheme?.id) return "";
+    if (!activeTheme?.slug) return "";
     if (typeof window === "undefined") return "";
-    return `${window.location.origin}/r/${activeTheme.slug}`;
+    return `${window.location.origin}/workbench/${encodeURIComponent(activeTheme.slug)}`;
+  };
+
+  const getRawThemeLink = () => {
+    if (!activeTheme?.slug) return "";
+    if (typeof window === "undefined") return "";
+    return `${window.location.origin}/themes/${encodeURIComponent(activeTheme.slug)}.json`;
   };
 
   const handleImportTheme = async (
@@ -312,7 +319,8 @@ export function WorkbenchToolbar({
       if (!result.success)
         throw new Error(result.error || "Failed to duplicate theme");
       toast.success(`Theme duplicated as "${name}"!`);
-      if (result.theme) await handlePostSaveNavigation(result.theme, "Duplicate");
+      if (result.theme)
+        await handlePostSaveNavigation(result.theme, "Duplicate");
     } catch (error) {
       console.error("Error duplicating theme:", error);
       toast.error("Failed to duplicate theme");
@@ -517,7 +525,9 @@ export function WorkbenchToolbar({
         handleDeleteTheme={handleDeleteTheme}
         getDefaultThemeName={getDefaultThemeName}
         getShareLink={getShareLink}
+        getRawThemeLink={getRawThemeLink}
         isThemePublic={isThemePublic}
+        canTogglePublic={canTogglePublic}
         isSaving={isSaving}
         themeName={activeTheme?.name}
       />

@@ -1,6 +1,7 @@
-import { eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
+import type { Theme } from "@/lib/theme";
 import type { UserThemeData } from "@/types/user-theme";
 
 /**
@@ -10,9 +11,14 @@ import type { UserThemeData } from "@/types/user-theme";
 export async function getThemeBySlug(
   slug: string,
   preloadedThemes: UserThemeData[] = [],
+  currentUserId?: string | null,
 ): Promise<UserThemeData | null> {
   // First, try to find in pre-loaded themes
-  const themeInPreloaded = preloadedThemes.find((theme) => theme.slug === slug);
+  const themeInPreloaded = preloadedThemes.find(
+    (theme) =>
+      theme.slug === slug &&
+      (theme.is_public || (!!currentUserId && theme.user_id === currentUserId)),
+  );
   if (themeInPreloaded) {
     console.log("🎨 [Server] Found theme in pre-loaded themes:", slug);
     return themeInPreloaded;
@@ -33,7 +39,14 @@ export async function getThemeBySlug(
     const themeData = await db
       .select()
       .from(theme)
-      .where(eq(theme.slug, slug))
+      .where(
+        and(
+          eq(theme.slug, slug),
+          currentUserId
+            ? or(eq(theme.is_public, true), eq(theme.user_id, currentUserId))
+            : eq(theme.is_public, true),
+        ),
+      )
       .limit(1);
 
     if (themeData.length === 0) {
@@ -42,72 +55,7 @@ export async function getThemeBySlug(
     }
 
     const themeRecord = themeData[0];
-
-    // Transform database record to ThemeWithMetadata format
-    const transformedTheme: UserThemeData = {
-      // Base Theme properties (from database)
-      ...themeRecord,
-
-      // Computed properties for ThemeWithMetadata
-      colors: {
-        primary: themeRecord.light_pr,
-        secondary: themeRecord.light_sc,
-        accent: themeRecord.light_ac_1,
-        foreground: themeRecord.light_tx,
-        background: themeRecord.light_bg,
-      },
-      rawTheme: {
-        light: {
-          bg: themeRecord.light_bg,
-          bg_2: themeRecord.light_bg_2,
-          ui: themeRecord.light_ui,
-          ui_2: themeRecord.light_ui_2,
-          ui_3: themeRecord.light_ui_3,
-          tx: themeRecord.light_tx,
-          tx_2: themeRecord.light_tx_2,
-          tx_3: themeRecord.light_tx_3,
-          pr: themeRecord.light_pr,
-          sc: themeRecord.light_sc,
-          ac_1: themeRecord.light_ac_1,
-          ac_2: themeRecord.light_ac_2,
-          ac_3: themeRecord.light_ac_3,
-        },
-        dark: {
-          bg: themeRecord.dark_bg,
-          bg_2: themeRecord.dark_bg_2,
-          ui: themeRecord.dark_ui,
-          ui_2: themeRecord.dark_ui_2,
-          ui_3: themeRecord.dark_ui_3,
-          tx: themeRecord.dark_tx,
-          tx_2: themeRecord.dark_tx_2,
-          tx_3: themeRecord.dark_tx_3,
-          pr: themeRecord.dark_pr,
-          sc: themeRecord.dark_sc,
-          ac_1: themeRecord.dark_ac_1,
-          ac_2: themeRecord.dark_ac_2,
-          ac_3: themeRecord.dark_ac_3,
-        },
-      },
-
-      // Display metadata
-      author: "Tinte User",
-      description: themeRecord.concept || `Theme ${themeRecord.name}`,
-      tags: ["custom"],
-
-      // Provider metadata
-      provider: "tinte" as const,
-      downloads: 0,
-      likes: 0,
-      createdAt:
-        themeRecord.created_at?.toISOString() || new Date().toISOString(),
-
-      // Structured overrides
-      overrides: {
-        shadcn: themeRecord.shadcn_override as any,
-        vscode: themeRecord.vscode_override as any,
-        shiki: themeRecord.shiki_override as any,
-      },
-    };
+    const transformedTheme = transformThemeRecord(themeRecord);
 
     console.log(
       "✅ [Server] Found theme by slug in database:",
@@ -119,4 +67,84 @@ export async function getThemeBySlug(
     console.error("💥 [Server] Error fetching theme by slug:", error);
     return null;
   }
+}
+
+export function transformThemeRecord(themeRecord: Theme): UserThemeData {
+  return {
+    ...themeRecord,
+    colors: {
+      primary: themeRecord.light_pr,
+      secondary: themeRecord.light_sc,
+      accent: themeRecord.light_ac_1,
+      foreground: themeRecord.light_tx,
+      background: themeRecord.light_bg,
+    },
+    rawTheme: {
+      light: {
+        bg: themeRecord.light_bg,
+        bg_2: themeRecord.light_bg_2,
+        ui: themeRecord.light_ui,
+        ui_2: themeRecord.light_ui_2,
+        ui_3: themeRecord.light_ui_3,
+        tx: themeRecord.light_tx,
+        tx_2: themeRecord.light_tx_2,
+        tx_3: themeRecord.light_tx_3,
+        pr: themeRecord.light_pr,
+        sc: themeRecord.light_sc,
+        ac_1: themeRecord.light_ac_1,
+        ac_2: themeRecord.light_ac_2,
+        ac_3: themeRecord.light_ac_3,
+      },
+      dark: {
+        bg: themeRecord.dark_bg,
+        bg_2: themeRecord.dark_bg_2,
+        ui: themeRecord.dark_ui,
+        ui_2: themeRecord.dark_ui_2,
+        ui_3: themeRecord.dark_ui_3,
+        tx: themeRecord.dark_tx,
+        tx_2: themeRecord.dark_tx_2,
+        tx_3: themeRecord.dark_tx_3,
+        pr: themeRecord.dark_pr,
+        sc: themeRecord.dark_sc,
+        ac_1: themeRecord.dark_ac_1,
+        ac_2: themeRecord.dark_ac_2,
+        ac_3: themeRecord.dark_ac_3,
+      },
+    },
+    author: "Tinte User",
+    description: themeRecord.concept || `Theme ${themeRecord.name}`,
+    tags: ["custom"],
+    provider: "tinte",
+    downloads: 0,
+    likes: 0,
+    createdAt:
+      themeRecord.created_at?.toISOString() || new Date().toISOString(),
+    overrides: {
+      shadcn: themeRecord.shadcn_override as any,
+      vscode: themeRecord.vscode_override as any,
+      shiki: themeRecord.shiki_override as any,
+    },
+  };
+}
+
+export function buildPublicThemeResponse(themeRecord: Theme) {
+  const transformedTheme = transformThemeRecord(themeRecord);
+
+  return {
+    id: transformedTheme.id,
+    slug: transformedTheme.slug,
+    name: transformedTheme.name,
+    description: transformedTheme.description,
+    concept: transformedTheme.concept,
+    author: transformedTheme.author,
+    provider: transformedTheme.provider,
+    downloads: transformedTheme.downloads,
+    likes: transformedTheme.likes,
+    tags: transformedTheme.tags,
+    createdAt: transformedTheme.createdAt,
+    colors: transformedTheme.colors,
+    rawTheme: transformedTheme.rawTheme,
+    overrides: transformedTheme.overrides,
+    is_public: transformedTheme.is_public,
+  };
 }

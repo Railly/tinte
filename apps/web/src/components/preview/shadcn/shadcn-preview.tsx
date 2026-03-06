@@ -5,6 +5,7 @@ import { CardsExerciseMinutes } from "./demos/exercise-minutes";
 import { CardsForms } from "./demos/forms";
 import { CardsPayments } from "./demos/payments";
 import { CardsShare } from "./demos/share";
+import { SidebarSonnerPreview } from "./demos/sidebar-sonner";
 import { CardsStats } from "./demos/stats";
 import { CardsTeamMembers } from "./demos/team-members";
 import { NewComponentsPreview } from "./new-components-preview";
@@ -14,6 +15,7 @@ export function ShadcnPreview() {
     <div className="font-sans flex flex-col gap-8">
       {/* New Components Section */}
       <NewComponentsPreview />
+      <SidebarSonnerPreview />
 
       {/* Classic Components Section */}
       <div className="md:grids-col-2 grid md:gap-4 lg:grid-cols-10 xl:grid-cols-13">

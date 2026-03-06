@@ -37,14 +37,14 @@ const faqItems: FAQItem[] = [
     question: "What platforms and frameworks does Tinte support?",
     sub: "Supported design systems and integrations",
     answer:
-      "Currently, Tinte supports shadcn/ui components, VS Code themes, and CSS variables. We're actively working on expanding support to include Tailwind CSS, Material-UI, Chakra UI, and other popular design systems. Check our roadmap for upcoming integrations.",
+      "Currently, Tinte supports shadcn/ui, Tailwind v4-style CSS variable exports, VS Code themes, and CSS variables. We're actively working on expanding support to include additional editors, terminals, and design systems. Check our roadmap for upcoming integrations.",
   },
   {
     id: "4",
     question: "Can I customize themes after they're generated?",
     sub: "Fine-tuning and editing capabilities",
     answer:
-      "Absolutely! While our AI creates excellent starting points, you can fine-tune every aspect of your theme. Our visual editor allows you to adjust colors, spacing, typography, and component styles. You can also import existing themes and modify them to match your brand.",
+      "Absolutely! Open the workbench at /workbench to fine-tune colors, spacing, typography, and component styles with live preview. You can also open a saved public theme at /workbench/[slug], copy the generated code from the View Code dialog, or fetch the raw theme JSON from /themes/[slug].json.",
   },
   {
     id: "5",
@@ -72,7 +72,7 @@ const faqItems: FAQItem[] = [
     question: "Do you offer API access for developers?",
     sub: "Developer integrations and API availability",
     answer:
-      "We're currently developing a comprehensive API that will allow developers to integrate Tinte's theme generation capabilities directly into their applications. This will be available in Q3 2025 as part of our platform integrations initiative.",
+      "Yes. Public themes can already be fetched as JSON, and the current reusable surface today is `@tinte/core` plus `@tinte/providers`. A fully embeddable customizer package is still a follow-up, but the workbench and provider exports already cover most of the conversion logic.",
   },
 ];
 
