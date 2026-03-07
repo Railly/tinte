@@ -1,6 +1,6 @@
 <h3 align="center">
   <a href="https://tinte.dev" target="_blank">
-    <img src="https://github.com/Railly/tinte/blob/main/src/app/icon.svg" width="80" alt="Tinte Logo"/>
+    <img src="https://github.com/Railly/tinte/blob/main/apps/web/src/app/icon.svg" width="80" alt="Tinte Logo"/>
   </a>
   <br/>
   <span style="font-weight:600;font-size:20px;color:#2563EB;">Tinte</span>
@@ -9,6 +9,7 @@
   <a href="https://vercel.com/oss" target="_blank">
     <img src="https://vercel.com/oss/program-badge.svg" alt="Vercel OSS Program"/>
   </a>
+  <br/>
   <a href="https://github.com/Railly/tinte/stargazers" target="_blank">
     <img src="https://img.shields.io/github/stars/Railly/tinte?style=social" alt="GitHub stars"/>
   </a>
@@ -18,7 +19,7 @@
 </h3>
 
 <p align="center">
-  Agent-native design system infrastructure — generate, compile, install, and preview design systems from one source of truth
+  Agent-native design system infrastructure. Generate, compile, install, and preview design systems from one source of truth.
 </p>
 
 ## Quick Start
