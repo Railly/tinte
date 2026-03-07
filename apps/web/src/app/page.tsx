@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
-import { ElementsBanner } from "@/components/home/elements-banner";
+import { Ecosystem } from "@/components/home/ecosystem";
 import { FAQ } from "@/components/home/faq";
 import { Header } from "@/components/home/header";
 import { Hero } from "@/components/home/hero";
@@ -19,23 +19,21 @@ import {
 } from "@/lib/theme-operations";
 
 export const metadata: Metadata = {
-  title: "Multi-Platform Theme Generator & Converter",
+  title: "Agent-Native Design System Infrastructure",
   description: siteConfig.longDescription,
   keywords: siteConfig.keywords,
   alternates: {
     canonical: siteConfig.url,
   },
   openGraph: {
-    title: `${siteConfig.name} - Multi-Platform Theme Generator & Converter`,
+    title: `${siteConfig.name} - Agent-Native Design System Infrastructure`,
     description: siteConfig.longDescription,
     url: siteConfig.url,
     type: "website",
-    // Images are handled by /app/opengraph-image.tsx
   },
   twitter: {
-    title: `${siteConfig.name} - Multi-Platform Theme Generator`,
+    title: `${siteConfig.name} - Agent-Native Design System Infrastructure`,
     description: siteConfig.longDescription,
-    // Images are handled by /app/opengraph-image.tsx
   },
   other: {
     "article:section": "Technology",
@@ -63,7 +61,7 @@ export default async function Home() {
   ]);
 
   const pageSchema = generatePageSchema({
-    title: "Multi-Platform Theme Generator & Converter",
+    title: "Agent-Native Design System Infrastructure",
     description: siteConfig.longDescription,
     url: siteConfig.url,
     type: "WebApplication",
@@ -87,13 +85,13 @@ export default async function Home() {
       />
       <div className="min-h-screen">
         <Header />
-        <ElementsBanner />
         <Hero
           userThemes={userThemes}
           tweakCNThemes={tweakCNThemes}
           tinteThemes={tinteThemes}
           raysoThemes={raysoThemes}
         />
+        <Ecosystem />
         <Showcase
           session={userId ? { user: { id: userId } } : null}
           userThemes={userThemes}

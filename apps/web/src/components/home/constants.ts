@@ -1,168 +1,136 @@
 export const ROADMAP_SECTIONS = {
-  "Being Worked On 🔥": [
+  "Being Worked On": [
     {
       id: "1",
-      title: "Tinte CLI",
+      title: "Preset Gallery",
       description:
-        "Command-line interface for theme generation, conversion, and management from the terminal",
+        "Browse and discover 500+ design system presets with live preview and one-command install",
       status: "in-progress" as const,
       category: "Core",
     },
     {
       id: "2",
-      title: "Terminal Provider Ecosystem",
+      title: "AI Preset Generation",
       description:
-        "Complete support for Alacritty, Kitty, Warp, Windows Terminal, and other terminal emulators",
+        "Describe your brand or aesthetic in natural language and get a complete design system preset",
       status: "in-progress" as const,
-      category: "Export",
+      category: "Core",
     },
     {
       id: "3",
-      title: "Extended Tool Support",
+      title: "Brand-to-Preset",
       description:
-        "Export providers for GIMP, Slack, Banana editor, and other development tools",
+        "Upload your logo or brand assets to automatically extract colors and generate a matching preset",
       status: "in-progress" as const,
-      category: "Export",
-    },
-    {
-      id: "19",
-      title: "Advanced AI Chat Interface",
-      description:
-        "Enhanced AI conversation with context-aware theme suggestions and iterative refinements",
-      status: "in-progress" as const,
-      category: "Core",
-    },
-    {
-      id: "20",
-      title: "Mobile Experience",
-      description:
-        "Optimized mobile theme editor with touch-friendly controls and responsive design",
-      status: "in-progress" as const,
-      category: "Core",
+      category: "Integration",
     },
   ],
-  "Planned 📋": [
+  Planned: [
     {
-      id: "21",
-      title: "Design System Generator",
+      id: "4",
+      title: "Tinte CLI",
       description:
-        "Generate complete design systems with typography, spacing, and component guidelines",
-      status: "planned" as const,
-      category: "Export",
-    },
-    {
-      id: "22",
-      title: "Theme Analytics",
-      description:
-        "Detailed usage analytics and popularity metrics for community themes",
-      status: "planned" as const,
-      category: "Social",
-    },
-    {
-      id: "23",
-      title: "Team Collaboration",
-      description:
-        "Shared workspaces, team libraries, and collaborative theme editing",
-      status: "planned" as const,
-      category: "Social",
-    },
-    {
-      id: "24",
-      title: "Advanced Accessibility",
-      description:
-        "WCAG compliance checking, contrast validation, and color blindness simulation",
+        "bunx tinte init wrapping shadcn CLI for preset management, publishing, and browsing",
       status: "planned" as const,
       category: "Core",
     },
     {
-      id: "25",
-      title: "Brand Integration",
+      id: "5",
+      title: "Preset Analytics",
       description:
-        "Import brand guidelines from Figma, Adobe, and other design tools",
+        "Track installs, views, and forks for your published presets",
+      status: "planned" as const,
+      category: "Social",
+    },
+    {
+      id: "6",
+      title: "Team Design Systems",
+      description:
+        "Shared presets with version control, branching, and collaborative editing",
+      status: "planned" as const,
+      category: "Social",
+    },
+    {
+      id: "7",
+      title: "Website-to-Preset",
+      description:
+        "Scrape any website's CSS variables and convert them into a Tinte preset",
       status: "planned" as const,
       category: "Integration",
     },
-    {
-      id: "26",
-      title: "Theme Versioning",
-      description:
-        "Version control for themes with branching, merging, and history tracking",
-      status: "planned" as const,
-      category: "Editor",
-    },
   ],
-  "Completed 🎉": [
+  Completed: [
+    {
+      id: "8",
+      title: "Agent Skill",
+      description:
+        "npx skills add Railly/tinte — AI agents can browse, install, and preview Tinte presets",
+      status: "completed" as const,
+      category: "Integration",
+    },
     {
       id: "9",
-      title: "AI Theme Generator",
+      title: "Preset Pack API",
       description:
-        "Generate beautiful themes using AI prompts with advanced color theory and OKLCH color space",
+        "GET /api/preset/{slug}?type=pack returns base + fonts + install commands in one payload",
       status: "completed" as const,
       category: "Core",
     },
     {
       id: "10",
-      title: "Core Export System",
+      title: "Registry Font API",
       description:
-        "Export to key formats: shadcn/ui, VS Code, Shiki, brand guidelines, and design systems",
+        "Distribute fonts as registry:font items via /api/preset/{slug}/font",
       status: "completed" as const,
       category: "Export",
     },
     {
       id: "11",
-      title: "Real-time Preview System",
+      title: "Preset Distribution API",
       description:
-        "Live preview across multiple providers with Monaco Editor and Shiki integration",
-      status: "completed" as const,
-      category: "Editor",
-    },
-    {
-      id: "12",
-      title: "Community Marketplace",
-      description:
-        "Browse, share, favorite, and discover 13,000+ community themes with search and filtering",
-      status: "completed" as const,
-      category: "Social",
-    },
-    {
-      id: "13",
-      title: "Advanced Theme Editor",
-      description:
-        "Professional workbench with canonical editing, provider overrides, and agent assistance",
-      status: "completed" as const,
-      category: "Editor",
-    },
-    {
-      id: "14",
-      title: "User Authentication & Profiles",
-      description:
-        "Complete user system with favorites, personal collections, and theme management",
-      status: "completed" as const,
-      category: "Social",
-    },
-    {
-      id: "15",
-      title: "Theme Import/Export",
-      description:
-        "Import from multiple sources, export themes, and save/load personal collections",
+        "Serve presets as registry:base items via /api/preset/{slug} for shadcn CLI v4",
       status: "completed" as const,
       category: "Core",
     },
     {
-      id: "16",
-      title: "Core Provider Support",
+      id: "12",
+      title: "AI Theme Generator",
       description:
-        "Full support for shadcn/ui, VS Code, Shiki syntax highlighting, and design system generation",
+        "Generate presets using AI prompts with advanced color theory and OKLCH color space",
       status: "completed" as const,
-      category: "Integration",
+      category: "Core",
     },
     {
-      id: "17",
-      title: "Advanced Search & Discovery",
+      id: "13",
+      title: "Multi-Format Export",
       description:
-        "Intelligent search across themes with filtering by provider, author, and categories",
+        "Export to shadcn/ui, VS Code, Shiki, terminals, and design systems (19 formats)",
       status: "completed" as const,
-      category: "Browse",
+      category: "Export",
+    },
+    {
+      id: "14",
+      title: "Live Preview System",
+      description:
+        "Real-time preview across multiple providers with Monaco Editor and Shiki",
+      status: "completed" as const,
+      category: "Editor",
+    },
+    {
+      id: "15",
+      title: "Community Marketplace",
+      description:
+        "Browse, share, and discover 500+ community presets with search and filtering",
+      status: "completed" as const,
+      category: "Social",
+    },
+    {
+      id: "16",
+      title: "Professional Workbench",
+      description:
+        "Advanced preset editor with canonical editing, provider overrides, and AI assistance",
+      status: "completed" as const,
+      category: "Editor",
     },
   ],
 };

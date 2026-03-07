@@ -1,6 +1,7 @@
 "use client";
+import { Check, Copy } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";
 import { PromptInput } from "@/components/home/prompt-input";
 import { PROVIDER_ICONS } from "@/config/providers";
@@ -26,8 +27,8 @@ export function Hero({
   const [active, ref2] = useLoop();
   const { mounted } = useActiveTheme();
   const { addThemes } = useUserThemes();
+  const [copied, setCopied] = useState(false);
 
-  // Add themes to store once on mount
   useEffect(() => {
     if (!mounted) return;
 
@@ -43,15 +44,21 @@ export function Hero({
     }
   }, [mounted, userThemes, tweakCNThemes, tinteThemes, raysoThemes, addThemes]);
 
+  const installCommand =
+    "npx shadcn@latest add https://tinte.dev/api/preset/one-hunter";
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(installCommand);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center px-4 min-h-[65dvh]">
+    <div className="flex flex-col items-center justify-center px-4 min-h-[65dvh] max-w-6xl mx-auto">
       <div className="flex flex-col items-center gap-2 md:gap-4 mb-4">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 border border-border/40 px-3 py-1.5 text-sm font-medium text-foreground/80 backdrop-blur-sm">
-          <svg className="w-3 h-3" viewBox="0 0 12 12" fill="currentColor">
-            <title>Star icon</title>
-            <path d="M6 0l1.5 4.5L12 6l-4.5 1.5L6 12l-1.5-4.5L0 6l4.5-1.5L6 0z" />
-          </svg>
-          AI Theme Editor
+          <span className="font-mono text-xs text-primary">v4</span>
+          Agent-Native Design Systems
         </div>
         <h1 className="flex flex-col items-center gap-2 md:gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center">
@@ -149,11 +156,12 @@ export function Hero({
                   </div>
                 </div>
               </motion.div>
-              <span>theme</span>
+              <span>preset</span>
             </div>
           </div>
-          <div className="flex text-sm sm:text-md md:text-lg lg:text-xl text-muted-foreground font-light text-center">
-            Define colors once, ship them everywhere.
+          <div className="flex text-sm sm:text-md md:text-lg  text-muted-foreground font-light text-center max-w-2xl">
+            Generate, compile, and install complete design systems from one
+            source of truth. 500+ presets, 19 export formats.
           </div>
         </h1>
       </div>
@@ -163,6 +171,31 @@ export function Hero({
             console.log("Submitted:", kind, raw);
           }}
         />
+      </div>
+      <div className="mt-6 w-full max-w-2xl mx-auto">
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex items-center gap-3 w-full px-4 py-2.5 rounded-md bg-muted/60 border border-border/60 font-mono text-[13px] text-muted-foreground hover:border-border transition-colors cursor-pointer group"
+        >
+          <span className="text-emerald-500 select-none shrink-0">~</span>
+          <span className="flex-1 text-left truncate">
+            <span className="text-muted-foreground/60">npx</span> shadcn@latest add{" "}
+            <span className="text-primary/80">tinte.dev/api/preset/one-hunter</span>
+          </span>
+          {copied ? (
+            <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+          ) : (
+            <Copy className="w-3.5 h-3.5 opacity-40 group-hover:opacity-80 transition-opacity shrink-0" />
+          )}
+        </button>
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-3 text-xs text-muted-foreground/60">
+          <span>shadcn CLI v4</span>
+          <span className="text-border hidden sm:inline">|</span>
+          <span>OKLCH color space</span>
+          <span className="text-border hidden sm:inline">|</span>
+          <span>Agent-ready API</span>
+        </div>
       </div>
     </div>
   );
