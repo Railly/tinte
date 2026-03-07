@@ -11,14 +11,14 @@ export function ElementsBanner() {
             tryelements.dev
           </span>
           {" — "}
-          <span>Trusted shadcn registry for</span>{" "}
+          <span>Presets + Components =</span>{" "}
           <a
             href="https://tryelements.dev"
             target="_blank"
             rel="noopener noreferrer"
             className="underline font-medium hover:text-foreground transition-colors"
           >
-            full-stack components
+            Complete Design System
           </a>
         </p>
       </div>

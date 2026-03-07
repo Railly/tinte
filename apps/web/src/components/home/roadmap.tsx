@@ -23,8 +23,8 @@ const getCategoryBadge = (category: string) => {
 
 export function Roadmap() {
   return (
-    <section id="roadmap" className="py-24 bg-muted/20">
-      <div className="px-4 max-w-7xl mx-auto">
+    <section id="roadmap" className="py-12 sm:py-24 bg-muted/20">
+      <div className="px-4 max-w-6xl mx-auto">
         <div className="space-y-6 mb-16">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="space-y-3">

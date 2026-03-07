@@ -40,7 +40,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="px-4">
+      <div className="max-w-6xl mx-auto px-4">
         <div className="relative flex h-[var(--header-height)] items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
@@ -110,8 +110,8 @@ export function Header() {
               <SheetHeader>
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col h-full">
-                <nav className="flex flex-col gap-8 pt-4">
+              <div className="flex flex-col h-full justify-between">
+                <nav className="flex flex-col gap-6 pt-4">
                   {navigation.map((item) => (
                     <SheetClose key={item.name} asChild>
                       <Link
@@ -123,15 +123,24 @@ export function Header() {
                       </Link>
                     </SheetClose>
                   ))}
+
+                  <SheetClose asChild>
+                    <Button
+                      size="lg"
+                      className="h-12 text-base w-full font-medium mt-2"
+                      onClick={handleGetStarted}
+                    >
+                      Get Started
+                    </Button>
+                  </SheetClose>
                 </nav>
 
-                <div className="mt-auto flex flex-col gap-6">
-                  <div className="flex items-center justify-center gap-6">
-                    <ThemeSwitcher />
+                <div className="flex items-center justify-between border-t border-border/40 pt-6">
+                  <div className="flex items-center gap-3">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-12 w-12 p-0"
+                      className="h-9 w-9 p-0"
                       asChild
                     >
                       <a
@@ -139,13 +148,13 @@ export function Header() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <GithubIcon className="h-8 w-8" />
+                        <GithubIcon className="h-5 w-5" />
                       </a>
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-12 w-12 p-0"
+                      className="h-9 w-9 p-0"
                       asChild
                     >
                       <a
@@ -153,23 +162,12 @@ export function Header() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <TwitterIcon className="h-8 w-8" />
+                        <TwitterIcon className="h-5 w-5" />
                       </a>
                     </Button>
+                    <ThemeSwitcher />
                   </div>
-
-                  <div className="flex flex-col items-center">
-                    <UserDropdown />
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="h-12 px-8 text-base w-full font-medium"
-                    onClick={handleGetStarted}
-                  >
-                    Get Started
-                  </Button>
+                  <UserDropdown avatarSize="sm" />
                 </div>
               </div>
             </SheetContent>

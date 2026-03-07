@@ -20,82 +20,82 @@ interface FAQItem {
 const faqItems: FAQItem[] = [
   {
     id: "1",
-    question: "What is Tinte and how does it work?",
-    sub: "AI-powered theme generation for modern applications",
+    question: "What is Tinte?",
+    sub: "Agent-native design system infrastructure",
     answer:
-      "Tinte is an AI-powered theme editor that generates beautiful, consistent themes for your applications. Simply describe your desired aesthetic in natural language, and our AI will create a complete theme with color palettes, component styles, and export options for popular platforms like shadcn/ui and VS Code.",
+      "Tinte is agent-native design system infrastructure for shadcn/ui. It maintains a theme graph of 13 semantic OKLCH color tokens that compiles to shadcn presets, VS Code themes, terminal configs, and 19+ formats from one source of truth. Install with one command via shadcn CLI v4.",
   },
   {
     id: "2",
-    question: "Is Tinte free to use?",
-    sub: "Pricing and premium features",
+    question: "How do I install a preset?",
+    sub: "One command via shadcn CLI v4",
     answer:
-      "Yes! Tinte offers a generous free tier that includes basic theme generation, community theme browsing, and standard export formats. We also offer premium plans with advanced features like unlimited generations, priority support, and exclusive AI models.",
+      "Run npx shadcn@latest add https://tinte.dev/api/preset/{slug} to install any preset. For fonts, add https://tinte.dev/api/preset/{slug}/font?variable=sans. Get the full pack (base + fonts + commands) via GET /api/preset/{slug}?type=pack.",
   },
   {
     id: "3",
-    question: "What platforms and frameworks does Tinte support?",
-    sub: "Supported design systems and integrations",
+    question: "What makes Tinte different from shadcn/create?",
+    sub: "Semantic color model vs color picker",
     answer:
-      "Currently, Tinte supports shadcn/ui, Tailwind v4-style CSS variable exports, VS Code themes, and CSS variables. We're actively working on expanding support to include additional editors, terminals, and design systems. Check our roadmap for upcoming integrations.",
+      "Tinte uses a 13-token semantic OKLCH color model with perceptual ramp generation, producing 30+ CSS variables with mathematical consistency. Unlike simple color pickers, Tinte outputs distributable presets, supports 19 export targets, and has an image-to-preset pipeline via Ray.",
   },
   {
     id: "4",
-    question: "Can I customize themes after they're generated?",
-    sub: "Fine-tuning and editing capabilities",
+    question: "What's in a Tinte preset?",
+    sub: "Colors, fonts, radius, shadows from 13 tokens",
     answer:
-      "Absolutely! Open the workbench at /workbench to fine-tune colors, spacing, typography, and component styles with live preview. You can also open a saved public theme at /workbench/[slug], copy the generated code from the View Code dialog, or fetch the raw theme JSON from /themes/[slug].json.",
+      "Every preset includes 30+ CSS variables in OKLCH for light and dark mode, font families (sans, serif, mono), border radius, and shadow configurations. All derived from 13 semantic tokens: 2 backgrounds, 3 UI surfaces, 3 text levels, primary, secondary, and 3 accents.",
   },
   {
     id: "5",
-    question: "How does the community marketplace work?",
-    sub: "Sharing and discovering community themes",
+    question: "How does the agent skill work?",
+    sub: "AI coding agents can discover and install presets",
     answer:
-      "Our community marketplace allows creators to share their themes with others. You can browse, download, and remix themes created by the community. Theme creators can showcase their work, receive feedback, and build their reputation within the Tinte ecosystem.",
+      "Install the skill with npx skills add Railly/tinte. Agents (Claude Code, Cursor, Windsurf) can then browse themes via the API, install presets, extract themes from images via Ray, and take screenshots for visual verification. The skill documents all available workflows.",
   },
   {
     id: "6",
-    question: "Can I use Tinte themes in commercial projects?",
-    sub: "Licensing and commercial usage rights",
+    question: "What is the Tinte ecosystem?",
+    sub: "Tinte + Elements + Ray",
     answer:
-      "Yes! All themes generated with Tinte can be used in both personal and commercial projects without attribution requirements. Community themes may have their own licensing terms, which are clearly displayed on each theme's page.",
+      "Tinte generates and compiles design systems. Elements (tryelements.dev) provides 227+ full-stack shadcn components that inherit your Tinte tokens. Ray (ray.tinte.dev) offers code screenshots with any theme and image-to-theme extraction. Together: generate, install, preview.",
   },
   {
     id: "7",
-    question: "How accurate is the AI theme generation?",
-    sub: "Quality and reliability of AI-generated themes",
+    question: "Is Tinte free?",
+    sub: "Open source, free presets, premium features coming",
     answer:
-      "Our AI is trained on thousands of high-quality design patterns and color theories. It understands context, brand guidelines, and accessibility requirements to generate themes that not only look great but also provide excellent user experiences. The accuracy continues to improve with each update.",
+      "Yes. 500+ presets, AI generation, all export formats including shadcn presets and VS Code themes are free. The preset API and skill are free. Premium features like brand-to-preset, private presets, team workspaces, and analytics are coming soon.",
   },
   {
     id: "8",
-    question: "Do you offer API access for developers?",
-    sub: "Developer integrations and API availability",
+    question: "Can I extract a theme from an image?",
+    sub: "Image-to-preset pipeline via Ray",
     answer:
-      "Yes. Public themes can already be fetched as JSON, and the current reusable surface today is `@tinte/core` plus `@tinte/providers`. A fully embeddable customizer package is still a follow-up, but the workbench and provider exports already cover most of the conversion logic.",
+      "Yes. POST an image to ray.tinte.dev/api/v1/extract-theme to extract a TinteBlock color palette. This can then be used to create a full Tinte preset with all 13 tokens, which compiles to a distributable shadcn preset. No other tool offers this pipeline.",
   },
 ];
 
 export function FAQ() {
   return (
-    <section id="faq" className="py-24">
-      <div className="px-4">
+    <section id="faq" className="py-12 sm:py-24">
+      <div className="max-w-6xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-left sm:text-center mb-10 sm:mb-16"
         >
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+          <div className="flex items-center gap-2 sm:justify-center mb-4 sm:mb-6">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shrink-0">
               <div className="w-2 h-2 bg-white rounded-full" />
             </div>
             <h2 className="text-xl font-medium">Frequently Asked Questions</h2>
           </div>
-          <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
-            Everything you need to know about Tinte. Can't find the answer
-            you're looking for? Reach out to our support team.
+          <p className="text-muted-foreground text-sm max-w-2xl sm:mx-auto">
+            Everything you need to know about Tinte and the design system
+            ecosystem.
           </p>
         </motion.div>
 

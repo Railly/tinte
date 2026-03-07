@@ -391,7 +391,7 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
                 }
               }}
               className={cn(
-                "w-full resize-none pt-3 pb-14 pr-12 focus-visible:ring-0",
+                "w-full resize-none pt-3 pb-14 px-3 focus-visible:ring-0",
                 pastedItems.length > 0
                   ? "rounded-b-none border-0 focus-visible:border-0"
                   : "border border-border/70 rounded-md focus-visible:border-border/90 focus-visible:shadow-sm",
@@ -399,104 +399,104 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
               placeholder={
                 pastedItems.length > 0
                   ? "Add your prompt here..."
-                  : "Describe your theme style..."
+                  : "Describe your design system..."
               }
               aria-label="Theme input"
               spellCheck={false}
               autoFocus
             />
 
-            {/* Controls positioned absolutely over the textarea only */}
-            <div className="absolute bottom-3 left-3 flex items-center gap-2 z-10">
-              <ThemeSelector
-                themes={allThemes}
-                activeId={null}
-                onSelect={handleThemeSelect}
-                triggerClassName="h-12"
-                label="Themes"
-                popoverWidth="w-72"
-              />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="inline-flex cursor-pointer items-center justify-center w-8 h-8 p-0 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground">
-                    <Plus className="size-4" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setPaletteDialogOpen(true);
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <Palette className="size-4" />
-                    Add colors
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => openDialog("url")}
-                    className="flex items-center gap-2"
-                  >
-                    <Globe className="size-4" />
-                    Add web page
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => openDialog("tailwind")}
-                    className="flex items-center gap-2"
-                  >
-                    <TailwindIcon className="size-4" />
-                    Add Tailwind config
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => openDialog("cssvars")}
-                    className="flex items-center gap-2"
-                  >
-                    <CSSIcon className="size-4" />
-                    Add globals.css
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between z-10">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <ThemeSelector
+                  themes={allThemes}
+                  activeId={null}
+                  onSelect={handleThemeSelect}
+                  triggerClassName="h-8 sm:h-12"
+                  label="Themes"
+                  popoverWidth="w-72"
+                />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="inline-flex cursor-pointer items-center justify-center w-8 h-8 p-0 rounded-md border border-input bg-background/80 hover:bg-accent hover:text-accent-foreground">
+                      <Plus className="size-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setPaletteDialogOpen(true);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Palette className="size-4" />
+                      Add colors
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => openDialog("url")}
+                      className="flex items-center gap-2"
+                    >
+                      <Globe className="size-4" />
+                      Add web page
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => openDialog("tailwind")}
+                      className="flex items-center gap-2"
+                    >
+                      <TailwindIcon className="size-4" />
+                      Add Tailwind config
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => openDialog("cssvars")}
+                      className="flex items-center gap-2"
+                    >
+                      <CSSIcon className="size-4" />
+                      Add globals.css
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
 
-            {/* Image upload and Submit buttons positioned absolutely over the textarea */}
-            <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
-              <Button
-                onClick={handleImageUpload}
-                className="inline-flex items-center justify-center"
-                title="Add image"
-                variant="outline"
-                size="sm"
-              >
-                <Image className="size-4" />
-                Image
-              </Button>
-              <motion.button
-                onClick={submit}
-                disabled={
-                  isSubmitting || (!prompt.trim() && pastedItems.length === 0)
-                }
-                whileHover={!isSubmitting ? { scale: 1.05 } : {}}
-                whileTap={!isSubmitting ? { scale: 0.95 } : {}}
-                className={cn(
-                  "inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg",
-                  !isSubmitting && (prompt.trim() || pastedItems.length > 0)
-                    ? "bg-primary text-primary-foreground cursor-pointer"
-                    : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
-                )}
-              >
-                {isSubmitting ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 1,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                    className="size-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                  />
-                ) : (
-                  <ArrowUp className="size-4" />
-                )}
-              </motion.button>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Button
+                  onClick={handleImageUpload}
+                  className="inline-flex items-center justify-center"
+                  title="Add image"
+                  variant="outline"
+                  size="sm"
+                >
+                  <Image className="size-4" />
+                  <span className="hidden sm:inline">Image</span>
+                </Button>
+                <motion.button
+                  onClick={submit}
+                  disabled={
+                    isSubmitting || (!prompt.trim() && pastedItems.length === 0)
+                  }
+                  whileHover={!isSubmitting ? { scale: 1.05 } : {}}
+                  whileTap={!isSubmitting ? { scale: 0.95 } : {}}
+                  className={cn(
+                    "inline-flex items-center justify-center w-8 h-8 p-0 rounded-lg",
+                    !isSubmitting && (prompt.trim() || pastedItems.length > 0)
+                      ? "bg-primary text-primary-foreground cursor-pointer"
+                      : "bg-primary/50 text-primary-foreground/50 cursor-not-allowed",
+                  )}
+                >
+                  {isSubmitting ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                      className="size-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+                    />
+                  ) : (
+                    <ArrowUp className="size-4" />
+                  )}
+                </motion.button>
+              </div>
             </div>
           </div>
 

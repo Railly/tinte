@@ -35,7 +35,7 @@ export function Showcase({
   const shouldShowSkeletons = !mounted;
 
   return (
-    <div className="w-full space-y-8 p-4 mx-auto">
+    <div className="w-full max-w-6xl space-y-8 mx-auto px-4">
       {/* Header */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -63,33 +63,33 @@ export function Showcase({
                   {activeTab === "community"
                     ? "From the Community"
                     : activeTab === "tinte"
-                      ? "Tinte Themes"
+                      ? "Tinte Presets"
                       : activeTab === "user"
-                        ? "My Themes"
+                        ? "My Presets"
                         : activeTab === "favorites"
                           ? "My Favorites"
                           : activeTab === "tweakcn"
-                            ? "tweakcn Themes"
+                            ? "tweakcn Presets"
                             : activeTab === "rayso"
-                              ? "ray.so Themes"
+                              ? "ray.so Presets"
                               : "From the Community"}
                 </h2>
               </div>
             </div>
             <p className="text-muted-foreground text-sm">
               {activeTab === "community"
-                ? "Explore what the community is crafting with Tinte."
+                ? "Explore design systems crafted by the community."
                 : activeTab === "tinte"
-                  ? "Beautiful themes created by the Tinte team."
+                  ? "Design system presets by the Tinte team."
                   : activeTab === "user"
-                    ? "Your personal theme collection."
+                    ? "Your personal preset collection."
                     : activeTab === "favorites"
-                      ? "Themes you've marked as favorites."
+                      ? "Presets you've marked as favorites."
                       : activeTab === "tweakcn"
-                        ? "Curated themes from tweakcn.com."
+                        ? "Curated presets from tweakcn.com."
                         : activeTab === "rayso"
-                          ? "Modern themes from ray.so."
-                          : "Explore what the community is crafting with Tinte."}
+                          ? "Modern presets from ray.so."
+                          : "Explore design systems crafted by the community."}
             </p>
           </div>
           <Tabs
@@ -129,7 +129,7 @@ export function Showcase({
                     ) : (
                       <User className="w-3 h-3" />
                     )}
-                    <span className="hidden sm:inline">My Themes</span>
+                    <span className="hidden sm:inline">My Presets</span>
                   </TabsTrigger>
                 )}
                 {session && (
@@ -166,14 +166,14 @@ export function Showcase({
         {activeTab === "community" && (
           <div className="space-y-4">
             {shouldShowSkeletons ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {Array.from({ length: 8 }).map((_, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
                   <ThemeCardSkeleton key={index} />
                 ))}
               </div>
             ) : publicThemes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {publicThemes.slice(0, 8).map((theme, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {publicThemes.slice(0, 6).map((theme, index) => (
                   <ThemeCard
                     key={theme.id}
                     theme={theme}
@@ -188,14 +188,14 @@ export function Showcase({
                 <Users className="w-12 h-12 mx-auto text-muted-foreground" />
                 <div className="space-y-2">
                   <h3 className="text-lg font-medium">
-                    No community themes yet
+                    No community presets yet
                   </h3>
                   <p className="text-muted-foreground text-sm">
-                    Be the first to share a theme with the community!
+                    Be the first to share a preset with the community!
                   </p>
                 </div>
                 <Button className="mt-4" asChild>
-                  <a href="/workbench">Create Theme</a>
+                  <a href="/workbench">Create Preset</a>
                 </Button>
               </div>
             )}
@@ -205,13 +205,13 @@ export function Showcase({
         {activeTab === "user" && session && (
           <div className="space-y-4">
             {shouldShowSkeletons ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {Array.from({ length: 8 }).map((_, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
                   <ThemeCardSkeleton key={index} />
                 ))}
               </div>
             ) : userThemes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {userThemes.map((theme, index) => (
                   <ThemeCard
                     key={theme.id}
@@ -226,13 +226,13 @@ export function Showcase({
               <div className="text-center py-12 space-y-4">
                 <User className="w-12 h-12 mx-auto text-muted-foreground" />
                 <div className="space-y-2">
-                  <h3 className="text-lg font-medium">No themes yet</h3>
+                  <h3 className="text-lg font-medium">No presets yet</h3>
                   <p className="text-muted-foreground text-sm">
-                    Start creating your first theme in the workbench!
+                    Start creating your first preset in the workbench!
                   </p>
                 </div>
                 <Button className="mt-4" asChild>
-                  <a href="/workbench">Create Theme</a>
+                  <a href="/workbench">Create Preset</a>
                 </Button>
               </div>
             )}
@@ -242,14 +242,14 @@ export function Showcase({
         {activeTab === "favorites" && session && (
           <div className="space-y-4">
             {shouldShowSkeletons ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {Array.from({ length: 8 }).map((_, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
                   <ThemeCardSkeleton key={index} />
                 ))}
               </div>
             ) : favoriteThemes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {favoriteThemes.slice(0, 8).map((theme, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {favoriteThemes.slice(0, 6).map((theme, index) => (
                   <ThemeCard
                     key={theme.id}
                     theme={theme}
@@ -265,7 +265,7 @@ export function Showcase({
                 <div className="space-y-2">
                   <h3 className="text-lg font-medium">No favorites yet</h3>
                   <p className="text-muted-foreground text-sm">
-                    Start exploring themes and mark your favorites!
+                    Start exploring presets and mark your favorites!
                   </p>
                 </div>
                 <Button className="mt-4" asChild>
@@ -277,13 +277,13 @@ export function Showcase({
         )}
 
         {activeTab === "tweakcn" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {shouldShowSkeletons
-              ? Array.from({ length: 8 }).map((_, index) => (
+              ? Array.from({ length: 6 }).map((_, index) => (
                   <ThemeCardSkeleton key={index} />
                 ))
               : tweakCNThemes
-                  .slice(0, 8)
+                  .slice(0, 6)
                   .map((theme, index) => (
                     <ThemeCard
                       key={theme.id}
@@ -297,13 +297,13 @@ export function Showcase({
         )}
 
         {activeTab === "rayso" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {shouldShowSkeletons
-              ? Array.from({ length: 8 }).map((_, index) => (
+              ? Array.from({ length: 6 }).map((_, index) => (
                   <ThemeCardSkeleton key={index} />
                 ))
               : raysoThemes
-                  .slice(0, 8)
+                  .slice(0, 6)
                   .map((theme, index) => (
                     <ThemeCard
                       key={theme.id}
@@ -317,13 +317,13 @@ export function Showcase({
         )}
 
         {activeTab === "tinte" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {shouldShowSkeletons
-              ? Array.from({ length: 8 }).map((_, index) => (
+              ? Array.from({ length: 6 }).map((_, index) => (
                   <ThemeCardSkeleton key={index} />
                 ))
               : tinteThemes
-                  .slice(0, 8)
+                  .slice(0, 6)
                   .map((theme, index) => (
                     <ThemeCard
                       key={theme.id}
@@ -355,7 +355,7 @@ export function Showcase({
                       : activeTab === "rayso"
                         ? "ray.so"
                         : "Community"}{" "}
-            Themes
+            Presets
             <ArrowRight className="w-4 h-4" />
           </a>
         </Button>
