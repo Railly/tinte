@@ -9,10 +9,11 @@
   <a href="https://vercel.com/oss" target="_blank">
     <img src="https://vercel.com/oss/program-badge.svg" alt="Vercel OSS Program"/>
   </a>
-  <br/>
+  <br/><br/>
   <a href="https://github.com/Railly/tinte/stargazers" target="_blank">
     <img src="https://img.shields.io/github/stars/Railly/tinte?style=social" alt="GitHub stars"/>
   </a>
+  &nbsp;
   <a href="https://github.com/Railly/tinte/blob/main/LICENSE" target="_blank">
     <img src="https://img.shields.io/github/license/Railly/tinte" alt="License"/>
   </a>
