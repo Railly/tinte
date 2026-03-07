@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { buildRegistryItem, type RegistryItemType } from "@/lib/registry";
+import { buildRegistryItem } from "@/lib/registry";
 
 interface RouteContext {
   params: Promise<{
@@ -10,11 +10,9 @@ interface RouteContext {
   }>;
 }
 
-export async function GET(request: NextRequest, context: RouteContext) {
+export async function GET(_request: NextRequest, context: RouteContext) {
   try {
     const { slug } = await context.params;
-    const type = (request.nextUrl.searchParams.get("type") ||
-      "registry:theme") as RegistryItemType;
 
     let themeData = await db
       .select()
@@ -34,7 +32,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: "Theme not found" }, { status: 404 });
     }
 
-    const registryItem = buildRegistryItem(themeData[0], type);
+    const record = themeData[0];
+    if (!record.is_public) {
+      return NextResponse.json({ error: "Theme not found" }, { status: 404 });
+    }
+
+    const registryItem = buildRegistryItem(record, "registry:base");
 
     return NextResponse.json(registryItem, {
       headers: {
@@ -44,7 +47,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       },
     });
   } catch (error) {
-    console.error("Error generating registry item:", error);
+    console.error("Error generating preset:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
