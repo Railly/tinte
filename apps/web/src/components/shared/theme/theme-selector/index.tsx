@@ -32,7 +32,7 @@ export function ThemeSelector({
   activeTheme,
   onSelect,
   triggerClassName,
-  label = "Themes",
+  label = "Presets",
   popoverWidth,
 }: {
   themes: ThemeData[];
@@ -291,7 +291,7 @@ export function ThemeSelector({
                 </div>
                 <div className="text-center space-y-1">
                   <p className="text-sm font-medium">
-                    {searchQuery.trim() ? "No themes found" : "No theme found"}
+                    {searchQuery.trim() ? "No presets found" : "No preset found"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {searchQuery.trim()

@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronsUpDown } from "lucide-react";
+import * as React from "react";
 import { ThemeColorPreview } from "../theme-color-preview";
 import { Button } from "@/components/ui/button";
 import type { ThemeData } from "@/lib/theme";
@@ -8,7 +9,7 @@ import { extractThemeColors } from "@/lib/theme/utils";
 import { cn } from "@/lib/utils";
 import { getDisplayName } from "./utils";
 
-interface ThemeTriggerProps {
+interface ThemeTriggerProps extends React.ComponentPropsWithoutRef<typeof Button> {
   active: ThemeData | null | undefined;
   currentMode: "light" | "dark";
   isLoading: boolean;
@@ -17,26 +18,35 @@ interface ThemeTriggerProps {
   open: boolean;
 }
 
-export function ThemeTrigger({
-  active,
-  currentMode,
-  isLoading,
-  label,
-  triggerClassName,
-  open,
-}: ThemeTriggerProps) {
-  return (
-    <Button
-      variant="outline"
-      role="combobox"
-      aria-expanded={open}
-      aria-controls="theme-selector-listbox"
-      size="sm"
-      className={cn(
+export const ThemeTrigger = React.forwardRef<HTMLButtonElement, ThemeTriggerProps>(
+  function ThemeTrigger(
+    {
+      active,
+      currentMode,
+      isLoading,
+      label,
+      triggerClassName,
+      open,
+      className,
+      ...props
+    },
+    ref,
+  ) {
+    return (
+      <Button
+        ref={ref}
+        variant="outline"
+        role="combobox"
+        aria-expanded={open}
+        aria-controls="theme-selector-listbox"
+        size="sm"
+        className={cn(
         "justify-between gap-2 md:h-auto md:py-1.5 hover:text-muted-foreground",
         triggerClassName,
+        className,
       )}
       title={label}
+      {...props}
     >
       <div className="hidden md:flex items-center gap-2 min-w-0">
         {isLoading ? (
@@ -96,4 +106,5 @@ export function ThemeTrigger({
       <ChevronsUpDown className="ml-2 h-4 w-4 md:h-3 md:w-3 shrink-0 opacity-50" />
     </Button>
   );
-}
+  },
+);

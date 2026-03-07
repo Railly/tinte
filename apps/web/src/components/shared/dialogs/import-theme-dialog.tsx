@@ -40,12 +40,12 @@ export function ImportThemeDialog({
     const cssToUse = themeCSS.trim();
 
     if (!nameToUse) {
-      toast.error("Please enter a theme name");
+      toast.error("Please enter a preset name");
       return;
     }
 
     if (!cssToUse) {
-      toast.error("Please enter theme CSS");
+      toast.error("Please enter preset CSS");
       return;
     }
 
@@ -66,7 +66,7 @@ export function ImportThemeDialog({
       setMakePublic(true);
     } catch (error) {
       console.error("Error importing theme:", error);
-      toast.error("Failed to import theme");
+      toast.error("Failed to import preset");
     } finally {
       setIsImporting(false);
     }
@@ -103,21 +103,21 @@ export function ImportThemeDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Import Theme
+            Import Preset
           </DialogTitle>
           <DialogDescription>
-            Paste your shadcn CSS variables to create a new theme
+            Paste your shadcn CSS variables to create a new preset
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="theme-name">Theme Name</Label>
+            <Label htmlFor="theme-name">Preset Name</Label>
             <Input
               id="theme-name"
               value={themeName}
               onChange={(e) => setThemeName(e.target.value)}
-              placeholder="My Imported Theme"
+              placeholder="My Imported Preset"
               disabled={isImporting || isLoading}
             />
           </div>
@@ -146,7 +146,7 @@ export function ImportThemeDialog({
               disabled={isImporting || isLoading}
             />
             <Label htmlFor="make-public" className="text-sm font-normal">
-              Make theme public (others can see and use it)
+              Make preset public (others can discover and install it)
             </Label>
           </div>
         </div>

@@ -28,7 +28,7 @@ export function DuplicateThemeDialog({
   isOpen,
   onOpenChange,
   onDuplicate,
-  defaultName = "Copy of Theme",
+  defaultName = "Copy of Preset",
   isLoading = false,
   isBuiltInTheme = false,
 }: DuplicateThemeDialogProps) {
@@ -71,22 +71,22 @@ export function DuplicateThemeDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Copy className="h-5 w-5" />
-            {isBuiltInTheme ? "Save Theme" : "Duplicate Theme"}
+            {isBuiltInTheme ? "Save Preset" : "Duplicate Preset"}
           </DialogTitle>
           <DialogDescription>
             {isBuiltInTheme
-              ? "Save this built-in theme to your collection with a custom name."
-              : "Create a copy of this theme with a new name."}
+              ? "Save this built-in preset to your collection with a custom name."
+              : "Create a copy of this preset with a new name."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="theme-name">Theme name</Label>
+            <Label htmlFor="theme-name">Preset name</Label>
             <Input
               id="theme-name"
               value={currentThemeName}
               onChange={(e) => setThemeName(e.target.value)}
-              placeholder="Enter theme name..."
+              placeholder="Enter preset name..."
               disabled={isDuplicating || isLoading}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && currentThemeName.trim()) {
@@ -103,7 +103,7 @@ export function DuplicateThemeDialog({
               disabled={isDuplicating || isLoading}
             />
             <Label htmlFor="make-public" className="text-sm font-normal">
-              Make theme public (others can see and use it)
+              Make preset public (others can discover and install it)
             </Label>
           </div>
         </div>
@@ -130,7 +130,7 @@ export function DuplicateThemeDialog({
             ) : (
               <>
                 <Copy className="mr-2 h-4 w-4" />
-                {isBuiltInTheme ? "Save Theme" : "Duplicate"}
+                {isBuiltInTheme ? "Save Preset" : "Duplicate"}
               </>
             )}
           </Button>

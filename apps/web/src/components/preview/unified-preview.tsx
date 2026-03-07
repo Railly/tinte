@@ -127,7 +127,7 @@ export const UnifiedPreview = memo(function UnifiedPreview({ theme, className }:
 
   return (
     <div
-      className={cn("h-[calc(100dvh-var(--header-height)_-_5rem)]", className)}
+      className={cn("h-full", className)}
     >
       <PreviewComponent key={previewKey} theme={converted} />
     </div>

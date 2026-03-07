@@ -64,20 +64,20 @@ export function RenameThemeDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Edit3 className="h-5 w-5" />
-            Rename Theme
+            Rename Preset
           </DialogTitle>
           <DialogDescription>
-            Enter a new name for your theme.
+            Enter a new name for your preset.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="theme-name">Theme name</Label>
+            <Label htmlFor="theme-name">Preset name</Label>
             <Input
               id="theme-name"
               value={currentThemeName}
               onChange={(e) => setThemeName(e.target.value)}
-              placeholder="Enter theme name..."
+              placeholder="Enter preset name..."
               disabled={isRenaming || isLoading}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && currentThemeName.trim()) {

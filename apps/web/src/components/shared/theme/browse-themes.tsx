@@ -75,10 +75,10 @@ export function BrowseThemes({
     if (fromWorkbench && initialSearch) {
       toast.info(`Theme "${initialSearch}" not found`, {
         description:
-          "We've searched for similar themes below. You can also create a new theme in the workbench.",
+          "We've searched for similar presets below. You can also create a new preset in the workbench.",
         duration: 6000,
         action: {
-          label: "Create Theme",
+          label: "Create Preset",
           onClick: () => {
             const workbenchId = initialSearch ? "new" : nanoid();
             const url = initialSearch
@@ -442,13 +442,13 @@ export function BrowseThemes({
                 <div className="space-y-2">
                   <h3 className="text-lg font-medium">
                     {searchTerm.trim()
-                      ? "No themes found"
-                      : "No themes in this category"}
+                      ? "No presets found"
+                      : "No presets in this category"}
                   </h3>
                   <p className="text-muted-foreground text-sm">
                     {searchTerm.trim()
-                      ? `No themes match "${searchTerm}". Try a different search term.`
-                      : "This category doesn't have any themes yet."}
+                      ? `No presets match "${searchTerm}". Try a different search term.`
+                      : "This category doesn't have any presets yet."}
                   </p>
                 </div>
                 <Button

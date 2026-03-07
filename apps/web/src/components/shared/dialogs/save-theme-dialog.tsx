@@ -27,7 +27,7 @@ export function SaveThemeDialog({
   isOpen,
   onOpenChange,
   onSave,
-  defaultName = "My Custom Theme",
+  defaultName = "My Custom Preset",
   isLoading = false,
 }: SaveThemeDialogProps) {
   const [themeName, setThemeName] = useState("");
@@ -71,20 +71,20 @@ export function SaveThemeDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Save className="h-5 w-5" />
-            Save Theme
+            Save Preset
           </DialogTitle>
           <DialogDescription>
-            Give your theme a name and choose whether to make it public.
+            Give your preset a name and choose whether to make it public.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="theme-name">Theme name</Label>
+            <Label htmlFor="theme-name">Preset name</Label>
             <Input
               id="theme-name"
               value={currentThemeName}
               onChange={(e) => setThemeName(e.target.value)}
-              placeholder="Enter theme name..."
+              placeholder="Enter preset name..."
               disabled={isSaving || isLoading}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && currentThemeName.trim()) {
@@ -101,7 +101,7 @@ export function SaveThemeDialog({
               disabled={isSaving || isLoading}
             />
             <Label htmlFor="make-public" className="text-sm font-normal">
-              Make theme public (others can see and use it)
+              Make preset public (others can discover and install it)
             </Label>
           </div>
         </div>
@@ -128,7 +128,7 @@ export function SaveThemeDialog({
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Save Theme
+                Save Preset
               </>
             )}
           </Button>
