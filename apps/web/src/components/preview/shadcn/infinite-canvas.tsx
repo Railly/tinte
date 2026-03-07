@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  useRef,
-  useState,
+  type ReactNode,
+  type PointerEvent as ReactPointerEvent,
+  type WheelEvent as ReactWheelEvent,
   useCallback,
   useEffect,
-  type ReactNode,
-  type WheelEvent as ReactWheelEvent,
-  type PointerEvent as ReactPointerEvent,
+  useRef,
+  useState,
 } from "react";
 
 interface CanvasTransform {
@@ -45,7 +45,7 @@ export function InfiniteCanvas({ children }: { children: ReactNode }) {
         const delta = -e.deltaY * ZOOM_SENSITIVITY;
         const newScale = Math.min(
           MAX_SCALE,
-          Math.max(MIN_SCALE, prev.scale * (1 + delta))
+          Math.max(MIN_SCALE, prev.scale * (1 + delta)),
         );
         const ratio = newScale / prev.scale;
         return {
@@ -72,7 +72,7 @@ export function InfiniteCanvas({ children }: { children: ReactNode }) {
         (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
       }
     },
-    [spaceHeld]
+    [spaceHeld],
   );
 
   const handlePointerMove = useCallback(
@@ -87,7 +87,7 @@ export function InfiniteCanvas({ children }: { children: ReactNode }) {
         y: prev.y + dy,
       }));
     },
-    [isPanning]
+    [isPanning],
   );
 
   const handlePointerUp = useCallback(
@@ -97,7 +97,7 @@ export function InfiniteCanvas({ children }: { children: ReactNode }) {
         (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
       }
     },
-    [isPanning]
+    [isPanning],
   );
 
   useEffect(() => {

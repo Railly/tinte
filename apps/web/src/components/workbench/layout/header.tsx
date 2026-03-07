@@ -4,17 +4,19 @@ import { Heart, Shuffle, Slash } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { Logo, UserDropdown } from "@/components/shared/layout";
+import {
+  Logo,
+  SocialsDropdown,
+  UserDropdown,
+} from "@/components/shared/layout";
 import { ProviderSwitcher } from "@/components/shared/providers";
-import { ThemeSelector } from "@/components/shared/theme";
-import type { ThemeData } from "@/lib/theme";
-import { useActiveTheme, useUserThemes, useThemeActions } from "@/stores/hooks";
-import type { UserThemeData } from "@/types/user-theme";
-import { SocialsDropdown } from "@/components/shared/layout";
-import { ThemeSwitcher } from "@/components/shared/theme";
+import { ThemeSelector, ThemeSwitcher } from "@/components/shared/theme";
 import { TinteCommandMenu } from "@/components/shared/tinte-command-menu";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import type { ThemeData } from "@/lib/theme";
+import { useActiveTheme, useThemeActions, useUserThemes } from "@/stores/hooks";
+import type { UserThemeData } from "@/types/user-theme";
 
 interface WorkbenchHeaderProps {
   themeSlug: string;
@@ -119,7 +121,9 @@ export function WorkbenchHeader({
             size="icon"
             onClick={handleToggleFavorite}
             className="h-8 w-8 p-0"
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
             disabled={!isAuthenticated || !mounted || !favoritesLoaded}
           >
             <Heart

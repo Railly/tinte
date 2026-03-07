@@ -10,17 +10,17 @@ import {
 } from "@/components/ui/chat-container";
 import { Message, MessageContent } from "@/components/ui/message";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ChatInput } from "./chat-input";
-import { useActiveTheme, useThemeMode, useUserThemes } from "@/stores/hooks";
 import { cn } from "@/lib/utils";
+import { useActiveTheme, useThemeMode, useUserThemes } from "@/stores/hooks";
 import { AssistantAvatar } from "./assistant-avatar";
 import { ChatEmptyState } from "./chat-empty-state";
-import { MessageAttachment } from "./message-attachment";
-import { ThemeResultCard } from "./theme-result-card";
-import { ToolStatusCard } from "./tool-status-card";
+import { ChatInput } from "./chat-input";
 import { useChatLogic } from "./hooks/use-chat-logic";
 import { useLoadingTimer } from "./hooks/use-loading-timer";
 import { useThemeApplication } from "./hooks/use-theme-application";
+import { MessageAttachment } from "./message-attachment";
+import { ThemeResultCard } from "./theme-result-card";
+import { ToolStatusCard } from "./tool-status-card";
 
 interface AgentTabProps {
   initialPrompt?: string;

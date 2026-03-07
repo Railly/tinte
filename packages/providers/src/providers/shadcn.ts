@@ -1,14 +1,15 @@
-import { formatHex, oklch } from "culori";
-import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
-import { ShadcnIcon } from "@/components/shared/icons";
+import type { TinteBlock, TinteTheme } from "@tinte/core";
 import {
   DEFAULT_BASE,
   DEFAULT_FONTS,
+  generateTailwindPalette,
+  getBestTextColor,
   type ShadcnBlock,
   type ShadcnTheme,
 } from "@tinte/core";
-import type { TinteBlock, TinteTheme } from "@tinte/core";
-import { getBestTextColor, generateTailwindPalette } from "@tinte/core";
+import { formatHex, oklch } from "culori";
+import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
+import { ShadcnIcon } from "@/components/shared/icons";
 import type { PreviewableProvider, ProviderOutput } from "./types";
 
 type ThemeMode = "light" | "dark";

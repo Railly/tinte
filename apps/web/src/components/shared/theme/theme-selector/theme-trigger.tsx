@@ -2,14 +2,15 @@
 
 import { ChevronsUpDown } from "lucide-react";
 import * as React from "react";
-import { ThemeColorPreview } from "../theme-color-preview";
 import { Button } from "@/components/ui/button";
 import type { ThemeData } from "@/lib/theme";
 import { extractThemeColors } from "@/lib/theme/utils";
 import { cn } from "@/lib/utils";
+import { ThemeColorPreview } from "../theme-color-preview";
 import { getDisplayName } from "./utils";
 
-interface ThemeTriggerProps extends React.ComponentPropsWithoutRef<typeof Button> {
+interface ThemeTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof Button> {
   active: ThemeData | null | undefined;
   currentMode: "light" | "dark";
   isLoading: boolean;
@@ -18,29 +19,31 @@ interface ThemeTriggerProps extends React.ComponentPropsWithoutRef<typeof Button
   open: boolean;
 }
 
-export const ThemeTrigger = React.forwardRef<HTMLButtonElement, ThemeTriggerProps>(
-  function ThemeTrigger(
-    {
-      active,
-      currentMode,
-      isLoading,
-      label,
-      triggerClassName,
-      open,
-      className,
-      ...props
-    },
-    ref,
-  ) {
-    return (
-      <Button
-        ref={ref}
-        variant="outline"
-        role="combobox"
-        aria-expanded={open}
-        aria-controls="theme-selector-listbox"
-        size="sm"
-        className={cn(
+export const ThemeTrigger = React.forwardRef<
+  HTMLButtonElement,
+  ThemeTriggerProps
+>(function ThemeTrigger(
+  {
+    active,
+    currentMode,
+    isLoading,
+    label,
+    triggerClassName,
+    open,
+    className,
+    ...props
+  },
+  ref,
+) {
+  return (
+    <Button
+      ref={ref}
+      variant="outline"
+      role="combobox"
+      aria-expanded={open}
+      aria-controls="theme-selector-listbox"
+      size="sm"
+      className={cn(
         "justify-between gap-2 md:h-auto md:py-1.5 hover:text-muted-foreground",
         triggerClassName,
         className,
@@ -106,5 +109,4 @@ export const ThemeTrigger = React.forwardRef<HTMLButtonElement, ThemeTriggerProp
       <ChevronsUpDown className="ml-2 h-4 w-4 md:h-3 md:w-3 shrink-0 opacity-50" />
     </Button>
   );
-  },
-);
+});

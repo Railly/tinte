@@ -180,8 +180,11 @@ export function Hero({
         >
           <span className="text-emerald-500 select-none shrink-0">~</span>
           <span className="flex-1 text-left truncate">
-            <span className="text-muted-foreground/60">npx</span> shadcn@latest add{" "}
-            <span className="text-primary/80">tinte.dev/api/preset/one-hunter</span>
+            <span className="text-muted-foreground/60">npx</span> shadcn@latest
+            add{" "}
+            <span className="text-primary/80">
+              tinte.dev/api/preset/one-hunter
+            </span>
           </span>
           {copied ? (
             <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />

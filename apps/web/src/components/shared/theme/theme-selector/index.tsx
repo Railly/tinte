@@ -14,17 +14,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import type { ThemeData } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { useActiveTheme, useThemeMode, useUserThemes } from "@/stores/hooks";
+import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import { ThemeListItem } from "./theme-list-item";
 import { ThemeTrigger } from "./theme-trigger";
 
+export { AuthorIcon } from "./author-icon";
 export { ThemeListItem } from "./theme-list-item";
 export { ThemeTrigger } from "./theme-trigger";
-export { AuthorIcon } from "./author-icon";
-export { isTemporaryTheme, getDisplayName } from "./utils";
+export { getDisplayName, isTemporaryTheme } from "./utils";
 
 export function ThemeSelector({
   themes,
@@ -291,7 +291,9 @@ export function ThemeSelector({
                 </div>
                 <div className="text-center space-y-1">
                   <p className="text-sm font-medium">
-                    {searchQuery.trim() ? "No presets found" : "No preset found"}
+                    {searchQuery.trim()
+                      ? "No presets found"
+                      : "No preset found"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {searchQuery.trim()
@@ -366,7 +368,9 @@ export function ThemeSelector({
                 <CommandGroup
                   heading={
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold">Your Library</span>
+                      <span className="text-xs font-semibold">
+                        Your Library
+                      </span>
                       <span className="text-[10px] text-muted-foreground font-normal px-1.5 py-0.5 rounded-md bg-muted/50">
                         {organizedThemes.localSearchResults.length}
                       </span>

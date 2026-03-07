@@ -1,6 +1,6 @@
+import type { TinteTheme } from "@tinte/core";
 import { UnifiedPreview } from "@/components/preview/unified-preview";
 import { useActiveTheme } from "@/stores/hooks";
-import type { TinteTheme } from "@tinte/core";
 import { WorkbenchToolbar } from "../toolbar";
 
 type WorkbenchPreviewPaneProps = {};

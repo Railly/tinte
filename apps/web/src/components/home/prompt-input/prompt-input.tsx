@@ -1,5 +1,6 @@
 "use client";
 
+import { generateTailwindPalette } from "@tinte/core";
 import { ArrowUp, Globe, Image, Palette, Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { nanoid } from "nanoid";
@@ -21,11 +22,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { usePalette } from "@/lib/hooks/use-palette";
 import { usePastedItems } from "@/components/workbench/hooks/editor/use-pasted-items";
 import { cn } from "@/lib";
+import { usePalette } from "@/lib/hooks/use-palette";
 import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
-import { generateTailwindPalette } from "@tinte/core";
 import type { ThemeData } from "@/lib/theme";
 import { useUserThemes } from "@/stores/hooks";
 import { writeSeed } from "@/utils/anon-seed";

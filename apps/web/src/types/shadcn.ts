@@ -178,10 +178,7 @@ export const TOKEN_GROUPS = [
   },
   {
     label: "Selection",
-    keys: [
-      "selection",
-      "selection-foreground",
-    ] as ColorToken[],
+    keys: ["selection", "selection-foreground"] as ColorToken[],
   },
 ] as const;
 

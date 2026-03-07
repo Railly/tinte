@@ -14,16 +14,16 @@ import {
   ThemeCardListSkeleton,
   ThemeCardSkeleton,
 } from "@/components/shared/theme";
-import { CompactFilterBar } from "./compact-filter-bar";
 import { Button } from "@/components/ui/button";
 import { PROVIDER_ICONS } from "@/config/providers";
 import { useInfiniteScroll } from "@/lib/hooks/use-infinite-scroll";
 import { useLoop } from "@/lib/hooks/use-loop";
-import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import { useActiveTheme } from "@/stores/hooks";
+import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import type { SessionData } from "@/types/auth";
 import type { UserThemeData } from "@/types/user-theme";
 import { mergeRefs } from "@/utils/merge-refs";
+import { CompactFilterBar } from "./compact-filter-bar";
 
 // All static preset imports removed - using database themes passed as props
 

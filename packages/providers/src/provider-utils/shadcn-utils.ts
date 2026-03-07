@@ -1,9 +1,6 @@
-import { oklch } from "culori";
-import {
-  computeShadowVars,
-  convertTinteToShadcn,
-} from "../providers/shadcn";
 import type { TinteTheme } from "@tinte/core";
+import { oklch } from "culori";
+import { computeShadowVars, convertTinteToShadcn } from "../providers/shadcn";
 
 const COLOR_TOKENS = new Set([
   "background",

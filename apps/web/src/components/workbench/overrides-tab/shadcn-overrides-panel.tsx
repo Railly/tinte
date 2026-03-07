@@ -1,5 +1,7 @@
 "use client";
 
+import type { FontInfo } from "@tinte/core";
+import { getShadcnPaletteWithOverrides } from "@tinte/providers/provider-utils/shadcn-utils";
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
 import { EnhancedTokenInput, TokenSearch } from "@/components/shared/inputs";
@@ -12,10 +14,13 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/use-clear-overrides";
 import { useShadcnOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { getShadcnPaletteWithOverrides } from "@tinte/providers/provider-utils/shadcn-utils";
 import { createSkeletonGroups } from "@/lib/theme";
-import { useActiveTheme, useThemeMode, useThemeOverrides, useThemeTokens } from "@/stores/hooks";
-import type { FontInfo } from "@tinte/core";
+import {
+  useActiveTheme,
+  useThemeMode,
+  useThemeOverrides,
+  useThemeTokens,
+} from "@/stores/hooks";
 import { buildFontFamily } from "@/utils/fonts";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
 
@@ -251,10 +256,7 @@ export function ShadcnOverridesPanel({
       if (typeof value === "string") {
         if (key.startsWith("sidebar")) {
           sidebarGroup.push([key, value] as [string, string]);
-        } else if (
-          key.startsWith("surface") ||
-          key.startsWith("code")
-        ) {
+        } else if (key.startsWith("surface") || key.startsWith("code")) {
           surfaceCodeGroup.push([key, value] as [string, string]);
         } else if (key.startsWith("selection")) {
           selectionGroup.push([key, value] as [string, string]);

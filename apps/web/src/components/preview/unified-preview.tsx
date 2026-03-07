@@ -1,21 +1,27 @@
+import type { TinteTheme } from "@tinte/core";
+import {
+  convertTheme,
+  convertTinteToVSCode,
+  getPreviewableProvider,
+  tinteToZed,
+} from "@tinte/providers";
 import { useQueryState } from "nuqs";
 import { memo, useMemo } from "react";
 import {
   useVSCodeOverrides,
   useZedOverrides,
 } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { convertTheme, getPreviewableProvider } from "@tinte/providers";
-import { convertTinteToVSCode } from "@tinte/providers";
-import { tinteToZed } from "@tinte/providers";
 import { cn } from "@/lib/utils";
-import type { TinteTheme } from "@tinte/core";
 
 interface UnifiedPreviewProps {
   theme: TinteTheme;
   className?: string;
 }
 
-export const UnifiedPreview = memo(function UnifiedPreview({ theme, className }: UnifiedPreviewProps) {
+export const UnifiedPreview = memo(function UnifiedPreview({
+  theme,
+  className,
+}: UnifiedPreviewProps) {
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const vscodeOverrides = useVSCodeOverrides();
   const zedOverrides = useZedOverrides();
@@ -126,9 +132,7 @@ export const UnifiedPreview = memo(function UnifiedPreview({ theme, className }:
   const PreviewComponent = currentProvider.preview.component;
 
   return (
-    <div
-      className={cn("h-full", className)}
-    >
+    <div className={cn("h-full", className)}>
       <PreviewComponent key={previewKey} theme={converted} />
     </div>
   );

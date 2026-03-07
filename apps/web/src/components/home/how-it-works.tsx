@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Eye, Terminal } from "lucide-react";
+import { Eye, Sparkles, Terminal } from "lucide-react";
 import { motion } from "motion/react";
 
 const steps = [
