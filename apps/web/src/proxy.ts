@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/themes/slug/(.*)",
   "/api/themes/public(.*)",
   "/api/figma(.*)",
+  "/api/preset(.*)",
   "/api/generate-vscode-theme(.*)",
   "/workbench(.*)",
   "/experiment(.*)",
