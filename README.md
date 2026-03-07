@@ -18,86 +18,100 @@
 </h3>
 
 <p align="center">
-  Theme generator for VS Code, shadcn/ui, and more — with Ray, a free code screenshot tool
+  Agent-native design system infrastructure — generate, compile, install, and preview design systems from one source of truth
 </p>
 
-## Ray by Tinte
+## Quick Start
 
-**[ray.tinte.dev](https://ray.tinte.dev)** is a free code screenshot tool with professional syntax highlighting.
+Install a Tinte design system into any shadcn/ui project:
 
-### Features
+```bash
+npx shadcn@latest add https://tinte.dev/api/preset/one-hunter
+```
 
-- 500+ syntax highlighting themes (VS Code, Material, GitHub, and more)
-- 16 programming languages supported
-- Export to PNG, SVG, or clipboard
-- Free REST API (60 requests/minute, no authentication required)
-- Claude Code and Cursor skill support for AI-native workflows
-
-### Quick Start
-
-Install the Ray skill for Claude Code or Cursor:
+Install the Tinte skill for Claude Code, Cursor, or any coding agent:
 
 ```bash
 npx skills add Railly/tinte
 ```
 
-Use the `/ray` command to generate code screenshots directly from your editor.
+## How It Works
 
-### API
+Tinte maintains a theme graph of 13 semantic OKLCH color tokens that compiles to:
 
-The Ray API is free and requires no authentication. Perfect for integrating code screenshots into your documentation, blogs, or automation workflows.
+- **shadcn/ui presets** — `registry:base` + `registry:font` items, compatible with shadcn/cli v4
+- **VS Code themes** — Full editor themes with syntax highlighting
+- **Terminal configs** — Alacritty, Kitty, Warp, Windows Terminal
+- **Design tools** — GIMP, Slack, design system tokens
+- **19+ formats** from the same source of truth
 
-**Documentation**: [ray.tinte.dev/docs](https://ray.tinte.dev/docs)
+## Preset API (shadcn v4)
 
-**Example**:
+Every public Tinte theme is installable as a shadcn `registry:base` item:
+
+```bash
+npx shadcn@latest add https://tinte.dev/api/preset/{slug}
+npx shadcn@latest add https://tinte.dev/api/preset/{slug}/font?variable=sans
+```
+
+Get the full preset pack (base + fonts + install commands):
+
+```
+GET https://tinte.dev/api/preset/{slug}?type=pack
+```
+
+Browse themes:
+
+```
+GET https://tinte.dev/api/themes/public?search=minimal
+```
+
+## Ray by Tinte
+
+**[ray.tinte.dev](https://ray.tinte.dev)** — code screenshots + theme extraction.
+
+- 500+ syntax themes, 16 languages, PNG/SVG export
+- Free REST API (60 req/min, no auth)
+- Extract color themes from images: `POST ray.tinte.dev/api/v1/extract-theme`
+- Screenshot with any Tinte theme: `POST ray.tinte.dev/api/v1/screenshot`
 
 ```bash
 curl -X POST https://ray.tinte.dev/api/v1/screenshot \
   -H "Content-Type: application/json" \
-  -d '{
-    "code": "console.log(\"Hello, world!\");",
-    "language": "javascript",
-    "theme": "one-dark-pro"
-  }' \
+  -d '{"code": "const x = 42;", "language": "typescript", "theme": "one-hunter"}' \
   --output screenshot.png
 ```
 
-## Tinte Theme Generator
+## Ecosystem
 
-The original Tinte project generates themes for VS Code, shadcn/ui, and other tools.
+| Product | Role | URL |
+|---------|------|-----|
+| **Tinte** | Generate and compile design systems | [tinte.dev](https://tinte.dev) |
+| **Elements** | Install via shadcn registry | [tryelements.dev](https://tryelements.dev) |
+| **Ray** | Preview and screenshot | [ray.tinte.dev](https://ray.tinte.dev) |
 
-### Features
+> Tinte generates the system, Elements installs it, Ray shows it.
 
-- 500+ themes for VS Code and shadcn/ui
-- Tailwind v4-ready shadcn/ui exports with CSS variables and `@theme inline`
-- Theme extraction from images
-- Open source and community-driven
+## Packages
 
-### Workbench / Customizer
+- `@tinte/core` — Theme primitives, OKLCH color model, type definitions
+- `@tinte/providers` — 19+ format converters (shadcn, VS Code, terminals, design tools)
+- `@tinte/cli` — CLI for theme installation
 
-The main customizer lives in the Tinte workbench:
+## Development
 
-- `https://tinte.dev/workbench` to start editing a theme
-- `https://tinte.dev/workbench/[slug]` to open and tweak a saved public theme
-- `https://tinte.dev/themes/[slug].json` to fetch a public theme as raw JSON
+```bash
+bun install      # Install dependencies
+bun dev          # Start development server
+bun build        # Production build
+```
 
-Inside the workbench, use **View Code** to copy the generated shadcn/Tailwind output.
+## Links
 
-### Reusing Tinte In Your Own App
-
-Today, the easiest reusable pieces are:
-
-- `@tinte/core` for theme primitives and conversions
-- `@tinte/providers` for output formats such as shadcn/ui and VS Code
-- the web workbench as the reference implementation for the full customizer UX
-
-A standalone embeddable customizer package is not extracted yet, but the current workbench and provider packages cover most of the logic you would reuse.
-
-### Links
-
+- **Tinte**: [tinte.dev](https://tinte.dev)
 - **Ray**: [ray.tinte.dev](https://ray.tinte.dev)
-- **Theme Generator**: [tinte.railly.dev](https://tinte.railly.dev)
-- **GitHub**: [github.com/Railly/tinte](https://github.com/Railly/tinte)
+- **Elements**: [tryelements.dev](https://tryelements.dev)
+- **Skill API**: [tinte.dev/api/skill](https://tinte.dev/api/skill)
 - **API Docs**: [ray.tinte.dev/docs](https://ray.tinte.dev/docs)
 
 ## License

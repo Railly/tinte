@@ -1,18 +1,19 @@
-# Tinte - Theme Converter & Generator
+# Tinte - Agent-Native Design System Infrastructure
 
-A Next.js application for converting themes between Rayso, TweakCN, VS Code, shadcn/ui, and 8+ other formats with live previews.
+Generate, compile, install, and preview design systems from one source of truth. Compatible with shadcn/cli v4 presets and registries.
 
 ## What It Does
 
-- Convert between theme formats (Rayso ↔ TweakCN ↔ VS Code ↔ shadcn/ui)
+- Compile theme graph to shadcn v4 `registry:base` + `registry:font` presets
+- Convert between 19+ theme formats (shadcn/ui, VS Code, terminals, design tools)
 - Generate semantic color palettes using OKLCH color space
+- Extract themes from images via Ray API
 - Live theme editing with real-time preview
-- Export themes for editors, terminals, and design tools
-- Universal theme previews for all supported providers
+- Serve installable presets: `npx shadcn@latest add https://tinte.dev/api/preset/{slug}`
 
 ## Tech Stack
 
-- **Next.js 14** with TypeScript and App Router
+- **Next.js 16** with TypeScript and App Router
 - **Tailwind CSS + shadcn/ui** for UI components
 - **Culori** for OKLCH color manipulation
 - **Shiki + Monaco Editor** for syntax highlighting

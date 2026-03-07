@@ -54,3 +54,4 @@ apps/figma/dist
 *.log
 
 .env.local
+.env*.local
