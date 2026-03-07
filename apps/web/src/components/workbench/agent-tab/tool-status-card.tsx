@@ -13,14 +13,14 @@ interface ToolStatusCardProps {
 const TOOL_CONFIG = {
   generateTheme: {
     icon: Palette,
-    label: "Generating Theme",
-    description: "Creating your custom theme...",
+    label: "Generating Preset",
+    description: "Creating your design system preset...",
     color: "text-primary",
   },
   getCurrentTheme: {
     icon: Eye,
-    label: "Analyzing Theme",
-    description: "Reading current theme state...",
+    label: "Analyzing Preset",
+    description: "Reading current preset state...",
     color: "text-blue-600 dark:text-blue-400",
   },
 };

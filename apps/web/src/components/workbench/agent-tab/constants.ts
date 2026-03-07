@@ -1,16 +1,16 @@
 export const CHAT_SUGGESTIONS = [
-  "Ocean sunset theme with warm oranges and cool blues",
-  "Dark cyberpunk theme with neon accents",
-  "Forest morning theme with natural greens",
-  "Minimalist theme with subtle grays",
+  "Ocean sunset preset with warm oranges and cool blues",
+  "Dark cyberpunk preset with neon accents",
+  "Forest morning design system with natural greens",
+  "Minimalist preset with subtle grays",
 ];
 
 export const TOOL_MESSAGES = [
-  "Crafting color harmony...",
+  "Crafting your design system...",
   "Generating light mode...",
   "Creating dark variant...",
   "Perfecting contrasts...",
-  "Finalizing your theme...",
+  "Finalizing your preset...",
   "Almost ready...",
 ];
 

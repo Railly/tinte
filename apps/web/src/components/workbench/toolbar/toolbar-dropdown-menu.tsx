@@ -8,6 +8,7 @@ import {
   FileText,
   Settings,
   Share2,
+  Terminal,
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
@@ -50,7 +51,7 @@ export function ToolbarDropdownMenu({
   onSignInClick,
 }: ToolbarDropdownMenuProps) {
   const [copiedAction, setCopiedAction] = useState<
-    "file" | "theme" | "command" | null
+    "file" | "theme" | "command" | "skill" | null
   >(null);
 
   const handleExportClick = async () => {
@@ -65,6 +66,12 @@ export function ToolbarDropdownMenu({
     setTimeout(() => setCopiedAction(null), 2000);
   };
 
+  const handleCopySkill = async () => {
+    await navigator.clipboard.writeText("npx skills add Railly/tinte");
+    setCopiedAction("skill");
+    setTimeout(() => setCopiedAction(null), 2000);
+  };
+
   const handleDuplicateClick = () => {
     if (!isAuthenticated) {
       onSignInClick();
@@ -76,7 +83,12 @@ export function ToolbarDropdownMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Theme options">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          aria-label="Theme options"
+        >
           <Settings className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -236,6 +248,33 @@ export function ToolbarDropdownMenu({
         <DropdownMenuItem onClick={onShareClick}>
           <Share2 className="h-4 w-4 mr-2" />
           Share
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={handleCopySkill}
+          className="relative overflow-hidden"
+        >
+          <div
+            className={cn(
+              "flex items-center gap-2 w-full transition-all duration-300",
+              copiedAction === "skill"
+                ? "opacity-0 scale-75 blur-sm"
+                : "opacity-100 scale-100 blur-0",
+            )}
+          >
+            <Terminal className="h-4 w-4 mr-2" />
+            Copy Skill
+          </div>
+          <div
+            className={cn(
+              "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
+              copiedAction === "skill"
+                ? "opacity-100 scale-100 blur-0"
+                : "opacity-0 scale-75 blur-sm pointer-events-none",
+            )}
+          >
+            <Check className="h-4 w-4" />
+            Copied!
+          </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onRenameClick} disabled={!isOwnTheme}>

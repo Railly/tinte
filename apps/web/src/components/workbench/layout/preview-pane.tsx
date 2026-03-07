@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { UnifiedPreview } from "@/components/preview/unified-preview";
 import { useActiveTheme } from "@/stores/hooks";
 import type { TinteTheme } from "@tinte/core";
@@ -8,15 +7,9 @@ type WorkbenchPreviewPaneProps = {};
 
 function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
   return (
-    <ScrollArea
-      className="h-[calc(100dvh-var(--header-height)-56px)]"
-      showScrollIndicators={true}
-      indicatorType="shadow"
-    >
-      <div className="h-full px-4 pt-4">
-        <UnifiedPreview theme={theme} />
-      </div>
-    </ScrollArea>
+    <div className="h-[calc(100dvh-var(--header-height)-56px)]">
+      <UnifiedPreview theme={theme} />
+    </div>
   );
 }
 

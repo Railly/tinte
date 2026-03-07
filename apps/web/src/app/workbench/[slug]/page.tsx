@@ -69,27 +69,26 @@ export async function generateMetadata({
   }
 
   return {
-    title: "Theme Workbench - Create & Edit Themes",
+    title: "Design System Studio - Create & Edit Presets",
     description:
-      "Create, edit, and convert themes with Tinte's powerful workbench. Live preview, real-time editing, and export to multiple formats including VS Code, shadcn/ui, terminals, and more.",
+      "Create, edit, and compile design system presets with Tinte's studio. Live preview, OKLCH color editing, and export to 19+ formats including shadcn/ui, VS Code, and terminals.",
     keywords: [
       ...siteConfig.keywords,
-      "theme workbench",
-      "theme editor",
+      "design system studio",
+      "preset editor",
       "live preview",
       "real-time editing",
-      "theme creation",
-      "color editing",
-      "theme conversion",
+      "preset creation",
       "OKLCH editor",
+      "design system compiler",
     ],
     alternates: {
       canonical: `${siteConfig.url}/workbench`,
     },
     openGraph: {
-      title: "Theme Workbench - Create & Edit Themes | Tinte",
+      title: "Design System Studio - Create & Edit Presets | Tinte",
       description:
-        "Create, edit, and convert themes with live preview and real-time editing. Export to VS Code, shadcn/ui, terminals, and more.",
+        "Create and compile design system presets with live preview and OKLCH editing. Export to 19+ formats including shadcn/ui, VS Code, and terminals.",
       url: `${siteConfig.url}/workbench`,
       type: "website",
       images: [
@@ -97,14 +96,14 @@ export async function generateMetadata({
           url: `${siteConfig.url}/og-workbench.jpg`,
           width: 1200,
           height: 630,
-          alt: "Tinte Theme Workbench - Create and edit themes with live preview",
+          alt: "Tinte Design System Studio - Create and edit presets with live preview",
         },
       ],
     },
     twitter: {
-      title: "Theme Workbench - Create & Edit Themes | Tinte",
+      title: "Design System Studio - Create & Edit Presets | Tinte",
       description:
-        "Create beautiful themes with live preview and real-time editing. Export to multiple formats.",
+        "Create design system presets with live preview and OKLCH editing. Export to 19+ formats.",
       images: [`${siteConfig.url}/og-workbench.jpg`],
     },
     other: {

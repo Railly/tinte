@@ -144,11 +144,11 @@ export function WorkbenchToolbar({
 
   const handleSaveTheme = async () => {
     if (!canSave) {
-      toast.error("Please sign in to save themes");
+      toast.error("Please sign in to save presets");
       return;
     }
     if (!unsavedChanges) {
-      toast.success("Theme is already up to date");
+      toast.success("Preset is already up to date");
       return;
     }
     const isOwnSavedTheme =
@@ -166,15 +166,15 @@ export function WorkbenchToolbar({
           activeTheme.id,
         );
         if (result.success && result.savedTheme) {
-          toast.success("Theme updated successfully!");
+          toast.success("Preset updated successfully!");
           markAsSaved();
           selectTheme(result.savedTheme);
         } else {
-          toast.error("Failed to update theme");
+          toast.error("Failed to update preset");
         }
       } catch (error) {
-        console.error("Error updating theme:", error);
-        toast.error("Error updating theme");
+        console.error("Error updating preset:", error);
+        toast.error("Error updating preset");
       }
       return;
     }
@@ -185,15 +185,15 @@ export function WorkbenchToolbar({
     try {
       const result = await saveCurrentTheme(name, makePublic);
       if (result.success && result.savedTheme) {
-        toast.success("Theme saved successfully!");
+        toast.success("Preset saved successfully!");
         markAsSaved();
         await handlePostSaveNavigation(result.savedTheme, "Save");
       } else {
-        toast.error("Failed to save theme");
+        toast.error("Failed to save preset");
       }
     } catch (error) {
-      console.error("Error saving theme:", error);
-      toast.error("Error saving theme");
+      console.error("Error saving preset:", error);
+      toast.error("Error saving preset");
       throw error;
     }
   };
@@ -203,7 +203,7 @@ export function WorkbenchToolbar({
       return activeTheme.name.replace(" (unsaved)", "");
     }
     if (activeTheme.name === "Custom" || activeTheme.name.includes("Custom")) {
-      return "My Custom Theme";
+      return "My Custom Preset";
     }
     return activeTheme.name;
   };
@@ -213,13 +213,13 @@ export function WorkbenchToolbar({
       if (!activeTheme?.id) throw new Error("No theme ID");
       const result = await renameTheme(activeTheme.id, newName);
       if (!result.success)
-        throw new Error(result.error || "Failed to rename theme");
+        throw new Error(result.error || "Failed to rename preset");
       await loadUserThemes();
       if (result.theme?.slug) router.replace(`/workbench/${result.theme.slug}`);
-      toast.success(`Theme renamed to "${newName}"!`);
+      toast.success(`Preset renamed to "${newName}"!`);
     } catch (error) {
       console.error("Error renaming theme:", error);
-      toast.error("Failed to rename theme");
+      toast.error("Failed to rename preset");
       throw error;
     }
   };
@@ -282,7 +282,7 @@ export function WorkbenchToolbar({
         (user && activeTheme?.user?.id === user?.id) ||
         (user && activeTheme?.author === "You");
       if (!isOwner) {
-        toast.error("Only theme owners can make themes public");
+        toast.error("Only preset owners can make presets public");
         return;
       }
       setIsThemePublic(makePublic);
@@ -291,20 +291,20 @@ export function WorkbenchToolbar({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isPublic: makePublic }),
       });
-      if (!response.ok) throw new Error("Failed to update theme visibility");
+      if (!response.ok) throw new Error("Failed to update preset visibility");
       const result = await response.json();
       if (!result.success)
-        throw new Error(result.error || "Failed to update theme visibility");
+        throw new Error(result.error || "Failed to update preset visibility");
       if (activeTheme) {
         selectTheme({ ...activeTheme, is_public: makePublic });
       }
       await loadUserThemes();
       toast.success(
-        makePublic ? "✨ Theme is now public!" : "🔒 Theme is now private",
+        makePublic ? "✨ Preset is now public!" : "🔒 Preset is now private",
       );
     } catch (error) {
-      console.error("Error toggling theme visibility:", error);
-      toast.error("Failed to update theme visibility");
+      console.error("Error toggling preset visibility:", error);
+      toast.error("Failed to update preset visibility");
       setIsThemePublic(!makePublic);
     }
   };
@@ -317,13 +317,13 @@ export function WorkbenchToolbar({
         provider: activeTheme.provider,
       });
       if (!result.success)
-        throw new Error(result.error || "Failed to duplicate theme");
-      toast.success(`Theme duplicated as "${name}"!`);
+        throw new Error(result.error || "Failed to duplicate preset");
+      toast.success(`Preset duplicated as "${name}"!`);
       if (result.theme)
         await handlePostSaveNavigation(result.theme, "Duplicate");
     } catch (error) {
       console.error("Error duplicating theme:", error);
-      toast.error("Failed to duplicate theme");
+      toast.error("Failed to duplicate preset");
       throw error;
     }
   };
@@ -333,7 +333,7 @@ export function WorkbenchToolbar({
       if (!activeTheme?.id) throw new Error("No theme ID");
       const success = await deleteTheme(activeTheme.id);
       if (!success) throw new Error("Failed to delete theme");
-      toast.success("Theme deleted successfully");
+      toast.success("Preset deleted successfully");
       if (userThemes.length > 0) {
         router.replace(`/workbench/${userThemes[0].slug}`);
       } else {
@@ -435,7 +435,7 @@ export function WorkbenchToolbar({
             if (isTemporaryTheme()) {
               if (!canSave) {
                 toast.error(
-                  "Please sign in to save themes and generate install commands",
+                  "Please sign in to save presets and generate install commands",
                 );
                 return;
               }
@@ -530,6 +530,7 @@ export function WorkbenchToolbar({
         canTogglePublic={canTogglePublic}
         isSaving={isSaving}
         themeName={activeTheme?.name}
+        themeSlug={activeTheme?.slug}
       />
     </div>
   );

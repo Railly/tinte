@@ -21,10 +21,10 @@ export function ChatEmptyState({ onSuggestionClick }: ChatEmptyStateProps) {
       </div>
 
       <h3 className="text-lg font-medium text-foreground mb-2">
-        What can I help you craft?
+        What preset should we build?
       </h3>
       <p className="text-sm text-muted-foreground mb-8 max-w-xs">
-        Describe your vision and I'll generate the perfect theme
+        Describe your design system and I'll generate a preset
       </p>
 
       <div className="grid grid-cols-1 gap-2 w-full max-w-xs">

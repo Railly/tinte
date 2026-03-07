@@ -1,12 +1,11 @@
+import type { TinteTheme } from "@tinte/core";
+import { convertTinteToShiki, exportTheme } from "@tinte/providers";
+import { downloadVSCodeTheme } from "@tinte/providers/provider-utils/vscode-download";
 import { Copy, Download, Save } from "lucide-react";
 import { useState } from "react";
 import { ShadcnIcon } from "@/components/shared/icons";
 import { InvertedLogo } from "@/components/shared/layout";
 import { incrementThemeInstalls } from "@/lib/actions/themes";
-import { downloadVSCodeTheme } from "@tinte/providers/provider-utils/vscode-download";
-import { exportTheme } from "@tinte/providers";
-import { convertTinteToShiki } from "@tinte/providers";
-import type { TinteTheme } from "@tinte/core";
 
 interface UseDockActionsProps {
   theme: TinteTheme;
@@ -63,7 +62,7 @@ export function useDockActions({
       if (providerId === "vscode") {
         await downloadVSCodeTheme({
           tinteTheme: theme,
-          themeName: themeName || "Custom Theme",
+          themeName: themeName || "Custom Preset",
           variant: "dark", // Default to dark, could be made configurable
           overrides: vscodeOverrides?.dark || undefined,
         });
@@ -227,8 +226,8 @@ ${darkVars}
         const output = exportTheme(providerId, theme);
         if (output) {
           await navigator.share({
-            title: `${providerName} Theme`,
-            text: `Check out this ${providerName} theme I created with Tinte`,
+            title: `${providerName} Preset`,
+            text: `Check out this ${providerName} preset I created with Tinte`,
             files: [
               new File([output.content], output.filename, {
                 type: output.mimeType,
@@ -259,10 +258,9 @@ ${darkVars}
 
   const handlePrimaryAction = async () => {
     if (providerId === "shadcn") {
-      // Use the registry endpoint with the theme ID
       const baseUrl = window.location.origin;
-      const registryUrl = `${baseUrl}/r/${themeId}`;
-      const command = `npx shadcn@latest add ${registryUrl}`;
+      const presetUrl = `${baseUrl}/api/preset/${themeId}`;
+      const command = `npx shadcn@latest add ${presetUrl}`;
       await handleCopyCommand(command);
     } else if (providerId === "vscode") {
       // Copy bunx tinte command
@@ -289,8 +287,8 @@ ${darkVars}
         label: "Save to Copy",
         description:
           canSave === false
-            ? "Sign in to save theme and generate install command"
-            : "Save theme first to generate install command",
+            ? "Sign in to save preset and generate install command"
+            : "Save preset first to generate install command",
         icon: Save,
         variant: "outline" as const,
       };
@@ -299,10 +297,10 @@ ${darkVars}
     if (providerId === "shadcn") {
       const baseUrl =
         typeof window !== "undefined" ? window.location.origin : "";
-      const registryUrl = `${baseUrl}/r/${themeId}`;
+      const presetUrl = `${baseUrl}/api/preset/${themeId}`;
       return {
         label: "Copy Command",
-        description: `npx shadcn@latest add ${registryUrl}`,
+        description: `npx shadcn@latest add ${presetUrl}`,
         icon: ShadcnIcon,
         variant: "default" as const,
       };

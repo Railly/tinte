@@ -54,6 +54,7 @@ interface ToolbarDialogsProps {
   canTogglePublic: boolean;
   isSaving: boolean;
   themeName?: string;
+  themeSlug?: string;
 }
 
 export function ToolbarDialogs({
@@ -86,6 +87,7 @@ export function ToolbarDialogs({
   canTogglePublic,
   isSaving,
   themeName,
+  themeSlug,
 }: ToolbarDialogsProps) {
   return (
     <>
@@ -105,6 +107,7 @@ export function ToolbarDialogs({
         rawThemeLink={getRawThemeLink()}
         isPublic={isThemePublic}
         canTogglePublic={canTogglePublic}
+        themeSlug={themeSlug}
       />
 
       <ImportThemeDialog
@@ -151,8 +154,8 @@ export function ToolbarDialogs({
               Sign in to continue
             </DialogTitle>
             <DialogDescription className="text-base text-muted-foreground">
-              Create an account to duplicate themes, save your work, and sync
-              across devices.
+              Create an account to save presets, generate install commands, and
+              sync across devices.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-4 pb-2">

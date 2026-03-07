@@ -299,7 +299,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
                                       <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg space-y-2">
                                         <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
                                           <div className="w-2 h-2 rounded-full bg-red-500" />
-                                          <span>Theme generation failed</span>
+                                          <span>Preset generation failed</span>
                                         </div>
                                         <p className="text-red-700 dark:text-red-400 text-sm">
                                           {part.errorText ||
@@ -375,7 +375,7 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
         <div className="px-4 py-3 border-t border-border bg-muted/50">
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">
-              🎨 <strong>Sign in to continue</strong> creating theme variations
+              🎨 <strong>Sign in to continue</strong> creating preset variations
             </p>
             <SignInButton mode="modal">
               <Button size="sm" variant="default">
@@ -390,8 +390,8 @@ export function AgentTab({ initialPrompt }: AgentTabProps) {
         onSubmit={handleSubmit}
         placeholder={
           shouldBlockInput
-            ? "Sign in to continue creating themes..."
-            : "Describe your ideal theme or drag & drop an image..."
+            ? "Sign in to continue creating presets..."
+            : "Describe your design system or drag & drop an image..."
         }
         disabled={isChatDisabled || shouldBlockInput}
         isStreaming={isLoading}

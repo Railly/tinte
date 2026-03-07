@@ -58,7 +58,7 @@ export function ThemeResultCard({
           <div className="flex items-center gap-2">
             <Palette className="h-4 w-4 text-primary" />
             <h4 className="font-semibold text-sm">
-              {themeOutput.title || "Custom Theme"}
+              {themeOutput.title || "Custom Preset"}
             </h4>
           </div>
           {themeOutput.concept && (
@@ -104,7 +104,7 @@ export function ThemeResultCard({
             className="h-8 px-3 w-full"
           >
             <Sparkles className="h-3 w-3 mr-1.5" />
-            Apply Theme
+            Apply Preset
           </Button>
         </div>
       </div>

@@ -73,7 +73,7 @@ export function WorkbenchHeader({
       }
 
       if (!activeTheme?.id) {
-        toast.error("No theme selected");
+        toast.error("No preset selected");
         return;
       }
 
@@ -112,7 +112,7 @@ export function WorkbenchHeader({
             activeTheme={activeTheme}
             onSelect={selectTheme}
             triggerClassName="w-[15rem]"
-            label="Select theme…"
+            label="Select preset…"
           />
           <Button
             variant="outline"

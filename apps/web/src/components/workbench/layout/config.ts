@@ -1,15 +1,7 @@
-import dynamic from "next/dynamic";
 import type { WorkbenchTab } from "@/stores/workbench-store";
-
-const AgentTab = dynamic(() =>
-  import("../agent-tab").then((mod) => mod.AgentTab)
-);
-const CanonicalTab = dynamic(() =>
-  import("../canonical-tab").then((mod) => mod.CanonicalTab)
-);
-const OverridesTab = dynamic(() =>
-  import("../overrides-tab/overrides-tab").then((mod) => mod.OverridesTab)
-);
+import { AgentTab } from "../agent-tab";
+import { CanonicalTab } from "../canonical-tab";
+import { OverridesTab } from "../overrides-tab/overrides-tab";
 
 export const WORKBENCH_TABS = [
   {

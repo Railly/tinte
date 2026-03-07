@@ -59,6 +59,8 @@ export function ShadcnOverridesPanel({
       Borders: true,
       Charts: true,
       Sidebar: true,
+      "Surface & Code": true,
+      Selection: true,
       Fonts: true,
       "Border Radius": true,
       Shadows: true,
@@ -242,10 +244,21 @@ export function ShadcnOverridesPanel({
     const accentGroup: Array<[string, string]> = [];
     const chartGroup: Array<[string, string]> = [];
     const sidebarGroup: Array<[string, string]> = [];
+    const surfaceCodeGroup: Array<[string, string]> = [];
+    const selectionGroup: Array<[string, string]> = [];
 
     Object.entries(currentPalette).forEach(([key, value]) => {
       if (typeof value === "string") {
-        if (
+        if (key.startsWith("sidebar")) {
+          sidebarGroup.push([key, value] as [string, string]);
+        } else if (
+          key.startsWith("surface") ||
+          key.startsWith("code")
+        ) {
+          surfaceCodeGroup.push([key, value] as [string, string]);
+        } else if (key.startsWith("selection")) {
+          selectionGroup.push([key, value] as [string, string]);
+        } else if (
           key.includes("background") ||
           key.includes("card") ||
           key.includes("popover") ||
@@ -269,8 +282,6 @@ export function ShadcnOverridesPanel({
           accentGroup.push([key, value] as [string, string]);
         } else if (key.includes("chart")) {
           chartGroup.push([key, value] as [string, string]);
-        } else if (key.includes("sidebar")) {
-          sidebarGroup.push([key, value] as [string, string]);
         }
       }
     });
@@ -286,6 +297,12 @@ export function ShadcnOverridesPanel({
     groups.push({ label: "Borders", tokens: borderGroup, type: "color" });
     groups.push({ label: "Charts", tokens: chartGroup, type: "color" });
     groups.push({ label: "Sidebar", tokens: sidebarGroup, type: "color" });
+    groups.push({
+      label: "Surface & Code",
+      tokens: surfaceCodeGroup,
+      type: "color",
+    });
+    groups.push({ label: "Selection", tokens: selectionGroup, type: "color" });
 
     // Handle fonts - provide defaults
     const defaultFonts = {
