@@ -1,9 +1,6 @@
-import { oklch } from "culori";
 import type { TinteTheme } from "@tinte/core";
-import {
-  computeShadowVars,
-  convertTinteToShadcn,
-} from "@tinte/providers";
+import { computeShadowVars, convertTinteToShadcn } from "@tinte/providers";
+import { oklch } from "culori";
 import type { ThemeSelect } from "@/db/schema/theme";
 
 const COLOR_TOKENS = new Set([
@@ -39,6 +36,14 @@ const COLOR_TOKENS = new Set([
   "sidebar-accent-foreground",
   "sidebar-border",
   "sidebar-ring",
+  "surface",
+  "surface-foreground",
+  "code",
+  "code-foreground",
+  "code-highlight",
+  "code-number",
+  "selection",
+  "selection-foreground",
   "shadow-color",
 ]);
 
@@ -204,7 +209,8 @@ export function buildRegistryItem(
     name: slug,
     type,
     title: record.name,
-    description: record.concept || `${record.name} - A design system created with Tinte`,
+    description:
+      record.concept || `${record.name} - A design system created with Tinte`,
     author: "tinte.dev",
     cssVars: {
       light: formatTokens(shadcnTheme.light, lightShadowVars),
@@ -236,5 +242,33 @@ export function buildFontRegistryItem(
       subsets: ["latin"],
     },
     files: [],
+  };
+}
+
+export function buildPresetPack(record: ThemeSelect) {
+  const base = buildRegistryItem(record, "registry:base");
+
+  const fonts: ReturnType<typeof buildFontRegistryItem>[] = [];
+  const fontOverrides = record.shadcn_override?.fonts;
+  if (fontOverrides) {
+    if (fontOverrides.sans)
+      fonts.push(buildFontRegistryItem(fontOverrides.sans, "--font-sans"));
+    if (fontOverrides.serif)
+      fonts.push(buildFontRegistryItem(fontOverrides.serif, "--font-serif"));
+    if (fontOverrides.mono)
+      fonts.push(buildFontRegistryItem(fontOverrides.mono, "--font-mono"));
+  }
+
+  return {
+    base,
+    fonts,
+    slug: base.name,
+    install: {
+      base: `npx shadcn@latest add https://tinte.dev/api/preset/${base.name}`,
+      fonts: fonts.map(
+        (f) =>
+          `npx shadcn@latest add https://tinte.dev/r/font/${f.font.import.toLowerCase().replace(/\s+/g, "-")}?variable=${f.font.variable === "--font-sans" ? "sans" : f.font.variable === "--font-serif" ? "serif" : "mono"}`,
+      ),
+    },
   };
 }

@@ -37,7 +37,15 @@ export type ColorToken =
   | "sidebar-accent"
   | "sidebar-accent-foreground"
   | "sidebar-border"
-  | "sidebar-ring";
+  | "sidebar-ring"
+  | "surface"
+  | "surface-foreground"
+  | "code"
+  | "code-foreground"
+  | "code-highlight"
+  | "code-number"
+  | "selection"
+  | "selection-foreground";
 
 // ---- Non-color tokens
 export type FontToken = "font-sans" | "font-mono" | "font-serif";
@@ -155,6 +163,24 @@ export const TOKEN_GROUPS = [
       "sidebar-accent-foreground",
       "sidebar-border",
       "sidebar-ring",
+    ] as ColorToken[],
+  },
+  {
+    label: "Surface & Code",
+    keys: [
+      "surface",
+      "surface-foreground",
+      "code",
+      "code-foreground",
+      "code-highlight",
+      "code-number",
+    ] as ColorToken[],
+  },
+  {
+    label: "Selection",
+    keys: [
+      "selection",
+      "selection-foreground",
     ] as ColorToken[],
   },
 ] as const;

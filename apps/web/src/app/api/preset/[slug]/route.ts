@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { theme } from "@/db/schema/theme";
-import { buildRegistryItem } from "@/lib/registry";
+import { buildPresetPack, buildRegistryItem } from "@/lib/registry";
 
 interface RouteContext {
   params: Promise<{
@@ -10,9 +10,16 @@ interface RouteContext {
   }>;
 }
 
-export async function GET(_request: NextRequest, context: RouteContext) {
+const CORS_HEADERS = {
+  "Content-Type": "application/json",
+  "Cache-Control": "public, max-age=3600",
+  "Access-Control-Allow-Origin": "*",
+};
+
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { slug } = await context.params;
+    const type = request.nextUrl.searchParams.get("type") || "base";
 
     let themeData = await db
       .select()
@@ -37,15 +44,14 @@ export async function GET(_request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: "Theme not found" }, { status: 404 });
     }
 
-    const registryItem = buildRegistryItem(record, "registry:base");
+    if (type === "pack") {
+      return NextResponse.json(buildPresetPack(record), {
+        headers: CORS_HEADERS,
+      });
+    }
 
-    return NextResponse.json(registryItem, {
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=3600",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    const registryItem = buildRegistryItem(record, "registry:base");
+    return NextResponse.json(registryItem, { headers: CORS_HEADERS });
   } catch (error) {
     console.error("Error generating preset:", error);
     return NextResponse.json(
