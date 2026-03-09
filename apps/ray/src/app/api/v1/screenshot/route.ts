@@ -5,24 +5,29 @@ import type { TinteBlock } from "@tinte/core";
 import { TinteBlockSchema } from "@tinte/core";
 import { DEFAULT_THEME } from "@/data/bundled-themes";
 import {
-  ScreenshotRequestSchema,
-  tinteBlockToTextMateTheme,
-  highlightCode,
-  buildScreenshotJsx,
-} from "@/lib/screenshot";
-import {
-  screenshotRatelimit,
   getIdentifier,
   rateLimitHeaders,
+  screenshotRatelimit,
 } from "@/lib/ratelimit";
+import {
+  buildScreenshotJsx,
+  highlightCode,
+  ScreenshotRequestSchema,
+  tinteBlockToTextMateTheme,
+} from "@/lib/screenshot";
 
 let fontCache: ArrayBuffer | null = null;
 
 async function getGeistMonoFont(): Promise<ArrayBuffer> {
   if (fontCache) return fontCache;
-  const fontPath = join(process.cwd(), "public", "fonts", "GeistMono-Regular.ttf");
+  const fontPath = join(
+    process.cwd(),
+    "public",
+    "fonts",
+    "GeistMono-Regular.ttf",
+  );
   const buffer = await readFile(fontPath);
-  fontCache = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+  fontCache = new Uint8Array(buffer).buffer as ArrayBuffer;
   return fontCache;
 }
 
