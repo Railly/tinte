@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "@takumi-rs/image-response";
 import type { TinteBlock } from "@tinte/core";
 import { TinteBlockSchema } from "@tinte/core";
@@ -13,6 +15,16 @@ import {
   getIdentifier,
   rateLimitHeaders,
 } from "@/lib/ratelimit";
+
+let fontCache: ArrayBuffer | null = null;
+
+async function getGeistMonoFont(): Promise<ArrayBuffer> {
+  if (fontCache) return fontCache;
+  const fontPath = join(process.cwd(), "public", "fonts", "GeistMono-Regular.ttf");
+  const buffer = await readFile(fontPath);
+  fontCache = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+  return fontCache;
+}
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -146,11 +158,21 @@ export async function POST(request: Request) {
       lineNumbers,
     );
 
+    const fontData = await getGeistMonoFont();
+
     return new ImageResponse(jsx, {
       width: width * scale,
       height: height * scale,
       format: "png",
       headers: CORS_HEADERS,
+      fonts: [
+        {
+          name: "Geist Mono",
+          data: fontData,
+          style: "normal" as const,
+          weight: 400 as const,
+        },
+      ],
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
