@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { ImageResponse } from "@takumi-rs/image-response";
+import { ImageResponse } from "next/og";
 import type { TinteBlock } from "@tinte/core";
 import { TinteBlockSchema } from "@tinte/core";
 import { DEFAULT_THEME } from "@/data/bundled-themes";
@@ -168,7 +168,6 @@ export async function POST(request: Request) {
     return new ImageResponse(jsx, {
       width: width * scale,
       height: height * scale,
-      format: "png",
       headers: CORS_HEADERS,
       fonts: [
         {
