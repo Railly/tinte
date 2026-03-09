@@ -111,12 +111,16 @@ export async function POST(request: Request) {
   try {
     step = "ratelimit";
     const identifier = getIdentifier(request);
-    const rl = await screenshotRatelimit.limit(identifier);
-    if (!rl.success) {
-      return Response.json(
-        { error: "Too many requests. Try again shortly." },
-        { status: 429, headers: { ...CORS_HEADERS, ...rateLimitHeaders(rl) } },
-      );
+    try {
+      const rl = await screenshotRatelimit.limit(identifier);
+      if (!rl.success) {
+        return Response.json(
+          { error: "Too many requests. Try again shortly." },
+          { status: 429, headers: { ...CORS_HEADERS, ...rateLimitHeaders(rl) } },
+        );
+      }
+    } catch {
+      // Upstash unreachable — skip rate limiting gracefully
     }
 
     step = "parse";
