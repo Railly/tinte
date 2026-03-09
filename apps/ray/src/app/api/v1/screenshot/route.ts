@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { ImageResponse } from "next/og";
 import type { TinteBlock } from "@tinte/core";
 import { TinteBlockSchema } from "@tinte/core";
+import { ImageResponse } from "next/og";
 import { DEFAULT_THEME } from "@/data/bundled-themes";
 import {
   getIdentifier,
@@ -107,7 +107,9 @@ function estimateDimensions(
 }
 
 export async function POST(request: Request) {
+  let step = "init";
   try {
+    step = "ratelimit";
     const identifier = getIdentifier(request);
     const rl = await screenshotRatelimit.limit(identifier);
     if (!rl.success) {
@@ -117,6 +119,7 @@ export async function POST(request: Request) {
       );
     }
 
+    step = "parse";
     const body = await request.json();
     const parsed = ScreenshotRequestSchema.safeParse(body);
 
@@ -140,10 +143,14 @@ export async function POST(request: Request) {
       scale,
     } = parsed.data;
 
+    step = "resolveTheme";
     const block = await resolveTheme(theme, mode);
+
+    step = "highlight";
     const textMateTheme = tinteBlockToTextMateTheme(block, mode);
     const { tokens, fg } = await highlightCode(code, language, textMateTheme);
 
+    step = "render";
     const jsx = buildScreenshotJsx({
       tokens,
       bg: block.bg,
@@ -163,8 +170,10 @@ export async function POST(request: Request) {
       lineNumbers,
     );
 
+    step = "font";
     const fontData = await getGeistMonoFont();
 
+    step = "imageResponse";
     return new ImageResponse(jsx, {
       width: width * scale,
       height: height * scale,
@@ -180,10 +189,11 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error("Screenshot generation failed:", message);
+    console.error(`Screenshot failed at step="${step}":`, message);
     return Response.json(
       {
         error: "Screenshot generation failed",
+        step,
         message,
       },
       { status: 500, headers: CORS_HEADERS },
