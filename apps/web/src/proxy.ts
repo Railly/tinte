@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/themes/public(.*)",
   "/api/figma(.*)",
   "/api/preset(.*)",
+  "/api/skill(.*)",
   "/api/generate-vscode-theme(.*)",
   "/workbench(.*)",
   "/experiment(.*)",
