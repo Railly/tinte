@@ -1,10 +1,12 @@
 "use client";
 
+import type { TinteBlock } from "@tinte/core";
+import { generateTailwindPalette } from "@tinte/core";
 import { ChevronDown, Info } from "lucide-react";
 import * as React from "react";
 import { TailwindIcon } from "@/components/shared/icons";
-import { InvertedLogo } from "@/components/shared/layout";
 import { TokenSearch } from "@/components/shared/inputs";
+import { InvertedLogo } from "@/components/shared/layout";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -27,10 +29,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useClearOverrides } from "@/components/workbench/overrides-tab/hooks/use-clear-overrides";
 import { useZedOverrides } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
-import { generateTailwindPalette } from "@tinte/core";
 import { cn } from "@/lib/utils";
 import { useActiveTheme, useThemeMode } from "@/stores/hooks";
-import type { TinteBlock } from "@tinte/core";
 import { ClearOverridesAlert } from "./clear-overrides-alert";
 import type { OverrideVariable, OverrideVariableGroup } from "./types";
 
@@ -509,11 +509,7 @@ export function ZedOverridesPanel({
         </div>
       )}
 
-      <ScrollArea
-        className="flex-1 min-h-0 pl-1 pr-3"
-        showScrollIndicators={true}
-        indicatorType="shadow"
-      >
+      <ScrollArea className="flex-1 min-h-0 pl-1 pr-3">
         <div className="space-y-4 pb-2">
           {clearOverrides.hasOverrides && (
             <ClearOverridesAlert

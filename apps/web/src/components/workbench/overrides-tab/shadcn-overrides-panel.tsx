@@ -399,11 +399,7 @@ export function ShadcnOverridesPanel({
         </div>
       )}
 
-      <ScrollArea
-        className="flex-1 min-h-0 pl-1 pr-3"
-        showScrollIndicators={true}
-        indicatorType="shadow"
-      >
+      <ScrollArea className="flex-1 min-h-0 pl-1 pr-3">
         <div className="space-y-4 pb-2">
           {/* Clear Overrides Alert */}
           {clearOverrides.hasOverrides &&

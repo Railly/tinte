@@ -1,15 +1,5 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import * as React from "react";
-import { TokenSearch, VSCodeTokenInput } from "@/components/shared/inputs";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   editorColorMap,
   type SemanticToken,
@@ -20,10 +10,20 @@ import {
   createVSCodeTokenSkeletons,
   VSCODE_TOKEN_GROUPS,
 } from "@tinte/providers/provider-utils/vscode-tokens";
+import { ChevronDown } from "lucide-react";
+import * as React from "react";
+import { TokenSearch, VSCodeTokenInput } from "@/components/shared/inputs";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useActiveTheme, useThemeMode } from "@/stores/hooks";
+import { ClearOverridesAlert } from "../clear-overrides-alert";
 import { useClearOverrides } from "../hooks/use-clear-overrides";
 import { useVSCodeOverrides } from "../hooks/use-provider-overrides";
-import { ClearOverridesAlert } from "../clear-overrides-alert";
 import { defaultTokenColorMap } from "./default-token-color-map";
 import { EDITOR_COLOR_GROUPS } from "./editor-color-groups";
 
@@ -198,11 +198,7 @@ export function VSCodeOverridesPanel({
         </Tabs>
       </div>
 
-      <ScrollArea
-        className="flex-1 min-h-0 pl-1 pr-3"
-        showScrollIndicators={true}
-        indicatorType="shadow"
-      >
+      <ScrollArea className="flex-1 min-h-0 pl-1 pr-3">
         {clearOverrides.hasOverrides && (
           <div className="mb-4">
             <ClearOverridesAlert

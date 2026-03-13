@@ -161,6 +161,10 @@
 * {
   color-scheme: light dark;
   border-color: var(--color-border);
+}
+
+html,
+body {
   overscroll-behavior: none;
 }
 

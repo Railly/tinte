@@ -18,6 +18,7 @@ export * from "./windows-terminal";
 export * from "./zed";
 export * from "./zed-provider";
 
+import { designSystemProvider } from "./design-system";
 import { ProviderRegistry } from "./registry";
 import { shadcnProvider } from "./shadcn";
 import { shikiProvider } from "./shiki";
@@ -29,6 +30,7 @@ registry.registerPreviewable(shadcnProvider);
 registry.registerPreviewable(vscodeProvider);
 registry.registerPreviewable(shikiProvider);
 registry.registerPreviewable(zedProvider);
+registry.registerPreviewable(designSystemProvider);
 
 export function getAvailableProviders() {
   return registry.getAll();

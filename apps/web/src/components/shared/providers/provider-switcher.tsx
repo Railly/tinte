@@ -1,5 +1,6 @@
 "use client";
 
+import { getAvailableProviders } from "@tinte/providers";
 import { ChevronsUpDown, Clock, FlaskConical } from "lucide-react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
@@ -18,7 +19,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ALL_FORMATTED_PROVIDERS } from "@/config/providers";
-import { getAvailableProviders } from "@tinte/providers";
 
 interface ProviderSwitcherProps {
   className?: string;
@@ -112,7 +112,7 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
       <PopoverContent align="start" className="w-48 p-0">
         <Command>
           <CommandInput placeholder="Search providers..." className="h-9" />
-          <CommandList id={listboxId} className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-thumb]:bg-border">
+          <CommandList id={listboxId}>
             <CommandEmpty>No provider found.</CommandEmpty>
 
             {availableProviders.length > 0 && (

@@ -791,7 +791,7 @@ export function ShikiPreview({
         ) : combinedLoading ? (
           <LoadingState />
         ) : (
-          <ScrollArea className="h-full" showScrollIndicators={true} indicatorType="shadow">
+          <ScrollArea className="h-full">
             <div
               className="text-sm !font-mono !text-[13px] !leading-[1.53] shiki-css-container p-4"
               dangerouslySetInnerHTML={{ __html: html }}

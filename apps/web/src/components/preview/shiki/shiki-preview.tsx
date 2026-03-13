@@ -1,5 +1,6 @@
 "use client";
 
+import type { ShikiTheme } from "@tinte/core";
 import { useEffect, useState } from "react";
 import {
   GolangIcon,
@@ -17,7 +18,6 @@ import {
 } from "@/components/ui/select";
 import { useShikiCssHighlighter } from "@/components/workbench/hooks/editor/use-shiki-css";
 import { useThemeMode } from "@/stores/hooks";
-import type { ShikiTheme } from "@tinte/core";
 import { codeTemplates } from "./shiki-code-templates";
 
 interface ShikiPreviewProps {
@@ -128,11 +128,7 @@ export function ShikiPreview({ theme, className }: ShikiPreviewProps) {
           `,
           }}
         />
-        <ScrollArea
-          className="h-full"
-          showScrollIndicators={true}
-          indicatorType="shadow"
-        >
+        <ScrollArea className="h-full">
           <div
             className="text-sm !font-mono !text-[13px] !leading-[1.53] !break-words shiki-css-container"
             dangerouslySetInnerHTML={{ __html: html }}
