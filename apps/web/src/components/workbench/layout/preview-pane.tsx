@@ -7,7 +7,7 @@ type WorkbenchPreviewPaneProps = {};
 
 function PreviewPaneContent({ theme }: { theme: TinteTheme }) {
   return (
-    <div className="h-[calc(100dvh-var(--header-height)-56px)]">
+    <div className="h-[calc(100dvh-var(--header-height)-56px)] overflow-y-auto">
       <UnifiedPreview theme={theme} />
     </div>
   );
