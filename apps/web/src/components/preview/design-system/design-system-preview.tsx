@@ -65,7 +65,7 @@ export function DesignSystemPreview({
 }: DesignSystemPreviewProps) {
   const tinteTheme = useThemeStore((state) => state.tinteTheme);
   const currentMode = useThemeStore((state) => state.mode);
-  const { fonts } = useThemeTokens();
+  const { fonts, serifHeadings } = useThemeTokens();
 
   const colors = tinteTheme?.[currentMode] ?? DEFAULT_COLORS;
 
@@ -93,7 +93,12 @@ export function DesignSystemPreview({
         </div>
         <h1
           className="text-2xl font-bold tracking-tight"
-          style={{ color: colors.tx }}
+          style={{
+            color: colors.tx,
+            fontFamily: serifHeadings
+              ? "var(--font-serif, serif)"
+              : undefined,
+          }}
         >
           {theme.brand.name}
         </h1>
@@ -146,7 +151,7 @@ export function DesignSystemPreview({
               </p>
             </div>
           </div>
-          <TypographySection colors={colors} />
+          <TypographySection colors={colors} serifHeadings={serifHeadings} />
         </section>
 
         <section className="px-6 py-10">

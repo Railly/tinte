@@ -4,6 +4,7 @@ import type { TinteBlock } from "@tinte/core";
 
 interface TypographySectionProps {
   colors: TinteBlock;
+  serifHeadings?: boolean;
 }
 
 const typeScale = [
@@ -17,7 +18,10 @@ const typeScale = [
   { label: "4xl", size: "36px", sample: "Build fast, ship faster" },
 ];
 
-export function TypographySection({ colors }: TypographySectionProps) {
+export function TypographySection({ colors, serifHeadings }: TypographySectionProps) {
+  const headingFont = serifHeadings
+    ? "var(--font-serif, serif)"
+    : "var(--font-sans, system-ui)";
   return (
     <div className="space-y-10">
       <div>
@@ -32,7 +36,7 @@ export function TypographySection({ colors }: TypographySectionProps) {
           style={{
             fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
             color: colors.pr,
-            fontFamily: "var(--font-sans, system-ui)",
+            fontFamily: headingFont,
             letterSpacing: "-0.03em",
           }}
         >
@@ -80,7 +84,10 @@ export function TypographySection({ colors }: TypographySectionProps) {
             <div key={h.tag} className="flex items-baseline gap-4">
               <span
                 className="text-xs w-8 flex-shrink-0"
-                style={{ color: colors.tx_3, fontFamily: "var(--font-mono, monospace)" }}
+                style={{
+                  color: colors.tx_3,
+                  fontFamily: "var(--font-mono, monospace)",
+                }}
               >
                 {h.tag}
               </span>
@@ -90,14 +97,17 @@ export function TypographySection({ colors }: TypographySectionProps) {
                   fontWeight: h.weight,
                   color: colors.tx,
                   lineHeight: 1.2,
-                  fontFamily: "var(--font-sans, inherit)",
+                  fontFamily: headingFont,
                 }}
               >
                 {h.sample}
               </span>
               <span
                 className="text-xs ml-auto flex-shrink-0"
-                style={{ color: colors.tx_3, fontFamily: "var(--font-mono, monospace)" }}
+                style={{
+                  color: colors.tx_3,
+                  fontFamily: "var(--font-mono, monospace)",
+                }}
               >
                 {h.size}
               </span>
@@ -204,13 +214,19 @@ export function TypographySection({ colors }: TypographySectionProps) {
             >
               <span
                 className="text-xs w-10 flex-shrink-0"
-                style={{ color: colors.tx_3, fontFamily: "var(--font-mono, monospace)" }}
+                style={{
+                  color: colors.tx_3,
+                  fontFamily: "var(--font-mono, monospace)",
+                }}
               >
                 {t.label}
               </span>
               <span
                 className="text-xs w-12 flex-shrink-0"
-                style={{ color: colors.tx_3, fontFamily: "var(--font-mono, monospace)" }}
+                style={{
+                  color: colors.tx_3,
+                  fontFamily: "var(--font-mono, monospace)",
+                }}
               >
                 {t.size}
               </span>

@@ -24,6 +24,7 @@ export function useThemeTokens() {
   const hasEdits = useThemeStore((state) => state.hasEdits);
   const editToken = useThemeStore((state) => state.editToken);
   const resetTokens = useThemeStore((state) => state.resetTokens);
+  const activeTheme = useThemeStore((state) => state.activeTheme);
 
   const fonts: ThemeFonts = useMemo(
     () => ({
@@ -54,6 +55,14 @@ export function useThemeTokens() {
 
   const radius = currentTokens.radius || "0.5rem";
 
+  const serifHeadings = useMemo(() => {
+    const override = (activeTheme as any)?.shadcn_override;
+    if (override?.serifHeadings) return true;
+    const raw = (activeTheme as any)?.rawTheme;
+    if (raw?.fonts?.serifHeadings) return true;
+    return false;
+  }, [activeTheme]);
+
   return {
     currentTokens,
     editedTokens,
@@ -61,6 +70,7 @@ export function useThemeTokens() {
     fonts,
     shadows,
     radius,
+    serifHeadings,
     editToken,
     resetTokens,
   };
