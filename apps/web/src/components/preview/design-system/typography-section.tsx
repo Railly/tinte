@@ -79,8 +79,8 @@ export function TypographySection({ colors }: TypographySectionProps) {
           ].map((h) => (
             <div key={h.tag} className="flex items-baseline gap-4">
               <span
-                className="font-mono text-xs w-8 flex-shrink-0"
-                style={{ color: colors.tx_3 }}
+                className="text-xs w-8 flex-shrink-0"
+                style={{ color: colors.tx_3, fontFamily: "var(--font-mono, monospace)" }}
               >
                 {h.tag}
               </span>
@@ -90,13 +90,14 @@ export function TypographySection({ colors }: TypographySectionProps) {
                   fontWeight: h.weight,
                   color: colors.tx,
                   lineHeight: 1.2,
+                  fontFamily: "var(--font-sans, inherit)",
                 }}
               >
                 {h.sample}
               </span>
               <span
-                className="font-mono text-xs ml-auto flex-shrink-0"
-                style={{ color: colors.tx_3 }}
+                className="text-xs ml-auto flex-shrink-0"
+                style={{ color: colors.tx_3, fontFamily: "var(--font-mono, monospace)" }}
               >
                 {h.size}
               </span>
@@ -202,14 +203,14 @@ export function TypographySection({ colors }: TypographySectionProps) {
               style={{ borderColor: colors.ui }}
             >
               <span
-                className="font-mono text-xs w-10 flex-shrink-0"
-                style={{ color: colors.tx_3 }}
+                className="text-xs w-10 flex-shrink-0"
+                style={{ color: colors.tx_3, fontFamily: "var(--font-mono, monospace)" }}
               >
                 {t.label}
               </span>
               <span
-                className="font-mono text-xs w-12 flex-shrink-0"
-                style={{ color: colors.tx_3 }}
+                className="text-xs w-12 flex-shrink-0"
+                style={{ color: colors.tx_3, fontFamily: "var(--font-mono, monospace)" }}
               >
                 {t.size}
               </span>

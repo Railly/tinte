@@ -1,6 +1,7 @@
 "use client";
 
 import type { DesignSystemOutput } from "@tinte/providers";
+import { useThemeTokens } from "@/stores/hooks/use-theme-tokens";
 import { useThemeStore } from "@/stores/theme";
 import { ColorSystemSection } from "./color-system-section";
 import { ComponentsSection } from "./components-section";
@@ -64,13 +65,21 @@ export function DesignSystemPreview({
 }: DesignSystemPreviewProps) {
   const tinteTheme = useThemeStore((state) => state.tinteTheme);
   const currentMode = useThemeStore((state) => state.mode);
+  const { fonts } = useThemeTokens();
 
   const colors = tinteTheme?.[currentMode] ?? DEFAULT_COLORS;
 
   return (
     <div
-      className={`font-sans ${className ?? ""}`}
-      style={{ backgroundColor: colors.bg, color: colors.tx }}
+      className={className}
+      style={{
+        backgroundColor: colors.bg,
+        color: colors.tx,
+        fontFamily: fonts.sans,
+        ["--font-sans" as string]: fonts.sans,
+        ["--font-serif" as string]: fonts.serif,
+        ["--font-mono" as string]: fonts.mono,
+      }}
     >
       <div
         className="px-6 pt-8 pb-4 border-b"
