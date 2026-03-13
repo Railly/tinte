@@ -1,18 +1,62 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { DesignSystemOutput } from "@tinte/providers";
 import { useThemeStore } from "@/stores/theme";
-import { ComponentsTab } from "./components-tab";
-import { DataDisplayTab } from "./data-display-tab";
-import { FeedbackTab } from "./feedback-tab";
-import { FormsTab } from "./forms-tab";
-import { FoundationTab } from "./foundation-tab";
+import { ColorSystemSection } from "./color-system-section";
+import { ComponentsSection } from "./components-section";
+import { DataVizSection } from "./data-viz-section";
+import { FormsSection } from "./forms-section";
+import { TypographySection } from "./typography-section";
 
 interface DesignSystemPreviewProps {
   theme: DesignSystemOutput;
   className?: string;
 }
+
+const DEFAULT_COLORS = {
+  bg: "#ffffff",
+  bg_2: "#f8f9fa",
+  ui: "#e9ecef",
+  ui_2: "#dee2e6",
+  ui_3: "#ced4da",
+  tx: "#212529",
+  tx_2: "#6c757d",
+  tx_3: "#adb5bd",
+  pr: "#007bff",
+  sc: "#6c757d",
+  ac_1: "#dc3545",
+  ac_2: "#28a745",
+  ac_3: "#ffc107",
+};
+
+const sections = [
+  {
+    id: "01",
+    title: "Color System",
+    subtitle: "Backgrounds, text hierarchy, accent ramps, and semantic tokens",
+  },
+  {
+    id: "02",
+    title: "Typography",
+    subtitle:
+      "Display, heading scale, body text, data, and type scale reference",
+  },
+  {
+    id: "03",
+    title: "Components",
+    subtitle: "Buttons, cards, tags, badges, and stat blocks",
+  },
+  {
+    id: "04",
+    title: "Forms",
+    subtitle: "Text inputs, selects, search, and validation states",
+  },
+  {
+    id: "05",
+    title: "Data & Viz",
+    subtitle: "Chart color palette, bar chart, and divider styles",
+  },
+];
 
 export function DesignSystemPreview({
   theme,
@@ -21,80 +65,149 @@ export function DesignSystemPreview({
   const tinteTheme = useThemeStore((state) => state.tinteTheme);
   const currentMode = useThemeStore((state) => state.mode);
 
-  const currentColors = tinteTheme?.[currentMode] || {
-    bg: "#ffffff",
-    bg_2: "#f8f9fa",
-    ui: "#e9ecef",
-    ui_2: "#dee2e6",
-    ui_3: "#ced4da",
-    tx: "#212529",
-    tx_2: "#6c757d",
-    tx_3: "#adb5bd",
-    pr: "#007bff",
-    sc: "#6c757d",
-    ac_1: "#dc3545",
-    ac_2: "#28a745",
-    ac_3: "#ffc107",
-  };
+  const colors = tinteTheme?.[currentMode] ?? DEFAULT_COLORS;
 
   return (
-    <div className={`h-full font-sans ${className}`}>
-      <div className="">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Design System</h1>
-          <p className="text-muted-foreground text-sm">
-            {theme.brand.description}
-          </p>
+    <div
+      className={`font-sans ${className ?? ""}`}
+      style={{ backgroundColor: colors.bg, color: colors.tx }}
+    >
+      <div
+        className="px-6 pt-8 pb-4 border-b"
+        style={{ borderColor: colors.ui }}
+      >
+        <div
+          className="text-xs font-mono uppercase tracking-widest mb-1"
+          style={{ color: colors.pr }}
+        >
+          Design System
         </div>
+        <h1
+          className="text-2xl font-bold tracking-tight"
+          style={{ color: colors.tx }}
+        >
+          {theme.brand.name}
+        </h1>
+        <p className="text-sm mt-1" style={{ color: colors.tx_3 }}>
+          {theme.brand.description}
+        </p>
+      </div>
 
-        <Tabs defaultValue="foundation" className="w-full">
-          <TabsList className="h-auto flex-wrap justify-start gap-1 bg-transparent p-0">
-            <TabsTrigger
-              value="foundation"
-              className="data-[state=active]:bg-muted"
+      <div className="divide-y" style={{ borderColor: colors.ui }}>
+        <section className="px-6 py-10">
+          <div className="flex items-start gap-6 mb-8">
+            <span
+              className="text-5xl font-bold leading-none flex-shrink-0"
+              style={{ color: colors.ui_2 }}
             >
-              Foundation
-            </TabsTrigger>
-            <TabsTrigger
-              value="components"
-              className="data-[state=active]:bg-muted"
+              {sections[0].id}
+            </span>
+            <div>
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: colors.tx }}
+              >
+                {sections[0].title}
+              </h2>
+              <p className="text-sm mt-0.5" style={{ color: colors.tx_3 }}>
+                {sections[0].subtitle}
+              </p>
+            </div>
+          </div>
+          <ColorSystemSection colors={colors} />
+        </section>
+
+        <section className="px-6 py-10">
+          <div className="flex items-start gap-6 mb-8">
+            <span
+              className="text-5xl font-bold leading-none flex-shrink-0"
+              style={{ color: colors.ui_2 }}
             >
-              Components
-            </TabsTrigger>
-            <TabsTrigger value="forms" className="data-[state=active]:bg-muted">
-              Forms
-            </TabsTrigger>
-            <TabsTrigger value="data" className="data-[state=active]:bg-muted">
-              Data Display
-            </TabsTrigger>
-            <TabsTrigger
-              value="feedback"
-              className="data-[state=active]:bg-muted"
+              {sections[1].id}
+            </span>
+            <div>
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: colors.tx }}
+              >
+                {sections[1].title}
+              </h2>
+              <p className="text-sm mt-0.5" style={{ color: colors.tx_3 }}>
+                {sections[1].subtitle}
+              </p>
+            </div>
+          </div>
+          <TypographySection colors={colors} />
+        </section>
+
+        <section className="px-6 py-10">
+          <div className="flex items-start gap-6 mb-8">
+            <span
+              className="text-5xl font-bold leading-none flex-shrink-0"
+              style={{ color: colors.ui_2 }}
             >
-              Feedback
-            </TabsTrigger>
-          </TabsList>
+              {sections[2].id}
+            </span>
+            <div>
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: colors.tx }}
+              >
+                {sections[2].title}
+              </h2>
+              <p className="text-sm mt-0.5" style={{ color: colors.tx_3 }}>
+                {sections[2].subtitle}
+              </p>
+            </div>
+          </div>
+          <ComponentsSection colors={colors} />
+        </section>
 
-          <TabsContent value="foundation" className="mt-4">
-            <FoundationTab theme={theme} currentColors={currentColors} />
-          </TabsContent>
+        <section className="px-6 py-10">
+          <div className="flex items-start gap-6 mb-8">
+            <span
+              className="text-5xl font-bold leading-none flex-shrink-0"
+              style={{ color: colors.ui_2 }}
+            >
+              {sections[3].id}
+            </span>
+            <div>
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: colors.tx }}
+              >
+                {sections[3].title}
+              </h2>
+              <p className="text-sm mt-0.5" style={{ color: colors.tx_3 }}>
+                {sections[3].subtitle}
+              </p>
+            </div>
+          </div>
+          <FormsSection colors={colors} />
+        </section>
 
-          <TabsContent value="components" className="mt-4">
-            <ComponentsTab />
-          </TabsContent>
-
-          <TabsContent value="forms" className="mt-4">
-            <FormsTab />
-          </TabsContent>
-
-          <TabsContent value="data" className="mt-4">
-            <DataDisplayTab />
-          </TabsContent>
-
-          <TabsContent value="feedback" className="mt-4">
-            <FeedbackTab />
-          </TabsContent>
-        </Tabs>
+        <section className="px-6 py-10">
+          <div className="flex items-start gap-6 mb-8">
+            <span
+              className="text-5xl font-bold leading-none flex-shrink-0"
+              style={{ color: colors.ui_2 }}
+            >
+              {sections[4].id}
+            </span>
+            <div>
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: colors.tx }}
+              >
+                {sections[4].title}
+              </h2>
+              <p className="text-sm mt-0.5" style={{ color: colors.tx_3 }}>
+                {sections[4].subtitle}
+              </p>
+            </div>
+          </div>
+          <DataVizSection colors={colors} />
+        </section>
       </div>
     </div>
   );
