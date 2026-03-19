@@ -1,8 +1,8 @@
 "use client";
 
-import { convertTinteToShiki } from "@tinte/providers";
+import { convertTinteToShiki, getCodexVariantString } from "@tinte/providers";
 import { getShadcnThemeCSS } from "@tinte/providers/provider-utils/shadcn-utils";
-import { Check, Code, Copy } from "lucide-react";
+import { Check, Code, Copy, Moon, Sun } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -81,11 +81,16 @@ export function ViewCodeDialog({
   providerId,
 }: ViewCodeDialogProps) {
   const [copied, setCopied] = useState(false);
+  const [codexVariant, setCodexVariant] = useState<"light" | "dark">("light");
   const { tinteTheme, activeTheme } = useActiveTheme();
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const currentProviderId = providerId || provider;
+  const isCodex = currentProviderId === "codex";
 
-  const themeCSS = useMemo(() => {
+  const themeCode = useMemo(() => {
+    if (isCodex) {
+      return getCodexVariantString(tinteTheme, codexVariant);
+    }
     if (currentProviderId === "shiki") {
       const shikiTheme = convertTinteToShiki(tinteTheme);
       const shikiOverrides = activeTheme?.overrides?.shiki as
@@ -96,6 +101,8 @@ export function ViewCodeDialog({
     return getShadcnThemeCSS(tinteTheme, activeTheme?.overrides?.shadcn);
   }, [
     currentProviderId,
+    isCodex,
+    codexVariant,
     tinteTheme,
     activeTheme?.overrides?.shadcn,
     activeTheme?.overrides?.shiki,
@@ -103,11 +110,11 @@ export function ViewCodeDialog({
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(themeCSS);
+      await navigator.clipboard.writeText(themeCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy CSS:", error);
+      console.error("Failed to copy:", error);
     }
   };
 
@@ -118,6 +125,10 @@ export function ViewCodeDialog({
     }
   };
 
+  const dialogDescription = isCodex
+    ? `Codex theme string (${codexVariant} variant) — paste in Codex Settings > Appearance`
+    : "Tailwind v4-ready CSS variables for your current theme";
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -126,14 +137,41 @@ export function ViewCodeDialog({
             <Code className="h-5 w-5" />
             View Code
           </DialogTitle>
-          <DialogDescription>
-            Tailwind v4-ready CSS variables for your current theme
-          </DialogDescription>
+          <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
+
+        {isCodex && (
+          <div className="flex gap-1 p-1 bg-muted rounded-md w-fit">
+            <Button
+              variant={codexVariant === "light" ? "default" : "ghost"}
+              size="sm"
+              className="h-7 px-3 text-xs"
+              onClick={() => {
+                setCodexVariant("light");
+                setCopied(false);
+              }}
+            >
+              <Sun className="h-3 w-3 mr-1.5" />
+              Light
+            </Button>
+            <Button
+              variant={codexVariant === "dark" ? "default" : "ghost"}
+              size="sm"
+              className="h-7 px-3 text-xs"
+              onClick={() => {
+                setCodexVariant("dark");
+                setCopied(false);
+              }}
+            >
+              <Moon className="h-3 w-3 mr-1.5" />
+              Dark
+            </Button>
+          </div>
+        )}
 
         <div className="grid gap-4 py-4">
           <Textarea
-            value={themeCSS}
+            value={themeCode}
             readOnly
             className="h-[300px] font-mono text-sm resize-none"
             rows={15}
