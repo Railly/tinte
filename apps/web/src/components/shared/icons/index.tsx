@@ -4,6 +4,7 @@ export { AlacrittyIcon } from "./alacritty";
 export { BananaIcon } from "./banana";
 export { ChatGPTIcon } from "./chatgpt";
 export { ClerkIcon } from "./clerk";
+export { CodexIcon } from "./codex";
 export { CrafterStationIcon } from "./crafter-station";
 export { CSSIcon } from "./css";
 export { CursorIcon } from "./cursor";
@@ -49,6 +50,7 @@ import { AlacrittyIcon } from "./alacritty";
 import { BananaIcon } from "./banana";
 import { ChatGPTIcon } from "./chatgpt";
 import { ClerkIcon } from "./clerk";
+import { CodexIcon } from "./codex";
 import { CrafterStationIcon } from "./crafter-station";
 import { CSSIcon } from "./css";
 import { CursorIcon } from "./cursor";
@@ -98,6 +100,7 @@ export const icons = {
   banana: BananaIcon,
   chatgpt: ChatGPTIcon,
   clerk: ClerkIcon,
+  codex: CodexIcon,
   "crafter-station": CrafterStationIcon,
   css: CSSIcon,
   cursor: CursorIcon,
