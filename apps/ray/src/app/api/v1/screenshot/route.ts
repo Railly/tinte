@@ -116,7 +116,10 @@ export async function POST(request: Request) {
       if (!rl.success) {
         return Response.json(
           { error: "Too many requests. Try again shortly." },
-          { status: 429, headers: { ...CORS_HEADERS, ...rateLimitHeaders(rl) } },
+          {
+            status: 429,
+            headers: { ...CORS_HEADERS, ...rateLimitHeaders(rl) },
+          },
         );
       }
     } catch {

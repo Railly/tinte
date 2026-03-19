@@ -146,9 +146,7 @@ export function FormsSection({ colors }: FormsSectionProps) {
             </p>
           </label>
           <label>
-            <span style={{ ...labelStyle, color: colors.ac_1 }}>
-              Password
-            </span>
+            <span style={{ ...labelStyle, color: colors.ac_1 }}>Password</span>
             <input
               type="password"
               defaultValue="weak"

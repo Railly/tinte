@@ -141,7 +141,7 @@ export function InstallGuideModal({
                     </span>
                   </div>
 
-                  <p className="text-white/70 text-xs mb-3">
+                  <p className="text-white/80 text-xs mb-3">
                     {step.description}
                   </p>
 

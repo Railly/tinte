@@ -18,7 +18,10 @@ const typeScale = [
   { label: "4xl", size: "36px", sample: "Build fast, ship faster" },
 ];
 
-export function TypographySection({ colors, serifHeadings }: TypographySectionProps) {
+export function TypographySection({
+  colors,
+  serifHeadings,
+}: TypographySectionProps) {
   const headingFont = serifHeadings
     ? "var(--font-serif, serif)"
     : "var(--font-sans, system-ui)";

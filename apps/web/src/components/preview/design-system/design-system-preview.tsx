@@ -95,9 +95,7 @@ export function DesignSystemPreview({
           className="text-2xl font-bold tracking-tight"
           style={{
             color: colors.tx,
-            fontFamily: serifHeadings
-              ? "var(--font-serif, serif)"
-              : undefined,
+            fontFamily: serifHeadings ? "var(--font-serif, serif)" : undefined,
           }}
         >
           {theme.brand.name}
