@@ -19,13 +19,6 @@ function computeContrast(bg: string, fg: string): number {
   return Math.round(Math.min(ratio / 0.21, 1) * 100);
 }
 
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
 function mapTinteBlockToCodex(block: TinteBlock): CodexThemeBlock {
   return {
     accent: block.pr,
@@ -42,89 +35,15 @@ function mapTinteBlockToCodex(block: TinteBlock): CodexThemeBlock {
   };
 }
 
-const CODEX_CODE_THEMES = [
-  "andromeeda",
-  "aurora-x",
-  "catppuccin-frappe",
-  "catppuccin-latte",
-  "catppuccin-macchiato",
-  "catppuccin-mocha",
-  "dark-plus",
-  "dracula",
-  "dracula-soft",
-  "everforest-dark",
-  "everforest-light",
-  "github-dark",
-  "github-dark-default",
-  "github-dark-dimmed",
-  "github-dark-high-contrast",
-  "github-light",
-  "github-light-default",
-  "github-light-high-contrast",
-  "gruvbox-dark-hard",
-  "gruvbox-dark-medium",
-  "gruvbox-dark-soft",
-  "gruvbox-light-hard",
-  "gruvbox-light-medium",
-  "gruvbox-light-soft",
-  "houston",
-  "kanagawa-dragon",
-  "kanagawa-lotus",
-  "kanagawa-wave",
-  "light-plus",
-  "material-theme",
-  "material-theme-darker",
-  "material-theme-lighter",
-  "material-theme-ocean",
-  "material-theme-palenight",
-  "min-dark",
-  "min-light",
-  "monokai",
-  "night-owl",
-  "nord",
-  "one-dark-pro",
-  "one-light",
-  "poimandres",
-  "rose-pine",
-  "rose-pine-dawn",
-  "rose-pine-moon",
-  "slack-dark",
-  "slack-ochin",
-  "snazzy-light",
-  "solarized-dark",
-  "solarized-light",
-  "tokyo-night",
-  "vesper",
-  "vitesse-black",
-  "vitesse-dark",
-  "vitesse-light",
-] as const;
-
-export type CodexCodeThemeId = (typeof CODEX_CODE_THEMES)[number];
-
-function resolveCodeThemeId(
-  name: string | undefined,
-  variant: "light" | "dark",
-): CodexCodeThemeId {
-  if (name) {
-    const slug = slugify(name);
-    const exact = CODEX_CODE_THEMES.find((id) => id === slug);
-    if (exact) return exact;
-    const partial = CODEX_CODE_THEMES.find((id) => id.includes(slug));
-    if (partial) return partial;
-  }
-  return variant === "light" ? "light-plus" : "dark-plus";
-}
-
 export function convertTinteToCodex(tinte: TinteTheme): CodexTheme {
   return {
     light: {
-      codeThemeId: resolveCodeThemeId(tinte.name, "light"),
+      codeThemeId: "light-plus",
       theme: mapTinteBlockToCodex(tinte.light),
       variant: "light",
     },
     dark: {
-      codeThemeId: resolveCodeThemeId(tinte.name, "dark"),
+      codeThemeId: "dark-plus",
       theme: mapTinteBlockToCodex(tinte.dark),
       variant: "dark",
     },
