@@ -48,7 +48,9 @@ export function WorkbenchToolbar({
   const [showViewCodeDialog, setShowViewCodeDialog] = useState(false);
   const [isThemePublic, setIsThemePublic] = useState(false);
   const [showCopiedFeedback, setShowCopiedFeedback] = useState(false);
-  const [codexCopiedVariant, setCodexCopiedVariant] = useState<"light" | "dark" | null>(null);
+  const [codexCopiedVariant, setCodexCopiedVariant] = useState<
+    "light" | "dark" | null
+  >(null);
 
   const {
     activeTheme,
@@ -455,7 +457,9 @@ export function WorkbenchToolbar({
                 onClick={async () => {
                   if (isTemporaryTheme()) {
                     if (!canSave) {
-                      toast.error("Please sign in to save presets and generate install commands");
+                      toast.error(
+                        "Please sign in to save presets and generate install commands",
+                      );
                       return;
                     }
                     setShowSaveDialog(true);
@@ -494,7 +498,9 @@ export function WorkbenchToolbar({
                 onClick={async () => {
                   if (isTemporaryTheme()) {
                     if (!canSave) {
-                      toast.error("Please sign in to save presets and generate install commands");
+                      toast.error(
+                        "Please sign in to save presets and generate install commands",
+                      );
                       return;
                     }
                     setShowSaveDialog(true);

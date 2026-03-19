@@ -1,8 +1,8 @@
 "use client";
 
+import type { CodexTheme, CodexThemeEntry } from "@tinte/core";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useThemeMode } from "@/stores/hooks";
-import type { CodexTheme, CodexThemeEntry } from "@tinte/core";
 
 interface CodexPreviewProps {
   theme: CodexTheme;
@@ -60,9 +60,18 @@ export function CodexPreview({ theme, className }: CodexPreviewProps) {
         style={{ borderColor: border, backgroundColor: surfaceElevated }}
       >
         <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `${ink}20` }} />
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `${ink}20` }} />
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `${ink}20` }} />
+          <div
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: `${ink}20` }}
+          />
+          <div
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: `${ink}20` }}
+          />
+          <div
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: `${ink}20` }}
+          />
         </div>
         <span className="ml-2 font-mono" style={{ color: muted }}>
           Codex — ~/projects/tinte
@@ -208,7 +217,11 @@ function ContrastBar({
   value,
   accent,
   muted,
-}: { value: number; accent: string; muted: string }) {
+}: {
+  value: number;
+  accent: string;
+  muted: string;
+}) {
   return (
     <div
       className="w-8 h-1.5 rounded-full overflow-hidden"

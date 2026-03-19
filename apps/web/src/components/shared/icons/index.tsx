@@ -14,8 +14,8 @@ export { ElevenLabsIcon } from "./elevenlabs";
 export { Folder as FolderIcon } from "./folder";
 export { FolderOpened as FolderOpenedIcon } from "./folder-opened";
 export { GhosttyIcon } from "./ghostty";
-export { default as GithubIcon } from "./github";
 export { GIMPIcon } from "./gimp";
+export { default as GithubIcon } from "./github";
 export { BrandGolang as GolangIcon } from "./golang";
 export { Javascript as JavascriptIcon } from "./javascript";
 export { JetBrainsIcon } from "./jetbrains";
@@ -60,8 +60,8 @@ import { ElevenLabsIcon } from "./elevenlabs";
 import { Folder } from "./folder";
 import { FolderOpened } from "./folder-opened";
 import { GhosttyIcon } from "./ghostty";
-import GithubIcon from "./github";
 import { GIMPIcon } from "./gimp";
+import GithubIcon from "./github";
 import { BrandGolang } from "./golang";
 import { Javascript } from "./javascript";
 import { JetBrainsIcon } from "./jetbrains";
@@ -145,10 +145,7 @@ export const icons = {
 
 export type IconName = keyof typeof icons;
 
-export function Icon({
-  name,
-  ...props
-}: { name: IconName } & IconProps) {
+export function Icon({ name, ...props }: { name: IconName } & IconProps) {
   const IconComponent = icons[name] as IconComponent;
   return <IconComponent {...props} />;
 }

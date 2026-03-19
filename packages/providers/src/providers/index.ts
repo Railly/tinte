@@ -25,6 +25,7 @@ import { ProviderRegistry } from "./registry";
 import { shadcnProvider } from "./shadcn";
 import { shikiProvider } from "./shiki";
 import { vscodeProvider } from "./vscode";
+
 const registry = new ProviderRegistry();
 registry.registerPreviewable(codexProvider);
 registry.registerPreviewable(shadcnProvider);
