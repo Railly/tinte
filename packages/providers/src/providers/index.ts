@@ -3,6 +3,7 @@ import type { TinteTheme } from "@tinte/core";
 export * from "./alacritty";
 export * from "./banana";
 export * from "./brand-guidelines";
+export * from "./codex";
 export * from "./design-system";
 export * from "./gimp";
 export * from "./kitty";
@@ -18,18 +19,17 @@ export * from "./windows-terminal";
 export * from "./zed";
 export * from "./zed-provider";
 
+import { codexProvider } from "./codex";
 import { designSystemProvider } from "./design-system";
 import { ProviderRegistry } from "./registry";
 import { shadcnProvider } from "./shadcn";
 import { shikiProvider } from "./shiki";
 import { vscodeProvider } from "./vscode";
-import { zedProvider } from "./zed-provider";
-
 const registry = new ProviderRegistry();
+registry.registerPreviewable(codexProvider);
 registry.registerPreviewable(shadcnProvider);
 registry.registerPreviewable(vscodeProvider);
 registry.registerPreviewable(shikiProvider);
-registry.registerPreviewable(zedProvider);
 registry.registerPreviewable(designSystemProvider);
 
 export function getAvailableProviders() {
