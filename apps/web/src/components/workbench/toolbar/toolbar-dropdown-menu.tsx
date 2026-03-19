@@ -6,8 +6,10 @@ import {
   Download,
   Edit3,
   FileText,
+  Moon,
   Settings,
   Share2,
+  Sun,
   Terminal,
   Trash2,
 } from "lucide-react";
@@ -29,6 +31,7 @@ interface ToolbarDropdownMenuProps {
   isAuthenticated: boolean;
   onExport: () => Promise<void>;
   onCopyTheme: () => Promise<void>;
+  onCopyCodexVariant?: (variant: "light" | "dark") => Promise<void>;
   onImportClick: () => void;
   onShareClick: () => void;
   onRenameClick: () => void;
@@ -43,6 +46,7 @@ export function ToolbarDropdownMenu({
   isAuthenticated,
   onExport,
   onCopyTheme,
+  onCopyCodexVariant,
   onImportClick,
   onShareClick,
   onRenameClick,
@@ -51,7 +55,7 @@ export function ToolbarDropdownMenu({
   onSignInClick,
 }: ToolbarDropdownMenuProps) {
   const [copiedAction, setCopiedAction] = useState<
-    "file" | "theme" | "command" | "skill" | null
+    "file" | "theme" | "command" | "skill" | "codex-light" | "codex-dark" | null
   >(null);
 
   const handleExportClick = async () => {
@@ -70,6 +74,22 @@ export function ToolbarDropdownMenu({
     await navigator.clipboard.writeText("npx skills add Railly/tinte");
     setCopiedAction("skill");
     setTimeout(() => setCopiedAction(null), 2000);
+  };
+
+  const handleCopyCodexLight = async () => {
+    if (onCopyCodexVariant) {
+      await onCopyCodexVariant("light");
+      setCopiedAction("codex-light");
+      setTimeout(() => setCopiedAction(null), 2000);
+    }
+  };
+
+  const handleCopyCodexDark = async () => {
+    if (onCopyCodexVariant) {
+      await onCopyCodexVariant("dark");
+      setCopiedAction("codex-dark");
+      setTimeout(() => setCopiedAction(null), 2000);
+    }
   };
 
   const handleDuplicateClick = () => {
@@ -180,9 +200,95 @@ export function ToolbarDropdownMenu({
             </DropdownMenuItem>
           </>
         )}
+        {currentProviderId === "codex" && (
+          <>
+            <DropdownMenuItem
+              onClick={handleCopyCodexLight}
+              className="relative overflow-hidden"
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-2 w-full transition-all duration-300",
+                  copiedAction === "codex-light"
+                    ? "opacity-0 scale-75 blur-sm"
+                    : "opacity-100 scale-100 blur-0",
+                )}
+              >
+                <Sun className="h-4 w-4" />
+                Copy Light Theme
+              </div>
+              <div
+                className={cn(
+                  "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
+                  copiedAction === "codex-light"
+                    ? "opacity-100 scale-100 blur-0"
+                    : "opacity-0 scale-75 blur-sm pointer-events-none",
+                )}
+              >
+                <Check className="h-4 w-4" />
+                Copied!
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleCopyCodexDark}
+              className="relative overflow-hidden"
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-2 w-full transition-all duration-300",
+                  copiedAction === "codex-dark"
+                    ? "opacity-0 scale-75 blur-sm"
+                    : "opacity-100 scale-100 blur-0",
+                )}
+              >
+                <Moon className="h-4 w-4" />
+                Copy Dark Theme
+              </div>
+              <div
+                className={cn(
+                  "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
+                  copiedAction === "codex-dark"
+                    ? "opacity-100 scale-100 blur-0"
+                    : "opacity-0 scale-75 blur-sm pointer-events-none",
+                )}
+              >
+                <Check className="h-4 w-4" />
+                Copied!
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleExportClick}
+              className="relative overflow-hidden"
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-2 w-full transition-all duration-300",
+                  copiedAction === "file"
+                    ? "opacity-0 scale-75 blur-sm"
+                    : "opacity-100 scale-100 blur-0",
+                )}
+              >
+                <Download className="h-4 w-4" />
+                Download JSON
+              </div>
+              <div
+                className={cn(
+                  "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
+                  copiedAction === "file"
+                    ? "opacity-100 scale-100 blur-0"
+                    : "opacity-0 scale-75 blur-sm pointer-events-none",
+                )}
+              >
+                <Check className="h-4 w-4" />
+                Downloaded!
+              </div>
+            </DropdownMenuItem>
+          </>
+        )}
         {currentProviderId !== "vscode" &&
           currentProviderId !== "shadcn" &&
-          currentProviderId !== "shiki" && (
+          currentProviderId !== "shiki" &&
+          currentProviderId !== "codex" && (
             <>
               <DropdownMenuItem
                 onClick={handleExportClick}

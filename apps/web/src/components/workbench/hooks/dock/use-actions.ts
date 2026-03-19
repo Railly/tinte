@@ -1,7 +1,11 @@
 import type { TinteTheme } from "@tinte/core";
-import { convertTinteToShiki, exportTheme } from "@tinte/providers";
+import {
+  convertTinteToShiki,
+  exportTheme,
+  getCodexVariantString,
+} from "@tinte/providers";
 import { downloadVSCodeTheme } from "@tinte/providers/provider-utils/vscode-download";
-import { Copy, Download, Save } from "lucide-react";
+import { Copy, Download, Save, Sun } from "lucide-react";
 import { useState } from "react";
 import { ShadcnIcon } from "@/components/shared/icons";
 import { InvertedLogo } from "@/components/shared/layout";
@@ -246,6 +250,16 @@ ${darkVars}
     }
   };
 
+  const handleCopyCodexVariant = async (variant: "light" | "dark") => {
+    try {
+      const content = getCodexVariantString(theme, variant);
+      await navigator.clipboard.writeText(content);
+      await incrementInstalls();
+    } catch (error) {
+      console.error("Copy failed:", error);
+    }
+  };
+
   const handleCopyCommand = async (command: string) => {
     try {
       await navigator.clipboard.writeText(command);
@@ -270,6 +284,9 @@ ${darkVars}
       // Copy bunx tinte command with --zed flag
       const command = `bunx tinte@latest ${themeId} --zed`;
       await handleCopyCommand(command);
+    } else if (providerId === "codex") {
+      // For Codex, copy light theme by default (user picks variant from dropdown)
+      await handleCopyCodexVariant("light");
     } else if (providerId === "shiki") {
       // For Shiki, copy the CSS theme
       await handleCopyTheme();
@@ -318,6 +335,13 @@ ${darkVars}
         icon: InvertedLogo,
         variant: "default" as const,
       };
+    } else if (providerId === "codex") {
+      return {
+        label: "Copy Light",
+        description: "Copy light theme to clipboard",
+        icon: Sun,
+        variant: "default" as const,
+      };
     } else if (providerId === "shiki") {
       return {
         label: "Copy CSS",
@@ -342,6 +366,7 @@ ${darkVars}
     handleCopyTheme,
     handleShare,
     handleCopyCommand,
+    handleCopyCodexVariant,
     handlePrimaryAction,
     getPrimaryActionConfig,
     isTemporaryTheme: () => isTemporaryTheme(themeId),

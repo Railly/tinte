@@ -2,13 +2,19 @@
 
 import type { TinteTheme } from "@tinte/core";
 import { getProvider } from "@tinte/providers";
-import { Check, Code, Copy, Save } from "lucide-react";
+import { Check, ChevronDown, Code, Copy, Moon, Save, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useDockActions } from "@/components/workbench/hooks/dock/use-actions";
 import {
   useShadcnOverrides,
@@ -42,6 +48,7 @@ export function WorkbenchToolbar({
   const [showViewCodeDialog, setShowViewCodeDialog] = useState(false);
   const [isThemePublic, setIsThemePublic] = useState(false);
   const [showCopiedFeedback, setShowCopiedFeedback] = useState(false);
+  const [codexCopiedVariant, setCodexCopiedVariant] = useState<"light" | "dark" | null>(null);
 
   const {
     activeTheme,
@@ -97,6 +104,7 @@ export function WorkbenchToolbar({
     isExporting,
     handleExport,
     handleCopyTheme,
+    handleCopyCodexVariant,
     handlePrimaryAction,
     getPrimaryActionConfig,
     isTemporaryTheme,
@@ -428,50 +436,147 @@ export function WorkbenchToolbar({
           </Button>
         )}
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={async () => {
-            if (isTemporaryTheme()) {
-              if (!canSave) {
-                toast.error(
-                  "Please sign in to save presets and generate install commands",
-                );
+        {currentProviderId === "codex" ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isExporting || (isTemporaryTheme() && !canSave)}
+                className="h-8"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Install
+                <ChevronDown className="h-3 w-3 ml-1.5 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={async () => {
+                  if (isTemporaryTheme()) {
+                    if (!canSave) {
+                      toast.error("Please sign in to save presets and generate install commands");
+                      return;
+                    }
+                    setShowSaveDialog(true);
+                    return;
+                  }
+                  await handleCopyCodexVariant("light");
+                  setCodexCopiedVariant("light");
+                  setTimeout(() => setCodexCopiedVariant(null), 2000);
+                }}
+                className="relative overflow-hidden"
+              >
+                <div
+                  className={cn(
+                    "flex items-center gap-2 w-full transition-all duration-300",
+                    codexCopiedVariant === "light"
+                      ? "opacity-0 scale-75 blur-sm"
+                      : "opacity-100 scale-100 blur-0",
+                  )}
+                >
+                  <Sun className="h-4 w-4" />
+                  Copy Light Theme
+                </div>
+                <div
+                  className={cn(
+                    "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
+                    codexCopiedVariant === "light"
+                      ? "opacity-100 scale-100 blur-0"
+                      : "opacity-0 scale-75 blur-sm pointer-events-none",
+                  )}
+                >
+                  <Check className="h-4 w-4" />
+                  Copied!
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  if (isTemporaryTheme()) {
+                    if (!canSave) {
+                      toast.error("Please sign in to save presets and generate install commands");
+                      return;
+                    }
+                    setShowSaveDialog(true);
+                    return;
+                  }
+                  await handleCopyCodexVariant("dark");
+                  setCodexCopiedVariant("dark");
+                  setTimeout(() => setCodexCopiedVariant(null), 2000);
+                }}
+                className="relative overflow-hidden"
+              >
+                <div
+                  className={cn(
+                    "flex items-center gap-2 w-full transition-all duration-300",
+                    codexCopiedVariant === "dark"
+                      ? "opacity-0 scale-75 blur-sm"
+                      : "opacity-100 scale-100 blur-0",
+                  )}
+                >
+                  <Moon className="h-4 w-4" />
+                  Copy Dark Theme
+                </div>
+                <div
+                  className={cn(
+                    "absolute inset-0 flex items-center gap-2 px-2 transition-all duration-300",
+                    codexCopiedVariant === "dark"
+                      ? "opacity-100 scale-100 blur-0"
+                      : "opacity-0 scale-75 blur-sm pointer-events-none",
+                  )}
+                >
+                  <Check className="h-4 w-4" />
+                  Copied!
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              if (isTemporaryTheme()) {
+                if (!canSave) {
+                  toast.error(
+                    "Please sign in to save presets and generate install commands",
+                  );
+                  return;
+                }
+                setShowSaveDialog(true);
                 return;
               }
-              setShowSaveDialog(true);
-              return;
-            }
-            await handlePrimaryAction();
-            setShowCopiedFeedback(true);
-            setTimeout(() => setShowCopiedFeedback(false), 2000);
-          }}
-          disabled={isExporting || (isTemporaryTheme() && !canSave)}
-          className="h-8 relative overflow-hidden"
-        >
-          <div
-            className={cn(
-              "flex items-center transition-all duration-300",
-              showCopiedFeedback
-                ? "opacity-0 scale-75 blur-sm"
-                : "opacity-100 scale-100 blur-0",
-            )}
+              await handlePrimaryAction();
+              setShowCopiedFeedback(true);
+              setTimeout(() => setShowCopiedFeedback(false), 2000);
+            }}
+            disabled={isExporting || (isTemporaryTheme() && !canSave)}
+            className="h-8 relative overflow-hidden"
           >
-            <PrimaryIcon className="h-4 w-4 mr-2" />
-            {primaryActionConfig.label}
-          </div>
-          <div
-            className={cn(
-              "absolute inset-0 flex items-center justify-center transition-all duration-300",
-              showCopiedFeedback
-                ? "opacity-100 scale-100 blur-0"
-                : "opacity-0 scale-75 blur-sm",
-            )}
-          >
-            <Check className="h-4 w-4 mr-2" />
-            Copied!
-          </div>
-        </Button>
+            <div
+              className={cn(
+                "flex items-center transition-all duration-300",
+                showCopiedFeedback
+                  ? "opacity-0 scale-75 blur-sm"
+                  : "opacity-100 scale-100 blur-0",
+              )}
+            >
+              <PrimaryIcon className="h-4 w-4 mr-2" />
+              {primaryActionConfig.label}
+            </div>
+            <div
+              className={cn(
+                "absolute inset-0 flex items-center justify-center transition-all duration-300",
+                showCopiedFeedback
+                  ? "opacity-100 scale-100 blur-0"
+                  : "opacity-0 scale-75 blur-sm",
+              )}
+            >
+              <Check className="h-4 w-4 mr-2" />
+              Copied!
+            </div>
+          </Button>
+        )}
 
         <div className="w-px h-6 bg-border" />
 
@@ -491,6 +596,7 @@ export function WorkbenchToolbar({
           isAuthenticated={isAuthenticated}
           onExport={handleExport}
           onCopyTheme={handleCopyTheme}
+          onCopyCodexVariant={handleCopyCodexVariant}
           onImportClick={() => setShowImportDialog(true)}
           onShareClick={() => setShowShareDialog(true)}
           onRenameClick={() => setShowRenameDialog(true)}
