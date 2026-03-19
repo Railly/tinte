@@ -1,6 +1,7 @@
 import {
   AlacrittyIcon,
   BananaIcon,
+  CodexIcon,
   CursorIcon,
   GhosttyIcon,
   GIMPIcon,
@@ -65,8 +66,9 @@ export const ALL_FORMATTED_PROVIDERS = [
   { id: "shadcn", name: "shadcn/ui", icon: ShadcnIcon },
   { id: "vscode", name: "VS Code", icon: VSCodeIcon },
   { id: "shiki", name: "Shiki", icon: ShikiIcon, category: "editor" },
-  { id: "banana", name: "Nano Banana", icon: BananaIcon, category: "other" },
+  { id: "codex", name: "Codex", icon: CodexIcon, category: "editor" },
   { id: "zed", name: "Zed", icon: ZedIcon, category: "editor" },
+  { id: "banana", name: "Nano Banana", icon: BananaIcon, category: "other" },
   { id: "warp", name: "Warp", icon: WarpIcon, category: "terminal" },
   {
     id: "alacritty",
