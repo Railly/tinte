@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -73,6 +74,7 @@ export default function RootLayout({
       >
         <NuqsAdapter>{children}</NuqsAdapter>
         <Analytics />
+        <Script defer src="https://counterscale.raillyhugo.workers.dev/tracker.js" data-site-id="ray-tinte" />
       </body>
     </html>
   );

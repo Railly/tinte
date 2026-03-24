@@ -2,6 +2,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -156,6 +157,7 @@ export default function RootLayout({
                   <Toaster position="bottom-right" />
                   <Analytics />
                   <SpeedInsights />
+                  <Script defer src="https://counterscale.raillyhugo.workers.dev/tracker.js" data-site-id="tinte" />
                 </ThemeProvider>
               </QueryProvider>
             </NuqsAdapter>
