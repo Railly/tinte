@@ -1,9 +1,11 @@
 import { auth as clerkAuth } from "@clerk/nextjs/server";
 import { auth as triggerAuth } from "@trigger.dev/sdk/v3";
 import { asc, eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { KitGenerationView } from "@/components/kit/kit-generation-view";
+import { CopyUrlButton } from "@/components/share/copy-url-button";
 import { brandKitAssets, brandKits, db } from "@/db";
 
 interface KitPageProps {
@@ -26,6 +28,7 @@ const slotTypes = new Set<string>(slots.map((slot) => slot.type));
 export default async function KitPage({ params }: KitPageProps) {
   const { id } = await params;
   const { userId } = await clerkAuth();
+  const requestHeaders = await headers();
   const [kit] = await db
     .select()
     .from(brandKits)
@@ -33,6 +36,7 @@ export default async function KitPage({ params }: KitPageProps) {
     .limit(1);
 
   if (!kit) notFound();
+  if (!kit.is_public && userId !== kit.user_id) notFound();
 
   const assets = await db
     .select()
@@ -48,6 +52,10 @@ export default async function KitPage({ params }: KitPageProps) {
       url: asset.url,
     }));
   const canSubscribe = userId === kit.user_id && Boolean(kit.trigger_run_id);
+  const host =
+    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? "https";
+  const shareUrl = host ? `${protocol}://${host}/k/${kit.id}` : `/k/${kit.id}`;
   const accessToken =
     kit.status !== "completed" && canSubscribe && kit.trigger_run_id
       ? await triggerAuth.createPublicToken({
@@ -82,7 +90,10 @@ export default async function KitPage({ params }: KitPageProps) {
           <KitCompleteView
             assets={visibleAssets}
             description={kit.description}
+            isPaid={kit.is_paid}
+            kitId={kit.id}
             name={kit.name}
+            shareUrl={shareUrl}
             status={kit.status}
           />
         ) : (
@@ -106,6 +117,9 @@ export default async function KitPage({ params }: KitPageProps) {
 interface KitCompleteViewProps {
   name: string;
   description: string;
+  isPaid: boolean;
+  kitId: string;
+  shareUrl: string;
   status: "queued" | "generating" | "completed" | "failed";
   assets: Array<{
     id: string;
@@ -117,40 +131,75 @@ interface KitCompleteViewProps {
 function KitCompleteView({
   name,
   description,
+  isPaid,
+  kitId,
+  shareUrl,
   status,
   assets,
 }: KitCompleteViewProps) {
+  const downloadAsset =
+    assets.find((asset) => asset.type === "bento") ??
+    assets.find((asset) => asset.type === "logo") ??
+    assets.find((asset) => asset.type === "moodboard");
+
   return (
-    <div className="grid gap-5 md:grid-cols-2">
-      {slots.map((slot) => {
-        const slotAssets = assets.filter((asset) => asset.type === slot.type);
-        return (
-          <section
-            className="min-h-[360px] rounded-lg border border-[#2b2925] bg-[#171613] p-4"
-            key={slot.type}
+    <div className="grid gap-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <CopyUrlButton url={shareUrl} />
+        {downloadAsset ? (
+          <a
+            className="inline-flex h-10 items-center rounded-md bg-[#d8ff5f] px-4 font-medium text-[#10110a] text-sm"
+            href={`/api/kit/${kitId}/download?type=${downloadAsset.type}`}
           >
-            <h2 className="mb-4 font-medium">{slot.title}</h2>
-            {slotAssets.length > 0 ? (
-              <div className="grid gap-3">
-                {slotAssets.map((asset) => (
-                  <img
-                    alt={`${name} ${slot.title}`}
-                    className="aspect-[4/3] w-full rounded-md border border-[#2b2925] object-cover"
-                    key={asset.id}
-                    src={asset.url}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex aspect-[4/3] items-center justify-center rounded-md border border-[#2b2925] bg-[#0c0c0b] px-4 text-center text-[#a7a096]">
-                {status === "failed"
-                  ? "Generation failed"
-                  : `${description} assets are not ready yet`}
-              </div>
-            )}
-          </section>
-        );
-      })}
+            Download free PNG
+          </a>
+        ) : null}
+        {!isPaid ? (
+          <span className="text-[#a7a096] text-sm">
+            Free downloads include a watermark.
+          </span>
+        ) : null}
+      </div>
+      <div className="grid gap-5 md:grid-cols-2">
+        {slots.map((slot) => {
+          const slotAssets = assets.filter((asset) => asset.type === slot.type);
+          return (
+            <section
+              className="min-h-[360px] rounded-lg border border-[#2b2925] bg-[#171613] p-4"
+              key={slot.type}
+            >
+              <h2 className="mb-4 font-medium">{slot.title}</h2>
+              {slotAssets.length > 0 ? (
+                <div className="grid gap-3">
+                  {slotAssets.map((asset) => (
+                    <div
+                      className="relative overflow-hidden rounded-md"
+                      key={asset.id}
+                    >
+                      <img
+                        alt={`${name} ${slot.title}`}
+                        className="aspect-[4/3] w-full border border-[#2b2925] object-cover"
+                        src={asset.url}
+                      />
+                      {!isPaid ? (
+                        <span className="absolute right-3 bottom-3 rounded-md bg-[#0c0c0b]/70 px-3 py-2 font-medium text-[#f4f1e8]/80 text-xs">
+                          Made with kit.tinte.dev
+                        </span>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex aspect-[4/3] items-center justify-center rounded-md border border-[#2b2925] bg-[#0c0c0b] px-4 text-center text-[#a7a096]">
+                  {status === "failed"
+                    ? "Generation failed"
+                    : `${description} assets are not ready yet`}
+                </div>
+              )}
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }
