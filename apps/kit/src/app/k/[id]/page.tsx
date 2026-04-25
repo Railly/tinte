@@ -4,6 +4,7 @@ import { asc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
+import { ExportTinteButton } from "@/components/kit/export-tinte-button";
 import { KitGenerationView } from "@/components/kit/kit-generation-view";
 import { ProCta } from "@/components/kit/pro-cta";
 import { CopyUrlButton } from "@/components/share/copy-url-button";
@@ -205,6 +206,7 @@ function KitCompleteView({
             >
               Download tokens.json
             </a>
+            <ExportTinteButton kitId={kitId} />
           </>
         ) : null}
       </div>
