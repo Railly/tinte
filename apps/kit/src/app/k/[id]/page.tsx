@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { KitGenerationView } from "@/components/kit/kit-generation-view";
+import { ProCta } from "@/components/kit/pro-cta";
 import { CopyUrlButton } from "@/components/share/copy-url-button";
 import { brandKitAssets, brandKits, db } from "@/db";
 
@@ -19,11 +20,22 @@ const slots = [
   { type: "logo_variation", title: "Logo variations" },
   { type: "moodboard", title: "Moodboard" },
   { type: "bento", title: "Bento" },
+  { type: "icon_set", title: "Icon set" },
+  { type: "hero", title: "Hero illustration" },
+  { type: "mockup_product", title: "Product mockups" },
+  { type: "lifestyle", title: "Lifestyle campaign" },
+  { type: "urban_campaign", title: "Urban campaign" },
 ] as const;
 
 type SlotType = (typeof slots)[number]["type"];
+type FreeSlotType = "logo" | "logo_variation" | "moodboard" | "bento";
 
-const slotTypes = new Set<string>(slots.map((slot) => slot.type));
+const freeSlotTypes = new Set<string>([
+  "logo",
+  "logo_variation",
+  "moodboard",
+  "bento",
+]);
 
 export default async function KitPage({ params }: KitPageProps) {
   const { id } = await params;
@@ -44,11 +56,22 @@ export default async function KitPage({ params }: KitPageProps) {
     .where(eq(brandKitAssets.kit_id, id))
     .orderBy(asc(brandKitAssets.created_at));
 
+  const visibleSlots = kit.is_paid ? slots : slots.slice(0, 4);
+  const visibleSlotTypes = new Set<string>(
+    visibleSlots.map((slot) => slot.type),
+  );
   const visibleAssets = assets
-    .filter((asset) => slotTypes.has(asset.type))
+    .filter((asset) => visibleSlotTypes.has(asset.type))
     .map((asset) => ({
       id: asset.id,
       type: asset.type as SlotType,
+      url: asset.url,
+    }));
+  const generationAssets = assets
+    .filter((asset) => freeSlotTypes.has(asset.type))
+    .map((asset) => ({
+      id: asset.id,
+      type: asset.type as FreeSlotType,
       url: asset.url,
     }));
   const canSubscribe = userId === kit.user_id && Boolean(kit.trigger_run_id);
@@ -91,9 +114,11 @@ export default async function KitPage({ params }: KitPageProps) {
             assets={visibleAssets}
             description={kit.description}
             isPaid={kit.is_paid}
+            isOwner={userId === kit.user_id}
             kitId={kit.id}
             name={kit.name}
             shareUrl={shareUrl}
+            slots={visibleSlots}
             status={kit.status}
           />
         ) : (
@@ -104,7 +129,7 @@ export default async function KitPage({ params }: KitPageProps) {
               name: kit.name,
               description: kit.description,
               status: kit.status,
-              assets: visibleAssets,
+              assets: generationAssets,
             }}
             runId={kit.trigger_run_id}
           />
@@ -118,8 +143,13 @@ interface KitCompleteViewProps {
   name: string;
   description: string;
   isPaid: boolean;
+  isOwner: boolean;
   kitId: string;
   shareUrl: string;
+  slots: ReadonlyArray<{
+    type: SlotType;
+    title: string;
+  }>;
   status: "queued" | "generating" | "completed" | "failed";
   assets: Array<{
     id: string;
@@ -132,8 +162,10 @@ function KitCompleteView({
   name,
   description,
   isPaid,
+  isOwner,
   kitId,
   shareUrl,
+  slots,
   status,
   assets,
 }: KitCompleteViewProps) {
@@ -159,7 +191,24 @@ function KitCompleteView({
             Free downloads include a watermark.
           </span>
         ) : null}
+        {isPaid && isOwner ? (
+          <>
+            <a
+              className="inline-flex h-10 items-center rounded-md border border-[#3a372f] px-4 font-medium text-sm"
+              href={`/api/kit/${kitId}/download-zip`}
+            >
+              Download ZIP HD
+            </a>
+            <a
+              className="inline-flex h-10 items-center rounded-md border border-[#3a372f] px-4 font-medium text-sm"
+              href={`/api/kit/${kitId}/tokens`}
+            >
+              Download tokens.json
+            </a>
+          </>
+        ) : null}
       </div>
+      {!isPaid && isOwner ? <ProCta kitId={kitId} /> : null}
       <div className="grid gap-5 md:grid-cols-2">
         {slots.map((slot) => {
           const slotAssets = assets.filter((asset) => asset.type === slot.type);
