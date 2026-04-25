@@ -42,7 +42,7 @@ export function BriefForm({ isSignedIn }: BriefFormProps) {
       return;
     }
 
-    router.push(`/k/${payload.kitId}`);
+    router.replace(`/k/${payload.kitId}`);
   }
 
   return (
