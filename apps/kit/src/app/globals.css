@@ -32,3 +32,27 @@ input,
 textarea {
   font: inherit;
 }
+
+.kit-shimmer {
+  background: linear-gradient(110deg, #0c0c0b 8%, #211f1a 18%, #0c0c0b 33%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
