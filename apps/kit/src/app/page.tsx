@@ -1,7 +1,8 @@
 import { SignInButton, UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 
-import { BriefForm } from "./brief-form";
+import { Hero } from "@/components/landing/hero";
+import { RecentKitsGrid } from "@/components/landing/recent-kits-grid";
 
 export default async function Page() {
   const { userId } = await auth();
@@ -22,20 +23,23 @@ export default async function Page() {
           </SignInButton>
         )}
       </nav>
-      <section className="mx-auto grid max-w-5xl gap-10 py-16 md:grid-cols-[1fr_420px] md:items-start">
-        <div className="space-y-6">
-          <p className="text-[#d8ff5f] text-sm uppercase tracking-[0.18em]">
-            Multi-model brand kit generator
-          </p>
-          <h1 className="max-w-2xl font-semibold text-5xl leading-[1.02] md:text-7xl">
-            Turn a rough product idea into a brand kit.
-          </h1>
-          <p className="max-w-xl text-[#a7a096] text-lg leading-7">
-            Logo, variations, moodboard, and bento composition generated through
-            the kit pipeline.
-          </p>
+      <Hero isSignedIn={Boolean(userId)} />
+      <section className="mx-auto grid max-w-6xl gap-6 pb-16">
+        <div className="flex items-end justify-between gap-4">
+          <div className="grid gap-2">
+            <p className="text-[#d8ff5f] text-sm uppercase tracking-[0.18em]">
+              Recent kits
+            </p>
+            <h2 className="font-semibold text-3xl">Public examples</h2>
+          </div>
+          <a
+            className="text-[#a7a096] text-sm hover:text-[#f4f1e8]"
+            href="/examples"
+          >
+            View all
+          </a>
         </div>
-        <BriefForm isSignedIn={Boolean(userId)} />
+        <RecentKitsGrid />
       </section>
     </main>
   );
