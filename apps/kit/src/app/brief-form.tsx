@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { AdvancedFields } from "@/components/brief/advanced-fields";
+
 interface BriefFormProps {
   isSignedIn: boolean;
 }
@@ -24,6 +26,11 @@ export function BriefForm({ isSignedIn }: BriefFormProps) {
       body: JSON.stringify({
         name: formData.get("name"),
         description: formData.get("description"),
+        advanced: {
+          vibe: formData.getAll("advanced.vibe"),
+          colors: formData.getAll("advanced.colors"),
+          refImages: formData.getAll("advanced.refImages"),
+        },
       }),
     });
 
@@ -70,6 +77,7 @@ export function BriefForm({ isSignedIn }: BriefFormProps) {
           required
         />
       </label>
+      <AdvancedFields />
       {error ? <p className="text-[#ff7a7a] text-sm">{error}</p> : null}
       <button
         className="h-12 rounded-md bg-[#d8ff5f] px-4 font-medium text-[#10110a] disabled:cursor-not-allowed disabled:opacity-60"

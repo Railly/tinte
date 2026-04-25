@@ -8,21 +8,16 @@ import { brandKits, db, type JsonValue } from "@/db";
 import { createKitId } from "@/lib/ids";
 import { kitGenerateRatelimit, rateLimitHeaders } from "@/lib/ratelimit";
 
-const jsonSchema: z.ZodType<JsonValue> = z.lazy(() =>
-  z.union([
-    z.string(),
-    z.number(),
-    z.boolean(),
-    z.null(),
-    z.array(jsonSchema),
-    z.record(jsonSchema),
-  ]),
-);
+const advancedSchema = z.object({
+  vibe: z.array(z.string().trim().min(1).max(40)).max(8).default([]),
+  colors: z.array(z.string().trim().min(1).max(80)).max(3).default([]),
+  refImages: z.array(z.string().url()).max(3).default([]),
+});
 
 const bodySchema = z.object({
   name: z.string().trim().min(1).max(80),
   description: z.string().trim().min(1).max(500),
-  advanced: z.record(jsonSchema).optional(),
+  advanced: advancedSchema.optional(),
 });
 
 export async function POST(request: Request) {
