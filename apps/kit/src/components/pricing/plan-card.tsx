@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { CouponInput } from "@/components/pricing/coupon-input";
 import type { PricingPlan } from "@/lib/polar";
 
 export interface PricingPlanCard {
@@ -22,8 +23,28 @@ interface PlanCardProps {
 
 export function PlanCard({ plan, kitId }: PlanCardProps) {
   const [coupon, setCoupon] = useState("LAUNCH50");
+  const [discount, setDiscount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const displayedSale =
+    plan.sale > 0 && discount > 0
+      ? Math.round(plan.sale * (1 - discount / 100))
+      : plan.sale;
+
+  useEffect(() => {
+    const stored = localStorage.getItem("kit:coupon");
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored) as { code?: string; discount?: number };
+      if (parsed.code && typeof parsed.discount === "number") {
+        setCoupon(parsed.code);
+        setDiscount(parsed.discount);
+      }
+    } catch {
+      localStorage.removeItem("kit:coupon");
+    }
+  }, []);
 
   async function startCheckout() {
     if (!plan.plan) return;
@@ -72,7 +93,7 @@ export function PlanCard({ plan, kitId }: PlanCardProps) {
       <h2 className="font-semibold text-2xl">{plan.title}</h2>
       <p className="mt-2 min-h-12 text-[#a7a096] text-sm">{plan.description}</p>
       <div className="mt-6 flex items-end gap-3">
-        <span className="font-semibold text-4xl">${plan.sale}</span>
+        <span className="font-semibold text-4xl">${displayedSale}</span>
         {plan.regular ? (
           <span className="pb-1 text-[#a7a096] line-through">
             ${plan.regular}
@@ -86,10 +107,11 @@ export function PlanCard({ plan, kitId }: PlanCardProps) {
       </ul>
       <div className="mt-auto grid gap-3 pt-6">
         {plan.plan ? (
-          <input
-            className="h-10 rounded-md border border-[#2b2925] bg-[#0c0c0b] px-3 text-sm outline-none focus:border-[#d8ff5f]"
-            onChange={(event) => setCoupon(event.target.value)}
-            value={coupon}
+          <CouponInput
+            onApply={(nextCoupon) => {
+              setCoupon(nextCoupon.code);
+              setDiscount(nextCoupon.discount);
+            }}
           />
         ) : null}
         <button
