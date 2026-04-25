@@ -1,3 +1,4 @@
+import { clerkClient } from "@clerk/nextjs/server";
 import {
   type Brief,
   briefToPrompts,
@@ -13,7 +14,9 @@ import { metadata, task } from "@trigger.dev/sdk/v3";
 import { eq } from "drizzle-orm";
 
 import { brandKitAssets, brandKits, db } from "@/db";
+import { KitReadyEmail, kitReadySubject } from "@/emails/kit-ready";
 import { createKitId } from "@/lib/ids";
+import { resend } from "@/lib/resend";
 
 type AssetType = "logo" | "logo_variation" | "moodboard" | "bento";
 
@@ -62,6 +65,49 @@ async function persistAsset(
     is_premium: false,
   });
   return uploaded.url;
+}
+
+function getKitUrl(kitId: string) {
+  const baseUrl =
+    process.env.KIT_PUBLIC_URL ??
+    process.env.NEXT_PUBLIC_KIT_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ??
+    "https://kit.tinte.dev";
+  return `${baseUrl}/k/${kitId}`;
+}
+
+async function notifyKitReady({
+  kitId,
+  userId,
+  kitName,
+  previewUrl,
+}: {
+  kitId: string;
+  userId: string;
+  kitName: string;
+  previewUrl?: string;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+  const primaryEmail = user.emailAddresses.find(
+    (email) => email.id === user.primaryEmailAddressId,
+  );
+  const to = primaryEmail?.emailAddress ?? user.emailAddresses[0]?.emailAddress;
+
+  if (!to) return;
+
+  await resend.emails.send({
+    from: process.env.KIT_EMAIL_FROM ?? "kit.tinte.dev <hello@tinte.dev>",
+    to,
+    subject: kitReadySubject,
+    react: KitReadyEmail({
+      kitName,
+      kitUrl: getKitUrl(kitId),
+      previewUrl,
+    }),
+  });
 }
 
 export const kitGenerate = task({
@@ -134,6 +180,21 @@ export const kitGenerate = task({
         .update(brandKits)
         .set({ status: "completed" })
         .where(eq(brandKits.id, kitId));
+
+      const [kit] = await db
+        .select({ userId: brandKits.user_id })
+        .from(brandKits)
+        .where(eq(brandKits.id, kitId))
+        .limit(1);
+
+      if (kit) {
+        await notifyKitReady({
+          kitId,
+          userId: kit.userId,
+          kitName: brief.name,
+          previewUrl: bentoUrl,
+        });
+      }
 
       await setCurrentStep("completed");
       return { kitId };
