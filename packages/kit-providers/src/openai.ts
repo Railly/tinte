@@ -1,5 +1,4 @@
-import { toFile } from "openai";
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
 
 import type { GeneratedImage } from "./types";
 

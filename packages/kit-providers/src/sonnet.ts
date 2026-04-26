@@ -1,6 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateObject } from "ai";
-import { z, type ZodType } from "zod";
+import { type ZodType, z } from "zod";
 
 import type { Brief, Prompts } from "./types";
 

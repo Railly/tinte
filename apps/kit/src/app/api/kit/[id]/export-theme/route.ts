@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import type { TinteBlock, TinteTheme } from "@tinte/core";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { brandKitAssets, brandKits, db, type JsonValue } from "@/db";
@@ -176,8 +176,39 @@ export async function POST(_: Request, context: RouteContext) {
     is_premium: true,
   });
 
+  await db.execute(sql`
+    INSERT INTO theme (
+      id, legacy_id, user_id, name, slug, vendor,
+      light_bg, light_bg_2, light_ui, light_ui_2, light_ui_3,
+      light_tx, light_tx_2, light_tx_3,
+      light_pr, light_sc, light_ac_1, light_ac_2, light_ac_3,
+      dark_bg, dark_bg_2, dark_ui, dark_ui_2, dark_ui_3,
+      dark_tx, dark_tx_2, dark_tx_3,
+      dark_pr, dark_sc, dark_ac_1, dark_ac_2, dark_ac_3,
+      is_public
+    ) VALUES (
+      ${themeId}, ${themeId}, ${userId}, ${theme.name}, ${slug}, 'tinte',
+      ${theme.light.bg}, ${theme.light.bg_2}, ${theme.light.ui}, ${theme.light.ui_2}, ${theme.light.ui_3},
+      ${theme.light.tx}, ${theme.light.tx_2}, ${theme.light.tx_3},
+      ${theme.light.pr}, ${theme.light.sc}, ${theme.light.ac_1}, ${theme.light.ac_2}, ${theme.light.ac_3},
+      ${theme.dark.bg}, ${theme.dark.bg_2}, ${theme.dark.ui}, ${theme.dark.ui_2}, ${theme.dark.ui_3},
+      ${theme.dark.tx}, ${theme.dark.tx_2}, ${theme.dark.tx_3},
+      ${theme.dark.pr}, ${theme.dark.sc}, ${theme.dark.ac_1}, ${theme.dark.ac_2}, ${theme.dark.ac_3},
+      true
+    )
+    ON CONFLICT (slug) DO UPDATE SET
+      name = EXCLUDED.name,
+      light_bg = EXCLUDED.light_bg,
+      light_pr = EXCLUDED.light_pr,
+      dark_bg = EXCLUDED.dark_bg,
+      dark_pr = EXCLUDED.dark_pr,
+      updated_at = now()
+  `);
+
   return NextResponse.json({
     themeId,
+    slug,
     installCommand: `npx shadcn@latest add https://tinte.dev/api/preset/${slug}`,
+    previewUrl: `https://tinte.dev/themes/${slug}`,
   });
 }
