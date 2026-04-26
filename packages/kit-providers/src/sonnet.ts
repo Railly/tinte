@@ -1,19 +1,23 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { generateText } from "ai";
-import { z } from "zod";
+import { generateObject } from "ai";
+import { z, type ZodType } from "zod";
 
 import type { Brief, Prompts } from "./types";
 
-const promptsSchema = z.object({
-  recraftLogoPrompt: z.string().min(20),
-  fluxMoodboardPrompts: z.tuple([
-    z.string().min(20),
-    z.string().min(20),
-    z.string().min(20),
-  ]),
-  gptBentoPrompt: z.string().min(20),
-  suggestedColors: z.array(z.string()).min(3).max(8),
-  brandPersonality: z.array(z.string()).min(3).max(8),
+interface PromptsRaw {
+  recraftLogoPrompt: string;
+  fluxMoodboardPrompts: string[];
+  gptBentoPrompt: string;
+  suggestedColors: string[];
+  brandPersonality: string[];
+}
+
+const promptsSchema: ZodType<PromptsRaw> = z.object({
+  recraftLogoPrompt: z.string(),
+  fluxMoodboardPrompts: z.array(z.string()),
+  gptBentoPrompt: z.string(),
+  suggestedColors: z.array(z.string()),
+  brandPersonality: z.array(z.string()),
 });
 
 function getModel() {
@@ -33,8 +37,13 @@ function getModel() {
 
 export async function briefToPrompts(brief: Brief): Promise<Prompts> {
   const advanced = brief.advanced ? JSON.stringify(brief.advanced) : "none";
-  const { text } = await generateText({
+  // biome-ignore lint/suspicious/noExplicitAny: AI SDK generic inference triggers TS2589
+  const generateObjectAny = generateObject as unknown as (
+    args: unknown,
+  ) => Promise<{ object: PromptsRaw }>;
+  const { object } = await generateObjectAny({
     model: getModel(),
+    schema: promptsSchema,
     prompt: [
       `Brand name: ${brief.name}`,
       `Description: ${brief.description}`,
@@ -43,13 +52,21 @@ export async function briefToPrompts(brief: Brief): Promise<Prompts> {
       "Treat vibe tags as personality and composition direction.",
       "Use color hints as palette anchors, preserving HSL intent in suggestedColors.",
       "Use reference image URLs as visual reference descriptions, not as literal brands to copy.",
-      "Return only valid JSON matching this TypeScript shape:",
-      "{ recraftLogoPrompt: string; fluxMoodboardPrompts: [string, string, string]; gptBentoPrompt: string; suggestedColors: string[]; brandPersonality: string[] }",
       "Create prompts for a premium brand kit generator.",
       "The logo prompt should favor clean vector identity, precise lettering, and strong silhouette.",
       "The three moodboard prompts should explore distinct but coherent visual worlds.",
       "The bento prompt should compose the outputs into one polished brand presentation image.",
     ].join("\n"),
   });
-  return promptsSchema.parse(JSON.parse(text));
+  const [m1, m2, m3] = object.fluxMoodboardPrompts;
+  if (!m1 || !m2 || !m3) {
+    throw new Error("Sonnet returned fewer than 3 moodboard prompts");
+  }
+  return {
+    recraftLogoPrompt: object.recraftLogoPrompt,
+    fluxMoodboardPrompts: [m1, m2, m3],
+    gptBentoPrompt: object.gptBentoPrompt,
+    suggestedColors: object.suggestedColors,
+    brandPersonality: object.brandPersonality,
+  };
 }
