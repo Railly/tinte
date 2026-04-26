@@ -11,16 +11,19 @@ function getUploadthing() {
 
 export async function uploadAsset(image: GeneratedImage, prefix: string) {
   const uploadthing = getUploadthing();
+  const safePrefix = prefix.replace(/[^a-zA-Z0-9_-]/g, "");
   const file = new File(
     [Buffer.from(image.data)],
-    `${prefix}/${image.filename}`,
+    `${safePrefix}-${image.filename}`,
     {
       type: image.contentType,
     },
   );
   const result = await uploadthing.uploadFiles(file);
   if (result.error) {
-    throw new Error(result.error.message);
+    throw new Error(
+      `Uploadthing upload failed: ${result.error.message ?? "unknown"} (code ${result.error.code ?? "?"})`,
+    );
   }
   if (!result.data) {
     throw new Error("Uploadthing did not return upload data");
