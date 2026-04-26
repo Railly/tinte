@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "trigger:dev": "trigger dev"
+    "trigger:dev": "trigger dev --env-file .env.local"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.25",
@@ -55,6 +55,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "drizzle-kit": "^0.30.0",
+    "trigger.dev": "^3.3.0",
     "typescript": "^5.6.0"
   }
 }
