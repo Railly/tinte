@@ -29,11 +29,26 @@ interface RunMetadata {
   assets?: unknown;
 }
 
-const slots: Array<{ type: SlotType; title: string }> = [
-  { type: "logo", title: "Logo" },
-  { type: "logo_variation", title: "Logo variations" },
-  { type: "moodboard", title: "Moodboard" },
-  { type: "bento", title: "Bento" },
+const slots: Array<{
+  type: SlotType;
+  title: string;
+  count: number;
+  step: KitGenerationStep;
+}> = [
+  { type: "logo", title: "Logo", count: 1, step: "generating_logo" },
+  {
+    type: "logo_variation",
+    title: "Variations",
+    count: 3,
+    step: "generating_logo",
+  },
+  {
+    type: "moodboard",
+    title: "Moodboard",
+    count: 3,
+    step: "generating_moodboard",
+  },
+  { type: "bento", title: "Bento", count: 1, step: "composing_bento" },
 ];
 
 const steps = new Set<KitGenerationStep>([
@@ -44,6 +59,14 @@ const steps = new Set<KitGenerationStep>([
   "completed",
 ]);
 
+const stepOrder: KitGenerationStep[] = [
+  "drafting_prompts",
+  "generating_logo",
+  "generating_moodboard",
+  "composing_bento",
+  "completed",
+];
+
 function getCurrentStep(value: unknown): KitGenerationStep | null {
   return typeof value === "string" && steps.has(value as KitGenerationStep)
     ? (value as KitGenerationStep)
@@ -51,16 +74,18 @@ function getCurrentStep(value: unknown): KitGenerationStep | null {
 }
 
 function getAssetUrls(value: unknown, type: SlotType): string[] {
-  if (!value || typeof value !== "object") {
-    return [];
-  }
-
+  if (!value || typeof value !== "object") return [];
   const urls = (value as Partial<Record<SlotType, unknown>>)[type];
-  if (!Array.isArray(urls)) {
-    return [];
-  }
-
+  if (!Array.isArray(urls)) return [];
   return urls.filter((url): url is string => typeof url === "string");
+}
+
+function isStepActive(
+  current: KitGenerationStep | null,
+  slotStep: KitGenerationStep,
+) {
+  if (!current) return false;
+  return stepOrder.indexOf(current) === stepOrder.indexOf(slotStep);
 }
 
 interface KitGenerationViewProps {
@@ -95,12 +120,7 @@ export function KitGenerationView({
           .map((asset) => asset.url);
         return accumulator;
       },
-      {
-        logo: [],
-        logo_variation: [],
-        moodboard: [],
-        bento: [],
-      },
+      { logo: [], logo_variation: [], moodboard: [], bento: [] },
     );
   }, [kit.assets]);
 
@@ -108,19 +128,31 @@ export function KitGenerationView({
     setRetryError(null);
     setIsRetrying(true);
 
-    const response = await fetch(`/api/kit/${kit.id}/retry`, {
-      method: "POST",
-    });
-    const payload = (await response.json()) as
-      | { kitId: string; runId: string }
-      | { error?: string };
+    let response: Response;
+    try {
+      response = await fetch(`/api/kit/${kit.id}/retry`, { method: "POST" });
+    } catch (err) {
+      setIsRetrying(false);
+      setRetryError(err instanceof Error ? err.message : "Network error");
+      return;
+    }
+
+    const text = await response.text();
+    let payload: { kitId?: string; runId?: string; error?: string } = {};
+    try {
+      payload = text ? JSON.parse(text) : {};
+    } catch {
+      setIsRetrying(false);
+      setRetryError(
+        `Server returned non-JSON (${response.status}): ${text.slice(0, 120)}`,
+      );
+      return;
+    }
 
     setIsRetrying(false);
 
-    if (!response.ok || !("runId" in payload)) {
-      setRetryError(
-        "error" in payload ? (payload.error ?? "Retry failed") : "Retry failed",
-      );
+    if (!response.ok || !payload.runId) {
+      setRetryError(payload.error ?? `Retry failed (${response.status})`);
       return;
     }
 
@@ -129,50 +161,86 @@ export function KitGenerationView({
   }
 
   return (
-    <div className="grid gap-8">
-      <div className="flex flex-col gap-4 rounded-lg border border-[#2b2925] bg-[#171613] p-5">
+    <div className="grid gap-6">
+      <div
+        className="rounded-lg border p-5"
+        style={{
+          borderColor: "var(--color-ui)",
+          background: "var(--color-bg-2)",
+        }}
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StepLabel currentStep={currentStep} isComplete={isComplete} />
-          <span className="text-[#a7a096] text-sm">
-            Run {run?.status.toLowerCase() ?? "loading"}
+          <span
+            className="font-mono text-[10px] uppercase tracking-[0.16em]"
+            style={{ color: "var(--color-tx-3)" }}
+          >
+            {run?.status?.toLowerCase() ?? "loading"}
           </span>
         </div>
-        <ProgressBar currentStep={currentStep} isComplete={isComplete} />
+        <div className="mt-4">
+          <ProgressBar currentStep={currentStep} isComplete={isComplete} />
+        </div>
         {error ? (
-          <p className="text-[#ffb36e] text-sm">
-            Live updates are reconnecting.
+          <p
+            className="mt-3 text-[12px]"
+            style={{ color: "var(--color-sc)" }}
+          >
+            Live updates reconnecting…
           </p>
         ) : null}
         {isFailed ? (
-          <div className="grid gap-3 rounded-md border border-[#5b2d2d] bg-[#241616] p-4">
-            <p className="font-medium text-[#ff7a7a]">Generation failed</p>
-            <p className="text-[#c6b8ad] text-sm">
+          <div
+            className="mt-4 grid gap-3 rounded border p-4"
+            style={{
+              borderColor: "color-mix(in oklab, var(--color-ac-1) 40%, transparent)",
+              background: "color-mix(in oklab, var(--color-ac-1) 8%, transparent)",
+            }}
+          >
+            <p
+              className="font-medium text-[13px]"
+              style={{ color: "var(--color-ac-1)" }}
+            >
+              Generation failed
+            </p>
+            <p className="text-[12px]" style={{ color: "var(--color-tx-2)" }}>
               The run stopped before the kit was completed.
             </p>
             {retryError ? (
-              <p className="text-[#ff7a7a] text-sm">{retryError}</p>
+              <p className="text-[11px]" style={{ color: "var(--color-ac-1)" }}>
+                {retryError}
+              </p>
             ) : null}
             <button
-              className="h-10 w-fit rounded-md bg-[#d8ff5f] px-4 font-medium text-[#10110a] disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-8 w-fit rounded px-3 font-medium text-[12px] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isRetrying}
               onClick={retryGeneration}
+              style={{
+                background: "var(--color-tx)",
+                color: "var(--color-bg)",
+              }}
               type="button"
             >
-              {isRetrying ? "Retrying..." : "Retry generation"}
+              {isRetrying ? "Retrying…" : "Retry generation"}
             </button>
           </div>
         ) : null}
       </div>
-      <div className="grid gap-5 md:grid-cols-2">
+
+      <div className="grid gap-4 sm:grid-cols-2">
         {slots.map((slot) => {
           const liveUrls = getAssetUrls(metadata?.assets, slot.type);
           const urls =
             liveUrls.length > 0 ? liveUrls : fallbackAssets[slot.type];
+          const active = !isComplete && isStepActive(currentStep, slot.step);
 
           return (
             <KitCardSlot
+              active={active}
               alt={`${kit.name} ${slot.title}`}
+              count={slot.count}
               key={slot.type}
+              step={slot.step.replace("generating_", "").replace("_", " ")}
               title={slot.title}
               urls={urls}
             />

@@ -1,7 +1,7 @@
 const stepProgress = {
-  drafting_prompts: 25,
-  generating_logo: 50,
-  generating_moodboard: 75,
+  drafting_prompts: 15,
+  generating_logo: 40,
+  generating_moodboard: 70,
   composing_bento: 90,
   completed: 100,
 } as const;
@@ -21,15 +21,31 @@ export function ProgressBar({ currentStep, isComplete }: ProgressBarProps) {
       : 0;
 
   return (
-    <div className="grid gap-2">
-      <div className="flex items-center justify-between text-[#a7a096] text-sm">
-        <span>Generation progress</span>
-        <span>{progress}%</span>
+    <div className="grid gap-1.5">
+      <div className="flex items-baseline justify-between">
+        <span
+          className="font-mono text-[10px] uppercase tracking-[0.16em]"
+          style={{ color: "var(--color-tx-2)" }}
+        >
+          Progress
+        </span>
+        <span
+          className="font-mono text-[10px]"
+          style={{ color: "var(--color-tx-2)" }}
+        >
+          {progress}%
+        </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-[#2b2925]">
+      <div
+        className="h-1 overflow-hidden rounded-full"
+        style={{ background: "var(--color-ui)" }}
+      >
         <div
-          className="h-full rounded-full bg-[#d8ff5f] transition-[width] duration-500"
-          style={{ width: `${progress}%` }}
+          className="h-full rounded-full transition-[width] duration-700 ease-out"
+          style={{
+            width: `${progress}%`,
+            background: "var(--color-tx)",
+          }}
         />
       </div>
     </div>
