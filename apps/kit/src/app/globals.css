@@ -1,25 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
-  --background: #0c0c0b;
-  --foreground: #f4f1e8;
-  --muted: #a7a096;
-  --line: #2b2925;
-  --panel: #171613;
-  --accent: #d8ff5f;
-  --accent-foreground: #10110a;
+  color-scheme: light dark;
+
+  /* Tinte Flexoki light tokens */
+  --color-bg: #f8f6f0;
+  --color-bg-2: #ebe8dc;
+  --color-ui: #d8d3c4;
+  --color-ui-2: #bfb8a5;
+  --color-ui-3: #837c6d;
+  --color-tx: #10110a;
+  --color-tx-2: #5f5a4e;
+  --color-tx-3: #837c6d;
+  --color-pr: #205ea6;
+  --color-sc: #ad8301;
+  --color-ac-1: #af3029;
+  --color-ac-2: #66800b;
+  --color-ac-3: #4385be;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #100f0f;
+    --color-bg-2: #1c1b1a;
+    --color-ui: #282726;
+    --color-ui-2: #343331;
+    --color-ui-3: #575653;
+    --color-tx: #cecdc3;
+    --color-tx-2: #878580;
+    --color-tx-3: #575653;
+    --color-pr: #4385be;
+    --color-sc: #d0a215;
+    --color-ac-1: #d14d41;
+    --color-ac-2: #879a39;
+    --color-ac-3: #4385be;
+  }
+}
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: "Instrument Serif", "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
 }
 
 a {
@@ -31,10 +69,34 @@ button,
 input,
 textarea {
   font: inherit;
+  color: inherit;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Subtle grid background */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--ui) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ui) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: -1px -1px;
 }
 
 .kit-shimmer {
-  background: linear-gradient(110deg, #0c0c0b 8%, #211f1a 18%, #0c0c0b 33%);
+  background: linear-gradient(
+    110deg,
+    var(--bg-2) 8%,
+    var(--ui) 18%,
+    var(--bg-2) 33%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.2s linear infinite;
 }
@@ -50,9 +112,42 @@ textarea {
     opacity: 0;
     transform: translateY(4px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+/* Inline uploadthing dropzone — compact pill */
+.ut-dropzone-inline {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 28px !important;
+  padding: 0 12px 0 10px !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  border-radius: 9999px !important;
+  border: 1px dashed var(--color-ui) !important;
+  background: var(--color-bg) !important;
+  cursor: pointer !important;
+  transition: border-color 0.15s ease;
+}
+.ut-dropzone-inline:hover {
+  border-color: var(--color-ui-2) !important;
+}
+.ut-dropzone-label {
+  font-size: 12px !important;
+  color: var(--color-tx-2) !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+.ut-dropzone-icon {
+  display: none !important;
 }
