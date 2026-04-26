@@ -1,5 +1,5 @@
 import { Webhooks } from "@polar-sh/nextjs";
-import { tasks } from "@trigger.dev/sdk/v3";
+import { tasks } from "@trigger.dev/sdk";
 import { eq } from "drizzle-orm";
 
 import { brandKits, db, type JsonValue, polarOrders } from "@/db";

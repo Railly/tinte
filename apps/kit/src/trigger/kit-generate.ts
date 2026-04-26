@@ -10,7 +10,7 @@ import {
   type JsonValue,
   uploadAsset,
 } from "@tinte/kit-providers";
-import { metadata, task } from "@trigger.dev/sdk/v3";
+import { metadata, task } from "@trigger.dev/sdk";
 import { eq } from "drizzle-orm";
 
 import { brandKitAssets, brandKits, db } from "@/db";

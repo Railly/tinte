@@ -1,5 +1,5 @@
 import { auth as clerkAuth } from "@clerk/nextjs/server";
-import { auth as triggerAuth } from "@trigger.dev/sdk/v3";
+import { auth as triggerAuth } from "@trigger.dev/sdk";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 

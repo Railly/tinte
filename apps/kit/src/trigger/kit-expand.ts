@@ -3,7 +3,7 @@ import {
   generateComposition,
   uploadAsset,
 } from "@tinte/kit-providers";
-import { task } from "@trigger.dev/sdk/v3";
+import { task } from "@trigger.dev/sdk";
 import { and, asc, eq, inArray } from "drizzle-orm";
 
 import { brandKitAssets, brandKits, db } from "@/db";
