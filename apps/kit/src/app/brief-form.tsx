@@ -20,46 +20,62 @@ export function BriefForm({ isSignedIn }: BriefFormProps) {
     setError(null);
     setIsPending(true);
 
-    const response = await fetch("/api/kit/generate", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        name: formData.get("name"),
-        description: formData.get("description"),
-        advanced: showAdvanced
-          ? {
-              vibe: formData.getAll("advanced.vibe"),
-              colors: formData.getAll("advanced.colors"),
-              refImages: formData.getAll("advanced.refImages"),
-            }
-          : undefined,
-      }),
-    });
+    let response: Response;
+    try {
+      response = await fetch("/api/kit/generate", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          description: formData.get("description"),
+          advanced: showAdvanced
+            ? {
+                vibe: formData.getAll("advanced.vibe"),
+                colors: formData.getAll("advanced.colors"),
+                refImages: formData.getAll("advanced.refImages"),
+              }
+            : undefined,
+        }),
+      });
+    } catch (err) {
+      setIsPending(false);
+      setError(err instanceof Error ? err.message : "Network error");
+      return;
+    }
 
-    const payload = (await response.json()) as
-      | { kitId: string }
-      | { error?: string };
+    const text = await response.text();
+    let payload: { kitId?: string; error?: string } = {};
+    try {
+      payload = text ? JSON.parse(text) : {};
+    } catch {
+      setIsPending(false);
+      setError(
+        `Server returned non-JSON (${response.status}): ${text.slice(0, 120) || "empty body"}`,
+      );
+      return;
+    }
 
     setIsPending(false);
 
-    if (!response.ok || !("kitId" in payload)) {
-      setError(
-        "error" in payload
-          ? (payload.error ?? "Generation failed")
-          : "Generation failed",
-      );
+    if (!response.ok || !payload.kitId) {
+      setError(payload.error ?? `Generation failed (${response.status})`);
       return;
     }
 
     router.replace(`/k/${payload.kitId}`);
   }
 
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    submit(new FormData(event.currentTarget));
+  }
+
   return (
     <form
-      action={submit}
       className="rounded-lg border border-[var(--color-ui)] bg-[var(--color-bg-2)]/40"
+      onSubmit={handleSubmit}
     >
       <div className="border-[var(--color-ui)] border-b px-5 py-3">
         <p className="font-mono text-[10px] text-[var(--color-tx-2)] uppercase tracking-[0.18em]">
