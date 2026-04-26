@@ -57,17 +57,17 @@ function FieldRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid gap-2 border-[var(--color-ui)] border-b py-3 last:border-b-0 sm:grid-cols-[100px_1fr] sm:gap-4 sm:py-4">
+    <div className="grid gap-1.5 border-[var(--color-ui)] border-b py-3 last:border-b-0 sm:grid-cols-[88px_1fr] sm:gap-4 sm:py-3">
       <div className="grid gap-0.5">
         <span
-          className="font-mono text-[10px] uppercase tracking-[0.16em]"
+          className="font-mono text-[10px] uppercase tracking-[0.16em] leading-none"
           style={{ color: "var(--color-tx)" }}
         >
           {label}
         </span>
         {hint ? (
           <span
-            className="text-[11px] leading-tight"
+            className="text-[10px] leading-tight"
             style={{ color: "var(--color-tx-3)" }}
           >
             {hint}
@@ -121,15 +121,15 @@ export function AdvancedFields() {
             const active = vibe.includes(option);
             return (
               <ToggleGroup.Item
-                className="m-0.5 h-7 rounded-full border px-3 text-[12px] capitalize transition-colors"
+                className="m-0.5 inline-flex items-center rounded-full border capitalize transition-colors"
                 key={option}
                 style={{
-                  borderColor: active
-                    ? "var(--color-tx)"
-                    : "var(--color-ui)",
-                  background: active
-                    ? "var(--color-tx)"
-                    : "var(--color-bg)",
+                  height: "22px",
+                  padding: "0 8px",
+                  fontSize: "11px",
+                  lineHeight: "22px",
+                  borderColor: active ? "var(--color-tx)" : "var(--color-ui)",
+                  background: active ? "var(--color-tx)" : "var(--color-bg)",
                   color: active ? "var(--color-bg)" : "var(--color-tx-2)",
                 }}
                 value={option}
@@ -154,13 +154,16 @@ export function AdvancedFields() {
                 <div className="relative" key={index}>
                   <button
                     aria-expanded={isOpen}
-                    className="flex h-7 items-center gap-1.5 rounded-full border pr-2.5 pl-1 transition-colors"
+                    className="inline-flex items-center rounded-full border transition-colors"
                     onClick={() =>
                       setEditingColor((current) =>
                         current === index ? null : index,
                       )
                     }
                     style={{
+                      height: "22px",
+                      padding: "0 8px 0 3px",
+                      gap: "5px",
                       borderColor: isOpen
                         ? "var(--color-tx)"
                         : "var(--color-ui)",
@@ -170,15 +173,21 @@ export function AdvancedFields() {
                   >
                     <span
                       aria-hidden="true"
-                      className="h-5 w-5 rounded-full"
                       style={{
+                        width: "14px",
+                        height: "14px",
+                        borderRadius: "9999px",
                         backgroundColor: hex,
                         border: "1px solid var(--color-ui)",
                       }}
                     />
                     <span
-                      className="font-mono text-[11px]"
-                      style={{ color: "var(--color-tx-2)" }}
+                      className="font-mono"
+                      style={{
+                        fontSize: "10px",
+                        lineHeight: "22px",
+                        color: "var(--color-tx-2)",
+                      }}
                     >
                       {hex}
                     </span>
@@ -227,11 +236,7 @@ export function AdvancedFields() {
                 key={url}
                 style={{ borderColor: "var(--color-ui)" }}
               >
-                <img
-                  alt=""
-                  className="h-full w-full object-cover"
-                  src={url}
-                />
+                <img alt="" className="h-full w-full object-cover" src={url} />
                 <button
                   aria-label="Remove"
                   className="absolute inset-0 grid place-items-center opacity-0 transition-opacity hover:opacity-100"
@@ -241,7 +246,8 @@ export function AdvancedFields() {
                     )
                   }
                   style={{
-                    background: "color-mix(in oklab, var(--color-bg) 85%, transparent)",
+                    background:
+                      "color-mix(in oklab, var(--color-bg) 85%, transparent)",
                     color: "var(--color-ac-1)",
                     fontSize: "10px",
                   }}
@@ -277,10 +283,7 @@ export function AdvancedFields() {
             ) : null}
           </div>
           {uploadError ? (
-            <p
-              className="text-[11px]"
-              style={{ color: "var(--color-ac-1)" }}
-            >
+            <p className="text-[11px]" style={{ color: "var(--color-ac-1)" }}>
               {uploadError}
             </p>
           ) : null}

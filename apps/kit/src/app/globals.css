@@ -38,7 +38,8 @@
 }
 
 @theme {
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-serif: "Instrument Serif", "Times New Roman", serif;
   --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
 }
@@ -122,14 +123,15 @@ textarea {
   animation: fade-in 0.4s ease-out;
 }
 
-/* Inline uploadthing dropzone — compact pill */
+/* Inline uploadthing dropzone — pill matching vibe + palette chips scale (22px h) */
 .ut-dropzone-inline {
   display: inline-flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 6px !important;
-  height: 28px !important;
-  padding: 0 12px 0 10px !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  height: 22px !important;
+  padding: 0 8px !important;
   margin: 0 !important;
   min-height: 0 !important;
   border-radius: 9999px !important;
@@ -142,10 +144,12 @@ textarea {
   border-color: var(--color-ui-2) !important;
 }
 .ut-dropzone-label {
-  font-size: 12px !important;
+  font-size: 11px !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 400 !important;
   color: var(--color-tx-2) !important;
   margin: 0 !important;
-  line-height: 1 !important;
+  line-height: 22px !important;
   cursor: pointer !important;
 }
 .ut-dropzone-icon {

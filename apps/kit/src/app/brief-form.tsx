@@ -137,7 +137,7 @@ export function BriefForm({ isSignedIn }: BriefFormProps) {
       <div className="border-[var(--color-ui)] border-t px-5 py-3">
         {isSignedIn ? (
           <button
-            className="flex h-9 w-full items-center justify-center gap-2 rounded px-4 font-medium text-[13px] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-9 w-full items-center justify-center gap-2 rounded px-4 font-medium text-[12px] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isPending}
             style={{
               background: "var(--color-tx)",
@@ -178,7 +178,7 @@ export function BriefForm({ isSignedIn }: BriefFormProps) {
         ) : (
           <SignInButton mode="modal">
             <button
-              className="flex h-9 w-full items-center justify-center gap-2 rounded px-4 font-medium text-[13px] transition-opacity hover:opacity-90"
+              className="flex h-9 w-full items-center justify-center gap-2 rounded px-4 font-medium text-[12px] transition-opacity hover:opacity-90"
               style={{
                 background: "var(--color-tx)",
                 color: "var(--color-bg)",
