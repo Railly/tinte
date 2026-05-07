@@ -26,9 +26,15 @@ Content-Type: application/json
 | `fontSize` | number | `14` | 8-32 |
 | `lineNumbers` | boolean | `true` | |
 | `title` | string | `""` | Window chrome title (max 100) |
-| `background` | string | `"midnight"` | midnight, sunset, ocean, forest, ember, steel, aurora, none |
+| `background` | string | `"midnight"` | One of: midnight, sunset, ocean, forest, ember, steel, aurora, none. Hex colors are not accepted. |
 | `format` | `"png"` | `"png"` | PNG only |
 | `scale` | number | `2` | 1-4 (retina) |
+
+## Notes
+
+- `background: "none"` returns a transparent RGBA PNG. Useful when you want to composite the screenshot onto a custom background.
+- Returned PNGs always include some transparent margin around the window for the drop shadow, even with `padding: 0`. If you're compositing the result, trim that halo first (e.g. `magick input.png -trim +repage output.png`).
+- Long snippets can take 30-60+ seconds to render. Use a per-request timeout when calling from scripts or agents.
 
 ## Workflow
 
