@@ -8,9 +8,7 @@ import {
   type ShadcnTheme,
 } from "@tinte/core";
 import { formatHex, oklch } from "culori";
-import { ShadcnPreview } from "@/components/preview/shadcn/shadcn-preview";
-import { ShadcnIcon } from "@/components/shared/icons";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 type ThemeMode = "light" | "dark";
 
@@ -514,7 +512,7 @@ function generateCSSVariables(theme: ShadcnTheme): string {
   return `:root {\n${lightVars}\n}\n\n.dark {\n${darkVars}\n}\n\n${THEME_INLINE_BLOCK}`;
 }
 
-export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
+export const shadcnProvider: ThemeProvider<ShadcnTheme> = {
   metadata: {
     id: "shadcn",
     name: "shadcn/ui",
@@ -522,7 +520,6 @@ export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
       "Beautifully designed components built on Radix UI and Tailwind CSS",
     category: "ui",
     tags: ["react", "tailwind", "components", "ui"],
-    icon: ShadcnIcon,
     website: "https://ui.shadcn.com/",
     documentation: "https://ui.shadcn.com/docs",
   },
@@ -538,8 +535,4 @@ export const shadcnProvider: PreviewableProvider<ShadcnTheme> = {
   }),
 
   validate: (output: ShadcnTheme) => !!(output.light && output.dark),
-
-  preview: {
-    component: ShadcnPreview,
-  },
 };

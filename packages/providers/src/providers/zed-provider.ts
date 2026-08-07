@@ -1,18 +1,15 @@
-import { ZedPreview } from "@/components/preview/zed/zed-preview";
-import { ZedIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@tinte/core";
 import type { ZedThemeFamily } from "@tinte/core";
-import type { PreviewableProvider } from "./types";
+import type { ThemeProvider } from "./types";
 import { tinteToZed } from "./zed";
 
-export const zedProvider: PreviewableProvider<ZedThemeFamily> = {
+export const zedProvider: ThemeProvider<ZedThemeFamily> = {
   metadata: {
     id: "zed",
     name: "Zed",
     description: "High-performance multiplayer code editor",
     category: "editor",
     tags: ["editor", "code", "multiplayer", "rust"],
-    icon: ZedIcon,
     website: "https://zed.dev/",
     documentation: "https://zed.dev/docs/themes",
     experimental: true,
@@ -43,9 +40,5 @@ export const zedProvider: PreviewableProvider<ZedThemeFamily> = {
       content: JSON.stringify(converted, null, 2),
       mimeType: "application/json",
     };
-  },
-
-  preview: {
-    component: ZedPreview,
   },
 };

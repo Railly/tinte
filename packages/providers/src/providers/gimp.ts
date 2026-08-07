@@ -1,5 +1,3 @@
-import { GimpPreview } from "@/components/preview/gimp/gimp-preview";
-import { GIMPIcon } from "@/components/shared/icons";
 import { makePolineFromTinte, polineRampHex } from "./poline-base";
 import type { TinteTheme } from "@tinte/core";
 import {
@@ -8,7 +6,7 @@ import {
   getThemeName,
   hexToInt,
 } from "./poline-base";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface GIMPPalette {
   name: string;
@@ -103,7 +101,7 @@ function generateGIMPPalette(
   };
 }
 
-export const gimpProvider: PreviewableProvider<{
+export const gimpProvider: ThemeProvider<{
   light: GIMPPalette;
   dark: GIMPPalette;
 }> = {
@@ -113,7 +111,6 @@ export const gimpProvider: PreviewableProvider<{
     description: "GNU Image Manipulation Program color palette",
     category: "design",
     tags: ["design", "graphics", "image-editing", "palette"],
-    icon: GIMPIcon,
     website: "https://www.gimp.org/",
     documentation: "https://docs.gimp.org/en/gimp-concepts-palettes.html",
   },
@@ -186,9 +183,5 @@ export const gimpProvider: PreviewableProvider<{
       );
 
     return validatePalette(output.light) && validatePalette(output.dark);
-  },
-
-  preview: {
-    component: GimpPreview,
   },
 };

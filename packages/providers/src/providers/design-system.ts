@@ -1,7 +1,5 @@
-import { Layers } from "lucide-react";
-import { DesignSystemPreview } from "@/components/preview/design-system/design-system-preview";
 import type { TinteTheme } from "@tinte/core";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface DesignSystemOutput {
   brand: {
@@ -120,11 +118,10 @@ function hexToCmyk(hex: string): string {
   return `${Math.round(c * 100)}%, ${Math.round(m * 100)}%, ${Math.round(y * 100)}%, ${Math.round(k * 100)}%`;
 }
 
-export const designSystemProvider: PreviewableProvider<DesignSystemOutput> = {
+export const designSystemProvider: ThemeProvider<DesignSystemOutput> = {
   metadata: {
     id: "design-system",
     name: "Design System",
-    icon: Layers,
     description:
       "A comprehensive library of custom components for consistent, beautiful interfaces",
     category: "design",
@@ -761,9 +758,5 @@ ${system.typography.body.variants.map((v) => `<Text variant="${v.name.toLowerCas
       filename: `${filename}.html`,
       mimeType: this.mimeType,
     };
-  },
-
-  preview: {
-    component: DesignSystemPreview,
   },
 };

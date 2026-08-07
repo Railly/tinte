@@ -1,4 +1,3 @@
-import { AlacrittyIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@tinte/core";
 import {
   createPolineColorMapping,
@@ -6,7 +5,7 @@ import {
   getThemeName,
   toYAML,
 } from "./poline-base";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface AlacrittyTheme {
   colors: {
@@ -110,9 +109,7 @@ function generateAlacrittyTheme(
   };
 }
 
-import { AlacrittyPreview } from "@/components/preview/alacritty/alacritty-preview";
-
-export const alacrittyProvider: PreviewableProvider<{
+export const alacrittyProvider: ThemeProvider<{
   light: AlacrittyTheme;
   dark: AlacrittyTheme;
 }> = {
@@ -122,7 +119,6 @@ export const alacrittyProvider: PreviewableProvider<{
     description: "Cross-platform, OpenGL terminal emulator",
     category: "terminal",
     tags: ["terminal", "opengl", "cross-platform"],
-    icon: AlacrittyIcon,
     website: "https://alacritty.org/",
     documentation: "https://alacritty.org/config.html",
   },
@@ -164,9 +160,5 @@ export const alacrittyProvider: PreviewableProvider<{
       );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  },
-
-  preview: {
-    component: AlacrittyPreview,
   },
 };

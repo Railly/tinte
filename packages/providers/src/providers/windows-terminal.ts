@@ -1,5 +1,3 @@
-import { WindowsTerminalPreview } from "@/components/preview/windows-terminal/windows-terminal-preview";
-import { WindowsTerminalIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@tinte/core";
 import {
   createPolineColorMapping,
@@ -7,7 +5,7 @@ import {
   getThemeName,
   toJSON,
 } from "./poline-base";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface WindowsTerminalTheme {
   name: string;
@@ -85,7 +83,7 @@ function generateWindowsTerminalTheme(
   };
 }
 
-export const windowsTerminalProvider: PreviewableProvider<{
+export const windowsTerminalProvider: ThemeProvider<{
   light: WindowsTerminalTheme;
   dark: WindowsTerminalTheme;
 }> = {
@@ -95,7 +93,6 @@ export const windowsTerminalProvider: PreviewableProvider<{
     description: "Modern terminal application for Windows",
     category: "terminal",
     tags: ["terminal", "windows", "microsoft", "powershell"],
-    icon: WindowsTerminalIcon,
     website: "https://aka.ms/terminal",
     documentation:
       "https://docs.microsoft.com/en-us/windows/terminal/customize-settings/color-schemes",
@@ -159,9 +156,5 @@ export const windowsTerminalProvider: PreviewableProvider<{
       );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  },
-
-  preview: {
-    component: WindowsTerminalPreview,
   },
 };

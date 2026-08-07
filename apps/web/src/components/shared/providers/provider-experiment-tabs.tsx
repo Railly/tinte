@@ -1,5 +1,8 @@
 "use client";
 
+import type { TinteTheme } from "@tinte/core";
+import { exportTheme, getAvailableProviders } from "@tinte/providers";
+import { previewableProviders } from "@tinte/providers/react";
 import { Copy, Download, ExternalLink } from "lucide-react";
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
@@ -13,13 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { makePolineFromTinte, polineRampHex } from "@/lib/theme";
-import {
-  exportTheme,
-  getAvailableProviders,
-  getPreviewableProviders,
-} from "@tinte/providers";
 import { cn } from "@/lib/utils";
-import type { TinteTheme } from "@tinte/core";
 
 interface ProviderExperimentTabsProps {
   theme: TinteTheme | null;
@@ -163,7 +160,6 @@ export function ProviderExperimentTabs({
   className,
 }: ProviderExperimentTabsProps) {
   const availableProviders = getAvailableProviders();
-  const previewableProviders = getPreviewableProviders();
 
   // Group providers by category
   const providersByCategory = React.useMemo(() => {

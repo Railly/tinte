@@ -1,12 +1,10 @@
-import { KittyPreview } from "@/components/preview/kitty/kitty-preview";
-import { KittyIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@tinte/core";
 import {
   createPolineColorMapping,
   getDisplayName,
   getThemeName,
 } from "./poline-base";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface KittyTheme {
   // Basic colors
@@ -100,7 +98,7 @@ function generateKittyTheme(
   };
 }
 
-export const kittyProvider: PreviewableProvider<{
+export const kittyProvider: ThemeProvider<{
   light: KittyTheme;
   dark: KittyTheme;
 }> = {
@@ -110,7 +108,6 @@ export const kittyProvider: PreviewableProvider<{
     description: "Fast, feature-rich, GPU based terminal emulator",
     category: "terminal",
     tags: ["terminal", "gpu", "fast", "python"],
-    icon: KittyIcon,
     website: "https://sw.kovidgoyal.net/kitty/",
     documentation: "https://sw.kovidgoyal.net/kitty/conf/",
   },
@@ -236,9 +233,5 @@ export const kittyProvider: PreviewableProvider<{
       );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  },
-
-  preview: {
-    component: KittyPreview,
   },
 };

@@ -1,4 +1,5 @@
 import { buildCommand } from "./commands/build";
+import { exportCommand } from "./commands/export";
 import { fromCommand } from "./commands/from";
 import { lintCommand } from "./commands/lint";
 import { TinteCLI } from "./tinte-cli";
@@ -17,6 +18,9 @@ async function main() {
       break;
     case "from":
       process.exit(await fromCommand(args.slice(1)));
+      break;
+    case "export":
+      process.exit(await exportCommand(args.slice(1)));
       break;
   }
 
@@ -38,6 +42,11 @@ Design system compiler (Agent Plugins):
   bunx tinte lint [paths...]         # Scan for colors that bypass the token system
   bunx tinte from --emit-script      # Print the agent-browser extraction script
   bunx tinte from --normalize <json> # Normalize extracted candidates to a draft identity
+
+Theme export (generate theme files from an identity):
+  bunx tinte export --list           # List available providers
+  bunx tinte export --provider vscode --out themes/
+  bunx tinte export --provider zed --json
 
 Options:
   --light                           # Install light variant

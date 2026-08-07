@@ -1,7 +1,5 @@
-import { BadgeCheck } from "lucide-react";
-import { BrandGuidelinesPreview } from "@/components/preview/brand-guidelines/brand-guidelines-preview";
 import type { TinteTheme } from "@tinte/core";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface BrandGuidelinesOutput {
   brand: {
@@ -68,188 +66,186 @@ export interface BrandGuidelinesOutput {
   };
 }
 
-export const brandGuidelinesProvider: PreviewableProvider<BrandGuidelinesOutput> =
-  {
-    metadata: {
-      id: "brand-guidelines",
-      name: "Brand Guidelines",
-      icon: BadgeCheck,
-      description:
-        "Comprehensive brand guidelines with logo, typography, and color specifications",
-      category: "design",
-      tags: ["brand", "guidelines", "design-system", "documentation"],
-      website: "https://example.com/brand-guidelines",
-    },
+export const brandGuidelinesProvider: ThemeProvider<BrandGuidelinesOutput> = {
+  metadata: {
+    id: "brand-guidelines",
+    name: "Brand Guidelines",
+    description:
+      "Comprehensive brand guidelines with logo, typography, and color specifications",
+    category: "design",
+    tags: ["brand", "guidelines", "design-system", "documentation"],
+    website: "https://example.com/brand-guidelines",
+  },
 
-    fileExtension: "html",
-    mimeType: "text/html",
+  fileExtension: "html",
+  mimeType: "text/html",
 
-    convert(theme: TinteTheme, currentTheme?: any): BrandGuidelinesOutput {
-      console.log({ theme, currentTheme });
-      const themeName = currentTheme?.name || "";
-      return {
-        brand: {
-          name: themeName,
-          description:
-            "The primary brand reflects the official logo and symbol that should be used in all communications. It combines the symbol and the logotype in a clear relationship. It should be used clearly and consistently.",
+  convert(theme: TinteTheme, currentTheme?: any): BrandGuidelinesOutput {
+    console.log({ theme, currentTheme });
+    const themeName = currentTheme?.name || "";
+    return {
+      brand: {
+        name: themeName,
+        description:
+          "The primary brand reflects the official logo and symbol that should be used in all communications. It combines the symbol and the logotype in a clear relationship. It should be used clearly and consistently.",
+      },
+      logo: {
+        primary:
+          "The primary logo is the official logo and should be used in most cases unless specified otherwise.",
+        variations: [
+          {
+            name: "Dark Background",
+            description: "Use on dark backgrounds",
+            background: theme.dark.bg,
+            logo: theme.light.tx,
+          },
+          {
+            name: "Light Background",
+            description: "Use on light backgrounds",
+            background: theme.light.bg,
+            logo: theme.dark.tx,
+          },
+          {
+            name: "Primary Color",
+            description: "Use on primary color backgrounds",
+            background: theme.light.pr,
+            logo: theme.light.bg,
+          },
+          {
+            name: "Accent Color",
+            description: "Use on accent color backgrounds",
+            background: theme.light.sc,
+            logo: theme.light.bg,
+          },
+        ],
+      },
+      symbol: {
+        description:
+          "The standalone symbol is reserved for specific applications where the full logo doesn't fit appropriately. It should be used in square or circular applications, or when space is extremely limited.",
+        variations: [
+          {
+            name: "Dark",
+            background: theme.dark.bg,
+            color: theme.light.pr,
+          },
+          {
+            name: "Primary",
+            background: theme.light.pr,
+            color: theme.light.bg,
+          },
+          {
+            name: "Light",
+            background: theme.light.bg_2,
+            color: theme.light.pr,
+          },
+          {
+            name: "Bright",
+            background: theme.light.sc,
+            color: theme.dark.tx,
+          },
+        ],
+      },
+      typography: {
+        primary: {
+          name: "Geist Sans",
+          family: "var(--font-geist-sans), system-ui, sans-serif",
+          weights: ["400", "500", "600", "700"],
+          sample:
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n1234567890!@#$%^&*()",
         },
-        logo: {
-          primary:
-            "The primary logo is the official logo and should be used in most cases unless specified otherwise.",
-          variations: [
+      },
+      colors: {
+        primary: {
+          name: "Primary Colour",
+          description: `Our primary colours reflect ${themeName}'s core brand identity. They should be used consistently across digital, print, and product experiences.`,
+          palette: [
             {
-              name: "Dark Background",
-              description: "Use on dark backgrounds",
-              background: theme.dark.bg,
-              logo: theme.light.tx,
+              name: "HEX",
+              hex: theme.light.pr,
+              usage: "Primary brand color",
             },
             {
-              name: "Light Background",
-              description: "Use on light backgrounds",
-              background: theme.light.bg,
-              logo: theme.dark.tx,
+              name: "RGB(185, 255, 4)",
+              hex: theme.light.pr,
+              usage: "Digital applications",
             },
             {
-              name: "Primary Color",
-              description: "Use on primary color backgrounds",
-              background: theme.light.pr,
-              logo: theme.light.bg,
+              name: "HEX",
+              hex: theme.light.sc,
+              usage: "Accent color",
             },
             {
-              name: "Accent Color",
-              description: "Use on accent color backgrounds",
-              background: theme.light.sc,
-              logo: theme.light.bg,
+              name: "PANTONE",
+              hex: theme.light.sc,
+              usage: "Print applications",
+            },
+            {
+              name: "HEX",
+              hex: theme.light.sc,
+              usage: "Bright variation",
+            },
+            {
+              name: "COFFEE",
+              hex: theme.dark.pr,
+              usage: "Dark variation",
             },
           ],
         },
-        symbol: {
+        neutral: {
+          name: "Neutral Colors",
           description:
-            "The standalone symbol is reserved for specific applications where the full logo doesn't fit appropriately. It should be used in square or circular applications, or when space is extremely limited.",
-          variations: [
+            "Supporting neutral colors for backgrounds, text, and UI elements.",
+          palette: [
             {
-              name: "Dark",
-              background: theme.dark.bg,
-              color: theme.light.pr,
+              name: "Background",
+              hex: theme.light.bg,
+              usage: "Main background",
             },
             {
-              name: "Primary",
-              background: theme.light.pr,
-              color: theme.light.bg,
+              name: "Surface",
+              hex: theme.light.bg_2,
+              usage: "Elevated surfaces",
             },
             {
-              name: "Light",
-              background: theme.light.bg_2,
-              color: theme.light.pr,
+              name: "Border",
+              hex: theme.light.ui,
+              usage: "Borders and dividers",
             },
             {
-              name: "Bright",
-              background: theme.light.sc,
-              color: theme.dark.tx,
+              name: "Text",
+              hex: theme.light.tx,
+              usage: "Primary text",
+            },
+            {
+              name: "Muted",
+              hex: theme.light.tx_2,
+              usage: "Secondary text",
+            },
+            {
+              name: "Faint",
+              hex: theme.light.tx_3,
+              usage: "Tertiary text",
             },
           ],
         },
-        typography: {
-          primary: {
-            name: "Geist Sans",
-            family: "var(--font-geist-sans), system-ui, sans-serif",
-            weights: ["400", "500", "600", "700"],
-            sample:
-              "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n1234567890!@#$%^&*()",
-          },
-        },
-        colors: {
-          primary: {
-            name: "Primary Colour",
-            description: `Our primary colours reflect ${themeName}'s core brand identity. They should be used consistently across digital, print, and product experiences.`,
-            palette: [
-              {
-                name: "HEX",
-                hex: theme.light.pr,
-                usage: "Primary brand color",
-              },
-              {
-                name: "RGB(185, 255, 4)",
-                hex: theme.light.pr,
-                usage: "Digital applications",
-              },
-              {
-                name: "HEX",
-                hex: theme.light.sc,
-                usage: "Accent color",
-              },
-              {
-                name: "PANTONE",
-                hex: theme.light.sc,
-                usage: "Print applications",
-              },
-              {
-                name: "HEX",
-                hex: theme.light.sc,
-                usage: "Bright variation",
-              },
-              {
-                name: "COFFEE",
-                hex: theme.dark.pr,
-                usage: "Dark variation",
-              },
-            ],
-          },
-          neutral: {
-            name: "Neutral Colors",
-            description:
-              "Supporting neutral colors for backgrounds, text, and UI elements.",
-            palette: [
-              {
-                name: "Background",
-                hex: theme.light.bg,
-                usage: "Main background",
-              },
-              {
-                name: "Surface",
-                hex: theme.light.bg_2,
-                usage: "Elevated surfaces",
-              },
-              {
-                name: "Border",
-                hex: theme.light.ui,
-                usage: "Borders and dividers",
-              },
-              {
-                name: "Text",
-                hex: theme.light.tx,
-                usage: "Primary text",
-              },
-              {
-                name: "Muted",
-                hex: theme.light.tx_2,
-                usage: "Secondary text",
-              },
-              {
-                name: "Faint",
-                hex: theme.light.tx_3,
-                usage: "Tertiary text",
-              },
-            ],
-          },
-        },
-        scaling: {
-          description:
-            "Logo should scale proportionally and remain legible across all media. The minimum size for digital applications is 24px height.",
-          sizes: [
-            { percentage: 100, usage: "Standard size" },
-            { percentage: 75, usage: "Medium applications" },
-            { percentage: 50, usage: "Small applications" },
-            { percentage: 25, usage: "Minimum size" },
-          ],
-        },
-      };
-    },
+      },
+      scaling: {
+        description:
+          "Logo should scale proportionally and remain legible across all media. The minimum size for digital applications is 24px height.",
+        sizes: [
+          { percentage: 100, usage: "Standard size" },
+          { percentage: 75, usage: "Medium applications" },
+          { percentage: 50, usage: "Small applications" },
+          { percentage: 25, usage: "Minimum size" },
+        ],
+      },
+    };
+  },
 
-    export(theme: TinteTheme, filename = "brand-guidelines"): ProviderOutput {
-      const guidelines = this.convert(theme);
+  export(theme: TinteTheme, filename = "brand-guidelines"): ProviderOutput {
+    const guidelines = this.convert(theme);
 
-      const html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -373,14 +369,10 @@ export const brandGuidelinesProvider: PreviewableProvider<BrandGuidelinesOutput>
 </body>
 </html>`;
 
-      return {
-        content: html,
-        filename: `${filename}.html`,
-        mimeType: this.mimeType,
-      };
-    },
-
-    preview: {
-      component: BrandGuidelinesPreview,
-    },
-  };
+    return {
+      content: html,
+      filename: `${filename}.html`,
+      mimeType: this.mimeType,
+    };
+  },
+};

@@ -1,8 +1,6 @@
-import { SlackPreview } from "@/components/preview/slack/slack-preview";
-import { SlackIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@tinte/core";
 import { createPolineColorMapping, getThemeName } from "./poline-base";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface SlackTheme {
   // Sidebar colors
@@ -52,7 +50,7 @@ function generateSlackTheme(
   };
 }
 
-export const slackProvider: PreviewableProvider<{
+export const slackProvider: ThemeProvider<{
   light: SlackTheme;
   dark: SlackTheme;
 }> = {
@@ -62,7 +60,6 @@ export const slackProvider: PreviewableProvider<{
     description: "Team collaboration and messaging platform",
     category: "other",
     tags: ["communication", "messaging", "collaboration", "workspace"],
-    icon: SlackIcon,
     website: "https://slack.com/",
     documentation:
       "https://slack.com/help/articles/205166337-Change-your-Slack-theme",
@@ -120,9 +117,5 @@ export const slackProvider: PreviewableProvider<{
       );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  },
-
-  preview: {
-    component: SlackPreview,
   },
 };
