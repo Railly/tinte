@@ -50,7 +50,7 @@ The primary action style is an inverted foreground/background pair, not a hue. D
 
 ### Type scale
 
-Six roles only: display 48/1.05 500 · title 30/1.15 500 · heading 20/1.3 500 · body 16/1.6 400 · label 13/1.4 500 · mono 13/1.6 400. Sans: Geist. Mono: Geist Mono. No other sizes or weights exist.
+Six roles only: display 56/1.05 500 · title 24/1.25 500 · heading 16/1.4 500 · body 16/1.6 400 · label 14/1.5 400 · mono 13/1.7 400. Sans: Geist. Mono: Geist Mono. No other sizes or weights exist.
 
 Use only these roles. Do not create arbitrary font sizes or numeric weights. Equivalent
 peers always share role, size, weight, line-height, and numeric treatment. Never resize
@@ -58,12 +58,12 @@ one peer because its string is longer or its number is larger.
 
 ### Voice
 
-Write in these words: compile, token, plugin, deterministic, on-brand, artifact
+Write in these words: precise, technical, calm, compile, token, plugin, deterministic, artifact
 
 Write every headline so a fifth grader gets it. Prefer concrete nouns and active verbs.
 Numbers, not adjectives: "renders in 40ms", not "blazingly fast". No weak quantifiers
 ("most", "many", "rarely", "up to"). Second person. Sentence case unless
-Show the emitted artifact. The plugin directory and the token file are the proof, so never describe an output you could print; Name the three commands with their real flags. Never paraphrase a command into prose; The primary action installs or builds something. Never write Get Started or Learn More; Stay monochrome. The accent is reserved for code syntax, never for a CTA fill says otherwise.
+Do: show the compiler pipeline as real commands and real output; Don't: use the word platform; Don't: decorative gradients or glows; Do: stay monochrome. The accent is reserved for code syntax, never for a CTA fill; Do: name the three commands with their real flags. Never paraphrase a command into prose says otherwise.
 
 Write copy only this company could write. If a competitor could paste this page onto
 their own domain and change one word, it is too generic — rewrite from what this product
@@ -71,10 +71,11 @@ actually does.
 
 ### Brand-specific rules
 
-- Show the emitted artifact. The plugin directory and the token file are the proof, so never describe an output you could print.
-- Name the three commands with their real flags. Never paraphrase a command into prose.
-- The primary action installs or builds something. Never write Get Started or Learn More.
-- Stay monochrome. The accent is reserved for code syntax, never for a CTA fill.
+- Do: show the compiler pipeline as real commands and real output
+- Don't: use the word platform
+- Don't: decorative gradients or glows
+- Do: stay monochrome. The accent is reserved for code syntax, never for a CTA fill
+- Do: name the three commands with their real flags. Never paraphrase a command into prose
 
 These override the archetype defaults below when they conflict, and only then.
 

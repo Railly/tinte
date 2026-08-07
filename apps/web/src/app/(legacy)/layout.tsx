@@ -4,7 +4,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { BetaBanner } from "@/components/shared/layout/beta-banner";
 import { TinteThemeScript } from "@/components/shared/theme/theme-script";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
@@ -49,7 +48,6 @@ export default function LegacyLayout({
               />
               <TinteThemeScript />
               {children}
-              <BetaBanner />
               <Toaster position="bottom-right" />
               <Analytics />
               <SpeedInsights />

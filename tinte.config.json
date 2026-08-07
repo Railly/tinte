@@ -1,37 +1,37 @@
 {
   "name": "tinte",
   "primaryStyle": "inverted",
-  "radius": "0.625rem",
+  "radius": "0.25rem",
   "theme": {
     "light": {
       "bg": "#ffffff",
-      "bg_2": "#f7f7f7",
-      "ui": "#e4e4e4",
-      "ui_2": "#d4d4d4",
-      "ui_3": "#b4b4b4",
-      "tx": "#191919",
-      "tx_2": "#6f6f6f",
-      "tx_3": "#9b9b9b",
-      "pr": "#986801",
-      "sc": "#4078f2",
-      "ac_1": "#a626a4",
-      "ac_2": "#50a14f",
-      "ac_3": "#e45649"
+      "bg_2": "#fafafa",
+      "ui": "#ebebeb",
+      "ui_2": "#e0e0e0",
+      "ui_3": "#c9c9c9",
+      "tx": "#0a0a0a",
+      "tx_2": "#666666",
+      "tx_3": "#8f8f8f",
+      "pr": "#0a0a0a",
+      "sc": "#404040",
+      "ac_1": "#7c5cff",
+      "ac_2": "#0a7f5c",
+      "ac_3": "#c5303c"
     },
     "dark": {
-      "bg": "#181818",
-      "bg_2": "#222222",
-      "ui": "#333333",
-      "ui_2": "#444444",
-      "ui_3": "#555555",
-      "tx": "#eeeeee",
-      "tx_2": "#aaaaaa",
-      "tx_3": "#666666",
-      "pr": "#e5c07b",
-      "sc": "#61afef",
-      "ac_1": "#c678dd",
-      "ac_2": "#98c379",
-      "ac_3": "#e06c75"
+      "bg": "#000000",
+      "bg_2": "#0a0a0a",
+      "ui": "#1f1f1f",
+      "ui_2": "#2e2e2e",
+      "ui_3": "#454545",
+      "tx": "#ededed",
+      "tx_2": "#a1a1a1",
+      "tx_3": "#7a7a7a",
+      "pr": "#ededed",
+      "sc": "#b4b4b4",
+      "ac_1": "#a48bff",
+      "ac_2": "#46d99e",
+      "ac_3": "#ff5f56"
     }
   },
   "typography": {
@@ -40,26 +40,29 @@
       "mono": "Geist Mono"
     },
     "roles": {
-      "display": { "size": 48, "lineHeight": 1.05, "weight": 500 },
-      "title": { "size": 30, "lineHeight": 1.15, "weight": 500 },
-      "heading": { "size": 20, "lineHeight": 1.3, "weight": 500 },
+      "display": { "size": 56, "lineHeight": 1.05, "weight": 500 },
+      "title": { "size": 24, "lineHeight": 1.25, "weight": 500 },
+      "heading": { "size": 16, "lineHeight": 1.4, "weight": 500 },
       "body": { "size": 16, "lineHeight": 1.6, "weight": 400 },
-      "label": { "size": 13, "lineHeight": 1.4, "weight": 500 },
-      "mono": { "size": 13, "lineHeight": 1.6, "weight": 400 }
+      "label": { "size": 14, "lineHeight": 1.5, "weight": 400 },
+      "mono": { "size": 13, "lineHeight": 1.7, "weight": 400 }
     }
   },
   "voiceWords": [
+    "precise",
+    "technical",
+    "calm",
     "compile",
     "token",
     "plugin",
     "deterministic",
-    "on-brand",
     "artifact"
   ],
   "dosDonts": [
-    "Show the emitted artifact. The plugin directory and the token file are the proof, so never describe an output you could print.",
-    "Name the three commands with their real flags. Never paraphrase a command into prose.",
-    "The primary action installs or builds something. Never write Get Started or Learn More.",
-    "Stay monochrome. The accent is reserved for code syntax, never for a CTA fill."
+    "Do: show the compiler pipeline as real commands and real output",
+    "Don't: use the word platform",
+    "Don't: decorative gradients or glows",
+    "Do: stay monochrome. The accent is reserved for code syntax, never for a CTA fill",
+    "Do: name the three commands with their real flags. Never paraphrase a command into prose"
   ]
 }
