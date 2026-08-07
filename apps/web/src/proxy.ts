@@ -5,6 +5,11 @@ const isPublicRoute = createRouteMatcher([
   // tinte's own design system, fetched by agents without a session.
   "/design.md",
   "/tokens.css",
+  // The same design system as a complete Agent Plugin tree. The matcher below
+  // only exempts static extensions, and neither .md nor .json is on that list,
+  // so plugin.json and SKILL.md reach this middleware and need the exemption
+  // spelled out the way /design.md does.
+  "/plugin(.*)",
   // Crawler surfaces. These were already unreachable behind auth before the
   // /legacy move; listing them here is what makes the new design.md entry in
   // robots.txt actually fetchable.

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CopyCommand } from "@/components/home/copy-command";
 import {
   CommandLine,
   ShikiTokenStyle,
@@ -14,6 +15,21 @@ export const metadata: Metadata = {
     "Tinte reads a live site, compiles its design system into an Agent Plugin, and fails the build on any color that bypasses the tokens.",
   alternates: { canonical: siteConfig.url },
 };
+
+// Both commands are the ones packages/cli/README.md documents, verbatim. The
+// skill install comes first because it is what a coding agent needs before it
+// can write on-brand UI; the CLI is the compiler behind it.
+const SKILL_INSTALL_COMMAND = "npx skills add Railly/tinte";
+const CLI_INSTALL_COMMAND = "bun add -g tinte";
+
+// Emitted by `bun run generate:design` into apps/web/public/. The first two are
+// the loose artifacts; the rest are the Agent Plugin tree an agent mirrors.
+const ARTIFACT_PATHS = [
+  "/design.md",
+  "/tokens.css",
+  "/plugin/plugin.json",
+  "/plugin/skills/tinte-design/SKILL.md",
+];
 
 const EXTRACT_SNIPPET = `$ tinte from --normalize candidates.json --name acme
 
@@ -130,21 +146,30 @@ export default function Home() {
               both as one installable artifact.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <a
-                href="https://www.npmjs.com/package/tinte"
-                className="rounded-sm bg-primary px-4 py-2.5 font-mono text-[13px] text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                style={{ touchAction: "manipulation" }}
-              >
-                bunx tinte
-              </a>
+            <div className="mt-10 flex flex-wrap items-center gap-3">
+              <CopyCommand
+                command={SKILL_INSTALL_COMMAND}
+                label="Install the skill"
+                variant="primary"
+              />
+              <CopyCommand
+                command={CLI_INSTALL_COMMAND}
+                label="Install the CLI"
+                variant="secondary"
+              />
+            </div>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              The first installs the skill into{" "}
+              <code className="font-mono text-[13px]">.agents/skills/</code> for
+              Claude Code, Codex, and Cursor. The second installs the compiler
+              itself.{" "}
               <a
                 href={siteConfig.links.github}
-                className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 Source on GitHub
               </a>
-            </div>
+            </p>
           </div>
 
           <TerminalBlock
@@ -216,23 +241,20 @@ export default function Home() {
           </h2>
           <p className="mt-4 max-w-[56ch] text-base leading-relaxed text-muted-foreground">
             The page you are reading is styled by the plugin tinte compiles from
-            its own config. Both artifacts are fetchable at their real paths, so
-            an agent can install this design system the same way it would
-            install yours.
+            its own config. Every artifact is fetchable at its real path, so an
+            agent can install this design system the same way it would install
+            yours. The full plugin is served as an Agent Plugins 1.0.0 tree.
           </p>
           <p className="mt-8 flex flex-wrap gap-x-8 gap-y-3 font-mono text-[13px]">
-            <a
-              href="/design.md"
-              className="underline underline-offset-4 hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-            >
-              /design.md
-            </a>
-            <a
-              href="/tokens.css"
-              className="underline underline-offset-4 hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-            >
-              /tokens.css
-            </a>
+            {ARTIFACT_PATHS.map((path) => (
+              <a
+                key={path}
+                href={path}
+                className="underline underline-offset-4 hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                {path}
+              </a>
+            ))}
           </p>
         </section>
       </main>
