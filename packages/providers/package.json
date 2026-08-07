@@ -34,6 +34,11 @@
       "bun": "./src/provider-utils/vscode-download.ts",
       "types": "./src/provider-utils/vscode-download.ts",
       "import": "./src/provider-utils/vscode-download.ts"
+    },
+    "./react": {
+      "bun": "./src/react/index.tsx",
+      "types": "./src/react/index.tsx",
+      "import": "./src/react/index.tsx"
     }
   },
   "dependencies": {

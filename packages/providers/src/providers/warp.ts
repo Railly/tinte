@@ -1,5 +1,3 @@
-import { WarpPreview } from "@/components/preview/warp/warp-preview";
-import { WarpIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@tinte/core";
 import {
   createPolineColorMapping,
@@ -7,7 +5,7 @@ import {
   getThemeName,
   toYAML,
 } from "./poline-base";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface WarpTheme {
   accent: string;
@@ -79,7 +77,7 @@ function generateWarpTheme(
   };
 }
 
-export const warpProvider: PreviewableProvider<{
+export const warpProvider: ThemeProvider<{
   light: WarpTheme;
   dark: WarpTheme;
 }> = {
@@ -89,7 +87,6 @@ export const warpProvider: PreviewableProvider<{
     description: "Modern terminal with AI and collaboration features",
     category: "terminal",
     tags: ["terminal", "ai", "modern", "collaboration"],
-    icon: WarpIcon,
     website: "https://www.warp.dev/",
     documentation: "https://docs.warp.dev/appearance/custom-themes",
   },
@@ -150,9 +147,5 @@ ${toYAML(warpTheme)}`;
       );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  },
-
-  preview: {
-    component: WarpPreview,
   },
 };

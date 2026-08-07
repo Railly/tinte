@@ -2,9 +2,9 @@ import type { TinteTheme } from "@tinte/core";
 import {
   convertTheme,
   convertTinteToVSCode,
-  getPreviewableProvider,
   tinteToZed,
 } from "@tinte/providers";
+import { getPreviewableProviderReact } from "@tinte/providers/react";
 import { useQueryState } from "nuqs";
 import { memo, useMemo } from "react";
 import {
@@ -25,7 +25,7 @@ export const UnifiedPreview = memo(function UnifiedPreview({
   const [provider] = useQueryState("provider", { defaultValue: "shadcn" });
   const vscodeOverrides = useVSCodeOverrides();
   const zedOverrides = useZedOverrides();
-  const currentProvider = getPreviewableProvider(provider || "shadcn");
+  const currentProvider = getPreviewableProviderReact(provider || "shadcn");
 
   // Use special conversion with overrides for VS Code and Zed
   const converted = useMemo(() => {

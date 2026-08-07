@@ -1,8 +1,6 @@
-import { BananaPreview } from "@/components/preview/banana/banana-preview";
-import { BananaIcon } from "@/components/shared/icons";
 import type { TinteTheme } from "@tinte/core";
 import { createPolineColorMapping, getThemeName } from "./poline-base";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 export interface BananaTheme {
   // Brand colors for design generation
@@ -66,7 +64,7 @@ function generateBananaTheme(
   };
 }
 
-export const bananaProvider: PreviewableProvider<{
+export const bananaProvider: ThemeProvider<{
   light: BananaTheme;
   dark: BananaTheme;
 }> = {
@@ -77,7 +75,6 @@ export const bananaProvider: PreviewableProvider<{
       "AI-powered creative partner for marketing assets and digital design",
     category: "other",
     tags: ["ai", "design", "marketing", "creative", "assets", "branding"],
-    icon: BananaIcon,
     website: "https://tinte.com/banana",
     documentation: "https://tinte.com/docs/banana",
   },
@@ -135,9 +132,5 @@ export const bananaProvider: PreviewableProvider<{
       );
 
     return validateTheme(output.light) && validateTheme(output.dark);
-  },
-
-  preview: {
-    component: BananaPreview,
   },
 };

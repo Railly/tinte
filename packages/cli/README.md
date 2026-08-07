@@ -75,6 +75,27 @@ bunx tinte from --normalize candidates.json --name acme --out tinte.config.json
 
 Without `--out` the identity is printed to stdout.
 
+### Export a theme file
+
+Turns an identity into a real theme file for one of the 14 providers. Reads the same `tinte.config.json` the compiler uses.
+
+```bash
+bunx tinte export --list                          # see every provider
+bunx tinte export --provider vscode --out themes/ # write themes/vscode-theme.json
+bunx tinte export --provider zed --json           # print to stdout
+```
+
+Providers span editors (VS Code, Zed, Shiki, Codex), terminals (Kitty, Alacritty, Warp, Windows Terminal), UI (shadcn/ui), and design tools (GIMP).
+
+Flags: `--config <path>` (default `./tinte.config.json`), `--out <dir>`, `--out-file <path>` for an exact filename, `--json` to print instead of write.
+
+Exits `1` on an unknown provider or an unreadable config, so it works as a CI step. A repo can regenerate its themes on every build and diff the result:
+
+```bash
+tinte export --provider vscode --out themes/
+git diff --exit-code themes/
+```
+
 ### Install a theme into your editor
 
 The classic installer. Accepts a theme slug, a URL, or a local JSON file.

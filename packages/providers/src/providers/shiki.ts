@@ -1,8 +1,10 @@
-import { ShikiPreview } from "@/components/preview/shiki/shiki-preview";
-import { ShikiIcon } from "@/components/shared/icons";
-import type { ShikiCssTheme, ShikiTheme } from "@tinte/core";
-import type { TinteBlock, TinteTheme } from "@tinte/core";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type {
+  ShikiCssTheme,
+  ShikiTheme,
+  TinteBlock,
+  TinteTheme,
+} from "@tinte/core";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 function mapTinteBlockToShiki(
   block: TinteBlock,
@@ -100,7 +102,7 @@ ${darkVars}
 }`;
 }
 
-export const shikiProvider: PreviewableProvider<ShikiTheme> = {
+export const shikiProvider: ThemeProvider<ShikiTheme> = {
   metadata: {
     id: "shiki",
     name: "Shiki",
@@ -108,7 +110,6 @@ export const shikiProvider: PreviewableProvider<ShikiTheme> = {
       "Syntax highlighter using CSS variables for maximum customization",
     category: "editor",
     tags: ["syntax", "highlighting", "css", "customizable"],
-    icon: ShikiIcon,
     website: "https://shiki.style/",
     documentation:
       "https://shiki.style/guide/theme-colors-manipulation#css-variables-theme",
@@ -125,8 +126,4 @@ export const shikiProvider: PreviewableProvider<ShikiTheme> = {
   }),
 
   validate: (output: ShikiTheme) => !!(output.light && output.dark),
-
-  preview: {
-    component: ShikiPreview,
-  },
 };

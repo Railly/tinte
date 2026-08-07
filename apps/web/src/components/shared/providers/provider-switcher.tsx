@@ -1,6 +1,7 @@
 "use client";
 
 import { getAvailableProviders } from "@tinte/providers";
+import { previewableProviders as reactPreviewableProviders } from "@tinte/providers/react";
 import { ChevronsUpDown, Clock, FlaskConical } from "lucide-react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
@@ -32,14 +33,21 @@ export function ProviderSwitcher({ className }: ProviderSwitcherProps) {
   const [open, setOpen] = React.useState(false);
 
   const availableProviders = React.useMemo(() => {
-    return getAvailableProviders().map((p) => ({
-      id: p.metadata.id,
-      name: p.metadata.name,
-      icon: p.metadata.icon,
-      category: p.metadata.category,
-      available: true,
-      experimental: p.metadata.experimental,
-    }));
+    const order = getAvailableProviders().map((p) => p.metadata.id);
+    const byId = new Map(
+      reactPreviewableProviders.map((p) => [p.metadata.id, p]),
+    );
+    return order
+      .map((id) => byId.get(id))
+      .filter((p): p is (typeof reactPreviewableProviders)[number] => !!p)
+      .map((p) => ({
+        id: p.metadata.id,
+        name: p.metadata.name,
+        icon: p.icon,
+        category: p.metadata.category,
+        available: true,
+        experimental: p.metadata.experimental,
+      }));
   }, []);
 
   const plannedProviders = React.useMemo(() => {

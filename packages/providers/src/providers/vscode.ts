@@ -1,10 +1,6 @@
-import { VSCodePreview } from "@/components/preview/vscode/vscode-preview";
-import { VSCodeIcon } from "@/components/shared/icons";
-import type { TinteBlock, TinteTheme } from "@tinte/core";
+import type { CodeTemplate, TinteBlock, TinteTheme } from "@tinte/core";
 import { shadcnToTinte } from "../provider-utils";
-import type { PreviewableProvider, ProviderOutput } from "./types";
-
-import type { CodeTemplate } from "@tinte/core";
+import type { ProviderOutput, ThemeProvider } from "./types";
 export type { CodeTemplate };
 export { codeTemplates } from "./vscode-code-templates";
 
@@ -455,7 +451,7 @@ function generateVSCodeThemeFile(themes: {
 
 export { convertTinteToVSCode };
 
-export const vscodeProvider: PreviewableProvider<{
+export const vscodeProvider: ThemeProvider<{
   light: VSCodeTheme;
   dark: VSCodeTheme;
 }> = {
@@ -465,7 +461,6 @@ export const vscodeProvider: PreviewableProvider<{
     description: "The most popular code editor with extensive theme support",
     category: "editor",
     tags: ["editor", "microsoft", "typescript", "javascript"],
-    icon: VSCodeIcon,
     website: "https://code.visualstudio.com/",
     documentation:
       "https://code.visualstudio.com/api/extension-guides/color-theme",
@@ -491,8 +486,4 @@ export const vscodeProvider: PreviewableProvider<{
       output.light?.tokenColors &&
       output.dark?.tokenColors
     ),
-
-  preview: {
-    component: VSCodePreview,
-  },
 };

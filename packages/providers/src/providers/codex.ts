@@ -5,9 +5,7 @@ import type {
   TinteTheme,
 } from "@tinte/core";
 import { wcagLuminance } from "culori";
-import { CodexPreview } from "@/components/preview/codex/codex-preview";
-import { CodexIcon } from "@/components/shared/icons";
-import type { PreviewableProvider, ProviderOutput } from "./types";
+import type { ProviderOutput, ThemeProvider } from "./types";
 
 function computeContrast(bg: string, fg: string): number {
   const bgLum = wcagLuminance(bg);
@@ -70,14 +68,13 @@ function generateExportContent(theme: CodexTheme): string {
   );
 }
 
-export const codexProvider: PreviewableProvider<CodexTheme> = {
+export const codexProvider: ThemeProvider<CodexTheme> = {
   metadata: {
     id: "codex",
     name: "Codex",
     description: "Theme for OpenAI Codex desktop app",
     category: "editor",
     tags: ["openai", "ai", "codex", "terminal"],
-    icon: CodexIcon,
     website: "https://openai.com/index/introducing-codex/",
   },
 
@@ -92,8 +89,4 @@ export const codexProvider: PreviewableProvider<CodexTheme> = {
   }),
 
   validate: (output: CodexTheme) => !!(output.light && output.dark),
-
-  preview: {
-    component: CodexPreview,
-  },
 };

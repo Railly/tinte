@@ -1,23 +1,25 @@
 "use client";
 
-import type { ShadcnTheme } from "@/types/shadcn";
 import type { TinteTheme } from "@tinte/core";
-import { DEFAULT_THEME } from "@/utils/default-theme";
-import {
-  downloadFile,
-  downloadJSON,
-  downloadMultipleFiles,
-} from "@/lib/file-download";
 import {
   convertAllThemes,
   convertTheme,
   exportAllThemes,
   exportTheme,
   getAvailableProviders,
-  getPreviewableProvider,
-  getPreviewableProviders,
   getProvider,
 } from "@tinte/providers";
+import {
+  getPreviewableProviderReact,
+  previewableProviders,
+} from "@tinte/providers/react";
+import {
+  downloadFile,
+  downloadJSON,
+  downloadMultipleFiles,
+} from "@/lib/file-download";
+import type { ShadcnTheme } from "@/types/shadcn";
+import { DEFAULT_THEME } from "@/utils/default-theme";
 import type { ThemeData } from "./tokens";
 
 export type ThemeMode = "light" | "dark";
@@ -230,7 +232,6 @@ export function extractThemeColors(
 
 export function useThemeAdapters() {
   const availableProviders = getAvailableProviders();
-  const previewableProviders = getPreviewableProviders();
 
   return {
     availableProviders,
@@ -257,7 +258,7 @@ export function useThemeAdapters() {
     },
 
     getPreviewableProvider: (providerId: string) => {
-      return getPreviewableProvider(providerId);
+      return getPreviewableProviderReact(providerId);
     },
   };
 }
