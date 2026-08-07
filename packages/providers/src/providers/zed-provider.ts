@@ -1,5 +1,4 @@
-import type { TinteTheme } from "@tinte/core";
-import type { ZedThemeFamily } from "@tinte/core";
+import type { TinteTheme, ZedThemeFamily } from "@tinte/core";
 import type { ThemeProvider } from "./types";
 import { tinteToZed } from "./zed";
 

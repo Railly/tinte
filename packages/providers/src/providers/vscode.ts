@@ -1,8 +1,6 @@
-import type { TinteBlock, TinteTheme } from "@tinte/core";
+import type { CodeTemplate, TinteBlock, TinteTheme } from "@tinte/core";
 import { shadcnToTinte } from "../provider-utils";
 import type { ProviderOutput, ThemeProvider } from "./types";
-
-import type { CodeTemplate } from "@tinte/core";
 export type { CodeTemplate };
 export { codeTemplates } from "./vscode-code-templates";
 

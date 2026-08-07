@@ -1,5 +1,9 @@
-import type { ShikiCssTheme, ShikiTheme } from "@tinte/core";
-import type { TinteBlock, TinteTheme } from "@tinte/core";
+import type {
+  ShikiCssTheme,
+  ShikiTheme,
+  TinteBlock,
+  TinteTheme,
+} from "@tinte/core";
 import type { ProviderOutput, ThemeProvider } from "./types";
 
 function mapTinteBlockToShiki(

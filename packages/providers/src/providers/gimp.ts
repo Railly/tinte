@@ -1,10 +1,11 @@
-import { makePolineFromTinte, polineRampHex } from "./poline-base";
 import type { TinteTheme } from "@tinte/core";
 import {
   createPolineColorMapping,
   getDisplayName,
   getThemeName,
   hexToInt,
+  makePolineFromTinte,
+  polineRampHex,
 } from "./poline-base";
 import type { ProviderOutput, ThemeProvider } from "./types";
 
