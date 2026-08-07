@@ -22,4 +22,18 @@
   color-scheme: dark;
   background-color: var(--background);
   color: var(--foreground);
+
+  /*
+   * globals.css defines the font tokens as `--font-mono: var(--font-mono)`,
+   * a self-reference that never resolves, so `font-mono` fell back to
+   * ui-sans-serif and the command list rendered in the sans face. The
+   * workbench masks this because its theme script writes these variables as
+   * inline styles at runtime; the landing has no such script. Bind them here
+   * to the faces layout.tsx loads, which are the two families named in
+   * tinte.config.json.
+   */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  font-family: var(--font-sans);
 }
