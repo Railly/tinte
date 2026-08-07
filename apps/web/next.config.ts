@@ -55,6 +55,12 @@ const nextConfig: NextConfig = {
           { key: "Content-Type", value: "text/markdown; charset=utf-8" },
         ],
       },
+      {
+        source: "/plugin/skills/:skill/SKILL.md",
+        headers: [
+          { key: "Content-Type", value: "text/markdown; charset=utf-8" },
+        ],
+      },
     ];
   },
 

@@ -11,7 +11,9 @@
     "build": "bun run --filter @tinte/web build",
     "lint": "biome check",
     "format": "biome format --write",
-    "generate:design": "bun packages/cli/src/cli.ts build --config ./tinte.config.json --out ./apps/web/public/design",
+    "generate:design": "bun run generate:artifacts && bun run generate:plugin",
+    "generate:artifacts": "bun packages/cli/src/cli.ts build --config ./tinte.config.json --out ./apps/web/public/design",
+    "generate:plugin": "bun packages/cli/src/cli.ts build --plugin --config ./tinte.config.json --out ./apps/web/public/plugin",
     "check:staged": "biome check --write --staged",
     "validate:commit-msg": "node scripts/validate-commit-msg.mjs",
     "prepare": "simple-git-hooks"
