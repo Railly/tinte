@@ -251,9 +251,15 @@ export default function Home() {
           href="https://vercel.com/oss"
           target="_blank"
           rel="noreferrer"
-          className="font-mono text-[13px] underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          Vercel OSS Program
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://vercel.com/oss/program-badge.svg"
+            alt="Vercel OSS Program"
+            width={160}
+            height={32}
+          />
         </a>
       </footer>
     </div>
