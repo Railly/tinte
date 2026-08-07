@@ -11,6 +11,10 @@ export default defineConfig([
     sourcemap: true,
     minify: false,
     target: "node16",
+    // Workspace packages ship TypeScript sources, so they must be inlined into
+    // the published bundle. Without this they stay external and the binary
+    // crashes at require time on a consumer machine.
+    noExternal: [/^@tinte\//],
     banner: {
       js: "#!/usr/bin/env node",
     },

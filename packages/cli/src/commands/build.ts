@@ -1,7 +1,6 @@
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   type TinteBlock,
   type TinteIdentity,
@@ -9,6 +8,7 @@ import {
   type Typography,
 } from "@tinte/core";
 import { formatCss, oklch, parse } from "culori";
+import { moduleDir } from "../lib/module-dir";
 
 const PLUGIN_SCHEMA_URL =
   "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json";
@@ -149,7 +149,7 @@ function parseArgs(args: string[]): BuildOptions {
  * bundle sits one level deeper than the package root.
  */
 async function loadTemplate(): Promise<string> {
-  const here = dirname(fileURLToPath(import.meta.url));
+  const here = moduleDir(import.meta.url);
   const candidates = [
     // src/commands/build.ts -> packages/cli/assets
     resolve(here, "../../assets/templates/landing.md"),
