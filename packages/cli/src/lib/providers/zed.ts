@@ -1,6 +1,10 @@
+import type {
+  TinteBlock,
+  ZedTheme,
+  ZedThemeFamily,
+  ZedThemeStyle,
+} from "@tinte/core";
 import { formatHex, interpolate, oklch, rgb } from "culori";
-import type { TinteBlock } from "@tinte/core";
-import type { ZedTheme, ZedThemeFamily, ZedThemeStyle } from "@tinte/core";
 
 // Helper functions for color manipulation
 function ensureAlpha(color: string, alpha: number = 1): string {
