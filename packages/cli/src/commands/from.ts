@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { oklch } from "culori";
 import { z } from "zod";
+import { moduleDir } from "../lib/module-dir";
 
 // Intentionally a LOOSE draft schema, not the strict TinteIdentitySchema from
 // @tinte/core: extraction from a homepage cannot derive every token (destructive,
@@ -77,17 +77,7 @@ const OKLCH_CHROMA_SATURATED_THRESHOLD = 0.09;
 const TOP_N_PER_CHANNEL = 10;
 
 function resolveExtractScriptPath(): string {
-  // Works under `tsx` dev (ESM, import.meta.url available) and under the
-  // tsup CJS build (import.meta.url is polyfilled to a file:// URL by
-  // esbuild's cjs interop for `target: node16`, __dirname is also valid
-  // there). Try import.meta first, fall back to __dirname for safety.
-  let dir: string;
-  try {
-    dir = dirname(fileURLToPath(import.meta.url));
-  } catch {
-    // biome-ignore lint/suspicious/noExplicitAny: __dirname is CJS-only
-    dir = (globalThis as any).__dirname ?? process.cwd();
-  }
+  const dir = moduleDir(import.meta.url);
 
   const candidates = [
     // dev via tsx: dir = packages/cli/src/commands

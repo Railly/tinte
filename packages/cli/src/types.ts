@@ -1,6 +1,8 @@
+import type { TinteBlock } from "@tinte/core";
+
 export interface TinteTheme {
-  light: Record<string, string>;
-  dark: Record<string, string>;
+  light: TinteBlock;
+  dark: TinteBlock;
 }
 
 export interface EditorInstallOptions {
