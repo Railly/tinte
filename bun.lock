@@ -187,15 +187,15 @@
     },
     "packages/cli": {
       "name": "tinte",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "bin": {
         "tinte": "dist/cli.js",
       },
       "dependencies": {
-        "@tinte/core": "workspace:*",
         "culori": "^4.0.2",
       },
       "devDependencies": {
+        "@tinte/core": "workspace:*",
         "@types/culori": "^4.0.0",
         "@types/node": "^20.0.0",
         "bun-types": "^1.3.14",
