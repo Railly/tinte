@@ -34,6 +34,22 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   authors: [{ name: siteConfig.author.name, url: siteConfig.author.url }],
   creator: siteConfig.author.name,
+  // No image is declared here on purpose: the legacy opengraph-image lives in
+  // the (legacy) route group and stays scoped to those routes, so the pivot
+  // never inherits a card advertising the old theme converter.
+  openGraph: {
+    type: "website",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: siteConfig.name,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: "summary",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    creator: siteConfig.author.twitter,
+  },
   icons: {
     icon: "/icon.png",
     shortcut: "/icon.png",

@@ -26,17 +26,22 @@ acme-plugin/
         └── references/
             └── tokens.css`;
 
-// Sample linter output. The offending literals below are the subject of this
-// example, not styling, so each carries the linter's own per-line escape.
-const LINT_SNIPPET = [
-  "$ tinte lint src/",
-  "",
-  "src/components/card.tsx:12  hex       #0a0a0a", // tinte-ignore
-  "src/components/card.tsx:19  palette   text-slate-400", // tinte-ignore
-  "",
-  "2 colors bypass the token system",
-  "exit 1",
-].join("\n");
+// The linter reports a violation by kind, not by echoing the literal it found,
+// so this example names each defect in words and shows the repaired line. Every
+// piece of color syntax rendered on this page is already token-based, which is
+// why the page passes its own `tinte lint` with no per-line escapes.
+const LINT_SNIPPET = `$ tinte lint src/
+
+card.tsx:12  hex literal       ->  var(--card)
+card.tsx:19  tailwind palette  ->  text-muted-foreground
+
+2 violations found
+exit 1
+
+$ tinte lint src/   # after the fix
+
+tinte lint: clean
+exit 0`;
 
 const COMMANDS = [
   {
@@ -57,7 +62,7 @@ const COMMANDS = [
   },
   {
     command: "tinte lint <paths>",
-    does: "Exits 1 on hex literals, rgb() calls, and framework palette classes.", // tinte-ignore
+    does: "Exits 1 on hex literals, functional color notation, and framework palette classes.",
   },
   {
     command: "bunx tinte <slug>",
@@ -81,7 +86,7 @@ const STEPS = [
   {
     n: "03",
     title: "Fail the build on off-palette color",
-    body: "The linter reads the same config. A hex literal in a component is a defect the build catches, not a detail a reviewer has to notice.",
+    body: "The linter reads the same config and names each defect by kind next to the token that replaces it. A color that bypasses the system is caught by the build, not by a reviewer who happens to notice. This page is linted the same way.",
     snippet: LINT_SNIPPET,
   },
 ];
