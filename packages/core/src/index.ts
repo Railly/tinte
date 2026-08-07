@@ -2,6 +2,7 @@ export * from "./colors/index";
 export * from "./types/code-template";
 export * from "./types/codex";
 export * from "./types/fonts";
+export * from "./types/identity";
 export * from "./types/overrides";
 export * from "./types/shadcn";
 export * from "./types/shiki";

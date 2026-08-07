@@ -173,3 +173,34 @@ Tinte uses 13 semantic OKLCH tokens per mode (light/dark):
 | `ac_3` | Accent 3 |
 
 These compile to 30+ shadcn CSS variables (background, foreground, card, primary, secondary, muted, accent, destructive, chart-1..5, sidebar-*, etc.) with OKLCH color space formatting.
+
+## Design system compiler (Agent Plugins)
+
+tinte compiles a project identity into an installable Agent Plugin (agent-plugins.org 1.0.0)
+so coding agents generate on-brand UI instead of default slop.
+
+```bash
+tinte build --plugin --config tinte.config.json --out ./acme-plugin
+# emits: plugin.json + skills/<name>-design/SKILL.md (composition law + identity)
+#        + references/tokens.css (OKLCH token API from the theme graph)
+
+tinte lint src/            # scan for hex/rgb/hsl literals and Tailwind palette classes
+tinte lint --json          # machine-readable; exit 1 on violations (CI gate)
+```
+
+### Extracting an identity from a reference site
+
+The CLI never guesses colors. The agent looks, the CLI does the math:
+
+```bash
+tinte from --emit-script > extract.js
+agent-browser open https://example.com && agent-browser wait --load networkidle
+agent-browser eval "$(cat extract.js)" > candidates.json
+# The agent (vision) reviews a screenshot to assign semantic roles if needed.
+tinte from --normalize candidates.json --name example --out draft-identity.json
+# Draft only: fill voiceWords/dosDonts by hand, then validate strictly via tinte build.
+```
+
+`--normalize` detects `primaryStyle: "inverted"` (sites whose CTA is a foreground/background
+pair, not a hue) and normalizes pill radii. Tokens that need app states (destructive, ring,
+input) are reported as warnings, never invented.
