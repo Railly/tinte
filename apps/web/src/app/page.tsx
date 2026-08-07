@@ -1,4 +1,10 @@
 import type { Metadata } from "next";
+import {
+  CommandLine,
+  ShikiTokenStyle,
+  TerminalBlock,
+} from "@/components/home/terminal-block";
+import InvertedLogo from "@/components/shared/layout/inverted-logo";
 import { siteConfig } from "@/config/site";
 import "./home.css";
 
@@ -28,8 +34,10 @@ acme-plugin/
 
 // The linter reports a violation by kind, not by echoing the literal it found,
 // so this example names each defect in words and shows the repaired line. Every
-// piece of color syntax rendered on this page is already token-based, which is
-// why the page passes its own `tinte lint` with no per-line escapes.
+// piece of color syntax rendered on this page is already token-based — the
+// syntax highlighting included, which references `--shiki-*` variables the
+// compiler emitted rather than literal colors — which is why the page passes
+// its own `tinte lint` with no per-line escapes.
 const LINT_SNIPPET = `$ tinte lint src/
 
 card.tsx:12  hex literal       ->  var(--card)
@@ -101,7 +109,10 @@ export default function Home() {
         Skip to content
       </a>
 
-      <header className="mx-auto w-full max-w-5xl px-6 pt-8">
+      <ShikiTokenStyle />
+
+      <header className="mx-auto flex w-full max-w-5xl items-center gap-2.5 px-6 pt-8">
+        <InvertedLogo size={22} />
         <span className="font-mono text-[13px] font-medium tracking-tight">
           tinte
         </span>
@@ -136,9 +147,11 @@ export default function Home() {
             </div>
           </div>
 
-          <pre className="min-w-0 overflow-x-auto rounded-sm border border-border bg-card p-6 font-mono text-[13px] leading-[1.7]">
-            <code>{BUILD_SNIPPET}</code>
-          </pre>
+          <TerminalBlock
+            snippet={BUILD_SNIPPET}
+            label="tinte build --plugin output"
+            className="p-6"
+          />
         </section>
 
         <section className="border-t border-border pt-14 pb-4">
@@ -169,9 +182,11 @@ export default function Home() {
                     {body}
                   </p>
                 </div>
-                <pre className="min-w-0 overflow-x-auto rounded-sm border border-border bg-card p-5 font-mono text-[13px] leading-[1.7]">
-                  <code>{snippet}</code>
-                </pre>
+                <TerminalBlock
+                  snippet={snippet}
+                  label={`Step ${n}: ${title}`}
+                  className="p-5"
+                />
               </li>
             ))}
           </ol>
@@ -185,7 +200,7 @@ export default function Home() {
             {COMMANDS.map(({ command, does }) => (
               <div key={command} className="contents">
                 <dt className="min-w-0 font-mono text-[13px] leading-[1.7]">
-                  {command}
+                  <CommandLine command={command} />
                 </dt>
                 <dd className="min-w-0 text-base leading-relaxed text-muted-foreground">
                   {does}
@@ -222,7 +237,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="mx-auto w-full max-w-5xl px-6 py-10 text-sm text-muted-foreground">
+      <footer className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-8 gap-y-4 px-6 py-10 text-sm text-muted-foreground">
         <p>
           Looking for the theme workbench?{" "}
           <a
@@ -232,6 +247,14 @@ export default function Home() {
             It moved to /legacy
           </a>
         </p>
+        <a
+          href="https://vercel.com/oss"
+          target="_blank"
+          rel="noreferrer"
+          className="font-mono text-[13px] underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          Vercel OSS Program
+        </a>
       </footer>
     </div>
   );
