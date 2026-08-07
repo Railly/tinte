@@ -1,3 +1,4 @@
+import { THEMES_PATH, WORKBENCH_PATH } from "@/config/legacy";
 import { siteConfig } from "@/config/site";
 
 export function GET() {
@@ -5,8 +6,9 @@ export function GET() {
 Allow: /
 
 # Allow all crawlers to access public pages
-Allow: /themes
-Allow: /workbench
+Allow: /design.md
+Allow: ${THEMES_PATH}
+Allow: ${WORKBENCH_PATH}
 
 # Disallow private/sensitive pages
 Disallow: /api/

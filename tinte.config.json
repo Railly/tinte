@@ -1,0 +1,65 @@
+{
+  "name": "tinte",
+  "primaryStyle": "inverted",
+  "radius": "0.625rem",
+  "theme": {
+    "light": {
+      "bg": "#ffffff",
+      "bg_2": "#f7f7f7",
+      "ui": "#e4e4e4",
+      "ui_2": "#d4d4d4",
+      "ui_3": "#b4b4b4",
+      "tx": "#191919",
+      "tx_2": "#6f6f6f",
+      "tx_3": "#9b9b9b",
+      "pr": "#986801",
+      "sc": "#4078f2",
+      "ac_1": "#a626a4",
+      "ac_2": "#50a14f",
+      "ac_3": "#e45649"
+    },
+    "dark": {
+      "bg": "#181818",
+      "bg_2": "#222222",
+      "ui": "#333333",
+      "ui_2": "#444444",
+      "ui_3": "#555555",
+      "tx": "#eeeeee",
+      "tx_2": "#aaaaaa",
+      "tx_3": "#666666",
+      "pr": "#e5c07b",
+      "sc": "#61afef",
+      "ac_1": "#c678dd",
+      "ac_2": "#98c379",
+      "ac_3": "#e06c75"
+    }
+  },
+  "typography": {
+    "families": {
+      "sans": "Geist",
+      "mono": "Geist Mono"
+    },
+    "roles": {
+      "display": { "size": 48, "lineHeight": 1.05, "weight": 500 },
+      "title": { "size": 30, "lineHeight": 1.15, "weight": 500 },
+      "heading": { "size": 20, "lineHeight": 1.3, "weight": 500 },
+      "body": { "size": 16, "lineHeight": 1.6, "weight": 400 },
+      "label": { "size": 13, "lineHeight": 1.4, "weight": 500 },
+      "mono": { "size": 13, "lineHeight": 1.6, "weight": 400 }
+    }
+  },
+  "voiceWords": [
+    "compile",
+    "token",
+    "plugin",
+    "deterministic",
+    "on-brand",
+    "artifact"
+  ],
+  "dosDonts": [
+    "Show the emitted artifact. The plugin directory and the token file are the proof, so never describe an output you could print.",
+    "Name the three commands with their real flags. Never paraphrase a command into prose.",
+    "The primary action installs or builds something. Never write Get Started or Learn More.",
+    "Stay monochrome. The accent is reserved for code syntax, never for a CTA fill."
+  ]
+}

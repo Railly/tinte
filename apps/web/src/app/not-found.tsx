@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { THEMES_PATH, WORKBENCH_PATH } from "@/config/legacy";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -38,26 +39,29 @@ export default function NotFound() {
             <Link href="/">Go Home</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/themes">Browse Themes</Link>
+            <Link href={THEMES_PATH}>Browse Themes</Link>
           </Button>
         </div>
 
         <div className="text-sm text-muted-foreground">
           <p>Looking for something specific?</p>
           <div className="flex flex-wrap gap-2 justify-center mt-2">
-            <Link href="/workbench" className="text-primary hover:underline">
+            <Link
+              href={WORKBENCH_PATH}
+              className="text-primary hover:underline"
+            >
               Theme Workbench
             </Link>
             <span>•</span>
             <Link
-              href="/themes?category=tinte"
+              href={`${THEMES_PATH}?category=tinte`}
               className="text-primary hover:underline"
             >
               Tinte Themes
             </Link>
             <span>•</span>
             <Link
-              href="/themes?category=rayso"
+              href={`${THEMES_PATH}?category=rayso`}
               className="text-primary hover:underline"
             >
               Ray.so Themes

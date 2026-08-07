@@ -15,6 +15,7 @@ import {
   ThemeCardSkeleton,
 } from "@/components/shared/theme";
 import { Button } from "@/components/ui/button";
+import { WORKBENCH_PATH, workbenchPath } from "@/config/legacy";
 import { PROVIDER_ICONS } from "@/config/providers";
 import { useInfiniteScroll } from "@/lib/hooks/use-infinite-scroll";
 import { useLoop } from "@/lib/hooks/use-loop";
@@ -82,8 +83,8 @@ export function BrowseThemes({
           onClick: () => {
             const workbenchId = initialSearch ? "new" : nanoid();
             const url = initialSearch
-              ? `/workbench/${workbenchId}?prompt=${encodeURIComponent(`Create a theme inspired by "${initialSearch}"`)}`
-              : "/workbench";
+              ? `${workbenchPath(workbenchId)}?prompt=${encodeURIComponent(`Create a theme inspired by "${initialSearch}"`)}`
+              : WORKBENCH_PATH;
             window.open(url, "_blank");
           },
         },

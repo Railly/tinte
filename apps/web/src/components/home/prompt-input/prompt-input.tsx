@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { usePastedItems } from "@/components/workbench/hooks/editor/use-pasted-items";
+import { workbenchPath } from "@/config/legacy";
 import { cn } from "@/lib";
 import { usePalette } from "@/lib/hooks/use-palette";
 import { detectKind, type Kind, type PastedItem } from "@/lib/input-detection";
@@ -203,10 +204,10 @@ export default function PromptInput({ onSubmit }: PromptInputProps) {
         attachments,
         createdAt: Date.now(),
       });
-      router.push(`/workbench/${chatId}?tab=agent`);
+      router.push(`${workbenchPath(chatId)}?tab=agent`);
     } else {
       router.push(
-        `/workbench/new?tab=agent&prompt=${encodeURIComponent(allContent)}`,
+        `${workbenchPath("new")}?tab=agent&prompt=${encodeURIComponent(allContent)}`,
       );
     }
     onSubmit?.("prompt", allContent);

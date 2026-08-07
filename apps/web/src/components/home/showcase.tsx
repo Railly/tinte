@@ -7,6 +7,7 @@ import { Logo } from "@/components/shared/layout";
 import { ThemeCard, ThemeCardSkeleton } from "@/components/shared/theme";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { THEMES_PATH, WORKBENCH_PATH } from "@/config/legacy";
 import { useActiveTheme } from "@/stores/hooks";
 import type { SessionData } from "@/types/auth";
 import type { UserThemeData } from "@/types/user-theme";
@@ -195,7 +196,7 @@ export function Showcase({
                   </p>
                 </div>
                 <Button className="mt-4" asChild>
-                  <a href="/workbench">Create Preset</a>
+                  <a href={WORKBENCH_PATH}>Create Preset</a>
                 </Button>
               </div>
             )}
@@ -232,7 +233,7 @@ export function Showcase({
                   </p>
                 </div>
                 <Button className="mt-4" asChild>
-                  <a href="/workbench">Create Preset</a>
+                  <a href={WORKBENCH_PATH}>Create Preset</a>
                 </Button>
               </div>
             )}
@@ -269,7 +270,7 @@ export function Showcase({
                   </p>
                 </div>
                 <Button className="mt-4" asChild>
-                  <a href="/themes">Browse Themes</a>
+                  <a href={THEMES_PATH}>Browse Themes</a>
                 </Button>
               </div>
             )}
@@ -340,7 +341,7 @@ export function Showcase({
       {/* Browse All Button */}
       <div className="flex justify-center pb-4">
         <Button variant="outline" className="gap-2 h-10 px-6" asChild>
-          <a href={`/themes?category=${activeTab}`}>
+          <a href={`${THEMES_PATH}?category=${activeTab}`}>
             Browse All{" "}
             {activeTab === "community"
               ? "Community"

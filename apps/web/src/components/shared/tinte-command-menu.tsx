@@ -29,11 +29,12 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { Separator } from "@/components/ui/separator";
+import { THEMES_PATH, WORKBENCH_PATH } from "@/config/legacy";
 import { ALL_FORMATTED_PROVIDERS } from "@/config/providers";
-import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 import { extractThemeColors } from "@/lib/theme/utils";
 import { cn } from "@/lib/utils";
 import { useActiveTheme, useThemeMode, useUserThemes } from "@/stores/hooks";
+import { useThemeSearch } from "@/stores/hooks/use-theme-search";
 
 const NAVIGATION_ITEMS = [
   {
@@ -47,7 +48,7 @@ const NAVIGATION_ITEMS = [
   {
     id: "themes",
     title: "Themes",
-    path: "/themes",
+    path: THEMES_PATH,
     icon: Palette,
     shortcut: "p",
     description: "Explore all themes",
@@ -55,7 +56,7 @@ const NAVIGATION_ITEMS = [
   {
     id: "workbench",
     title: "Workbench",
-    path: "/workbench",
+    path: WORKBENCH_PATH,
     icon: MessageSquare,
     shortcut: "w",
     description: "Create and edit themes",
@@ -108,7 +109,7 @@ export function TinteCommandMenu({
           break;
         case "w":
           e.preventDefault();
-          router.push("/workbench");
+          router.push(WORKBENCH_PATH);
           break;
         case "m":
           if (e.shiftKey) {
@@ -208,9 +209,7 @@ export function TinteCommandMenu({
               <CommandItem
                 value="toggle theme mode light dark"
                 onSelect={() => {
-                  runCommand(() =>
-                    setMode(isDark ? "light" : "dark"),
-                  );
+                  runCommand(() => setMode(isDark ? "light" : "dark"));
                   setSelectedType("theme");
                 }}
                 onMouseEnter={() => setSelectedType("theme")}
@@ -402,7 +401,9 @@ export function TinteCommandMenu({
                       onSelect={() => {
                         runCommand(() => {
                           // Navigate to chat with provider focus
-                          router.push(`/workbench?provider=${provider.id}`);
+                          router.push(
+                            `${WORKBENCH_PATH}?provider=${provider.id}`,
+                          );
                         });
                         setSelectedType("export");
                       }}

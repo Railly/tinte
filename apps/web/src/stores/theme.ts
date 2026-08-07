@@ -1,21 +1,21 @@
 "use client";
 
-import { create } from "zustand";
-import { devtools, subscribeWithSelector } from "zustand/middleware";
+import type { NormalizedOverrides, TinteBlock, TinteTheme } from "@tinte/core";
 import {
   mergeOverrides,
   normalizeOverrides,
   validateOverride,
 } from "@tinte/providers/provider-utils/override-normalization";
+import { create } from "zustand";
+import { devtools, subscribeWithSelector } from "zustand/middleware";
+import { WORKBENCH_PATH, workbenchPath } from "@/config/legacy";
+import type { ThemeData } from "@/lib/theme";
 import {
   computeFinalTokens,
   convertColorToHex,
   extractTinteTheme,
 } from "@/lib/theme/computation";
-import type { ThemeData } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth";
-import type { NormalizedOverrides } from "@tinte/core";
-import type { TinteBlock, TinteTheme } from "@tinte/core";
 import { DEFAULT_THEME } from "@/utils/default-theme";
 import { extractFontFamily, loadGoogleFont } from "@/utils/fonts";
 
@@ -294,8 +294,8 @@ export const useThemeStore = create<ThemeStore>()(
             });
 
             const currentPath = window.location.pathname;
-            if (currentPath.startsWith("/workbench/") && theme.slug) {
-              const newUrl = `/workbench/${theme.slug}${window.location.search}`;
+            if (currentPath.startsWith(`${WORKBENCH_PATH}/`) && theme.slug) {
+              const newUrl = `${workbenchPath(theme.slug)}${window.location.search}`;
               window.history.replaceState(null, "", newUrl);
             }
           }

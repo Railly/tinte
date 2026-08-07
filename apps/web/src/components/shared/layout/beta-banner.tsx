@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { VSCodeIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
+import { WORKBENCH_PATH } from "@/config/legacy";
 
 const BETA_BANNER_KEY = "tinte-beta-banner-dismissed";
 
@@ -46,9 +47,9 @@ export function BetaBanner() {
             className="h-7 text-xs"
             onClick={() => {
               // Preserve current theme slug if in workbench, otherwise go to base
-              const targetPath = pathname.startsWith("/workbench/")
+              const targetPath = pathname.startsWith(`${WORKBENCH_PATH}/`)
                 ? `${pathname}?provider=vscode`
-                : "/workbench?provider=vscode";
+                : `${WORKBENCH_PATH}?provider=vscode`;
               router.push(targetPath);
               dismissBanner();
             }}

@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { THEMES_PATH, WORKBENCH_PATH } from "@/config/legacy";
 import { siteConfig } from "@/config/site";
 
 export function Header() {
@@ -29,11 +30,11 @@ export function Header() {
   };
 
   const handleGetStarted = () => {
-    router.push("/workbench");
+    router.push(WORKBENCH_PATH);
   };
 
   const navigation = [
-    { name: "Themes", href: "/themes" },
+    { name: "Themes", href: THEMES_PATH },
     { name: "Roadmap", href: "#roadmap" },
     { name: "FAQ", href: "#faq" },
   ];

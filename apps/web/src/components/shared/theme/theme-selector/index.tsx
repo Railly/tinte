@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { workbenchPath } from "@/config/legacy";
 import type { ThemeData } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { useActiveTheme, useThemeMode, useUserThemes } from "@/stores/hooks";
@@ -69,7 +70,7 @@ export function ThemeSelector({
       onSelect(theme);
       if (theme.slug && theme.slug !== "default" && theme.slug !== "theme") {
         const currentUrl = new URL(window.location.href);
-        const newUrl = `/workbench/${theme.slug}${currentUrl.search}`;
+        const newUrl = `${workbenchPath(theme.slug)}${currentUrl.search}`;
         window.history.replaceState(null, "", newUrl);
       }
     },
