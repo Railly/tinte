@@ -41,7 +41,8 @@
     "@types/node": "^20.0.0",
     "tsup": "^8.0.0",
     "tsx": "^4.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@types/culori": "^4.0.0"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -52,5 +53,9 @@
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@tinte/core": "workspace:*",
+    "culori": "^4.0.2"
   }
 }
