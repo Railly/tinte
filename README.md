@@ -20,32 +20,63 @@
 </h3>
 
 <p align="center">
-  Agent-native design system infrastructure. Generate, compile, install, and preview design systems from one source of truth.
+  Compile your design system into an Agent Plugin. Extract an identity from any reference, emit SKILL.md + tokens.css, lint what bypasses your tokens.
 </p>
+
+A coding agent writes on-brand UI when it can read your tokens as an API and your
+composition rules as instructions. Tinte compiles both from one identity config
+into a single installable artifact.
 
 ## Quick Start
 
-Install a Tinte design system into any shadcn/ui project:
+```bash
+bunx tinte from --emit-script       # print the extraction script for a live page
+bunx tinte from --normalize <json>  # turn captured styles into a draft identity
+bunx tinte build --plugin           # compile the identity into an Agent Plugin
+bunx tinte lint <paths>             # exit 1 on any color that bypasses the tokens
+```
+
+Extraction, compilation, and enforcement all read the same `tinte.config.json`.
+Nothing is restated by hand.
+
+`tinte build --plugin` emits:
+
+```
+acme-plugin/
+├── plugin.json
+└── skills/
+    └── acme-design/
+        ├── SKILL.md
+        └── references/
+            └── tokens.css
+```
+
+`SKILL.md` carries the type scale, the voice, and the composition law.
+`tokens.css` is the token file the agent reads as an API.
+
+## This site serves its own design context
+
+[tinte.dev](https://tinte.dev) is styled by the plugin Tinte compiles from its own
+config, and both artifacts are fetchable at their real paths:
+
+- [tinte.dev/design.md](https://tinte.dev/design.md)
+- [tinte.dev/tokens.css](https://tinte.dev/tokens.css)
+
+An agent can install this design system the same way it would install yours.
+
+## Theme builder
+
+The classic workbench is still here: start from a reference, convert to any
+provider, install it.
 
 ```bash
+bunx tinte <theme-slug>             # install into VS Code, Cursor, or Zed
 npx shadcn@latest add https://tinte.dev/api/preset/one-hunter
 ```
 
-Install the Tinte skill for Claude Code, Cursor, or any coding agent:
-
-```bash
-npx skills add Railly/tinte
-```
-
-## How It Works
-
-Tinte maintains a theme graph of 13 semantic OKLCH color tokens that compiles to:
-
-- **shadcn/ui presets** — `registry:base` + `registry:font` items, compatible with shadcn/cli v4
-- **VS Code themes** — Full editor themes with syntax highlighting
-- **Terminal configs** — Alacritty, Kitty, Warp, Windows Terminal
-- **Design tools** — GIMP, Slack, design system tokens
-- **19+ formats** from the same source of truth
+13 semantic OKLCH tokens compile to shadcn/ui presets, VS Code themes, terminal
+configs (Alacritty, Kitty, Warp, Windows Terminal), and 19+ formats from the same
+source of truth.
 
 ## Preset API (shadcn v4)
 
@@ -88,7 +119,7 @@ curl -X POST https://ray.tinte.dev/api/v1/screenshot \
 
 | Product | Role | URL |
 |---------|------|-----|
-| **Tinte** | Generate and compile design systems | [tinte.dev](https://tinte.dev) |
+| **Tinte** | Compile design systems into Agent Plugins | [tinte.dev](https://tinte.dev) |
 | **Elements** | Install via shadcn registry | [tryelements.dev](https://tryelements.dev) |
 | **Ray** | Preview and screenshot | [ray.tinte.dev](https://ray.tinte.dev) |
 
@@ -98,7 +129,7 @@ curl -X POST https://ray.tinte.dev/api/v1/screenshot \
 
 - `@tinte/core` — Theme primitives, OKLCH color model, type definitions
 - `@tinte/providers` — 19+ format converters (shadcn, VS Code, terminals, design tools)
-- `@tinte/cli` — CLI for theme installation
+- `@tinte/cli` — Agent Plugin compiler (`from`, `build`, `lint`) and theme installer
 
 ## Development
 

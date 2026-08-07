@@ -1,0 +1,68 @@
+{
+  "name": "tinte",
+  "primaryStyle": "inverted",
+  "radius": "0.25rem",
+  "theme": {
+    "light": {
+      "bg": "#ffffff",
+      "bg_2": "#fafafa",
+      "ui": "#ebebeb",
+      "ui_2": "#e0e0e0",
+      "ui_3": "#c9c9c9",
+      "tx": "#0a0a0a",
+      "tx_2": "#666666",
+      "tx_3": "#8f8f8f",
+      "pr": "#0a0a0a",
+      "sc": "#404040",
+      "ac_1": "#7c5cff",
+      "ac_2": "#0a7f5c",
+      "ac_3": "#c5303c"
+    },
+    "dark": {
+      "bg": "#000000",
+      "bg_2": "#0a0a0a",
+      "ui": "#1f1f1f",
+      "ui_2": "#2e2e2e",
+      "ui_3": "#454545",
+      "tx": "#ededed",
+      "tx_2": "#a1a1a1",
+      "tx_3": "#7a7a7a",
+      "pr": "#ededed",
+      "sc": "#b4b4b4",
+      "ac_1": "#a48bff",
+      "ac_2": "#46d99e",
+      "ac_3": "#ff5f56"
+    }
+  },
+  "typography": {
+    "families": {
+      "sans": "Geist",
+      "mono": "Geist Mono"
+    },
+    "roles": {
+      "display": { "size": 56, "lineHeight": 1.05, "weight": 500 },
+      "title": { "size": 24, "lineHeight": 1.25, "weight": 500 },
+      "heading": { "size": 16, "lineHeight": 1.4, "weight": 500 },
+      "body": { "size": 16, "lineHeight": 1.6, "weight": 400 },
+      "label": { "size": 14, "lineHeight": 1.5, "weight": 400 },
+      "mono": { "size": 13, "lineHeight": 1.7, "weight": 400 }
+    }
+  },
+  "voiceWords": [
+    "precise",
+    "technical",
+    "calm",
+    "compile",
+    "token",
+    "plugin",
+    "deterministic",
+    "artifact"
+  ],
+  "dosDonts": [
+    "Do: show the compiler pipeline as real commands and real output",
+    "Don't: use the word platform",
+    "Don't: decorative gradients or glows",
+    "Do: stay monochrome. The accent is reserved for code syntax, never for a CTA fill",
+    "Do: name the three commands with their real flags. Never paraphrase a command into prose"
+  ]
+}

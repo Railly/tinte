@@ -21,6 +21,7 @@ import {
   useShikiOverrides,
   useVSCodeOverrides,
 } from "@/components/workbench/overrides-tab/hooks/use-provider-overrides";
+import { WORKBENCH_PATH, workbenchPath } from "@/config/legacy";
 import { cn } from "@/lib";
 import { duplicateTheme, renameTheme } from "@/lib/actions/themes";
 import { importShadcnTheme } from "@/lib/theme-operations/import";
@@ -146,7 +147,7 @@ export function WorkbenchToolbar({
     try {
       await loadUserThemes();
       if (savedTheme) selectTheme(savedTheme);
-      if (savedTheme?.slug) router.replace(`/workbench/${savedTheme.slug}`);
+      if (savedTheme?.slug) router.replace(workbenchPath(savedTheme.slug));
     } catch (error) {
       console.error(`Error in post-${action.toLowerCase()} navigation:`, error);
     }
@@ -225,7 +226,7 @@ export function WorkbenchToolbar({
       if (!result.success)
         throw new Error(result.error || "Failed to rename preset");
       await loadUserThemes();
-      if (result.theme?.slug) router.replace(`/workbench/${result.theme.slug}`);
+      if (result.theme?.slug) router.replace(workbenchPath(result.theme.slug));
       toast.success(`Preset renamed to "${newName}"!`);
     } catch (error) {
       console.error("Error renaming theme:", error);
@@ -237,7 +238,7 @@ export function WorkbenchToolbar({
   const getShareLink = () => {
     if (!activeTheme?.slug) return "";
     if (typeof window === "undefined") return "";
-    return `${window.location.origin}/workbench/${encodeURIComponent(activeTheme.slug)}`;
+    return `${window.location.origin}${workbenchPath(encodeURIComponent(activeTheme.slug))}`;
   };
 
   const getRawThemeLink = () => {
@@ -273,7 +274,7 @@ export function WorkbenchToolbar({
       await loadUserThemes();
       if (result.savedTheme) selectTheme(result.savedTheme);
       if (result.savedTheme.slug)
-        router.replace(`/workbench/${result.savedTheme.slug}`);
+        router.replace(workbenchPath(result.savedTheme.slug));
       toast.success(`"${name}" imported and saved successfully!`);
     } catch (error) {
       console.error("Error importing theme:", error);
@@ -344,10 +345,11 @@ export function WorkbenchToolbar({
       const success = await deleteTheme(activeTheme.id);
       if (!success) throw new Error("Failed to delete theme");
       toast.success("Preset deleted successfully");
-      if (userThemes.length > 0) {
-        router.replace(`/workbench/${userThemes[0].slug}`);
+      const nextSlug = userThemes[0]?.slug;
+      if (nextSlug) {
+        router.replace(workbenchPath(nextSlug));
       } else {
-        router.replace("/workbench");
+        router.replace(WORKBENCH_PATH);
       }
     } catch (error) {
       console.error("Error deleting theme:", error);

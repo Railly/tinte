@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "Tinte",
   url: "https://tinte.dev",
   description:
-    "Agent-native design system infrastructure. Generate, compile, install, and preview design systems from one source of truth.",
+    "Compile your design system into an Agent Plugin. Extract an identity from any reference, emit SKILL.md + tokens.css, lint what bypasses your tokens.",
   longDescription:
     "Agent-native design system infrastructure for shadcn/ui. 13 semantic OKLCH tokens compile to presets, VS Code themes, terminal configs, and 19+ formats. Install with one command via shadcn CLI v4. 500+ presets, AI generation, agent skill included.",
   keywords: [

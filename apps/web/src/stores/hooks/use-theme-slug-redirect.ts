@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { workbenchPath } from "@/config/legacy";
 import { useThemeStore } from "@/stores/theme";
 
 interface UseThemeSlugRedirectProps {
@@ -51,14 +52,14 @@ export function useThemeSlugRedirect({
 
     const currentPath = window.location.pathname;
     const isOnOriginalChatId =
-      currentPath === `/workbench/${initialChatIdRef.current}`;
+      currentPath === workbenchPath(initialChatIdRef.current);
 
     if (!isOnOriginalChatId) return;
 
     // Priority 1: Use detected slug from AI tool response
     if (detectedSlug && detectedSlug !== chatId) {
       const searchParams = window.location.search;
-      const newUrl = `/workbench/${detectedSlug}${searchParams}`;
+      const newUrl = `${workbenchPath(detectedSlug)}${searchParams}`;
       router.replace(newUrl);
       return;
     }
@@ -71,7 +72,7 @@ export function useThemeSlugRedirect({
     ) {
       lastThemeRef.current = activeTheme.slug;
       const searchParams = window.location.search;
-      const newUrl = `/workbench/${activeTheme.slug}${searchParams}`;
+      const newUrl = `${workbenchPath(activeTheme.slug)}${searchParams}`;
       router.replace(newUrl);
     } else if (activeTheme?.slug) {
       // Update the reference even if we don't redirect
@@ -86,7 +87,7 @@ export function useThemeSlugRedirect({
       enabled &&
         (detectedSlug || activeTheme?.slug) &&
         (detectedSlug !== chatId || activeTheme?.slug !== chatId) &&
-        window.location.pathname === `/workbench/${initialChatIdRef.current}`,
+        window.location.pathname === workbenchPath(initialChatIdRef.current),
     ),
   };
 }

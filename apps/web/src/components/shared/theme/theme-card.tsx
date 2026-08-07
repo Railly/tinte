@@ -6,13 +6,13 @@ import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
 import { RaycastIcon, TweakCNIcon } from "@/components/shared/icons";
 import { Logo } from "@/components/shared/layout";
-import { ThemeCardPreview } from "./theme-card-preview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useThemeFonts } from "@/stores/hooks/use-theme-fonts";
+import { workbenchPath } from "@/config/legacy";
 import type { ThemeData } from "@/lib/theme";
 import { getVendorIcon, getVendorImage } from "@/lib/vendors";
 import { useThemeMode } from "@/stores/hooks";
+import { useThemeFonts } from "@/stores/hooks/use-theme-fonts";
 import {
   extractShadcnColors,
   extractShadcnFonts,
@@ -20,6 +20,7 @@ import {
   extractThemeColors,
   formatNumber,
 } from "@/utils/theme-card-helpers";
+import { ThemeCardPreview } from "./theme-card-preview";
 
 interface ThemeCardProps {
   theme: ThemeData;
@@ -141,12 +142,12 @@ export function ThemeCard({
     }
     // Then navigate to workbench - use theme slug if available, otherwise generate new ID with prompt
     if (theme.slug) {
-      router.push(`/workbench/${theme.slug}`);
+      router.push(workbenchPath(theme.slug));
     } else {
       const workbenchId = nanoid();
       const prompt = `Create a theme similar to "${theme.name}" with these colors: primary ${theme.colors?.primary}, background ${theme.colors?.background}, accent ${theme.colors?.accent}`;
       router.push(
-        `/workbench/${workbenchId}?prompt=${encodeURIComponent(prompt)}`,
+        `${workbenchPath(workbenchId)}?prompt=${encodeURIComponent(prompt)}`,
       );
     }
   };
