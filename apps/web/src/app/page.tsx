@@ -121,7 +121,7 @@ export default function Home() {
 
             <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
               <a
-                href="https://www.npmjs.com/package/@tinte/cli"
+                href="https://www.npmjs.com/package/tinte"
                 className="rounded-sm bg-primary px-4 py-2.5 font-mono text-[13px] text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 style={{ touchAction: "manipulation" }}
               >
