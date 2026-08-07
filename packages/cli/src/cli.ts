@@ -1,9 +1,25 @@
+import { buildCommand } from "./commands/build";
+import { fromCommand } from "./commands/from";
+import { lintCommand } from "./commands/lint";
 import { TinteCLI } from "./tinte-cli";
 import type { EditorInstallOptions } from "./types";
 
 // CLI Interface
 async function main() {
   const args = process.argv.slice(2);
+
+  switch (args[0]) {
+    case "build":
+      process.exit(await buildCommand(args.slice(1)));
+      break;
+    case "lint":
+      process.exit(await lintCommand(args.slice(1)));
+      break;
+    case "from":
+      process.exit(await fromCommand(args.slice(1)));
+      break;
+  }
+
   const cli = new TinteCLI();
 
   if (args.length === 0) {
@@ -16,6 +32,12 @@ Usage:
   bunx tinte <theme.json>            # Install theme from local file
   bunx tinte list                    # List installed Tinte themes
   bunx tinte cleanup                 # Clean up temporary files
+
+Design system compiler (Agent Plugins):
+  bunx tinte build --plugin          # Compile identity config to an Agent Plugin
+  bunx tinte lint [paths...]         # Scan for colors that bypass the token system
+  bunx tinte from --emit-script      # Print the agent-browser extraction script
+  bunx tinte from --normalize <json> # Normalize extracted candidates to a draft identity
 
 Options:
   --light                           # Install light variant

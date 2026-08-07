@@ -4,10 +4,10 @@ import { fileURLToPath } from "node:url";
 import { oklch } from "culori";
 import { z } from "zod";
 
-// TODO-wire: import { TinteIdentitySchema } from "@tinte/core" once V4 lands
-// (packages/core/src/types/identity.ts). Until then this is a local mirror
-// of the shape described in slices.md V4, kept in sync by hand. DEVIATION:
-// documented in the from-command report, not silently assumed.
+// Intentionally a LOOSE draft schema, not the strict TinteIdentitySchema from
+// @tinte/core: extraction from a homepage cannot derive every token (destructive,
+// ring, input need app states). `tinte from` emits a draft identity; `tinte build`
+// is the strict gate that validates the final config against the core schema.
 const TypeRoleSchema = z.object({
   size: z.number(),
   lineHeight: z.number(),
