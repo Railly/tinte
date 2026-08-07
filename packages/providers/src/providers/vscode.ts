@@ -51,6 +51,11 @@ export interface VSCodeTheme {
   name: string;
   displayName: string;
   type: "light" | "dark";
+  /**
+   * VS Code discards a theme's semantic token colors unless this is true, so
+   * semantic scopes silently have no effect without it.
+   */
+  semanticHighlighting: boolean;
   colors: Record<string, string>;
   tokenColors: VSCodeTokenColor[];
 }
@@ -414,6 +419,7 @@ function convertTinteToVSCode(
     name: `${name} Light`,
     displayName: `${name} (Light)`,
     type: "light",
+    semanticHighlighting: true,
     colors: getVSCodeColors(tinteTheme.light, "light"),
     tokenColors: generateTokenColors(
       tinteTheme.light,
@@ -426,6 +432,7 @@ function convertTinteToVSCode(
     name: `${name} Dark`,
     displayName: `${name} (Dark)`,
     type: "dark",
+    semanticHighlighting: true,
     colors: getVSCodeColors(tinteTheme.dark, "dark"),
     tokenColors: generateTokenColors(
       tinteTheme.dark,
