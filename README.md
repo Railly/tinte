@@ -129,7 +129,7 @@ curl -X POST https://ray.tinte.dev/api/v1/screenshot \
 
 - `@tinte/core` — Theme primitives, OKLCH color model, type definitions
 - `@tinte/providers` — 19+ format converters (shadcn, VS Code, terminals, design tools)
-- `@tinte/cli` — Agent Plugin compiler (`from`, `build`, `lint`) and theme installer
+- [`tinte`](https://www.npmjs.com/package/tinte) - Agent Plugin compiler (`from`, `build`, `lint`) and theme installer
 
 ## Development
 
