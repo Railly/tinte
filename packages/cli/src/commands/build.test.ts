@@ -343,3 +343,136 @@ describe("buildCommand validation", () => {
     expect(errors.join("\n")).toContain("not valid JSON");
   });
 });
+
+describe("buildCommand --to", () => {
+  it("emits a VS Code artifact the classic installer can consume", async () => {
+    const config = await writeConfig("tinte.config.json", cronwatchIdentity);
+    const out = join(workDir, "themes");
+
+    const code = await buildCommand([
+      "--to",
+      "vscode",
+      "--config",
+      config,
+      "--out",
+      out,
+    ]);
+    expect(code).toBe(0);
+
+    const artifact = JSON.parse(
+      await readFile(join(out, "cronwatch-vscode.json"), "utf8"),
+    );
+
+    // The installer reads `rawTheme || themeData` and needs light/dark blocks
+    // to generate a VSIX; a bare VS Code theme has neither.
+    expect(artifact.rawTheme.light.bg).toBe(cronwatchBlock.bg);
+    expect(artifact.rawTheme.dark.bg).toBe(cronwatchDarkBlock.bg);
+    expect(artifact.name).toBe("Cronwatch");
+
+    expect(
+      Object.keys(artifact.vscode_overrides.colors).length,
+    ).toBeGreaterThan(0);
+    expect(artifact.vscode_overrides.tokenColors.length).toBeGreaterThan(0);
+  });
+
+  it("emits a Zed theme family carrying the identity name", async () => {
+    const config = await writeConfig("tinte.config.json", cronwatchIdentity);
+    const out = join(workDir, "themes");
+
+    const code = await buildCommand([
+      "--to",
+      "zed",
+      "--config",
+      config,
+      "--out",
+      out,
+    ]);
+    expect(code).toBe(0);
+
+    const theme = JSON.parse(
+      await readFile(join(out, "cronwatch.json"), "utf8"),
+    );
+    expect(theme.$schema).toContain("zed.dev/schema/themes");
+    expect(theme.name).toBe("Cronwatch");
+    expect(
+      theme.themes.map((t: { appearance: string }) => t.appearance),
+    ).toEqual(["light", "dark"]);
+  });
+
+  it("emits a kitty conf with the mapped foreground and background", async () => {
+    const config = await writeConfig("tinte.config.json", cronwatchIdentity);
+    const out = join(workDir, "themes");
+
+    const code = await buildCommand([
+      "--to",
+      "kitty",
+      "--config",
+      config,
+      "--out",
+      out,
+    ]);
+    expect(code).toBe(0);
+
+    // The kitty provider emits the dark variant, terminals being dark by
+    // convention.
+    const conf = await readFile(join(out, "tinte-theme-kitty.conf"), "utf8");
+    expect(conf).toContain(`background ${cronwatchDarkBlock.bg}`);
+    expect(conf).toContain(`foreground ${cronwatchDarkBlock.tx}`);
+  });
+
+  it("writes to an explicit file path when --out has an extension", async () => {
+    const config = await writeConfig("tinte.config.json", cronwatchIdentity);
+    const target = join(workDir, "nested", "my-theme.json");
+
+    const code = await buildCommand([
+      "--to",
+      "vscode",
+      "--config",
+      config,
+      "--out",
+      target,
+    ]);
+    expect(code).toBe(0);
+
+    const artifact = JSON.parse(await readFile(target, "utf8"));
+    expect(artifact.rawTheme).toBeDefined();
+  });
+
+  it("lists targets when --to has no value, without needing a config", async () => {
+    const logs: string[] = [];
+    const original = console.log;
+    console.log = (...parts: unknown[]) => {
+      logs.push(parts.map(String).join(" "));
+    };
+
+    let code: number;
+    try {
+      code = await buildCommand(["--to"]);
+    } finally {
+      console.log = original;
+    }
+
+    expect(code).toBe(0);
+    expect(logs.join("\n")).toContain("vscode");
+    expect(logs.join("\n")).toContain("kitty");
+  });
+
+  it("rejects a provider that is not a valid target", async () => {
+    const config = await writeConfig("tinte.config.json", cronwatchIdentity);
+    const errors: string[] = [];
+    const original = console.error;
+    console.error = (...parts: unknown[]) => {
+      errors.push(parts.map(String).join(" "));
+    };
+
+    let code: number;
+    try {
+      code = await buildCommand(["--to", "shadcn", "--config", config]);
+    } finally {
+      console.error = original;
+    }
+
+    expect(code).toBe(1);
+    expect(errors.join("\n")).toContain("unknown --to target");
+  });
+});

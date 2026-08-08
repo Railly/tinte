@@ -67,6 +67,34 @@ $ tinte lint src/   # after the fix
 tinte lint: clean
 exit 0`;
 
+// The full human path: read a reference, emit the artifact, install it. The
+// VS Code artifact is the one the classic installer accepts, so the last line
+// is a real command and not an illustration.
+const THEME_SNIPPET = `$ tinte from --normalize candidates.json --name acme
+
+$ tinte build --to vscode --config acme.json
+
+acme-vscode.json
+
+$ tinte acme-vscode.json --code
+
+Theme installed successfully!`;
+
+// Registered --to targets, mirroring src/lib/build-targets.ts exactly. Only
+// providers whose artifact is a theme a tool consumes are listed; the shadcn,
+// design-system and brand-guidelines providers emit UI documents instead.
+const THEME_TARGETS = [
+  { id: "vscode", does: "VS Code and Cursor, installable with tinte --code" },
+  { id: "zed", does: "Zed theme family, light and dark" },
+  { id: "kitty", does: "Kitty terminal conf" },
+  { id: "warp", does: "Warp terminal YAML" },
+  { id: "alacritty", does: "Alacritty terminal YAML" },
+  { id: "windows-terminal", does: "Windows Terminal color scheme" },
+  { id: "slack", does: "Slack sidebar theme" },
+  { id: "gimp", does: "GIMP palette" },
+  { id: "shiki", does: "Shiki syntax highlighting CSS" },
+];
+
 const COMMANDS = [
   {
     command: "tinte from --emit-script",
@@ -83,6 +111,14 @@ const COMMANDS = [
   {
     command: "tinte build --out <dir>",
     does: "Emits design.md and tokens.css as two loose files instead.",
+  },
+  {
+    command: "tinte build --to <provider>",
+    does: "Emits a theme artifact for one provider: vscode, zed, kitty, and six more.",
+  },
+  {
+    command: "tinte build --to",
+    does: "Lists every provider target available to build against.",
   },
   {
     command: "tinte lint <paths>",
@@ -143,7 +179,8 @@ export default function Home() {
             <p className="mt-6 max-w-[34ch] text-base leading-relaxed text-muted-foreground">
               A coding agent writes on-brand UI when it can read your tokens as
               an API and your composition rules as instructions. Tinte emits
-              both as one installable artifact.
+              both as one installable artifact, and compiles the same identity
+              into a theme for your editor and terminal.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -215,6 +252,53 @@ export default function Home() {
               </li>
             ))}
           </ol>
+        </section>
+
+        <section className="mt-20 border-t border-border pt-14 pb-4">
+          <h2 className="text-2xl font-medium leading-tight tracking-tight">
+            The same identity, as a theme for humans
+          </h2>
+          <p className="mt-4 max-w-[56ch] text-base leading-relaxed text-muted-foreground">
+            A design system an agent can read is also a theme you can look at
+            all day. One config compiles both ways:{" "}
+            <code className="font-mono text-[13px]">--plugin</code> for the
+            agent, <code className="font-mono text-[13px]">--to</code> for the
+            editor and terminal you already use.
+          </p>
+
+          <div className="mt-10 grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start">
+            <div className="min-w-0">
+              <h3 className="text-base font-medium tracking-tight">
+                Nine targets, one command
+              </h3>
+              <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+                Each target is a provider that converts the thirteen tokens into
+                that tool's own format. The VS Code artifact is accepted by the
+                classic installer, so the theme lands in your editor without a
+                marketplace round trip.
+              </p>
+              <dl className="mt-6 grid gap-x-6 gap-y-2 sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
+                {THEME_TARGETS.map(({ id, does }) => (
+                  <div key={id} className="contents">
+                    {/* Target ids are values, not commands, so they stay in
+                        foreground rather than taking the command color. */}
+                    <dt className="min-w-0 font-mono text-[13px] leading-[1.7]">
+                      {id}
+                    </dt>
+                    <dd className="min-w-0 text-sm leading-[1.7] text-muted-foreground">
+                      {does}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <TerminalBlock
+              snippet={THEME_SNIPPET}
+              label="Reference to installed theme"
+              className="p-5"
+            />
+          </div>
         </section>
 
         <section className="mt-20 border-t border-border py-14">
