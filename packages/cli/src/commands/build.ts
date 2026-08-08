@@ -1,6 +1,6 @@
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, extname, join, resolve } from "node:path";
 import {
   type TinteBlock,
   type TinteIdentity,
@@ -8,6 +8,12 @@ import {
   type Typography,
 } from "@tinte/core";
 import { formatCss, oklch, parse } from "culori";
+import {
+  type BuildTargetId,
+  buildForTarget,
+  isBuildTarget,
+  listTargets,
+} from "../lib/build-targets";
 import { moduleDir } from "../lib/module-dir";
 
 const PLUGIN_SCHEMA_URL =
@@ -22,14 +28,24 @@ interface BuildOptions {
   configPath: string;
   outDir: string;
   plugin: boolean;
+  /** Provider id from `--to`, or "" when the flag was passed with no value. */
+  to?: BuildTargetId | "";
+}
+
+function printTargets(): void {
+  console.log("Available --to targets:\n");
+  const width = Math.max(...listTargets().map((t) => t.id.length));
+  for (const target of listTargets()) {
+    console.log(`  ${target.id.padEnd(width)}  ${target.description}`);
+  }
 }
 
 /**
- * `tinte build [--plugin] [--config <file>] [--out <dir>]`
+ * `tinte build [--plugin] [--to <provider>] [--config <file>] [--out <path>]`
  *
  * Reads a TinteIdentity config, validates it against the V4 schema, and emits
- * either a full Agent Plugin directory (--plugin) or the two loose artifacts
- * (design.md + tokens.css).
+ * either a full Agent Plugin directory (--plugin), a provider theme artifact
+ * (--to), or the two loose artifacts (design.md + tokens.css).
  */
 export async function buildCommand(args: string[]): Promise<number> {
   let options: BuildOptions;
@@ -38,6 +54,13 @@ export async function buildCommand(args: string[]): Promise<number> {
   } catch (error) {
     console.error(`Error: ${messageOf(error)}`);
     return 1;
+  }
+
+  // `--to` with no value is a listing request, so it answers before the
+  // config is required.
+  if (options.to === "") {
+    printTargets();
+    return 0;
   }
 
   const configPath = resolve(process.cwd(), options.configPath);
@@ -67,6 +90,11 @@ export async function buildCommand(args: string[]): Promise<number> {
   }
 
   const identity = parsed.data;
+
+  if (options.to) {
+    return emitProviderArtifact(identity, options.to, options.outDir);
+  }
+
   const outDir = resolve(
     process.cwd(),
     options.outDir ?? `./${identity.name}-plugin`,
@@ -114,15 +142,83 @@ export async function buildCommand(args: string[]): Promise<number> {
   return 0;
 }
 
+/**
+ * `--to <provider>`: route the identity's theme through a provider and write
+ * the artifact. `--out` accepts either a directory (the provider names the
+ * file) or an explicit file path, detected by a trailing separator or the
+ * presence of an extension.
+ */
+async function emitProviderArtifact(
+  identity: TinteIdentity,
+  target: BuildTargetId,
+  out: string,
+): Promise<number> {
+  const themeName = identity.theme.name ?? identity.name;
+
+  let artifact: { filename: string; content: string };
+  try {
+    artifact = buildForTarget(target, identity.theme, themeName);
+  } catch (error) {
+    console.error(`Error: ${messageOf(error)}`);
+    return 1;
+  }
+
+  const destination = resolveDestination(out, artifact.filename);
+
+  try {
+    await mkdir(dirname(destination), { recursive: true });
+    await writeFile(destination, artifact.content, "utf8");
+  } catch (error) {
+    console.error(`Error: could not write ${destination}. ${messageOf(error)}`);
+    return 1;
+  }
+
+  console.log(destination);
+  if (target === "vscode") {
+    console.log(`\nInstall it with:\n  tinte ${destination} --code`);
+  }
+
+  return 0;
+}
+
+function resolveDestination(out: string, filename: string): string {
+  if (!out) {
+    return resolve(process.cwd(), filename);
+  }
+
+  const looksLikeFile =
+    !out.endsWith("/") && extname(out) !== "" && !existsSync(out);
+  const isExistingDir = existsSync(out) && statSync(out).isDirectory();
+
+  if (looksLikeFile && !isExistingDir) {
+    return resolve(process.cwd(), out);
+  }
+
+  return resolve(process.cwd(), out, filename);
+}
+
 function parseArgs(args: string[]): BuildOptions {
   let configPath = "./tinte.config.json";
   let outDir = "";
   let plugin = false;
+  let to: BuildTargetId | "" | undefined;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === "--plugin") {
       plugin = true;
+    } else if (arg === "--to") {
+      // `--to` with no value lists the targets instead of erroring.
+      const value = args[i + 1];
+      if (!value || value.startsWith("--")) {
+        to = "";
+      } else {
+        to = assertTarget(value);
+        i++;
+      }
+    } else if (arg.startsWith("--to=")) {
+      const value = arg.slice("--to=".length);
+      to = value ? assertTarget(value) : "";
     } else if (arg === "--config" || arg === "--out") {
       const value = args[i + 1];
       if (!value || value.startsWith("--")) {
@@ -140,7 +236,17 @@ function parseArgs(args: string[]): BuildOptions {
     }
   }
 
-  return { configPath, outDir, plugin };
+  return { configPath, outDir, plugin, to };
+}
+
+function assertTarget(value: string): BuildTargetId {
+  if (!isBuildTarget(value)) {
+    const available = listTargets()
+      .map((t) => t.id)
+      .join(", ");
+    throw new Error(`unknown --to target "${value}". Available: ${available}`);
+  }
+  return value;
 }
 
 /**

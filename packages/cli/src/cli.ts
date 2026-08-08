@@ -37,6 +37,11 @@ Usage:
   bunx tinte list                    # List installed Tinte themes
   bunx tinte cleanup                 # Clean up temporary files
 
+Themes for humans (identity -> provider artifact):
+  bunx tinte build --to              # List available provider targets
+  bunx tinte build --to vscode       # Emit a VS Code theme, installable below
+  bunx tinte build --to zed --out themes/
+
 Design system compiler (Agent Plugins):
   bunx tinte build --plugin          # Compile identity config to an Agent Plugin
   bunx tinte lint [paths...]         # Scan for colors that bypass the token system
