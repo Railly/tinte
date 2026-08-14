@@ -78,6 +78,32 @@ npx shadcn@latest add https://tinte.dev/api/preset/one-hunter
 configs (Alacritty, Kitty, Warp, Windows Terminal), and 19+ formats from the same
 source of truth.
 
+## Provider capability matrix
+
+This table is generated from the legacy web provider list and the provider
+modules. Run `bun run generate:provider-matrix` after changing either source.
+
+<!-- provider-matrix:start -->
+| Provider | Status | Module |
+| --- | --- | --- |
+| shadcn/ui | Implemented | `packages/providers/src/providers/shadcn.ts` |
+| VS Code | Implemented | `packages/providers/src/providers/vscode.ts` |
+| Cursor | Planned | — |
+| Shiki | Implemented | `packages/providers/src/providers/shiki.ts` |
+| Zed | Implemented | `packages/providers/src/providers/zed.ts` |
+| Warp | Implemented | `packages/providers/src/providers/warp.ts` |
+| Alacritty | Implemented | `packages/providers/src/providers/alacritty.ts` |
+| Windows Terminal | Implemented | `packages/providers/src/providers/windows-terminal.ts` |
+| Kitty | Implemented | `packages/providers/src/providers/kitty.ts` |
+| Ghostty | Planned | — |
+| JetBrains | Planned | — |
+| Slack | Implemented | `packages/providers/src/providers/slack.ts` |
+| Replit | Planned | — |
+| Neovim | Planned | — |
+| Obsidian | Planned | — |
+| GIMP | Implemented | `packages/providers/src/providers/gimp.ts` |
+<!-- provider-matrix:end -->
+
 ## Preset API (shadcn v4)
 
 Every public Tinte theme is installable as a shadcn `registry:base` item:
