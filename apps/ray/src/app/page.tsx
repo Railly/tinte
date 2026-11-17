@@ -22,7 +22,7 @@ const jsonLd = {
   creator: {
     "@type": "Person",
     name: "Railly Hugo",
-    url: "https://raillyhugo.com",
+    url: "https://railly.dev",
   },
   featureList: [
     "500+ syntax highlighting themes",
